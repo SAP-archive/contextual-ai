@@ -1,20 +1,21 @@
-from plugin.xai.evaluation.basic_result import ClassificationResult
-from plugin.xai.evaluation.confusion_matrix import ConfusionMatrix
+from xai.evaluation.basic_result import ClassificationResult
+from xai.evaluation.confusion_matrix import ConfusionMatrix
+from xai.util import get_table_layout
+from xai import constants
 from collections import defaultdict
-from plugin.xai.util import get_table_layout
-from src.services import constants
+
 
 class MultiClassificationResult(ClassificationResult):
     def __init__(self):
         super(MultiClassificationResult, self).__init__()
         self.average_result_dict = defaultdict(lambda: defaultdict(int))
 
-
     def load_results_from_meta(self, metadata: dict):
         for split, evaluation_result in metadata.items():
             for metric, values in evaluation_result.items():
                 if metric == constants.TRAIN_TEST_CM:
-                    self.confusion_matrices[split] = ConfusionMatrix(label=values['labels'],confusion_matrix=values['values'])
+                    self.confusion_matrices[split] = ConfusionMatrix(label=values['labels'],
+                                                                     confusion_matrix=values['values'])
                     continue
                 if 'class' in values:
                     class_values = values['class']
@@ -46,7 +47,8 @@ class MultiClassificationResult(ClassificationResult):
                 for label in self.label_set:
                     row = [label]
                     row.extend(
-                        ["{:.4f}".format(self.resultdict[split][metric][label]) if type(self.resultdict[split][metric][label])==float else 'nan' for metric in self.metric_set])
+                        ["{:.4f}".format(self.resultdict[split][metric][label]) if type(
+                            self.resultdict[split][metric][label]) == float else 'nan' for metric in self.metric_set])
                     table_content.append(row)
 
             # add in average result if any[

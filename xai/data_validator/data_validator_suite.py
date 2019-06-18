@@ -1,4 +1,4 @@
-from plugin.xai.data_validator.abstract_validator import AbstractValidator
+from xai.data_validator.abstract_validator import AbstractValidator
 
 
 class DataValidatorSuite:

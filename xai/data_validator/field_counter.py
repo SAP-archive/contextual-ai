@@ -1,6 +1,7 @@
-from plugin.xai.data_validator.abstract_validator import AbstractValidator
+from xai.data_validator.abstract_validator import AbstractValidator
 from typing import Iterator
-from plugin.xai.constants import KEY_FIELD_COUNTER
+from xai import constants
+
 
 class FieldCounter(AbstractValidator):
 
@@ -32,4 +33,4 @@ class FieldCounter(AbstractValidator):
             self.validate_sample(item)
 
     def summarize_info(self):
-        return {KEY_FIELD_COUNTER: self.info_summary}
+        return {constants.KEY_FIELD_COUNTER: self.info_summary}

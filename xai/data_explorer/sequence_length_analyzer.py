@@ -1,6 +1,6 @@
-from plugin.xai.data_explorer.numeric_analyzer import NumericAnalyzer
+from xai.data_explorer.numeric_analyzer import NumericAnalyzer
 from collections import defaultdict
-from plugin.xai import constants
+from xai import constants
 
 
 class SequenceLengthAnalyzer(NumericAnalyzer):

@@ -1,8 +1,7 @@
-from plugin.xai.evaluation.basic_result import ClassificationResult
-from plugin.xai.evaluation.confusion_matrix import ConfusionMatrix
-from plugin.xai.util import get_table_layout
-from src.services import constants
-
+from xai.evaluation.basic_result import ClassificationResult
+from xai.evaluation.confusion_matrix import ConfusionMatrix
+from xai.util import get_table_layout
+from xai import constants
 
 class BinaryClassificationResult(ClassificationResult):
     def __init__(self, ):

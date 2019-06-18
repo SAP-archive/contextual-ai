@@ -5,9 +5,9 @@ import math
 import re
 import operator
 from nltk.corpus import stopwords
-from plugin.xai.data_explorer.abstract_analyzer import AbstractAnalyzer
-from plugin.xai.data_explorer.sequence_length_analyzer import SequenceLengthAnalyzer
-from plugin.xai import constants
+from xai.data_explorer.abstract_analyzer import AbstractAnalyzer
+from xai.data_explorer.sequence_length_analyzer import SequenceLengthAnalyzer
+from xai import constants
 
 
 class TextAnalyzer(AbstractAnalyzer):

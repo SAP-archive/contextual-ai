@@ -1,6 +1,6 @@
 import shap
 import dill
-from plugin.xai.explainer.abstract_explainer import AbstractExplainer
+from xai.explainer.abstract_explainer import AbstractExplainer
 
 
 class ShapExplainer(AbstractExplainer):
@@ -31,9 +31,9 @@ class ShapExplainer(AbstractExplainer):
         print('Successfully initialize: %s' % self.explainer)
         return self.explainer
 
-    def explain_instance(self, sample, num_features=Explainer.TOP_EXPLAIN_FEATURES):
+    def explain_instance(self, sample, num_features=AbstractExplainer.TOP_EXPLAIN_FEATURES):
         exp = self.explainer.shap_values(sample, nsamples=100,
-                                          l1_reg='num_features(%s)' % num_features)
+                                         l1_reg='num_features(%s)' % num_features)
         return exp
 
     def decode_explaination(self, exp, sample, output):
@@ -75,7 +75,7 @@ class ShapExplainer(AbstractExplainer):
         return output_str
 
     def save_to_file(self, filename):
-        saved_obj = {}
+        saved_obj = dict()
         saved_obj['explainer'] = self.explainer
         saved_obj['explainer_name'] = self.explainer_name
         saved_obj['class_names'] = self.class_names

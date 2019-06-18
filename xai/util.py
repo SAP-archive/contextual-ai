@@ -1,3 +1,7 @@
+import json
+import numpy
+
+
 def get_table_layout(table_header):
     column = len(table_header) - 1
     width = (180 - 30) / column
@@ -5,8 +9,6 @@ def get_table_layout(table_header):
     layout.extend([width] * column)
     return layout
 
-import json
-import numpy
 
 class JsonSerializable(json.JSONEncoder):
     def default(self, obj):

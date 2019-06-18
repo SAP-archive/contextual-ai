@@ -1,7 +1,6 @@
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-from plugin.xai import constants
-import os
+from xai import constants
 
 def adjust_xtick_labels(ticks_length):
     ticks_params = dict()
@@ -38,6 +37,7 @@ def make_ticklabels_invisible(fig):
         ax.tick_params(labelbottom=False, labelleft=False)
         ax.grid(False)
 
+
 def dimreduce_visualization(data, mode='pca'):
     if mode == 'tsne':
         tsne = TSNE(n_components=2)
@@ -46,4 +46,9 @@ def dimreduce_visualization(data, mode='pca'):
         pca = PCA(n_components=2)
         d_data = pca.fit_transform(data)
     return d_data
+
+def map_code_to_text_metric(metric_code):
+    for text, value_codes in constants.METRIC_MAPPING.items():
+        if metric_code in value_codes:
+            return text
 

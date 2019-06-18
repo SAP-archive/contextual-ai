@@ -22,7 +22,6 @@ class ConfusionMatrix:
         similar_class = defaultdict(list)
         for idx, label in enumerate(self.label):
             predicted_distribution = values[:, idx]
-            normalized = predicted_distribution / np.linalg.norm(predicted_distribution)
             args = np.argsort(predicted_distribution)
             for i in range(k):
                 sim_idx = args[-i]

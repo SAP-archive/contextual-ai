@@ -1,7 +1,6 @@
-from plugin.xai.data_validator.abstract_validator import AbstractValidator
+from xai.data_validator.abstract_validator import AbstractValidator
 from typing import Dict, Iterator
-from plugin.xai.constants import DEFAULT_VALUE, KEY_MISSING_VALUE_COUNTER
-
+from xai import constants
 
 class MissingValueValidator(AbstractValidator):
 
@@ -16,7 +15,7 @@ class MissingValueValidator(AbstractValidator):
             else:
                 schema_meta = dict()
                 for type, features in feature_type_list.items():
-                    for defined_type, default_values in DEFAULT_VALUE.items():
+                    for defined_type, default_values in constants.DEFAULT_VALUE.items():
                         if type == defined_type:
                             for feature in features:
                                 schema_meta[feature] = default_values
@@ -45,4 +44,4 @@ class MissingValueValidator(AbstractValidator):
             self.validate_sample(item)
 
     def summarize_info(self):
-        return {KEY_MISSING_VALUE_COUNTER: self.info_summary}
+        return {constants.KEY_MISSING_VALUE_COUNTER: self.info_summary}

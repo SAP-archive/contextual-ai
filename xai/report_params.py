@@ -1,16 +1,16 @@
 import os
 import json
-from plugin.xai import constants
+from xai import constants
 from collections import defaultdict
-from src.services import constants as Const
+
 
 class Params:
     def __init__(self, path):
         self.folder_path = path
-        self.seq_fea=None
-        self.att_fea=None
-        self.label_type=None
-        self.label_key=None
+        self.seq_fea = None
+        self.att_fea = None
+        self.label_type = None
+        self.label_key = None
 
         report_metadata_path = os.path.join(self.folder_path, 'report_meta.json')
         if not os.path.exists(report_metadata_path):
@@ -26,11 +26,11 @@ class Params:
         self.file_params = dict()
         for dataset_file, dataset_key, dataset_label in constants.DATASET_LABEL:
             self.file_params[dataset_key] = {'data_file': dataset_file, 'att_fea': att_fea,
-                                        'seq_fea': seq_fea,
-                                        'metafile_name': dataset_key, 'label_key': label_key,
-                                        'label_type': label_type,
-                                        'feature_file': None,
-                                        'group_criterias': []}
+                                             'seq_fea': seq_fea,
+                                             'metafile_name': dataset_key, 'label_key': label_key,
+                                             'label_type': label_type,
+                                             'feature_file': None,
+                                             'group_criterias': []}
 
         self.recommendation_metric = report_setup_meta['overall']['recommendation_metric']
         self.is_deeplearning = report_setup_meta['overall']['is_deeplearning']
@@ -44,7 +44,6 @@ class Params:
         self.sequence_feature_name = report_setup_meta['data_analysis']['sequence_feature_name']
         self.key_feature = report_setup_meta['evaluation']['key_feature']
 
-
     def load_feature_list(self):
         ml_metadata_path = os.path.join(self.folder_path, 'meta.json')
 
@@ -56,26 +55,26 @@ class Params:
 
         att_fea = defaultdict(list)
 
-        for k, v in meta[Const.METADATA_KEY_DATA_SEC][Const.META_KEY_ATTRIBUTE_FEATURE].items():
-            feature_type = v[Const.META_KEY_FIELD_TYPE]
-            if feature_type in Const.FEATURE_DATA_TYPE_NOMINAL + Const.FEATURE_DATA_TYPE_ORDINAL:
+        for k, v in meta[constants.METADATA_KEY_DATA_SEC][constants.META_KEY_ATTRIBUTE_FEATURE].items():
+            feature_type = v[constants.META_KEY_FIELD_TYPE]
+            if feature_type in constants.FEATURE_DATA_TYPE_NOMINAL + constants.FEATURE_DATA_TYPE_ORDINAL:
                 att_fea['categorical'].append(k)
-            elif feature_type in Const.FEATURE_DATA_TYPE_CONTINUOUS:
+            elif feature_type in constants.FEATURE_DATA_TYPE_CONTINUOUS:
                 att_fea['numeric'].append(k)
-            elif feature_type in Const.FEATURE_DATA_TYPE_TEXT:
+            elif feature_type in constants.FEATURE_DATA_TYPE_TEXT:
                 att_fea['text'].append(k)
-            elif feature_type in Const.FEATURE_DATA_TYPE_LABEL:
+            elif feature_type in constants.FEATURE_DATA_TYPE_LABEL:
                 att_fea['label'].append(k)
 
         seq_fea = defaultdict(list)
-        for k, v in meta[Const.METADATA_KEY_DATA_SEC][Const.META_KEY_SEQUENCE_FEATURE].items():
-            feature_type = v[Const.META_KEY_FIELD_TYPE]
-            if feature_type in Const.FEATURE_DATA_TYPE_NOMINAL + Const.FEATURE_DATA_TYPE_ORDINAL:
+        for k, v in meta[constants.METADATA_KEY_DATA_SEC][constants.META_KEY_SEQUENCE_FEATURE].items():
+            feature_type = v[constants.META_KEY_FIELD_TYPE]
+            if feature_type in constants.FEATURE_DATA_TYPE_NOMINAL + constants.FEATURE_DATA_TYPE_ORDINAL:
                 seq_fea['categorical'].append(k)
-            elif feature_type in Const.FEATURE_DATA_TYPE_CONTINUOUS:
+            elif feature_type in constants.FEATURE_DATA_TYPE_CONTINUOUS:
                 seq_fea['numeric'].append(k)
-            elif feature_type in Const.FEATURE_DATA_TYPE_TEXT:
+            elif feature_type in constants.FEATURE_DATA_TYPE_TEXT:
                 seq_fea['text'].append(k)
-            elif feature_type in Const.FEATURE_DATA_TYPE_LABEL:
+            elif feature_type in constants.FEATURE_DATA_TYPE_LABEL:
                 seq_fea['label'].append(k)
         return att_fea, seq_fea

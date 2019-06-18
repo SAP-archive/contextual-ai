@@ -1,7 +1,7 @@
 import os
-from plugin.xai.graphs import graph_generator as gg
-from plugin.xai.graphs import format_contants as graph_constants
-from plugin.xai import constants
+from xai.graphs import graph_generator as gg
+from xai.graphs import format_contants as graph_constants
+from xai import constants
 
 
 def visualize_feature_for_similar_classes(dataset, feature_name, base_class, similar_class, sub_confusion_matrix):

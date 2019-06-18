@@ -1,5 +1,5 @@
-from plugin.xai.data_explorer.abstract_analyzer import AbstractAnalyzer
-from plugin.xai import constants
+from xai.data_explorer.abstract_analyzer import AbstractAnalyzer
+from xai import constants
 from collections import defaultdict
 import numpy as np
 import matplotlib.pyplot as plt
@@ -37,7 +37,6 @@ class NumericAnalyzer(AbstractAnalyzer):
                 class_values = self.summary_info[fea][label_name]
                 numeric_dist = self._get_numeric_curve_from_data(class_values, fea, label_name)
                 self.summary_info[fea][label_name] = numeric_dist
-
 
     def summarize_info(self):
         return {constants.KEY_NUMERIC_FEATURE_DISTRIBUTION: self.summary_info}

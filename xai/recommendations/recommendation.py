@@ -1,19 +1,19 @@
-import plugin.xai.constants as Const
+import xai.constants as constants
 from sklearn.metrics.pairwise import cosine_similarity
-from src.services import constants
 import math
 
+
 def get_model_fitting_status(evaluation_result, metric):
-    training_performance = evaluation_result[Const.KEY_DATA_TRAIN][metric]
-    validation_performance = evaluation_result[Const.KEY_DATA_VALID][metric]
+    training_performance = evaluation_result[constants.KEY_DATA_TRAIN][metric]
+    validation_performance = evaluation_result[constants.KEY_DATA_VALID][metric]
 
-    if training_performance < Const.RECOMMEND_PERFORMANCE_BENCHMARK[metric]:
-        return Const.MODEL_STATUS_UNDERFITTING, training_performance, validation_performance
+    if training_performance < constants.RECOMMEND_PERFORMANCE_BENCHMARK[metric]:
+        return constants.MODEL_STATUS_UNDERFITTING, training_performance, validation_performance
 
-    if training_performance - validation_performance > Const.RECOMMEND_PERFORMANCE_DIFFERENCE_BENCHMARK:
-        return Const.MODEL_STATUS_OVERFITTING, training_performance, validation_performance
+    if training_performance - validation_performance > constants.RECOMMEND_PERFORMANCE_DIFFERENCE_BENCHMARK:
+        return constants.MODEL_STATUS_OVERFITTING, training_performance, validation_performance
 
-    return Const.MODEL_STATUS_FITTING, training_performance, validation_performance
+    return constants.MODEL_STATUS_FITTING, training_performance, validation_performance
 
 
 def _get_normalized_distribution(distribution, key_names):
@@ -38,7 +38,7 @@ def _get_union_keyset(dist_a, dist_b):
 
 
 def get_training_data_distribution_balance_status(data_meta):
-    dist = data_meta[Const.KEY_DATA_EXTEND_TRAIN][Const.KEY_DATA_DISTRIBUTION]
+    dist = data_meta[constants.KEY_DATA_EXTEND_TRAIN][constants.KEY_DATA_DISTRIBUTION]
     labels = list(dist.keys())
     max_quan = max(list(dist.values()))
 
@@ -47,7 +47,7 @@ def get_training_data_distribution_balance_status(data_meta):
     unbalanced_labelled = []
     balanced = True
     for idx, value in enumerate(normalized_values):
-        if value < Const.RECOMMEND_UNBALANCED_BENCHMARK:
+        if value < constants.RECOMMEND_UNBALANCED_BENCHMARK:
             unbalanced_labelled.append([labels[idx], value])
             balanced = False
         if value == 1:
@@ -57,15 +57,15 @@ def get_training_data_distribution_balance_status(data_meta):
 
 
 def get_data_distribution_similar_status(data_meta, dataset_a, dataset_b):
-    dist_a = data_meta[dataset_a][Const.KEY_DATA_DISTRIBUTION]
-    dist_b = data_meta[dataset_b][Const.KEY_DATA_DISTRIBUTION]
+    dist_a = data_meta[dataset_a][constants.KEY_DATA_DISTRIBUTION]
+    dist_b = data_meta[dataset_b][constants.KEY_DATA_DISTRIBUTION]
     key_names, size_a, size_b, overlap = _get_union_keyset(dist_a, dist_b)
     normalized_dist_a = _get_normalized_distribution(dist_a, key_names)
     normalized_dist_b = _get_normalized_distribution(dist_b, key_names)
 
     cos_sim = cosine_similarity([normalized_dist_a], [normalized_dist_b])[0, 0]
 
-    if cos_sim < Const.RECOMMEND_DATA_DISTRIBUTION_DISTANCE_BENCHMARK:
+    if cos_sim < constants.RECOMMEND_DATA_DISTRIBUTION_DISTANCE_BENCHMARK:
         status = False
     else:
         status = True
@@ -74,15 +74,15 @@ def get_data_distribution_similar_status(data_meta, dataset_a, dataset_b):
 
 
 def get_feature_distribution_similar_status(data_meta, feature_name, dataset_a, dataset_b):
-    dist_a = data_meta[dataset_a][Const.KEY_CATEGORICAL_FEATURE_DISTRIBUTION][feature_name]['all']
-    dist_b = data_meta[dataset_b][Const.KEY_CATEGORICAL_FEATURE_DISTRIBUTION][feature_name]['all']
+    dist_a = data_meta[dataset_a][constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION][feature_name]['all']
+    dist_b = data_meta[dataset_b][constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION][feature_name]['all']
     key_names, size_a, size_b, overlap = _get_union_keyset(dist_a, dist_b)
     normalized_dist_a = _get_normalized_distribution(dist_a, key_names)
     normalized_dist_b = _get_normalized_distribution(dist_b, key_names)
 
     cos_sim = cosine_similarity([normalized_dist_a], [normalized_dist_b])[0, 0]
 
-    if cos_sim < Const.RECOMMEND_FEATURE_DISTRIBUTION_DISTANCE_BENCHMARK:
+    if cos_sim < constants.RECOMMEND_FEATURE_DISTRIBUTION_DISTANCE_BENCHMARK:
         status = False
     else:
         status = True
@@ -97,27 +97,30 @@ def get_training_history_suggestion(training_meta, metric):
     f1_scores = []
     auc_scores = []
 
-    best_idx = training_meta[Const.KEY_BEST_INDEX]
-    if best_idx not in training_meta[Const.KEY_HISTORY]:
+    best_idx = training_meta[constants.KEY_BEST_INDEX]
+    if best_idx not in training_meta[constants.KEY_HISTORY]:
         best_idx = str(best_idx)
-    best_idx_f1 = training_meta[Const.KEY_HISTORY][best_idx][Const.KEY_HISTORY_EVALUATION][constants.TRAIN_TEST_F1]
-    best_idx_auc = training_meta[Const.KEY_HISTORY][best_idx][Const.KEY_HISTORY_EVALUATION][constants.TRAIN_TEST_AUC]
-    best_metric = training_meta[Const.KEY_HISTORY][best_idx][Const.KEY_HISTORY_EVALUATION][metric]
+    best_idx_f1 = training_meta[constants.KEY_HISTORY][best_idx][constants.KEY_HISTORY_EVALUATION][
+        constants.TRAIN_TEST_F1]
+    best_idx_auc = training_meta[constants.KEY_HISTORY][best_idx][constants.KEY_HISTORY_EVALUATION][
+        constants.TRAIN_TEST_AUC]
+    best_metric = training_meta[constants.KEY_HISTORY][best_idx][constants.KEY_HISTORY_EVALUATION][metric]
 
     if math.isnan(best_idx_f1):
         best_idx_f1 = 0
     recommendation = []
-    for iter_num, iter_eval in training_meta[Const.KEY_HISTORY].items():
-        f1 = training_meta[Const.KEY_HISTORY][iter_num][Const.KEY_HISTORY_EVALUATION][constants.TRAIN_TEST_F1]
+    for iter_num, iter_eval in training_meta[constants.KEY_HISTORY].items():
+        f1 = training_meta[constants.KEY_HISTORY][iter_num][constants.KEY_HISTORY_EVALUATION][constants.TRAIN_TEST_F1]
         if math.isnan(f1):
             continue
         diff_f1 = f1 - best_idx_f1
         f1_scores.append(diff_f1)
-        auc = training_meta[Const.KEY_HISTORY][iter_num][Const.KEY_HISTORY_EVALUATION][constants.TRAIN_TEST_AUC]
+        auc = training_meta[constants.KEY_HISTORY][iter_num][constants.KEY_HISTORY_EVALUATION][constants.TRAIN_TEST_AUC]
         diff_auc = auc - best_idx_auc
         auc_scores.append(diff_auc)
-        diff_metric = best_metric - training_meta[Const.KEY_HISTORY][iter_num][Const.KEY_HISTORY_EVALUATION][metric]
-        if diff_f1 > Const.RECOMMEND_METRIC_DIFF_BENCHMARK or diff_auc > Const.RECOMMEND_METRIC_DIFF_BENCHMARK:
+        diff_metric = best_metric - training_meta[constants.KEY_HISTORY][iter_num][constants.KEY_HISTORY_EVALUATION][
+            metric]
+        if diff_f1 > constants.RECOMMEND_METRIC_DIFF_BENCHMARK or diff_auc > constants.RECOMMEND_METRIC_DIFF_BENCHMARK:
             recommendation.append((iter_num, diff_f1, diff_auc, diff_metric))
 
     if len(recommendation) > 0:

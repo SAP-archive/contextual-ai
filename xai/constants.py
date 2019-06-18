@@ -1,4 +1,4 @@
-from src.services import constants
+
 
 CONTENT_SUMMARY = 'Summary'
 CONTENT_DATA = 'Data Analysis'
@@ -34,6 +34,48 @@ KEY_DATA_TEST = 'test'
 KEY_DATA_EXTEND_TRAIN = 'extend_train'
 KEY_DATA_EXTEND_VALID = 'extend_valid'
 KEY_DATA_EXTEND_TEST = 'extend_test'
+
+FEATURE_DATA_TYPE_NOMINAL = ['Nominal', 0, '0']
+FEATURE_DATA_TYPE_ORDINAL = ['Ordinal', 1, '1']
+FEATURE_DATA_TYPE_TEXT = ['Text', 'Free Text', 2, '2']
+FEATURE_DATA_TYPE_CONTINUOUS = ['Continuous', 3, '3']
+FEATURE_DATA_TYPE_DATETIME = ['DateTime', 4, '4']
+FEATURE_DATA_TYPE_LABEL = ['Label', 5, '5']
+FEATURE_DATA_TYPE_KEY = ['Key', 6, '6']
+
+
+## file names
+TRAIN_DATA_FILE = 'train_data.txt'
+TEST_DATA_FILE = 'test_data.txt'
+VALIDATION_DATE_FILE = 'valid_data.txt'
+ALL_DATA_FILE = 'all_data.txt'
+EXTEND_TRAIN_DATA_FILE = 'extend_train_data.newdata'
+EXTEND_TEST_DATA_FILE = 'extend_test_data.newdata'
+EXTEND_VALID_DATA_FILE = 'extend_valid_data.newdata'
+
+## metric
+TRAIN_TEST_BATCH_NUM = 'batch_num'
+TRAIN_TEST_LOSS = 'loss'
+TRAIN_TEST_ACCURACY = 'accuracy'
+TRAIN_TEST_PRECISION = 'precision'
+TRAIN_TEST_RECALL = 'recall'
+TRAIN_TEST_F1 = 'f1'
+TRAIN_TEST_AUC = 'auc'
+TRAIN_TEST_CM = 'CM'
+
+METRIC_MAPPING = {TRAIN_TEST_ACCURACY: [0, '0', TRAIN_TEST_ACCURACY],
+                  TRAIN_TEST_PRECISION: [1, '1', TRAIN_TEST_PRECISION],
+                  TRAIN_TEST_RECALL: [2, '2', TRAIN_TEST_RECALL],
+                  TRAIN_TEST_F1: [3, '3', TRAIN_TEST_F1],
+                  TRAIN_TEST_AUC: [4, '4', TRAIN_TEST_AUC],
+                  TRAIN_TEST_CM: [5, '5', TRAIN_TEST_CM],
+                  }
+
+## metadata key
+METADATA_KEY_DATA_SEC = 'Data'
+METADATA_KEY_MAPPING_SEC = 'Mapping'
+METADATA_KEY_PARAM_SEC = 'Parameter'
+METADATA_KEY_FIELD_TYPE = 'type'
 
 KEY_PROBABILITY = "probability"
 KEY_GROUNDTRUTH = "gt"
@@ -85,13 +127,13 @@ IMPORTANCE_THRESHOLD = 0.01
 
 FIGURE_PATH = 'figures'
 
-DATASET_LABEL = [(constants.ALL_DATA_FILE, KEY_DATA_ALL, 'All Data (before splitting)'),
-                 (constants.TRAIN_DATA_FILE, KEY_DATA_TRAIN, 'Train Set'),
-                 (constants.VALIDATION_DATE_FILE, KEY_DATA_VALID, 'Validation Set'),
-                 (constants.TEST_DATA_FILE, KEY_DATA_TEST, 'Test Set'),
-                 (constants.EXTEND_TRAIN_DATA_FILE, KEY_DATA_EXTEND_TRAIN, 'Training (Extended)'),
-                 (constants.EXTEND_VALID_DATA_FILE, KEY_DATA_EXTEND_VALID, 'Validation (Extended)'),
-                 (constants.EXTEND_TEST_DATA_FILE, KEY_DATA_EXTEND_TEST, 'Testing (Extended)')]
+DATASET_LABEL = [(ALL_DATA_FILE, KEY_DATA_ALL, 'All Data (before splitting)'),
+                 (TRAIN_DATA_FILE, KEY_DATA_TRAIN, 'Train Set'),
+                 (VALIDATION_DATE_FILE, KEY_DATA_VALID, 'Validation Set'),
+                 (TEST_DATA_FILE, KEY_DATA_TEST, 'Test Set'),
+                 (EXTEND_TRAIN_DATA_FILE, KEY_DATA_EXTEND_TRAIN, 'Training (Extended)'),
+                 (EXTEND_VALID_DATA_FILE, KEY_DATA_EXTEND_VALID, 'Validation (Extended)'),
+                 (EXTEND_TEST_DATA_FILE, KEY_DATA_EXTEND_TEST, 'Testing (Extended)')]
 
 PDF_NAME = 'training_report.pdf'
 
@@ -99,11 +141,11 @@ MODEL_STATUS_OVERFITTING = 2
 MODEL_STATUS_UNDERFITTING = 1
 MODEL_STATUS_FITTING = 0
 
-RECOMMEND_PERFORMANCE_BENCHMARK = {constants.TRAIN_TEST_ACCURACY: 0.8,
-                                   constants.TRAIN_TEST_F1: 0.8,
-                                   constants.TRAIN_TEST_PRECISION: 0.8,
-                                   constants.TRAIN_TEST_RECALL: 0.8,
-                                   constants.TRAIN_TEST_AUC: 0.8}
+RECOMMEND_PERFORMANCE_BENCHMARK = {TRAIN_TEST_ACCURACY: 0.8,
+                                   TRAIN_TEST_F1: 0.8,
+                                   TRAIN_TEST_PRECISION: 0.8,
+                                   TRAIN_TEST_RECALL: 0.8,
+                                   TRAIN_TEST_AUC: 0.8}
 
 RECOMMEND_PERFORMANCE_DIFFERENCE_BENCHMARK = 0.15
 RECOMMEND_DATA_DISTRIBUTION_DISTANCE_BENCHMARK = 0.999

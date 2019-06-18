@@ -1,6 +1,6 @@
-from plugin.xai.data_explorer.abstract_analyzer import AbstractAnalyzer
+from xai.data_explorer.abstract_analyzer import AbstractAnalyzer
 from collections import defaultdict
-from plugin.xai import constants
+from xai import constants
 
 class CategoricalAnalyzer(AbstractAnalyzer):
 

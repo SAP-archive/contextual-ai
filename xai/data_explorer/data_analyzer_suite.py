@@ -1,10 +1,11 @@
-from plugin.xai.data_explorer.abstract_analyzer import AbstractAnalyzer
+from xai.data_explorer.abstract_analyzer import AbstractAnalyzer
 
 
 class DataAnalyzerSuite:
     def __init__(self):
         self.analyzer_list = []
         self.metadata = {}
+
     def add_analyzer(self, analyzer: AbstractAnalyzer):
         self.analyzer_list.append(analyzer)
 

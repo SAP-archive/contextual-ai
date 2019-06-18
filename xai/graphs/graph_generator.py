@@ -2,9 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import plugin.xai.constants as Const
+import xai.constants as Const
 from wordcloud import WordCloud
-from plugin.xai.graphs.basic_graph import Graph
+from xai.graphs.basic_graph import Graph
 from typing import List
 
 

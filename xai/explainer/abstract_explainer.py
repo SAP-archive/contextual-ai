@@ -1,12 +1,14 @@
 import time
 from abc import ABC, abstractmethod
 import numpy as np
-from typing import List,Dict
+from typing import List, Dict
+
 
 class AbstractExplainer(ABC):
     TOP_EXPLAIN_FEATURES = 5
 
-    def __init__(self, explainer_name: str, class_names: List[str], feature_names:List[str], categorical_dict: Dict[list]):
+    def __init__(self, explainer_name: str, class_names: List[str], feature_names: List[str],
+                 categorical_dict: Dict[list]):
         self.explainer_name = explainer_name
 
         self.class_names = class_names

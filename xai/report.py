@@ -3,7 +3,7 @@ import datetime
 import re
 import os
 import logging
-import plugin.xai.graphs.format_contants as graph_constants
+import xai.graphs.format_contants as graph_constants
 
 LOGGER = logging.getLogger(__name__)
 

@@ -1,17 +1,16 @@
 import json
-from collections import defaultdict
 import os
-import plugin.xai.constants as Const
+import xai.constants as Const
 import logging
-from plugin.xai.data_explorer.text_analyzer import TextAnalyzer
-from plugin.xai.data_explorer.categorical_analyzer import CategoricalAnalyzer
-from plugin.xai.data_explorer.numeric_analyzer import NumericAnalyzer
-from plugin.xai.data_explorer.sequence_length_analyzer import SequenceLengthAnalyzer
-from plugin.xai.data_explorer.data_analyzer_suite import DataAnalyzerSuite
+from xai.data_explorer.text_analyzer import TextAnalyzer
+from xai.data_explorer.categorical_analyzer import CategoricalAnalyzer
+from xai.data_explorer.numeric_analyzer import NumericAnalyzer
+from xai.data_explorer.sequence_length_analyzer import SequenceLengthAnalyzer
+from xai.data_explorer.data_analyzer_suite import DataAnalyzerSuite
 
-from plugin.xai.data_validator.data_validator_suite import DataValidatorSuite
-from plugin.xai.data_validator.field_counter import FieldCounter
-from plugin.xai.data_validator.missing_value_validator import MissingValueValidator
+from xai.data_validator.data_validator_suite import DataValidatorSuite
+from xai.data_validator.field_counter import FieldCounter
+from xai.data_validator.missing_value_validator import MissingValueValidator
 
 LOGGER = logging.getLogger(__name__)
 

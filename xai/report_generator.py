@@ -1,24 +1,22 @@
-from plugin.xai.report import TrainingReportFPDF
-from plugin.xai.data_explorer.data_analysis import prepare_data_metafile
-from plugin.xai.evaluation.binary_classification_result import BinaryClassificationResult
-from plugin.xai.evaluation.multi_classification_result import MultiClassificationResult
-from plugin.xai.report_params import Params
-from plugin.xai.graphs.generate_combo_figures import visualize_feature_for_similar_classes
-from plugin.xai.util import JsonSerializable
-import plugin.xai.recommendations.recommendation as rec
-import plugin.xai.graphs.graph_generator as gg
-import plugin.xai.graphs.format_contants as graph_constants
-
+from xai.report import TrainingReportFPDF
+from xai.data_explorer.data_analysis import prepare_data_metafile
+from xai.evaluation.binary_classification_result import BinaryClassificationResult
+from xai.evaluation.multi_classification_result import MultiClassificationResult
+from xai.report_params import Params
+from xai.graphs.generate_combo_figures import visualize_feature_for_similar_classes
+from xai.util import JsonSerializable
+import xai.recommendations.recommendation as rec
+import xai.graphs.graph_generator as gg
+import xai.graphs.format_contants as graph_constants
+from xai import constants
+from xai import util
 import numpy as np
 
 import json
 import os
 import logging
 import datetime
-from plugin.xai import constants as Const
-from src.services import constants
 import shutil
-from src.services.util import map_code_to_text_metric
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,8 +27,8 @@ class ReportGenerator(TrainingReportFPDF):
         self.report_params = report_params
         self.report_data = report_data
         self.setup_report_info()
-        if not os.path.exists(Const.FIGURE_PATH):
-            os.mkdir(Const.FIGURE_PATH)
+        if not os.path.exists(constants.FIGURE_PATH):
+            os.mkdir(constants.FIGURE_PATH)
 
     def generate_report(self, output_path):
         chapter_links = self.generate_cover_page(self.report_params.content_list, self.report_data)
@@ -39,24 +37,24 @@ class ReportGenerator(TrainingReportFPDF):
         self.output_report(output_path)
 
     def add_chapter(self, chapter_content, link=None):
-        if chapter_content == Const.CONTENT_DATA:
+        if chapter_content == constants.CONTENT_DATA:
             self.generate_data_analysis(link)
-        elif chapter_content == Const.CONTENT_FEATURE:
+        elif chapter_content == constants.CONTENT_FEATURE:
             self.generate_feature_analysis(link)
-        elif chapter_content == Const.CONTENT_TRAINING:
+        elif chapter_content == constants.CONTENT_TRAINING:
             self.generate_training_result(link)
-        elif chapter_content == Const.CONTENT_HYPEROPT:
+        elif chapter_content == constants.CONTENT_HYPEROPT:
             self.generate_hyperopt_result(link)
-        elif chapter_content == Const.CONTENT_RECOMMENDATION:
+        elif chapter_content == constants.CONTENT_RECOMMENDATION:
             self.generate_recommendations(link)
-        elif chapter_content == Const.CONTENT_DEEPLEARNING:
+        elif chapter_content == constants.CONTENT_DEEPLEARNING:
             self.generate_deeplearning(link)
 
     def output_report(self, output_path):
-        self.output('%s/%s' % (output_path, Const.PDF_NAME))
+        self.output('%s/%s' % (output_path, constants.PDF_NAME))
         print('Training report generated.')
-        if os.path.exists(Const.FIGURE_PATH):
-            shutil.rmtree(Const.FIGURE_PATH)
+        if os.path.exists(constants.FIGURE_PATH):
+            shutil.rmtree(constants.FIGURE_PATH)
 
     def setup_report_info(self):
         self.set_report_info(usecase_name=self.report_params.usecase_name, version=self.report_params.usecase_version)
@@ -82,56 +80,56 @@ class ReportGenerator(TrainingReportFPDF):
     def get_data_summary(self, data_meta):
         self.my_write_line("Data Summary", 'B')
         self.start_itemize()
-        if Const.KEY_DATA_ALL in data_meta.keys():
+        if constants.KEY_DATA_ALL in data_meta.keys():
             self.my_write_key_value("Number of all samples",
-                                    data_meta[Const.KEY_DATA_ALL][Const.KEY_TOTAL_COUNT])
+                                    data_meta[constants.KEY_DATA_ALL][constants.KEY_TOTAL_COUNT])
 
-        if Const.KEY_DATA_EXTEND_TRAIN in data_meta.keys():
+        if constants.KEY_DATA_EXTEND_TRAIN in data_meta.keys():
             self.my_write_key_value("Number of training samples (after extension)",
-                                    data_meta[Const.KEY_DATA_EXTEND_TRAIN][Const.KEY_TOTAL_COUNT])
-        elif Const.KEY_DATA_TRAIN in data_meta.keys():
+                                    data_meta[constants.KEY_DATA_EXTEND_TRAIN][constants.KEY_TOTAL_COUNT])
+        elif constants.KEY_DATA_TRAIN in data_meta.keys():
             self.my_write_key_value("Number of training samples",
-                                    data_meta[Const.KEY_DATA_TRAIN][Const.KEY_TOTAL_COUNT])
+                                    data_meta[constants.KEY_DATA_TRAIN][constants.KEY_TOTAL_COUNT])
 
-        if Const.KEY_DATA_EXTEND_VALID in data_meta.keys():
+        if constants.KEY_DATA_EXTEND_VALID in data_meta.keys():
             self.my_write_key_value("Number of validation samples (after extension)",
-                                    data_meta[Const.KEY_DATA_EXTEND_VALID][Const.KEY_TOTAL_COUNT])
-        elif Const.KEY_DATA_TRAIN in data_meta.keys():
+                                    data_meta[constants.KEY_DATA_EXTEND_VALID][constants.KEY_TOTAL_COUNT])
+        elif constants.KEY_DATA_TRAIN in data_meta.keys():
             self.my_write_key_value("Number of validation samples",
-                                    data_meta[Const.KEY_DATA_VALID][Const.KEY_TOTAL_COUNT])
-        if Const.KEY_DATA_EXTEND_TRAIN in data_meta.keys():
+                                    data_meta[constants.KEY_DATA_VALID][constants.KEY_TOTAL_COUNT])
+        if constants.KEY_DATA_EXTEND_TRAIN in data_meta.keys():
             self.my_write_key_value("Number of testing samples (after extension)",
-                                    data_meta[Const.KEY_DATA_EXTEND_TEST][Const.KEY_TOTAL_COUNT])
-        elif Const.KEY_DATA_TRAIN in data_meta.keys():
+                                    data_meta[constants.KEY_DATA_EXTEND_TEST][constants.KEY_TOTAL_COUNT])
+        elif constants.KEY_DATA_TRAIN in data_meta.keys():
             self.my_write_key_value("Number of testing samples",
-                                    data_meta[Const.KEY_DATA_TEST][Const.KEY_TOTAL_COUNT])
+                                    data_meta[constants.KEY_DATA_TEST][constants.KEY_TOTAL_COUNT])
 
         self.end_itemize()
 
     def get_timing(self, timing):
         self.my_write_line("Training Time:")
         self.start_itemize()
-        if Const.KEY_TIMING_FEATURE in timing.keys():
+        if constants.KEY_TIMING_FEATURE in timing.keys():
             self.my_write_key_value("Feature Processing",
-                                    datetime.timedelta(seconds=timing[Const.KEY_TIMING_FEATURE]))
-        if Const.KEY_TIMING_TRAINING in timing.keys():
+                                    datetime.timedelta(seconds=timing[constants.KEY_TIMING_FEATURE]))
+        if constants.KEY_TIMING_TRAINING in timing.keys():
             self.my_write_key_value("Training Model",
-                                    datetime.timedelta(seconds=timing[Const.KEY_TIMING_TRAINING]))
-        if Const.KEY_TIMING_EVALUATION in timing.keys():
+                                    datetime.timedelta(seconds=timing[constants.KEY_TIMING_TRAINING]))
+        if constants.KEY_TIMING_EVALUATION in timing.keys():
             self.my_write_key_value("Evaluation Model",
-                                    datetime.timedelta(seconds=timing[Const.KEY_TIMING_EVALUATION]))
+                                    datetime.timedelta(seconds=timing[constants.KEY_TIMING_EVALUATION]))
         self.end_itemize()
 
     def get_evaluation_result(self, evaluation_result, mode='test'):
         if mode == 'train':
             set_name = 'Training'
-            set_key = Const.KEY_DATA_TRAIN
+            set_key = constants.KEY_DATA_TRAIN
         if mode == 'valid':
             set_name = 'Validation'
-            set_key = Const.KEY_DATA_VALID
+            set_key = constants.KEY_DATA_VALID
         if mode == 'test':
             set_name = 'Testing'
-            set_key = Const.KEY_DATA_TEST
+            set_key = constants.KEY_DATA_TEST
 
         if set_key not in evaluation_result.keys():
             print('Error: Cannot find training result for %s set [%s] in training meta.' % (set_name, set_key))
@@ -139,7 +137,7 @@ class ReportGenerator(TrainingReportFPDF):
         self.my_write_line("Evaluation Result (on %s Set):" % set_name)
         self.start_itemize()
         for metric_name, metric_value in evaluation_result[set_key].items():
-            if metric_name != Const.KEY_VIS_RESULT and metric_name != constants.TRAIN_TEST_CM:
+            if metric_name != constants.KEY_VIS_RESULT and metric_name != constants.TRAIN_TEST_CM:
                 if type(metric_value) == dict:
                     if 'average' in metric_value.keys():
                         value = "%s (average)" % metric_value['average']
@@ -153,39 +151,40 @@ class ReportGenerator(TrainingReportFPDF):
     def get_training_summary(self, training_meta):
         self.my_write_line("Training Summary", 'B')
         self.start_itemize()
-        if Const.KEY_TRAINING_MODE in training_meta:
-            training_mode = training_meta[Const.KEY_TRAINING_MODE]
+        if constants.KEY_TRAINING_MODE in training_meta:
+            training_mode = training_meta[constants.KEY_TRAINING_MODE]
             if training_mode == 0:
-                training_mode_text = Const.TEXT_TRAININGMODE_DEFAULT
+                training_mode_text = constants.TEXT_TRAININGMODE_DEFAULT
             elif training_mode == 1:
-                training_mode_text = Const.TEXT_TRAININGMODE_HYPEROPT_BENCHMARK
+                training_mode_text = constants.TEXT_TRAININGMODE_HYPEROPT_BENCHMARK
             elif training_mode == 2:
-                training_mode_text = Const.TEXT_TRAININGMODE_HYPEROPT
+                training_mode_text = constants.TEXT_TRAININGMODE_HYPEROPT
             self.my_write_key_value("Training Mode", training_mode_text)
 
-        if Const.KEY_EVALUATION_RESULT in training_meta:
-            self.get_evaluation_result(training_meta[Const.KEY_EVALUATION_RESULT])
+        if constants.KEY_EVALUATION_RESULT in training_meta:
+            self.get_evaluation_result(training_meta[constants.KEY_EVALUATION_RESULT])
         self.my_write_line(1)
 
-        if Const.KEY_TIMING in training_meta:
-            self.get_timing(training_meta[Const.KEY_TIMING])
+        if constants.KEY_TIMING in training_meta:
+            self.get_timing(training_meta[constants.KEY_TIMING])
         else:
-            print("Error: cannot find timing key [%s] in the training meta." % Const.KEY_TIMING)
+            print("Error: cannot find timing key [%s] in the training meta." % constants.KEY_TIMING)
         self.my_write_line(1)
         self.end_itemize()
 
     def get_sequence_statistics(self, data_meta, sequence_feature_name):
-        if Const.KEY_DATA_EXTEND_TRAIN not in data_meta.keys():
-            data_key = Const.KEY_DATA_TRAIN
+        if constants.KEY_DATA_EXTEND_TRAIN not in data_meta.keys():
+            data_key = constants.KEY_DATA_TRAIN
         else:
-            data_key = Const.KEY_DATA_EXTEND_TRAIN
+            data_key = constants.KEY_DATA_EXTEND_TRAIN
 
-        numeric_dist = data_meta[data_key][Const.KEY_LENGTH_FEATURE_DISTRIBUTION][
+        numeric_dist = data_meta[data_key][constants.KEY_LENGTH_FEATURE_DISTRIBUTION][
             '%s_length' % sequence_feature_name]['all']
 
         self.add_subsubsection("Sample characteristics")
         self.my_write_line("The following statistical features are generated from the training data.")
-        self.my_write_key_value("Training sample number", data_meta[Const.KEY_DATA_EXTEND_TRAIN][Const.KEY_TOTAL_COUNT])
+        self.my_write_key_value("Training sample number",
+                                data_meta[constants.KEY_DATA_EXTEND_TRAIN][constants.KEY_TOTAL_COUNT])
         self.my_write_line("Interaction numbers for samples:")
 
         self.start_itemize()
@@ -204,11 +203,11 @@ class ReportGenerator(TrainingReportFPDF):
         self.ln()
         table_header = ['Feature', 'Missing Value Count', 'Percentage']
 
-        for _, data_name, data_title in Const.DATASET_LABEL:
+        for _, data_name, data_title in constants.DATASET_LABEL:
             if data_name not in data_meta:
                 continue
-            missing_value_data = data_meta[data_name][Const.KEY_MISSING_VALUE_COUNTER]
-            all_field_count = data_meta[data_name][Const.KEY_FIELD_COUNTER]
+            missing_value_data = data_meta[data_name][constants.KEY_MISSING_VALUE_COUNTER]
+            all_field_count = data_meta[data_name][constants.KEY_FIELD_COUNTER]
             table_data = []
             for feature_name in all_field_count:
                 if feature_name not in missing_value_data:
@@ -226,11 +225,11 @@ class ReportGenerator(TrainingReportFPDF):
 
     def generate_cover_page(self, content_list, _report_data):
         self.add_page()
-        self.chapter_title(Const.CONTENT_SUMMARY)
+        self.chapter_title(constants.CONTENT_SUMMARY)
 
-        model_meta = _report_data[Const.KEY_MODEL_META]
-        data_meta = _report_data[Const.KEY_DATA_META]
-        training_meta = _report_data[Const.KEY_TRAINING_META]
+        model_meta = _report_data[constants.KEY_MODEL_META]
+        data_meta = _report_data[constants.KEY_DATA_META]
+        training_meta = _report_data[constants.KEY_TRAINING_META]
 
         self.get_model_info(model_meta)
         self.ln(10)
@@ -261,17 +260,17 @@ class ReportGenerator(TrainingReportFPDF):
 
         table_data = []
         draw_graph = False
-        for _, data_name, data_title in Const.DATASET_LABEL:
+        for _, data_name, data_title in constants.DATASET_LABEL:
             if data_name in data_meta.keys():
-                if Const.KEY_DATA_DISTRIBUTION in data_meta[data_name]:
-                    if len(dict(data_meta[data_name][Const.KEY_DATA_DISTRIBUTION])) >= 3:
+                if constants.KEY_DATA_DISTRIBUTION in data_meta[data_name]:
+                    if len(dict(data_meta[data_name][constants.KEY_DATA_DISTRIBUTION])) >= 3:
                         distribution = 'See below graphs.'
                         draw_graph = True
                     else:
-                        distribution = dict(data_meta[data_name][Const.KEY_DATA_DISTRIBUTION])
+                        distribution = dict(data_meta[data_name][constants.KEY_DATA_DISTRIBUTION])
                 else:
                     distribution = 'N.A.'
-                table_data.append([data_title, data_meta[data_name][Const.KEY_TOTAL_COUNT],
+                table_data.append([data_title, data_meta[data_name][constants.KEY_TOTAL_COUNT],
                                    distribution])
 
         self.ln()
@@ -279,21 +278,21 @@ class ReportGenerator(TrainingReportFPDF):
 
         if draw_graph:
             image_set = dict()
-            if Const.KEY_DATA_TRAIN in data_meta.keys():
-                for _, data_name, data_title in Const.DATASET_LABEL:
+            if constants.KEY_DATA_TRAIN in data_meta.keys():
+                for _, data_name, data_title in constants.DATASET_LABEL:
                     if data_name in data_meta.keys():
-                        distribution = dict(data_meta[data_name][Const.KEY_DATA_DISTRIBUTION])
+                        distribution = dict(data_meta[data_name][constants.KEY_DATA_DISTRIBUTION])
                         image_path = gg.BarPlot(data=distribution, title='%s_data_distribution' % data_name,
                                                 x_label='Number of samples', y_label='Category').draw(caption=data_name)
-                        if data_name == Const.KEY_DATA_TRAIN:
+                        if data_name == constants.KEY_DATA_TRAIN:
                             image_set[0] = image_path
-                        if data_name == Const.KEY_DATA_VALID:
+                        if data_name == constants.KEY_DATA_VALID:
                             image_set[1] = image_path
-                        if data_name == Const.KEY_DATA_TEST:
+                        if data_name == constants.KEY_DATA_TEST:
                             image_set[2] = image_path
                 self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC)
-            elif Const.KEY_DATA_ALL in data_meta.keys():
-                distribution = dict(data_meta[Const.KEY_DATA_ALL][Const.KEY_DATA_DISTRIBUTION])
+            elif constants.KEY_DATA_ALL in data_meta.keys():
+                distribution = dict(data_meta[constants.KEY_DATA_ALL][constants.KEY_DATA_DISTRIBUTION])
                 image_path = gg.BarPlot(data=distribution, title='%s_data_distribution' % data_name,
                                         x_label='Number of samples', y_label='Category').draw(caption=data_name)
 
@@ -308,7 +307,7 @@ class ReportGenerator(TrainingReportFPDF):
         table_data = []
 
         def get_datetype_label(type_code):
-            for label, possible_values in Const.FEATURE_DATA_TYPE.items():
+            for label, possible_values in constants.FEATURE_DATA_TYPE.items():
                 if type_code in possible_values:
                     return label
 
@@ -326,15 +325,16 @@ class ReportGenerator(TrainingReportFPDF):
         self.add_subsection("Feature distribution")
         self.my_write_line("Below are some frequency plot for each features.")
 
-        if sample_key == Const.KEY_DATA_TRAIN:
-            dataset_names = [Const.KEY_DATA_TRAIN, Const.KEY_DATA_TEST, Const.KEY_DATA_VALID]
-        elif sample_key == Const.KEY_DATA_EXTEND_TRAIN:
-            dataset_names = [Const.KEY_DATA_EXTEND_TRAIN, Const.KEY_DATA_EXTEND_VALID, Const.KEY_DATA_EXTEND_TEST]
-        elif sample_key == Const.KEY_DATA_ALL:
-            dataset_names = [Const.KEY_DATA_ALL]
+        if sample_key == constants.KEY_DATA_TRAIN:
+            dataset_names = [constants.KEY_DATA_TRAIN, constants.KEY_DATA_TEST, constants.KEY_DATA_VALID]
+        elif sample_key == constants.KEY_DATA_EXTEND_TRAIN:
+            dataset_names = [constants.KEY_DATA_EXTEND_TRAIN, constants.KEY_DATA_EXTEND_VALID,
+                             constants.KEY_DATA_EXTEND_TEST]
+        elif sample_key == constants.KEY_DATA_ALL:
+            dataset_names = [constants.KEY_DATA_ALL]
 
         for feature_name, feature_distribution in data_meta[sample_key][
-            Const.KEY_CATEGORICAL_FEATURE_DISTRIBUTION].items():
+            constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION].items():
             if len(feature_distribution['all']) <= 2:
                 LOGGER.info('%s only have less than 2 values, ignore in visualization.' % feature_name)
                 continue
@@ -345,24 +345,24 @@ class ReportGenerator(TrainingReportFPDF):
                 continue
             self.my_write_line("Feature: %s" % feature_name, 'B')
             colors = dict()
-            for _, dataset, dataset_name in Const.DATASET_LABEL:
+            for _, dataset, dataset_name in constants.DATASET_LABEL:
                 if dataset not in data_meta.keys():
                     continue
                 if dataset not in dataset_names:
                     continue
                 image_set = dict()
-                all_distribution = data_meta[dataset][Const.KEY_CATEGORICAL_FEATURE_DISTRIBUTION][feature_name]
+                all_distribution = data_meta[dataset][constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION][feature_name]
                 comment = ''
                 for label_name in all_distribution.keys():
                     if label_name not in colors:
-                        colors[label_name] = Const.COLOR_PALLETES[len(colors) % len(Const.COLORS)]
+                        colors[label_name] = constants.COLOR_PALLETES[len(colors) % len(constants.COLORS)]
                     data_distribution = all_distribution[label_name]
 
-                    if len(data_distribution) > Const.MAXIMUM_NUM_ENUM_DISPLAY:
-                        limit_length = Const.MAXIMUM_NUM_ENUM_DISPLAY
+                    if len(data_distribution) > constants.MAXIMUM_NUM_ENUM_DISPLAY:
+                        limit_length = constants.MAXIMUM_NUM_ENUM_DISPLAY
                         if label_name == 'all':
                             comment = '(only top %s are displayed out of %s)' % (
-                                Const.MAXIMUM_NUM_ENUM_DISPLAY, len(data_distribution))
+                                constants.MAXIMUM_NUM_ENUM_DISPLAY, len(data_distribution))
                     else:
                         limit_length = None
 
@@ -383,18 +383,19 @@ class ReportGenerator(TrainingReportFPDF):
                                      caption="- %s %s" % (dataset, comment), style='I')
 
         colors = dict()
-        for feature_name, feature_distribution in data_meta[sample_key][Const.KEY_NUMERIC_FEATURE_DISTRIBUTION].items():
+        for feature_name, feature_distribution in data_meta[sample_key][
+            constants.KEY_NUMERIC_FEATURE_DISTRIBUTION].items():
             self.my_write_line("Feature: %s" % feature_name, 'B')
-            for _, dataset, dataset_name in Const.DATASET_LABEL:
+            for _, dataset, dataset_name in constants.DATASET_LABEL:
                 if dataset not in data_meta.keys():
                     continue
                 if dataset not in dataset_names:
                     continue
-                all_distribution = data_meta[dataset][Const.KEY_NUMERIC_FEATURE_DISTRIBUTION][feature_name]
+                all_distribution = data_meta[dataset][constants.KEY_NUMERIC_FEATURE_DISTRIBUTION][feature_name]
                 image_set = dict()
                 for label_name in all_distribution.keys():
                     if label_name not in colors:
-                        colors[label_name] = Const.COLORS[len(colors) % len(Const.COLORS)]
+                        colors[label_name] = constants.COLORS[len(colors) % len(constants.COLORS)]
                     data_distribution = all_distribution[label_name]
 
                     image_path = gg.KdeDistribution(data=data_distribution,
@@ -412,14 +413,15 @@ class ReportGenerator(TrainingReportFPDF):
                 self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC, caption="- %s" % dataset,
                                      style='I')
 
-        for feature_name, feature_distribution in data_meta[sample_key][Const.KEY_TEXT_FEATURE_DISTRIBUTION].items():
+        for feature_name, feature_distribution in data_meta[sample_key][
+            constants.KEY_TEXT_FEATURE_DISTRIBUTION].items():
             self.my_write_line("Feature: %s" % feature_name, 'B')
-            for _, dataset, dataset_name in Const.DATASET_LABEL:
+            for _, dataset, dataset_name in constants.DATASET_LABEL:
                 if dataset not in data_meta.keys():
                     continue
                 if dataset not in dataset_names:
                     continue
-                all_distribution = data_meta[dataset][Const.KEY_TEXT_FEATURE_DISTRIBUTION][feature_name]
+                all_distribution = data_meta[dataset][constants.KEY_TEXT_FEATURE_DISTRIBUTION][feature_name]
                 image_set = dict()
                 for label_name in all_distribution.keys():
                     data_distribution = all_distribution[label_name]
@@ -438,18 +440,19 @@ class ReportGenerator(TrainingReportFPDF):
                 self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC, caption="- %s" % dataset,
                                      style='I')
 
-        for feature_name, feature_distribution in data_meta[sample_key][Const.KEY_LENGTH_FEATURE_DISTRIBUTION].items():
+        for feature_name, feature_distribution in data_meta[sample_key][
+            constants.KEY_LENGTH_FEATURE_DISTRIBUTION].items():
             self.my_write_line("Feature: %s" % feature_name, 'B')
-            for _, dataset, dataset_name in Const.DATASET_LABEL:
+            for _, dataset, dataset_name in constants.DATASET_LABEL:
                 if dataset not in data_meta.keys():
                     continue
                 if dataset not in dataset_names:
                     continue
-                all_distribution = data_meta[dataset][Const.KEY_LENGTH_FEATURE_DISTRIBUTION][feature_name]
+                all_distribution = data_meta[dataset][constants.KEY_LENGTH_FEATURE_DISTRIBUTION][feature_name]
                 image_set = dict()
                 for label_name in all_distribution.keys():
                     if label_name not in colors:
-                        colors[label_name] = Const.COLORS[len(colors) % len(Const.COLORS)]
+                        colors[label_name] = constants.COLORS[len(colors) % len(constants.COLORS)]
                     data_distribution = all_distribution[label_name]
 
                     image_path = gg.KdeDistribution(data=data_distribution,
@@ -476,7 +479,7 @@ class ReportGenerator(TrainingReportFPDF):
             "3.  For numerical features, please pay attention to the y-axis scale, it might be changed to <B>log scale</B> in order to show the overall distribution.")
 
     def get_feature_ranking_visualization(self, training_meta, importance_threshold):
-        feature_ranking = training_meta[Const.KEY_FEATURE_RANKING]
+        feature_ranking = training_meta[constants.KEY_FEATURE_RANKING]
         feature_ranking = [(score, name) for name, score in feature_ranking]
 
         image_path = gg.FeatureImportance(data=feature_ranking, title='feature_importance').draw(limit_length=20)
@@ -542,19 +545,19 @@ class ReportGenerator(TrainingReportFPDF):
             cm_obj = confusion_matrices[split]
             title = '%s_cm' % split
             image_path = gg.HeatMap(data=cm_obj.get_values(), title=title, x_label='True',
-                                     y_label='Predict').draw(x_tick=cm_obj.get_labels(), y_tick=cm_obj.get_labels())
+                                    y_label='Predict').draw(x_tick=cm_obj.get_labels(), y_tick=cm_obj.get_labels())
             cm_image_paths.append(image_path)
             if similar_class_dict is not None:
                 similar_class_dict[split] = cm_obj.get_top_k_similar_classes(k=2)
             if unsimilar_class_dict is not None:
                 unsimilar_class_dict[split] = cm_obj.get_top_k_unsimilar_classes(k=2)
 
-        for metric_name in evaluation_result[Const.KEY_DATA_TEST].items():
-            if metric_name == Const.KEY_VIS_RESULT:
-                for dataset in [Const.KEY_DATA_TRAIN, Const.KEY_DATA_VALID, Const.KEY_DATA_TEST]:
+        for metric_name in evaluation_result[constants.KEY_DATA_TEST].items():
+            if metric_name == constants.KEY_VIS_RESULT:
+                for dataset in [constants.KEY_DATA_TRAIN, constants.KEY_DATA_VALID, constants.KEY_DATA_TEST]:
                     title = '%s_swarm' % dataset
                     image_path = gg.ResultProbability(data=evaluation_result[dataset][metric_name], title=title).draw(
-                        limit_size=Const.DEFAULT_LIMIT_SIZE)
+                        limit_size=constants.DEFAULT_LIMIT_SIZE)
                     sw_image_paths.append(image_path)
 
                     title = '%s_reliability' % dataset
@@ -600,10 +603,10 @@ class ReportGenerator(TrainingReportFPDF):
         self.add_page()
         if link is not None:
             self.set_link(link)
-        self.add_section(Const.CONTENT_DATA)
+        self.add_section(constants.CONTENT_DATA)
 
-        data_meta = self.report_data[Const.KEY_DATA_META]
-        model_meta = self.report_data[Const.KEY_MODEL_META]
+        data_meta = self.report_data[constants.KEY_DATA_META]
+        model_meta = self.report_data[constants.KEY_MODEL_META]
 
         self.add_subsection("Statistical Information of Data")
         self.my_write_line(
@@ -632,16 +635,16 @@ class ReportGenerator(TrainingReportFPDF):
         self.add_page()
         if link is not None:
             self.set_link(link)
-        self.add_section(Const.CONTENT_FEATURE)
+        self.add_section(constants.CONTENT_FEATURE)
 
-        training_meta = self.report_data[Const.KEY_TRAINING_META]
-        self.get_feature_ranking_visualization(training_meta, Const.IMPORTANCE_THRESHOLD)
+        training_meta = self.report_data[constants.KEY_TRAINING_META]
+        self.get_feature_ranking_visualization(training_meta, constants.IMPORTANCE_THRESHOLD)
 
     def generate_hyperopt_result(self, link=None):
         self.add_page()
         if link is not None:
             self.set_link(link)
-        self.add_section(Const.CONTENT_HYPEROPT)
+        self.add_section(constants.CONTENT_HYPEROPT)
 
         # search space
         self.add_subsection("Hyperparameter Tuning Search Space")
@@ -655,16 +658,16 @@ class ReportGenerator(TrainingReportFPDF):
 
         self.ln(5)
 
-        model_meta = self.report_data[Const.KEY_MODEL_META]
-        training_meta = self.report_data[Const.KEY_TRAINING_META]
+        model_meta = self.report_data[constants.KEY_MODEL_META]
+        training_meta = self.report_data[constants.KEY_TRAINING_META]
 
         # hyperopt history
-        training_log = training_meta[Const.KEY_TRAINING_LOG]
+        training_log = training_meta[constants.KEY_TRAINING_LOG]
 
-        benchmark_metric = map_code_to_text_metric(
+        benchmark_metric = util.map_code_to_text_metric(
             model_meta[constants.METADATA_KEY_PARAM_SEC][constants.META_KEY_HYPER_METRIC])
         benchmark_value = model_meta[constants.METADATA_KEY_PARAM_SEC][constants.META_KEY_HYPER_BENCHMARKING]
-        search_history = training_log[Const.KEY_HISTORY]
+        search_history = training_log[constants.KEY_HISTORY]
 
         self.add_subsection("Hyperparameter Tuning History Result")
         self.my_write_line("The metric results from hyperparameter tuning are shown in the figure.")
@@ -679,14 +682,14 @@ class ReportGenerator(TrainingReportFPDF):
                                                                          benchmark_value=benchmark_value)
 
         self.add_large_image(image_path)
-        self.ln(Const.LARGE_FIGURE_HEIGHT)
+        self.ln(constants.LARGE_FIGURE_HEIGHT)
 
         self.ln()
 
         # best result for hyperopt
 
-        search_best_idx = training_log[Const.KEY_BEST_INDEX]
-        benchmark_score = training_log[Const.KEY_BENCHMARK_SCORE]
+        search_best_idx = training_log[constants.KEY_BEST_INDEX]
+        benchmark_score = training_log[constants.KEY_BENCHMARK_SCORE]
 
         self.add_subsection("Best Result from Hyperparameter Tuning")
         self.my_write_key_value("The best iteration is ", "# %s" % search_best_idx)
@@ -694,7 +697,7 @@ class ReportGenerator(TrainingReportFPDF):
         self.my_write_line("Parameters:", 'B')
 
         self.start_itemize()
-        for param_name, param_value in search_history[search_best_idx][Const.KEY_HISTORY_PARAMETERS].items():
+        for param_name, param_value in search_history[search_best_idx][constants.KEY_HISTORY_PARAMETERS].items():
             self.my_write_key_value("%s" % param_name, param_value)
         self.end_itemize()
 
@@ -702,7 +705,7 @@ class ReportGenerator(TrainingReportFPDF):
         self.my_write_line("Validation Results:", 'B')
 
         self.start_itemize()
-        for param_name, param_value in search_history[search_best_idx][Const.KEY_HISTORY_EVALUATION].items():
+        for param_name, param_value in search_history[search_best_idx][constants.KEY_HISTORY_EVALUATION].items():
             if param_name == benchmark_metric:
                 self.my_write_key_value("%s" % param_name.capitalize(), "%s (benchmarking metric)" % param_value)
                 final_metric_value = param_value
@@ -749,17 +752,17 @@ class ReportGenerator(TrainingReportFPDF):
         self.add_page()
         if link is not None:
             self.set_link(link)
-        self.add_section(Const.CONTENT_DEEPLEARNING)
+        self.add_section(constants.CONTENT_DEEPLEARNING)
         benchmark_metric = 'f1'
         benchmark_value = 0.8
 
-        training_meta = self.report_data[Const.KEY_TRAINING_META]
-        parameters = training_meta[Const.KEY_PARAMETERS]
+        training_meta = self.report_data[constants.KEY_TRAINING_META]
+        parameters = training_meta[constants.KEY_PARAMETERS]
 
-        training_log = training_meta[Const.KEY_TRAINING_LOG]
+        training_log = training_meta[constants.KEY_TRAINING_LOG]
 
-        history = training_log[Const.KEY_HISTORY]
-        best_epoch = training_log[Const.KEY_BEST_INDEX]
+        history = training_log[constants.KEY_HISTORY]
+        best_epoch = training_log[constants.KEY_BEST_INDEX]
 
         image_path = gg.EvaluationLinePlot(data=history, title='training_history', x_label='Steps',
                                            y_label='Metrics Score').draw(benchmark_metric=benchmark_metric,
@@ -785,7 +788,7 @@ class ReportGenerator(TrainingReportFPDF):
         self.start_itemize()
         if best_epoch not in history:
             best_epoch = str(best_epoch)
-        for param_name, param_value in history[best_epoch][Const.KEY_HISTORY_EVALUATION].items():
+        for param_name, param_value in history[best_epoch][constants.KEY_HISTORY_EVALUATION].items():
             if param_name == benchmark_metric:
                 self.my_write_key_value(param_name.capitalize(), "%s (benchmarking metric)" % param_value)
             else:
@@ -805,24 +808,24 @@ class ReportGenerator(TrainingReportFPDF):
         self.add_page()
         if link is not None:
             self.set_link(link)
-        self.add_section(Const.CONTENT_TRAINING)
+        self.add_section(constants.CONTENT_TRAINING)
 
         sample_dataset_key = None
-        if Const.KEY_DATA_EXTEND_TRAIN in self.report_data[Const.KEY_DATA_META]:
-            sample_dataset_key = Const.KEY_DATA_EXTEND_TRAIN
-        elif Const.KEY_DATA_TRAIN in self.report_data[Const.KEY_DATA_META]:
-            sample_dataset_key = Const.KEY_DATA_TRAIN
-        elif Const.KEY_DATA_ALL in self.report_data[Const.KEY_DATA_META]:
-            sample_dataset_key = Const.KEY_DATA_ALL
+        if constants.KEY_DATA_EXTEND_TRAIN in self.report_data[constants.KEY_DATA_META]:
+            sample_dataset_key = constants.KEY_DATA_EXTEND_TRAIN
+        elif constants.KEY_DATA_TRAIN in self.report_data[constants.KEY_DATA_META]:
+            sample_dataset_key = constants.KEY_DATA_TRAIN
+        elif constants.KEY_DATA_ALL in self.report_data[constants.KEY_DATA_META]:
+            sample_dataset_key = constants.KEY_DATA_ALL
 
         cm_label = list(
-            self.report_data[Const.KEY_DATA_META][sample_dataset_key][Const.KEY_DATA_DISTRIBUTION].keys())
-        training_meta = self.report_data[Const.KEY_TRAINING_META]
+            self.report_data[constants.KEY_DATA_META][sample_dataset_key][constants.KEY_DATA_DISTRIBUTION].keys())
+        training_meta = self.report_data[constants.KEY_TRAINING_META]
 
-        self.get_training_metrics_score(training_meta[Const.KEY_EVALUATION_RESULT], cm_label)
+        self.get_training_metrics_score(training_meta[constants.KEY_EVALUATION_RESULT], cm_label)
 
-        if Const.KEY_PARAMETERS in training_meta:
-            parameters = training_meta[Const.KEY_PARAMETERS]
+        if constants.KEY_PARAMETERS in training_meta:
+            parameters = training_meta[constants.KEY_PARAMETERS]
             self.add_subsection("Parameters")
             self.my_write_line("The parameter for this training result is as follows:")
 
@@ -836,15 +839,15 @@ class ReportGenerator(TrainingReportFPDF):
         self.add_page()
         if link is not None:
             self.set_link(link)
-        self.add_section(Const.CONTENT_RECOMMENDATION)
+        self.add_section(constants.CONTENT_RECOMMENDATION)
 
-        data_meta = self.report_data[Const.KEY_DATA_META]
-        training_meta = self.report_data[Const.KEY_TRAINING_META]
+        data_meta = self.report_data[constants.KEY_DATA_META]
+        training_meta = self.report_data[constants.KEY_TRAINING_META]
 
         metric = self.report_params.recommendation_metric
         deeplearning = self.report_params.is_deeplearning
 
-        status, train_eval, valid_eval = rec.get_model_fitting_status(training_meta[Const.KEY_EVALUATION_RESULT],
+        status, train_eval, valid_eval = rec.get_model_fitting_status(training_meta[constants.KEY_EVALUATION_RESULT],
                                                                       metric)
 
         self.add_subsection("Overall Performance")
@@ -853,9 +856,9 @@ class ReportGenerator(TrainingReportFPDF):
             (metric, metric, train_eval, metric, valid_eval))
         self.my_write_line()
 
-        if status == Const.MODEL_STATUS_FITTING:
+        if status == constants.MODEL_STATUS_FITTING:
             self.my_write_line("It indicates that the model is <B>fitting</B>.")
-        elif status == Const.MODEL_STATUS_OVERFITTING:
+        elif status == constants.MODEL_STATUS_OVERFITTING:
             self.my_write_line("It indicates that the model is <B>overfitting</B>.")
 
             self.my_write_line("In the case of overfitting, we suggest the following improvements:")
@@ -869,7 +872,7 @@ class ReportGenerator(TrainingReportFPDF):
                 self.my_write_line("Reduce the model complexity by decreasing MaxSplit, NumTree or MaxDepth.")
                 self.my_write_line("Remove unimportant features based on importance ranking.")
             self.end_itemize()
-        elif status == Const.MODEL_STATUS_UNDERFITTING:
+        elif status == constants.MODEL_STATUS_UNDERFITTING:
             self.my_write_line("It indicates that the model is <B>underfitting</B>.")
             self.start_itemize()
             if deeplearning:
@@ -887,11 +890,11 @@ class ReportGenerator(TrainingReportFPDF):
         if balanced:
             self.my_write_line(
                 "The number of training samples for different classes are considered as <B>balanced</B> given a threshold of %s."
-                % Const.RECOMMEND_UNBALANCED_BENCHMARK)
+                % constants.RECOMMEND_UNBALANCED_BENCHMARK)
         else:
             self.my_write_line(
                 "The number of training samples for different classes are considered as <B>unbalanced</B> given a threshold of %s."
-                % Const.RECOMMEND_UNBALANCED_BENCHMARK)
+                % constants.RECOMMEND_UNBALANCED_BENCHMARK)
             self.my_write_line("Please collect more samples for the following classes:")
             self.start_itemize()
             for label, value in unbalanced_labelled:
@@ -903,8 +906,8 @@ class ReportGenerator(TrainingReportFPDF):
         self.add_subsubsection("Training vs Validation")
         status, key_names, cos_sim, normalized_dist_a, normalized_dist_b = rec.get_data_distribution_similar_status(
             data_meta,
-            Const.KEY_DATA_EXTEND_TRAIN,
-            Const.KEY_DATA_EXTEND_VALID)
+            constants.KEY_DATA_EXTEND_TRAIN,
+            constants.KEY_DATA_EXTEND_VALID)
         if status is True:
             self.my_write_line(
                 "The label distribution between training set and validation set are considered as <B>similar</B>.")
@@ -923,8 +926,8 @@ class ReportGenerator(TrainingReportFPDF):
         self.add_subsubsection("Training vs Testing")
         status, key_names, cos_sim, normalized_dist_a, normalized_dist_b = rec.get_data_distribution_similar_status(
             data_meta,
-            Const.KEY_DATA_EXTEND_TRAIN,
-            Const.KEY_DATA_EXTEND_TEST)
+            constants.KEY_DATA_EXTEND_TRAIN,
+            constants.KEY_DATA_EXTEND_TEST)
         if status is True:
             self.my_write_line(
                 "The label distribution between training set and testing set are considered as <B>similar</B>.")
@@ -942,9 +945,10 @@ class ReportGenerator(TrainingReportFPDF):
 
         self.add_subsection("Feature Distribution")
         unsimilar_features = {}
-        for feature_name in data_meta[Const.KEY_DATA_EXTEND_TRAIN][Const.KEY_CATEGORICAL_FEATURE_DISTRIBUTION].keys():
+        for feature_name in data_meta[constants.KEY_DATA_EXTEND_TRAIN][
+            constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION].keys():
             result = rec.get_feature_distribution_similar_status(
-                data_meta, feature_name, Const.KEY_DATA_EXTEND_TRAIN, Const.KEY_DATA_EXTEND_VALID)
+                data_meta, feature_name, constants.KEY_DATA_EXTEND_TRAIN, constants.KEY_DATA_EXTEND_VALID)
             status, key_names, cos_sim, size_a, size_b, overlap = result
             if status is False:
                 unsimilar_features[feature_name] = result
@@ -960,12 +964,12 @@ class ReportGenerator(TrainingReportFPDF):
             self.end_itemize()
         else:
             self.my_write_line(
-                "Given a threshold of %s, all features are considered to have a <B>similar</B> distribution between training set and validation set." % Const.RECOMMEND_FEATURE_DISTRIBUTION_DISTANCE_BENCHMARK)
+                "Given a threshold of %s, all features are considered to have a <B>similar</B> distribution between training set and validation set." % constants.RECOMMEND_FEATURE_DISTRIBUTION_DISTANCE_BENCHMARK)
 
         self.my_write_line()
-        if Const.KEY_TRAINING_LOG in training_meta:
+        if constants.KEY_TRAINING_LOG in training_meta:
             self.add_subsection("Other Candidate Models")
-            training_log = training_meta[Const.KEY_TRAINING_LOG]
+            training_log = training_meta[constants.KEY_TRAINING_LOG]
             best_get, recommendations = rec.get_training_history_suggestion(training_log, metric)
 
             if best_get is True:
@@ -988,13 +992,13 @@ def generate_report(data_folder, output_path,
 
     report_params = Params(data_folder)
 
-    _report_data[Const.KEY_DATA_META] = prepare_data_metafile(data_folder, file_params=report_params.file_params)
+    _report_data[constants.KEY_DATA_META] = prepare_data_metafile(data_folder, file_params=report_params.file_params)
 
     with open(os.path.join(output_path, constants.TRAIN_META_FILE), 'r') as f:
         model_meta = json.load(f)
 
-    _report_data[Const.KEY_MODEL_META] = model_meta
-    _report_data[Const.KEY_TRAINING_META] = training_meta
+    _report_data[constants.KEY_MODEL_META] = model_meta
+    _report_data[constants.KEY_TRAINING_META] = training_meta
 
     with open(os.path.join(output_path, 'report_data.json'), 'w') as f:
         json.dump(_report_data, f, cls=JsonSerializable)

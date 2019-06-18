@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-import plugin.xai.constants as Const
+import xai.constants as Const
 import matplotlib.pyplot as plt
-from typing import Dict, Tuple
+from typing import Tuple
 
 
 class Graph(ABC):

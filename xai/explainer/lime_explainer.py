@@ -1,9 +1,9 @@
 import lime.lime_tabular
-from plugin.xai.explainer.abstract_explainer import AbstractExplainer
+from xai.explainer.abstract_explainer import AbstractExplainer
 import dill
 
 
-class LimeExplainer(Explainer):
+class LimeExplainer(AbstractExplainer):
     def __init__(self, params):
         if 'class_names' in params.keys():
             class_names = params['class_names']
@@ -37,9 +37,9 @@ class LimeExplainer(Explainer):
         print('Successfully initialize: %s' % self.explainer)
         return self.explainer
 
-    def explain_instance(self, sample, num_features=Explainer.TOP_EXPLAIN_FEATURES):
+    def explain_instance(self, sample, num_features=AbstractExplainer.TOP_EXPLAIN_FEATURES):
         exp = self.explainer.explain_instance(data_row=sample, predict_fn=self.predict_fn,
-                                               num_features=num_features).as_list()
+                                              num_features=num_features).as_list()
         return exp
 
     def decode_explaination(self, exp, sample, score):
