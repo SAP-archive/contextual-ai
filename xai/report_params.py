@@ -1,0 +1,81 @@
+import os
+import json
+from plugin.xai import constants
+from collections import defaultdict
+from src.services import constants as Const
+
+class Params:
+    def __init__(self, path):
+        self.folder_path = path
+        self.seq_fea=None
+        self.att_fea=None
+        self.label_type=None
+        self.label_key=None
+
+        report_metadata_path = os.path.join(self.folder_path, 'report_meta.json')
+        if not os.path.exists(report_metadata_path):
+            raise FileNotFoundError("'report_meta.json' is not found!")
+
+        with open(report_metadata_path, 'r') as f:
+            report_setup_meta = json.load(f)
+
+        label_key = report_setup_meta['data_analysis']['label_key']
+        label_type = report_setup_meta['data_analysis']['label_type']
+        att_fea, seq_fea = self.load_feature_list()
+
+        self.file_params = dict()
+        for dataset_file, dataset_key, dataset_label in constants.DATASET_LABEL:
+            self.file_params[dataset_key] = {'data_file': dataset_file, 'att_fea': att_fea,
+                                        'seq_fea': seq_fea,
+                                        'metafile_name': dataset_key, 'label_key': label_key,
+                                        'label_type': label_type,
+                                        'feature_file': None,
+                                        'group_criterias': []}
+
+        self.recommendation_metric = report_setup_meta['overall']['recommendation_metric']
+        self.is_deeplearning = report_setup_meta['overall']['is_deeplearning']
+        self.content_list = report_setup_meta['overall']['content_list']
+        self.usecase_name = report_setup_meta['overall']['usecase_name']
+        self.usecase_version = report_setup_meta['overall']['usecase_version']
+        self.usecase_team = report_setup_meta['overall']['usecase_team']
+
+        self.label_description = report_setup_meta['data_analysis']['label_description']
+        self.feature_sample_key = report_setup_meta['data_analysis']['feature_sample_key']
+        self.sequence_feature_name = report_setup_meta['data_analysis']['sequence_feature_name']
+        self.key_feature = report_setup_meta['evaluation']['key_feature']
+
+
+    def load_feature_list(self):
+        ml_metadata_path = os.path.join(self.folder_path, 'meta.json')
+
+        if not os.path.exists(ml_metadata_path):
+            raise FileNotFoundError("'meta.json' is not found!")
+
+        with open(ml_metadata_path, 'r') as f:
+            meta = json.load(f)
+
+        att_fea = defaultdict(list)
+
+        for k, v in meta[Const.METADATA_KEY_DATA_SEC][Const.META_KEY_ATTRIBUTE_FEATURE].items():
+            feature_type = v[Const.META_KEY_FIELD_TYPE]
+            if feature_type in Const.FEATURE_DATA_TYPE_NOMINAL + Const.FEATURE_DATA_TYPE_ORDINAL:
+                att_fea['categorical'].append(k)
+            elif feature_type in Const.FEATURE_DATA_TYPE_CONTINUOUS:
+                att_fea['numeric'].append(k)
+            elif feature_type in Const.FEATURE_DATA_TYPE_TEXT:
+                att_fea['text'].append(k)
+            elif feature_type in Const.FEATURE_DATA_TYPE_LABEL:
+                att_fea['label'].append(k)
+
+        seq_fea = defaultdict(list)
+        for k, v in meta[Const.METADATA_KEY_DATA_SEC][Const.META_KEY_SEQUENCE_FEATURE].items():
+            feature_type = v[Const.META_KEY_FIELD_TYPE]
+            if feature_type in Const.FEATURE_DATA_TYPE_NOMINAL + Const.FEATURE_DATA_TYPE_ORDINAL:
+                seq_fea['categorical'].append(k)
+            elif feature_type in Const.FEATURE_DATA_TYPE_CONTINUOUS:
+                seq_fea['numeric'].append(k)
+            elif feature_type in Const.FEATURE_DATA_TYPE_TEXT:
+                seq_fea['text'].append(k)
+            elif feature_type in Const.FEATURE_DATA_TYPE_LABEL:
+                seq_fea['label'].append(k)
+        return att_fea, seq_fea
