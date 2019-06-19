@@ -552,9 +552,9 @@ class ReportGenerator(TrainingReportFPDF):
             if unsimilar_class_dict is not None:
                 unsimilar_class_dict[split] = cm_obj.get_top_k_unsimilar_classes(k=2)
 
-        for metric_name in evaluation_result[constants.KEY_DATA_TEST].items():
-            if metric_name == constants.KEY_VIS_RESULT:
-                for dataset in [constants.KEY_DATA_TRAIN, constants.KEY_DATA_VALID, constants.KEY_DATA_TEST]:
+        for dataset in cr.get_split_list():
+            for metric_name in evaluation_result[dataset].keys():
+                if metric_name == constants.KEY_VIS_RESULT:
                     title = '%s_swarm' % dataset
                     image_path = gg.ResultProbability(data=evaluation_result[dataset][metric_name], title=title).draw(
                         limit_size=constants.DEFAULT_LIMIT_SIZE)
@@ -563,6 +563,7 @@ class ReportGenerator(TrainingReportFPDF):
                     title = '%s_reliability' % dataset
                     image_path = gg.ReliabilityDiagram(data=evaluation_result[dataset][metric_name], title=title).draw()
                     rd_image_paths.append(image_path)
+
         if similar_class_dict is not None:
             key_feature = self.report_params.key_feature
             similar_class_img_spec = []
@@ -585,11 +586,11 @@ class ReportGenerator(TrainingReportFPDF):
 
         if len(sw_image_paths) > 0:
             self.add_grid_images(sw_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
-                                 "Probability Distribution", "B")
+                                  caption="Probability Distribution", style="B")
 
         if len(rd_image_paths) > 0:
             self.add_grid_images(rd_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
-                                 "Reliability Diagram", "B")
+                                 caption="Reliability Diagram", style="B")
 
         if similar_class_img_spec is not None and len(similar_class_img_spec) > 0:
             self.add_page()
@@ -757,52 +758,55 @@ class ReportGenerator(TrainingReportFPDF):
         benchmark_value = 0.8
 
         training_meta = self.report_data[constants.KEY_TRAINING_META]
-        parameters = training_meta[constants.KEY_PARAMETERS]
 
         training_log = training_meta[constants.KEY_TRAINING_LOG]
 
-        history = training_log[constants.KEY_HISTORY]
-        best_epoch = training_log[constants.KEY_BEST_INDEX]
+        if constants.KEY_HISTORY in training_log:
+            history = training_log[constants.KEY_HISTORY]
+            best_epoch = training_log[constants.KEY_BEST_INDEX]
 
-        image_path = gg.EvaluationLinePlot(data=history, title='training_history', x_label='Steps',
-                                           y_label='Metrics Score').draw(benchmark_metric=benchmark_metric,
-                                                                         benchmark_value=benchmark_value)
+            image_path = gg.EvaluationLinePlot(data=history, title='training_history', x_label='Steps',
+                                               y_label='Metrics Score').draw(benchmark_metric=benchmark_metric,
+                                                                             benchmark_value=benchmark_value)
 
-        self.add_subsection("Training Epochs")
-        self.my_write_line("The metric results from several training epochs are shown in the figure.")
+            self.add_subsection("Training Epochs")
+            self.my_write_line("The metric results from several training epochs are shown in the figure.")
 
-        self.start_itemize()
-        self.my_write_key_value("Benchmark metric", benchmark_metric)
-        self.my_write_key_value("Benchmark value", benchmark_value)
-        self.end_itemize()
+            self.start_itemize()
+            self.my_write_key_value("Benchmark metric", benchmark_metric)
+            self.my_write_key_value("Benchmark value", benchmark_value)
+            self.end_itemize()
 
-        self.ln()
-        self.add_large_image(image_path)
+            self.ln()
+            self.add_large_image(image_path)
 
-        self.ln()
-        self.add_subsection("Best Epoch from Training")
-        self.my_write_key_value("The best iteration is ", "# %s" % best_epoch)
+            self.ln()
+            self.add_subsection("Best Epoch from Training")
+            self.my_write_key_value("The best iteration is ", "# %s" % best_epoch)
+            self.my_write_line()
 
-        self.my_write_line()
-        self.my_write_line("Validation Results:", "B")
-        self.start_itemize()
-        if best_epoch not in history:
-            best_epoch = str(best_epoch)
-        for param_name, param_value in history[best_epoch][constants.KEY_HISTORY_EVALUATION].items():
-            if param_name == benchmark_metric:
-                self.my_write_key_value(param_name.capitalize(), "%s (benchmarking metric)" % param_value)
-            else:
-                self.my_write_key_value(param_name.capitalize(), param_value)
-        self.end_itemize()
-        self.ln(5)
+            self.my_write_line("Validation Results:", "B")
+            self.start_itemize()
+            if best_epoch not in history:
+                best_epoch = str(best_epoch)
+            for param_name, param_value in history[best_epoch][constants.KEY_HISTORY_EVALUATION].items():
+                if param_name == benchmark_metric:
+                    self.my_write_key_value(param_name.capitalize(), "%s (benchmarking metric)" % param_value)
+                else:
+                    self.my_write_key_value(param_name.capitalize(), param_value)
+            self.end_itemize()
+            self.ln(5)
 
-        self.add_subsection("Model Parameters")
-        self.my_write_line(1)
-        self.my_write_line("Parameters", 'B')
-        self.start_itemize()
-        for param_name, param_value in parameters.items():
-            self.my_write_key_value(param_name, param_value)
-        self.end_itemize()
+        if constants.KEY_PARAMETERS in training_meta:
+            parameters = training_meta[constants.KEY_PARAMETERS]
+
+            self.add_subsection("Model Parameters")
+            self.my_write_line(1)
+            self.my_write_line("Parameters", 'B')
+            self.start_itemize()
+            for param_name, param_value in parameters.items():
+                self.my_write_key_value(param_name, param_value)
+            self.end_itemize()
 
     def generate_training_result(self, link=None):
         self.add_page()
@@ -994,7 +998,7 @@ def generate_report(data_folder, output_path,
 
     _report_data[constants.KEY_DATA_META] = prepare_data_metafile(data_folder, file_params=report_params.file_params)
 
-    with open(os.path.join(output_path, constants.TRAIN_META_FILE), 'r') as f:
+    with open(os.path.join(data_folder, constants.TRAIN_META_FILE), 'r') as f:
         model_meta = json.load(f)
 
     _report_data[constants.KEY_MODEL_META] = model_meta
