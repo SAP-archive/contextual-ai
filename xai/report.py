@@ -268,6 +268,8 @@ class TrainingReportFPDF(FPDF):
                 self.write_html('<BR>')
 
     def my_write_key_value(self, key, value):
+        if value is None or value == '':
+            return
         self.write_html("%s%s" % ("   " * self.itemize_level, self.itemize_symbol))
         self.write_html("%s: " % key)
         self.write_html("<B>%s</B>" % str(value))

@@ -44,11 +44,11 @@ def get_evaluation_json(field, y_true, y_pred):
 
     evaluation_result = dict()
     evaluation_result[RESPONSE_KEY_F1] = f1
-    evaluation_result[RESPONSE_PREFIX_AVE+RESPONSE_KEY_F1] = ave_f1
+    evaluation_result[RESPONSE_PREFIX_AVE + RESPONSE_KEY_F1] = ave_f1
     evaluation_result[RESPONSE_KEY_RECALL] = rec
-    evaluation_result[RESPONSE_PREFIX_AVE+RESPONSE_KEY_RECALL] = ave_rec
+    evaluation_result[RESPONSE_PREFIX_AVE + RESPONSE_KEY_RECALL] = ave_rec
     evaluation_result[RESPONSE_KEY_PRECISION] = pre
-    evaluation_result[RESPONSE_PREFIX_AVE+RESPONSE_KEY_PRECISION] = ave_pre
+    evaluation_result[RESPONSE_PREFIX_AVE + RESPONSE_KEY_PRECISION] = ave_pre
     evaluation_result[RESPONSE_KEY_CM] = dict()
     evaluation_result[RESPONSE_KEY_CM][RESPONSE_KEY_CM_LABEL] = labels
     evaluation_result[RESPONSE_KEY_CM][RESPONSE_KEY_CM_VALUE] = cm
@@ -223,7 +223,7 @@ def generate_seperate_reports(data_path):
 
         from xai.report_generator import generate_report
 
-        generate_report(data_folder=rep_data_path, output_path=rep_data_path, training_meta=training_meta)
+        generate_report(data_folder=rep_data_path, output_path=rep_output_path, training_meta=training_meta)
 
 
 def file_check(data_path):

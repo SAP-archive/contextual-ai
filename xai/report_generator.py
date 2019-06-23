@@ -77,32 +77,74 @@ class ReportGenerator(TrainingReportFPDF):
 
         self.end_itemize()
 
-    def get_data_summary(self, data_meta):
+    def get_data_count_summary(self, data_meta, sample_count):
+
+        all_num = None, None
+        train_num = None, None
+        valid_num = None, None
+        test_num = None, None
+        extend_train_num = None, None
+        extend_valid_num = None, None
+        extend_test_num = None, None
+
+        # confirm the test data amount
+        if constants.KEY_DATA_EXTEND_TEST in data_meta.keys():
+            extend_test_num = data_meta[constants.KEY_DATA_EXTEND_TEST][constants.KEY_TOTAL_COUNT], '(after processing)'
+        elif constants.KEY_DATA_TEST in sample_count:
+            extend_test_num = sample_count[constants.KEY_DATA_TEST], '(after processing)'
+
+        # confirm the all data amount
+        if constants.KEY_DATA_ALL in data_meta.keys():
+            all_num = data_meta[constants.KEY_DATA_ALL][constants.KEY_TOTAL_COUNT], ''
+
+        if constants.KEY_DATA_EXTEND_TRAIN in data_meta.keys():
+            extend_train_num = data_meta[constants.KEY_DATA_EXTEND_TRAIN][
+                                   constants.KEY_TOTAL_COUNT], '(after processing)'
+        elif constants.KEY_DATA_TRAIN in sample_count:
+            extend_train_num = sample_count[constants.KEY_DATA_TRAIN], '(after processing)'
+        elif all_num[0] is not None:
+            extend_train_num = (all_num[0] - extend_test_num[0]), '(after processing)'
+
+        if all_num[0] is None:
+            if (extend_test_num[0] is not None) and (extend_train_num[0] is not None):
+                all_num[0] = extend_test_num[0] + extend_train_num[0]
+
+        if constants.KEY_DATA_TRAIN in data_meta.keys():
+            train_num = data_meta[constants.KEY_DATA_TRAIN][constants.KEY_TOTAL_COUNT], '(before processing)'
+        if constants.KEY_DATA_VALID in data_meta.keys():
+            valid_num = data_meta[constants.KEY_DATA_VALID][constants.KEY_TOTAL_COUNT], '(before processing)'
+        if constants.KEY_DATA_TEST in data_meta.keys():
+            test_num = data_meta[constants.KEY_DATA_TEST][constants.KEY_TOTAL_COUNT], '(before processing)'
+
+        data_summary = dict()
+        data_summary[constants.KEY_DATA_ALL] = all_num
+        data_summary[constants.KEY_DATA_TRAIN] = train_num
+        data_summary[constants.KEY_DATA_VALID] = valid_num
+        data_summary[constants.KEY_DATA_TEST] = test_num
+        data_summary[constants.KEY_DATA_EXTEND_TRAIN] = extend_train_num
+        data_summary[constants.KEY_DATA_EXTEND_VALID] = extend_valid_num
+        data_summary[constants.KEY_DATA_EXTEND_TEST] = extend_test_num
+
+        return data_summary
+
+    def get_data_summary(self, data_summary):
         self.my_write_line("Data Summary", 'B')
         self.start_itemize()
-        if constants.KEY_DATA_ALL in data_meta.keys():
-            self.my_write_key_value("Number of all samples",
-                                    data_meta[constants.KEY_DATA_ALL][constants.KEY_TOTAL_COUNT])
 
-        if constants.KEY_DATA_EXTEND_TRAIN in data_meta.keys():
-            self.my_write_key_value("Number of training samples (after extension)",
-                                    data_meta[constants.KEY_DATA_EXTEND_TRAIN][constants.KEY_TOTAL_COUNT])
-        elif constants.KEY_DATA_TRAIN in data_meta.keys():
-            self.my_write_key_value("Number of training samples",
-                                    data_meta[constants.KEY_DATA_TRAIN][constants.KEY_TOTAL_COUNT])
-
-        if constants.KEY_DATA_EXTEND_VALID in data_meta.keys():
-            self.my_write_key_value("Number of validation samples (after extension)",
-                                    data_meta[constants.KEY_DATA_EXTEND_VALID][constants.KEY_TOTAL_COUNT])
-        elif constants.KEY_DATA_TRAIN in data_meta.keys():
-            self.my_write_key_value("Number of validation samples",
-                                    data_meta[constants.KEY_DATA_VALID][constants.KEY_TOTAL_COUNT])
-        if constants.KEY_DATA_EXTEND_TRAIN in data_meta.keys():
-            self.my_write_key_value("Number of testing samples (after extension)",
-                                    data_meta[constants.KEY_DATA_EXTEND_TEST][constants.KEY_TOTAL_COUNT])
-        elif constants.KEY_DATA_TRAIN in data_meta.keys():
-            self.my_write_key_value("Number of testing samples",
-                                    data_meta[constants.KEY_DATA_TEST][constants.KEY_TOTAL_COUNT])
+        self.my_write_key_value("Number of all samples %s" % data_summary[constants.KEY_DATA_ALL][1],
+                                data_summary[constants.KEY_DATA_ALL][0])
+        self.my_write_key_value("Number of training samples %s" % data_summary[constants.KEY_DATA_TRAIN][1],
+                                data_summary[constants.KEY_DATA_TRAIN][0])
+        self.my_write_key_value("Number of validation samples %s" % data_summary[constants.KEY_DATA_VALID][1],
+                                data_summary[constants.KEY_DATA_VALID][0])
+        self.my_write_key_value("Number of testing samples %s" % data_summary[constants.KEY_DATA_TEST][1],
+                                data_summary[constants.KEY_DATA_TEST][0])
+        self.my_write_key_value("Number of training samples %s" % data_summary[constants.KEY_DATA_EXTEND_TRAIN][1],
+                                data_summary[constants.KEY_DATA_EXTEND_TRAIN][0])
+        self.my_write_key_value("Number of validation samples %s" % data_summary[constants.KEY_DATA_EXTEND_VALID][1],
+                                data_summary[constants.KEY_DATA_EXTEND_VALID][0])
+        self.my_write_key_value("Number of testing samples %s" % data_summary[constants.KEY_DATA_EXTEND_TEST][1],
+                                data_summary[constants.KEY_DATA_EXTEND_TEST][0])
 
         self.end_itemize()
 
@@ -223,6 +265,21 @@ class ReportGenerator(TrainingReportFPDF):
                 self.draw_table(table_header, table_data, [70, 50, 50])
                 self.ln()
 
+    def get_data_summary_from_results(self, training_meta):
+        print(training_meta)
+        result = training_meta[constants.KEY_EVALUATION_RESULT]
+        sample_count = dict()
+        for dataset in [constants.KEY_DATA_TRAIN, constants.KEY_DATA_VALID, constants.KEY_DATA_TEST]:
+            if dataset in result:
+                if constants.TRAIN_TEST_CM in result[dataset]:
+                    if type(result[dataset][constants.TRAIN_TEST_CM]) == dict:
+                        cm = result[dataset][constants.TRAIN_TEST_CM]['values']
+                    else:
+                        cm = result[dataset][constants.TRAIN_TEST_CM]
+
+                    sample_count[dataset] = sum([sum(l) for l in cm])
+        return sample_count
+
     def generate_cover_page(self, content_list, _report_data):
         self.add_page()
         self.chapter_title(constants.CONTENT_SUMMARY)
@@ -231,10 +288,14 @@ class ReportGenerator(TrainingReportFPDF):
         data_meta = _report_data[constants.KEY_DATA_META]
         training_meta = _report_data[constants.KEY_TRAINING_META]
 
+        sample_count = self.get_data_summary_from_results(training_meta)
+        print(sample_count)
+        data_summary = self.get_data_count_summary(data_meta, sample_count)
+
         self.get_model_info(model_meta)
         self.ln(10)
 
-        self.get_data_summary(data_meta)
+        self.get_data_summary(data_summary)
         self.ln(10)
 
         self.get_training_summary(training_meta)
@@ -586,7 +647,7 @@ class ReportGenerator(TrainingReportFPDF):
 
         if len(sw_image_paths) > 0:
             self.add_grid_images(sw_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
-                                  caption="Probability Distribution", style="B")
+                                 caption="Probability Distribution", style="B")
 
         if len(rd_image_paths) > 0:
             self.add_grid_images(rd_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
