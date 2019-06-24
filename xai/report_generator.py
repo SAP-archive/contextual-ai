@@ -266,7 +266,6 @@ class ReportGenerator(TrainingReportFPDF):
                 self.ln()
 
     def get_data_summary_from_results(self, training_meta):
-        print(training_meta)
         result = training_meta[constants.KEY_EVALUATION_RESULT]
         sample_count = dict()
         for dataset in [constants.KEY_DATA_TRAIN, constants.KEY_DATA_VALID, constants.KEY_DATA_TEST]:
@@ -289,7 +288,6 @@ class ReportGenerator(TrainingReportFPDF):
         training_meta = _report_data[constants.KEY_TRAINING_META]
 
         sample_count = self.get_data_summary_from_results(training_meta)
-        print(sample_count)
         data_summary = self.get_data_count_summary(data_meta, sample_count)
 
         self.get_model_info(model_meta)
@@ -366,7 +364,7 @@ class ReportGenerator(TrainingReportFPDF):
         self.add_subsection("Data attribute")
         self.my_write_line("The data attributes in 'meta.json' are classified as follows.")
 
-        table_header = ['Feature Name', 'Attribute/Sequence', 'Feature Type']
+        table_header = ['Data Field', 'Attribute/Sequence', 'Data Type', 'Used in Training']
 
         table_data = []
 
@@ -377,13 +375,13 @@ class ReportGenerator(TrainingReportFPDF):
 
         for feature_name, feature_json in model_meta[constants.METADATA_KEY_DATA_SEC][
             constants.META_KEY_ATTRIBUTE_FEATURE].items():
-            table_data.append([feature_name, 'Attribute', get_datetype_label(feature_json['type'])])
+            table_data.append([feature_name, 'Attribute', get_datetype_label(feature_json['type']), 'Yes' if feature_json['used'] else 'No'])
 
         for feature_name, feature_json in model_meta[constants.METADATA_KEY_DATA_SEC][
             constants.META_KEY_SEQUENCE_FEATURE].items():
-            table_data.append([feature_name, 'Sequence', get_datetype_label(feature_json['type'])])
+            table_data.append([feature_name, 'Sequence', get_datetype_label(feature_json['type']), 'Yes' if feature_json['used'] else 'No'])
 
-        self.draw_table(table_header, table_data, [70, 50, 50])
+        self.draw_table(table_header, table_data, [60, 40, 40, 40])
 
     def get_feature_visualization(self, data_meta, sample_key):
         self.add_subsection("Feature distribution")
