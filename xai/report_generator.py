@@ -344,7 +344,9 @@ class ReportGenerator(TrainingReportFPDF):
                     if data_name in data_meta.keys():
                         distribution = dict(data_meta[data_name][constants.KEY_DATA_DISTRIBUTION])
                         image_path = gg.BarPlot(data=distribution, title='%s_data_distribution' % data_name,
-                                                x_label='Number of samples', y_label='Category').draw(caption=data_name)
+                                                x_label='Number of samples', y_label='Category').draw(caption=data_name,
+                                                                                                      ratio=True,
+                                                                                                      limit_length=20)
                         if data_name == constants.KEY_DATA_TRAIN:
                             image_set[0] = image_path
                         if data_name == constants.KEY_DATA_VALID:
@@ -355,7 +357,8 @@ class ReportGenerator(TrainingReportFPDF):
             elif constants.KEY_DATA_ALL in data_meta.keys():
                 distribution = dict(data_meta[constants.KEY_DATA_ALL][constants.KEY_DATA_DISTRIBUTION])
                 image_path = gg.BarPlot(data=distribution, title='%s_data_distribution' % data_name,
-                                        x_label='Number of samples', y_label='Category').draw(caption=data_name)
+                                        x_label='Number of samples', y_label='Category').draw(
+                    caption=constants.KEY_DATA_ALL, ratio=True, limit_length=20)
 
                 self.add_large_image(image_path)
 

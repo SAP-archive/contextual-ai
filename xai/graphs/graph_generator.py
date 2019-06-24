@@ -64,10 +64,10 @@ class HeatMap(Graph):
         data = np.array(self.data)
         df_data = pd.DataFrame(data, x_tick, y_tick)
         sns.set(font_scale=1.5)  # label size
-        if len(x_tick)>30:
+        if len(x_tick) > 30:
             annot = False
             annot_kws = None
-        elif len(x_tick)>10:
+        elif len(x_tick) > 10:
             annot = True
             annot_kws = {}
         else:
@@ -213,7 +213,7 @@ class BarPlot(Graph):
             figsize = (10, 5)
         super(BarPlot, self).__init__(data=data, title=title, figure_size=figsize, x_label=x_label, y_label=y_label)
 
-    def draw_core(self, caption=None, limit_length=None, color_palette="Blues_d"):
+    def draw_core(self, caption=None, limit_length=None, color_palette="Blues_d", ratio=False):
         sns.set(font_scale=1)
         data = self.data
         if type(data) == list:
@@ -232,16 +232,24 @@ class BarPlot(Graph):
         if len(data) > 3 and percentage[0] - percentage[1] > 0.3:  # the top item is quite dominant
             xlimit = values[1] * 1.2
             plt.xlim([0, xlimit])
-
-            ax.text(xlimit, 0, round(values[0], 4), color='red', ha="left")
+            if ratio:
+                ax.text(values[0], 0, "%s%%" % round(percentage[0] * 100, 2), color='black', ha="left")
+            else:
+                ax.text(xlimit, 0, round(values[0], 4), color='red', ha="left")
             plt.autoscale(enable=True, axis='y', tight=True)
 
         else:
-            ax.text(values[0], 0, round(values[0], 4), color='black', ha="left")
+            if ratio:
+                ax.text(values[0], 0, "%s%%" % round(percentage[0] * 100, 2), color='black', ha="left")
+            else:
+                ax.text(values[0], 0, round(values[0], 4), color='black', ha="left")
             plt.autoscale(enable=True, axis='both', tight=True)
 
         for index in range(1, len(values)):
-            ax.text(values[index], index, round(values[index], 4), color='black', ha="left")
+            if ratio:
+                ax.text(values[index], index, "%s%%" % round(percentage[index] * 100, 2), color='black', ha="left")
+            else:
+                ax.text(values[index], index, round(values[index], 4), color='black', ha="left")
         if caption is not None:
             plt.title(caption)
         self.label_ax = ax
