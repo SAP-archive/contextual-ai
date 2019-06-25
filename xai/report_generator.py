@@ -610,9 +610,6 @@ class ReportGenerator(TrainingReportFPDF):
         similar_class_dict = None
         similar_class_img_spec = None
 
-        unsimilar_class_dict = None
-        unsimilar_class_img_spec = None
-
         if len(cm_label) > 2:
             cr = MultiClassificationResult()
             similar_class_dict = dict()
@@ -631,13 +628,11 @@ class ReportGenerator(TrainingReportFPDF):
         for split in cr.get_split_list():
             cm_obj = confusion_matrices[split]
             title = '%s_cm' % split
-            image_path = gg.HeatMap(data=cm_obj.get_values(), title=title, x_label='True',
-                                    y_label='Predict').draw(x_tick=cm_obj.get_labels(), y_tick=cm_obj.get_labels())
+            image_path = gg.HeatMap(data=cm_obj.get_values(), title=title, x_label='Predict',
+                                    y_label='True').draw(x_tick=cm_obj.get_labels(), y_tick=cm_obj.get_labels())
             cm_image_paths.append(image_path)
             if similar_class_dict is not None:
-                similar_class_dict[split] = cm_obj.get_top_k_similar_classes(k=2)
-            if unsimilar_class_dict is not None:
-                unsimilar_class_dict[split] = cm_obj.get_top_k_unsimilar_classes(k=2)
+                similar_class_dict[split] = cm_obj.get_top_k_similar_classes(k=1)
 
         for dataset in cr.get_split_list():
             for metric_name in evaluation_result[dataset].keys():

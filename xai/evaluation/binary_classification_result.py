@@ -3,6 +3,7 @@ from xai.evaluation.confusion_matrix import ConfusionMatrix
 from xai.util import get_table_layout
 from xai import constants
 
+
 class BinaryClassificationResult(ClassificationResult):
     def __init__(self, ):
         super(BinaryClassificationResult, self).__init__()
