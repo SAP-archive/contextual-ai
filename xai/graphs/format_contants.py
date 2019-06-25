@@ -17,6 +17,13 @@ ABSOLUTE_3_LEFT_BIG_GRID_SPEC
 |        | 2 |
 ==============
 
+IMAGE_TABLE_GRID_SPEC
+=============
+|   |       |
+| T | Image |
+|   |       |
+=============
+
 
 ABSOLUTE_3_RIGHT_BIG_GRID_SPEC
 =============
@@ -41,6 +48,10 @@ ABSOLUTE_3_COMPARISON_2_GRID_SPEC
 ABSOLUTE_LEFT_BIG_3_GRID_SPEC = {0: (0, 0, FIGURE_WIDTH, FIGURE_HEIGHT),
                                  1: (FIGURE_WIDTH, 0, SUBFIGURE_WIDTH, SUBFIGURE_HEIGHT),
                                  2: (FIGURE_WIDTH, SUBFIGURE_HEIGHT, SUBFIGURE_WIDTH, SUBFIGURE_HEIGHT)}
+
+IMAGE_TABLE_GRID_SPEC = {'table': (0, 0, SUBFIGURE_WIDTH, FIGURE_HEIGHT),
+                         'image': (SUBFIGURE_WIDTH, 0, FIGURE_WIDTH, FIGURE_HEIGHT)
+                         }
 
 ABSOLUTE_RIGHT_BIG_3_GRID_SPEC = {0: (0, 0, SUBFIGURE_WIDTH, SUBFIGURE_HEIGHT),
                                   1: (0, SUBFIGURE_HEIGHT, SUBFIGURE_WIDTH, SUBFIGURE_HEIGHT),

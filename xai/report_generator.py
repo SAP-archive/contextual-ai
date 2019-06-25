@@ -476,6 +476,7 @@ class ReportGenerator(TrainingReportFPDF):
                     continue
                 all_distribution = data_meta[dataset][constants.KEY_NUMERIC_FEATURE_DISTRIBUTION][field_name]
                 image_set = dict()
+                table_set = dict()
                 for label_name in all_distribution.keys():
                     if label_name not in colors:
                         colors[label_name] = constants.COLORS[len(colors) % len(constants.COLORS)]
@@ -485,17 +486,30 @@ class ReportGenerator(TrainingReportFPDF):
                                                     title='%s_%s_%s' % (dataset, field_name, label_name),
                                                     x_label="", y_label=field_name).draw(color=colors[label_name])
 
+                    table_header = ['Statistical Field', 'Value']
+                    table_values = []
+                    for key, value in data_distribution.items():
+                        if key in ['kde', 'histogram']:
+                            continue
+                        table_values.append([key, "%.2f"%value])
+
                     if label_name == 'all':
                         image_set[0] = image_path
+                        table_set[0] = (table_header, table_values)
                     else:
                         if show_sample_classes:
                             if 1 not in image_set:
                                 image_set[1] = image_path
                             elif 2 not in image_set:
                                 image_set[2] = image_path
-
-                self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC, caption="- %s" % dataset,
-                                     style='I')
+                if len(image_set) == 1:
+                    table_header, table_values = table_set[0]
+                    self.add_image_table(image_set[0], table_header, table_values,
+                                         graph_constants.IMAGE_TABLE_GRID_SPEC, caption="- %s" % dataset,
+                                         style='I')
+                else:
+                    self.add_grid_images(image_set, graph_constants.IMAGE_TABLE_GRID_SPEC, caption="- %s" % dataset,
+                                         style='I')
 
         for field_name, field_distribution in data_meta[sample_key][
             constants.KEY_TEXT_FEATURE_DISTRIBUTION].items():
@@ -507,22 +521,31 @@ class ReportGenerator(TrainingReportFPDF):
                     continue
                 all_distribution = data_meta[dataset][constants.KEY_TEXT_FEATURE_DISTRIBUTION][field_name]
                 image_set = dict()
+                table_set = dict()
                 for label_name in all_distribution.keys():
                     data_distribution = all_distribution[label_name]
-                    image_path = gg.WordCloudGraph(data=data_distribution,
+                    image_path = gg.WordCloudGraph(data=data_distribution['tfidf'],
                                                    title='%s_%s_%s' % (dataset, field_name, label_name)).draw()
-
+                    table_header = ['Placeholder', 'Doc Percentage ']
+                    table_values = []
+                    for w, v in data_distribution['placeholder'].items():
+                        table_values.append([w, '%.2f%%' % (v * 100)])
                     if label_name == 'all':
                         image_set[0] = image_path
+                        table_set[0] = (table_header, table_values)
                     else:
                         if show_sample_classes:
                             if 1 not in image_set:
                                 image_set[1] = image_path
                             elif 2 not in image_set:
                                 image_set[2] = image_path
-
-                self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC, caption="- %s" % dataset,
-                                     style='I')
+                if len(image_set) == 1:
+                    table_values,table_values = table_set[0]
+                    self.add_image_table(image_path, table_header, table_values, graph_constants.IMAGE_TABLE_GRID_SPEC,
+                                         caption="- %s" % dataset, style='I')
+                else:
+                    self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC,
+                                         caption="- %s" % dataset, style='I')
 
         colors = dict()
         for field_name, field_distribution in data_meta[sample_key][
@@ -535,6 +558,7 @@ class ReportGenerator(TrainingReportFPDF):
                     continue
                 all_distribution = data_meta[dataset][constants.KEY_LENGTH_FEATURE_DISTRIBUTION][field_name]
                 image_set = dict()
+                table_set = dict()
                 for label_name in all_distribution.keys():
                     if label_name not in colors:
                         colors[label_name] = constants.COLORS[len(colors) % len(constants.COLORS)]
@@ -543,10 +567,15 @@ class ReportGenerator(TrainingReportFPDF):
                     image_path = gg.KdeDistribution(data=data_distribution,
                                                     title='%s_%s_%s' % (dataset, field_name, label_name),
                                                     x_label="", y_label=field_name).draw(color=colors[label_name])
-
+                    table_header = ['Statistical Field', 'Value']
+                    table_values = []
+                    for key, value in data_distribution.items():
+                        if key in ['kde', 'histogram']:
+                            continue
+                        table_values.append([key, "%.3f"%(value)])
                     if label_name == 'all':
                         image_set[0] = image_path
-
+                        table_set[0] = (table_header, table_values)
                     else:
                         if show_sample_classes:
                             if 1 not in image_set:
@@ -554,8 +583,15 @@ class ReportGenerator(TrainingReportFPDF):
                             elif 2 not in image_set:
                                 image_set[2] = image_path
 
-                self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC, caption="- %s" % dataset,
-                                     style='I')
+                if len(image_set) == 1:
+                    table_header, table_values = table_set[0]
+                    self.add_image_table(image_set[0], table_header, table_values,
+                                         graph_constants.IMAGE_TABLE_GRID_SPEC, caption="- %s" % dataset,
+                                         style='I')
+                else:
+                    self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC,
+                                         caption="- %s" % dataset,
+                                         style='I')
 
         self.my_write_line("Notes:", "B")
         self.my_write_line(

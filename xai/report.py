@@ -225,7 +225,8 @@ class TrainingReportFPDF(FPDF):
 
         # Header
         if col_width is None:
-            w = [55] * len(header)
+            col_w = int(150 / len(header))
+            w = [col_w] * len(header)
         else:
             w = col_width
 
@@ -302,8 +303,8 @@ class TrainingReportFPDF(FPDF):
             if self.y + height + 5 > self.h - self.foot_size:
                 print('Warning: figure will exceed the page bottom, adding a new page.')
                 self.add_page()
-
-        self.my_write_line(caption,style=style)
+        if caption is not None:
+            self.my_write_line(caption, style=style)
         X = self.x
         Y = self.y
 
@@ -311,7 +312,53 @@ class TrainingReportFPDF(FPDF):
         self.ln(height)
         return True
 
-    def add_grid_images(self, image_set, grid_spec, ratio=False, grid_width = None, grid_height = None, caption = None, style = None):
+    def add_image_table(self, image_path, table_header, table_content, grid_spec, caption=None, style=None):
+        X = self.x
+        Y = self.y
+
+        if 'image' not in grid_spec:
+            print("Error in image_table_spec: no 'image' key found.")
+            return False
+        if 'table' not in grid_spec:
+            print("Error in image_table_spec: no 'table' key found.")
+            return False
+        maximum_y = 0
+        maximum_x = 0
+        for image_name, (x, y, w, h) in grid_spec.items():
+            maximum_y = max(maximum_y, y + h)
+            maximum_x = max(maximum_x, x + w)
+
+        if caption is None:
+            if Y + maximum_y > self.h - self.foot_size:
+                print('Warning: figure will exceed the page bottom, adding a new page.')
+                self.add_page()
+        else:
+            ## TODO: estimate the caption height, 5 is hardcoded
+            if self.y + maximum_y + 5 > self.h - self.foot_size:
+                print('Warning: figure will exceed the page bottom, adding a new page.')
+                self.add_page()
+
+        if X + maximum_x > self.w:
+            print('Error: figure will exceed the page edge on the right, exiting plotting.')
+            return False
+        X = self.x
+        Y = self.y
+
+        if image_path is not None:
+            x, y, w, h = grid_spec['image']
+            self.image(image_path, x=X + x, y=Y + y, w=w, h=h)
+
+        if table_header is not None and table_content is not None:
+            x, y, w, h = grid_spec['table']
+            self.draw_table(table_header, table_content, col_width=[w / len(table_header)] * len(table_header))
+        # reset to original point and advance
+        self.x = X
+        self.y = Y
+        self.ln(maximum_y)
+        return True
+
+    def add_grid_images(self, image_set, grid_spec, ratio=False, grid_width=None, grid_height=None, caption=None,
+                        style=None):
         # image_set: dict, key = image_name, value = image_path
         # grid_spec: dict, key = image_name, value = (x,y,w,h) [mark left top corner as 0,0]
         # ratio: indicate grid by ratio only. if True, grid_width and grid_height are required.
@@ -321,24 +368,24 @@ class TrainingReportFPDF(FPDF):
         maximum_y = 0
         maximum_x = 0
 
-        for image_name, (x,y,w,h) in grid_spec.items():
+        for image_name, (x, y, w, h) in grid_spec.items():
             if ratio:
                 x *= grid_width
                 y *= grid_height
                 w *= grid_width
                 h *= grid_height
-                grid_spec[image_name] = (x,y,w,h)
+                grid_spec[image_name] = (x, y, w, h)
                 maximum_y = grid_height
                 maximum_x = grid_width
             else:
-                maximum_y = max(maximum_y,y+h)
+                maximum_y = max(maximum_y, y + h)
 
-        if X+maximum_x>self.w:
+        if X + maximum_x > self.w:
             print('Error: figure will exceed the page edge on the right, exiting plotting.')
             return False
 
         if caption is None:
-            if Y+maximum_y>self.h-self.foot_size:
+            if Y + maximum_y > self.h - self.foot_size:
                 print('Warning: figure will exceed the page bottom, adding a new page.')
                 self.add_page()
         else:
@@ -347,77 +394,23 @@ class TrainingReportFPDF(FPDF):
                 print('Warning: figure will exceed the page bottom, adding a new page.')
                 self.add_page()
 
-        self.my_write_line(caption,style=style)
+        if caption is not None:
+            self.my_write_line(caption, style=style)
+
         X = self.x
         Y = self.y
         if type(image_set) == dict:
             for image_name, image_path in image_set.items():
                 pos = grid_spec[image_name]
                 x, y, w, h = pos
-                self.image(image_set[image_name], X+x, Y+y, w, h, '', '')
+                self.image(image_set[image_name], X + x, Y + y, w, h, '', '')
 
         if type(image_set) == list:
             ## follow the index
             for idx, image_path in enumerate(image_set):
                 pos = grid_spec[idx]
                 x, y, w, h = pos
-                self.image(image_path, X+x, Y+y, w, h, '', '')
+                self.image(image_path, X + x, Y + y, w, h, '', '')
 
         self.ln(maximum_y)
         return True
-
-    def add_grid_images(self, image_set, grid_spec, ratio=False, grid_width = None, grid_height = None, caption = None, style = None):
-        # image_set: dict, key = image_name, value = image_path
-        # grid_spec: dict, key = image_name, value = (x,y,w,h) [mark left top corner as 0,0]
-        # ratio: indicate grid by ratio only. if True, grid_width and grid_height are required.
-        X = self.x
-        Y = self.y
-
-        maximum_y = 0
-        maximum_x = 0
-
-        for image_name, (x,y,w,h) in grid_spec.items():
-            if ratio:
-                x *= grid_width
-                y *= grid_height
-                w *= grid_width
-                h *= grid_height
-                grid_spec[image_name] = (x,y,w,h)
-                maximum_y = grid_height
-                maximum_x = grid_width
-            else:
-                maximum_y = max(maximum_y,y+h)
-
-        if X+maximum_x>self.w:
-            print('Error: figure will exceed the page edge on the right, exiting plotting.')
-            return False
-
-        if caption is None:
-            if Y+maximum_y>self.h-self.foot_size:
-                print('Warning: figure will exceed the page bottom, adding a new page.')
-                self.add_page()
-        else:
-            ## TODO: estimate the caption height, 10 is hardcoded
-            if self.y + maximum_y + 5 > self.h - self.foot_size:
-                print('Warning: figure will exceed the page bottom, adding a new page.')
-                self.add_page()
-
-        self.my_write_line(caption,style=style)
-        X = self.x
-        Y = self.y
-        if type(image_set) == dict:
-            for image_name, image_path in image_set.items():
-                pos = grid_spec[image_name]
-                x, y, w, h = pos
-                self.image(image_set[image_name], X+x, Y+y, w, h, '', '')
-
-        if type(image_set) == list:
-            ## follow the index
-            for idx, image_path in enumerate(image_set):
-                pos = grid_spec[idx]
-                x, y, w, h = pos
-                self.image(image_path, X+x, Y+y, w, h, '', '')
-
-        self.ln(maximum_y)
-        return True
-

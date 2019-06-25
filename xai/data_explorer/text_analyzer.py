@@ -31,7 +31,6 @@ class TextAnalyzer(AbstractAnalyzer):
             tf_idf = self.summary_info[fea].get_tfidf(limit=TextHelper.TFIDF_TOP_N)
             text_length = self.summary_info[fea].get_text_length_distribution()
             word_count = self.summary_info[fea].get_word_count_num_distribution()
-
             self.summary_info[fea] = tf_idf
             self.derived_length_distribution['%s_textlength' % fea] = text_length
             self.derived_length_distribution['%s_wordcount' % fea] = word_count
@@ -133,8 +132,6 @@ class TextHelper:
 
         for word in self.stopwordsset:
             del word_count_vector[word]
-        for word in ['NUMBER','EMAIL','TIME','DATE','URL']:
-            del word_count_vector[word]
 
         return word_count_vector
 
@@ -155,10 +152,15 @@ class TextHelper:
         self.tfidf = dict()
         for class_label in self.tf.keys():
             self.tfidf[class_label] = dict()
+            self.tfidf[class_label]['tfidf'] = dict()
+            self.tfidf[class_label]['placeholder'] = dict()
             for word in self.tf[class_label].keys():
-                self.tfidf[class_label][word] = self.tf[class_label][word] * math.log(
+                self.tfidf[class_label]['tfidf'][word] = self.tf[class_label][word] * math.log(
                     self.class_doc_num['all'] / self.idf[class_label][word])
-            self.tfidf[class_label] = sorted(self.tfidf[class_label].items(), key=operator.itemgetter(1), reverse=True)
+                if word in ['NUMBER', 'EMAIL', 'TIME', 'DATE', 'URL']:
+                    self.tfidf[class_label]['placeholder'][word] = self.idf[class_label][word] / self.class_doc_num['all']
+                    del (self.tfidf[class_label]['tfidf'][word])
+            self.tfidf[class_label]['tfidf'] = sorted(self.tfidf[class_label]['tfidf'].items(), key=operator.itemgetter(1), reverse=True)
             # warning: return a list of tuple instead of a dict
 
     def get_tfidf(self, limit=None):
@@ -166,8 +168,11 @@ class TextHelper:
             self.update_tfidf()
         if limit is not None:
             for class_label in self.tfidf.keys():
-                self.tfidf[class_label] = self.tfidf[class_label][:limit]
+                self.tfidf[class_label]['tfidf'] = self.tfidf[class_label]['tfidf'][:limit]
         return self.tfidf
+
+    def get_placeholder_count(self):
+        return self.placeholder_count
 
     def get_text_length_distribution(self):
         return self.textlength
