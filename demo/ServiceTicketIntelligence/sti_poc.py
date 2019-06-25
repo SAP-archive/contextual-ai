@@ -207,6 +207,9 @@ def generate_seperate_reports(data_path):
         report_setup_meta['data_analysis']['label_type'] = label_type
         report_setup_meta['data_analysis']['label_description'] = None
 
+        report_setup_meta['visualize_setup'] = dict()
+        report_setup_meta['visualize_setup']['show_sample_classes'] = False
+
         report_setup_meta['overall'] = dict()
         report_setup_meta['overall']['content_list'] = content_list
         report_setup_meta['overall']['usecase_name'] = usecase_name

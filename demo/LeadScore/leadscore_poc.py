@@ -66,6 +66,8 @@ def generate_training_report(data_path, model_path, output_path, eval_result, tr
     report_setup_meta['overall']['is_deeplearning'] = is_deeplearning
     report_setup_meta['overall']['recommendation_metric'] = recommendation_metric
 
+    report_setup_meta['visualize_setup'] = dict()
+
     report_setup_meta['evaluation'] = dict()
     report_setup_meta['evaluation']['key_feature'] = key_feature
 

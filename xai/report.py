@@ -311,6 +311,60 @@ class TrainingReportFPDF(FPDF):
         self.ln(height)
         return True
 
+    def add_grid_images(self, image_set, grid_spec, ratio=False, grid_width = None, grid_height = None, caption = None, style = None):
+        # image_set: dict, key = image_name, value = image_path
+        # grid_spec: dict, key = image_name, value = (x,y,w,h) [mark left top corner as 0,0]
+        # ratio: indicate grid by ratio only. if True, grid_width and grid_height are required.
+        X = self.x
+        Y = self.y
+
+        maximum_y = 0
+        maximum_x = 0
+
+        for image_name, (x,y,w,h) in grid_spec.items():
+            if ratio:
+                x *= grid_width
+                y *= grid_height
+                w *= grid_width
+                h *= grid_height
+                grid_spec[image_name] = (x,y,w,h)
+                maximum_y = grid_height
+                maximum_x = grid_width
+            else:
+                maximum_y = max(maximum_y,y+h)
+
+        if X+maximum_x>self.w:
+            print('Error: figure will exceed the page edge on the right, exiting plotting.')
+            return False
+
+        if caption is None:
+            if Y+maximum_y>self.h-self.foot_size:
+                print('Warning: figure will exceed the page bottom, adding a new page.')
+                self.add_page()
+        else:
+            ## TODO: estimate the caption height, 10 is hardcoded
+            if self.y + maximum_y + 5 > self.h - self.foot_size:
+                print('Warning: figure will exceed the page bottom, adding a new page.')
+                self.add_page()
+
+        self.my_write_line(caption,style=style)
+        X = self.x
+        Y = self.y
+        if type(image_set) == dict:
+            for image_name, image_path in image_set.items():
+                pos = grid_spec[image_name]
+                x, y, w, h = pos
+                self.image(image_set[image_name], X+x, Y+y, w, h, '', '')
+
+        if type(image_set) == list:
+            ## follow the index
+            for idx, image_path in enumerate(image_set):
+                pos = grid_spec[idx]
+                x, y, w, h = pos
+                self.image(image_path, X+x, Y+y, w, h, '', '')
+
+        self.ln(maximum_y)
+        return True
 
     def add_grid_images(self, image_set, grid_spec, ratio=False, grid_width = None, grid_height = None, caption = None, style = None):
         # image_set: dict, key = image_name, value = image_path

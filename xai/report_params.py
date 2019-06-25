@@ -21,6 +21,13 @@ class Params:
 
         label_key = report_setup_meta['data_analysis']['label_key']
         label_type = report_setup_meta['data_analysis']['label_type']
+
+        if 'show_sample_classes' in  report_setup_meta['visualize_setup']:
+            self.show_sample_classes = report_setup_meta['visualize_setup']['show_sample_classes']
+        else:
+            self.show_sample_classes = True
+
+
         att_fea, seq_fea = self.load_feature_list()
 
         self.file_params = dict()

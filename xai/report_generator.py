@@ -375,15 +375,37 @@ class ReportGenerator(TrainingReportFPDF):
 
         for feature_name, feature_json in model_meta[constants.METADATA_KEY_DATA_SEC][
             constants.META_KEY_ATTRIBUTE_FEATURE].items():
-            table_data.append([feature_name, 'Attribute', get_datetype_label(feature_json['type']), 'Yes' if feature_json['used'] else 'No'])
+            if "used" not in feature_json:
+                if get_datetype_label(feature_json['type']) is 'Key':
+                    used = 'No'
+                else:
+                    used = 'Yes'
+            else:
+                if feature_json['type']:
+                    used = 'Yes'
+                else:
+                    used = 'No'
+
+            table_data.append([feature_name, 'Attribute', get_datetype_label(feature_json['type']), used])
 
         for feature_name, feature_json in model_meta[constants.METADATA_KEY_DATA_SEC][
             constants.META_KEY_SEQUENCE_FEATURE].items():
-            table_data.append([feature_name, 'Sequence', get_datetype_label(feature_json['type']), 'Yes' if feature_json['used'] else 'No'])
+            if "used" not in feature_json:
+                if get_datetype_label(feature_json['type']) is 'Key':
+                    used = 'No'
+                else:
+                    used = 'Yes'
+            else:
+                if feature_json['type']:
+                    used = 'Yes'
+                else:
+                    used = 'No'
+
+            table_data.append([feature_name, 'Sequence', get_datetype_label(feature_json['type']), used])
 
         self.draw_table(table_header, table_data, [60, 40, 40, 40])
 
-    def get_feature_visualization(self, data_meta, sample_key):
+    def visualize_data_distribution(self, data_meta, sample_key, show_sample_classes):
         self.add_subsection("Feature distribution")
         self.my_write_line("Below are some frequency plot for each features.")
 
@@ -395,25 +417,23 @@ class ReportGenerator(TrainingReportFPDF):
         elif sample_key == constants.KEY_DATA_ALL:
             dataset_names = [constants.KEY_DATA_ALL]
 
-        for feature_name, feature_distribution in data_meta[sample_key][
+        colors = dict()
+        for field_name, field_distribution in data_meta[sample_key][
             constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION].items():
-            if len(feature_distribution['all']) <= 2:
-                LOGGER.info('%s only have less than 2 values, ignore in visualization.' % feature_name)
+            if len(field_distribution['all']) <= 2:
+                LOGGER.info('%s only have less than 2 values, ignore in visualization.' % field_name)
                 continue
-            if len(feature_distribution['all']) / sum(feature_distribution['all'].values()) > 0.5:
-                LOGGER.info('%s is probably a unique feature, ignore in visualization.' % feature_name)
+            if len(field_distribution['all']) / sum(field_distribution['all'].values()) > 0.5:
+                LOGGER.info('%s is probably a unique feature, ignore in visualization.' % field_name)
                 continue
-            if 'length' in feature_name:
-                continue
-            self.my_write_line("Feature: %s" % feature_name, 'B')
-            colors = dict()
+            self.my_write_line("Feature: %s" % field_name, 'B')
             for _, dataset, dataset_name in constants.DATASET_LABEL:
                 if dataset not in data_meta.keys():
                     continue
                 if dataset not in dataset_names:
                     continue
                 image_set = dict()
-                all_distribution = data_meta[dataset][constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION][feature_name]
+                all_distribution = data_meta[dataset][constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION][field_name]
                 comment = ''
                 for label_name in all_distribution.keys():
                     if label_name not in colors:
@@ -429,31 +449,32 @@ class ReportGenerator(TrainingReportFPDF):
                         limit_length = None
 
                     image_path = gg.BarPlot(data=data_distribution,
-                                            title='%s_%s_%s' % (dataset, feature_name, label_name),
-                                            x_label="", y_label=feature_name).draw(limit_length=limit_length,
-                                                                                   color_palette=colors[label_name])
+                                            title='%s_%s_%s' % (dataset, field_name, label_name),
+                                            x_label="", y_label=field_name).draw(limit_length=limit_length,
+                                                                                 color_palette=colors[label_name])
 
                     if label_name == 'all':
                         image_set[0] = image_path
                     else:
-                        if 1 not in image_set:
-                            image_set[1] = image_path
-                        elif 2 not in image_set:
-                            image_set[2] = image_path
+                        if show_sample_classes:
+                            if 1 not in image_set:
+                                image_set[1] = image_path
+                            elif 2 not in image_set:
+                                image_set[2] = image_path
 
                 self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC,
                                      caption="- %s %s" % (dataset, comment), style='I')
 
         colors = dict()
-        for feature_name, feature_distribution in data_meta[sample_key][
+        for field_name, field_distribution in data_meta[sample_key][
             constants.KEY_NUMERIC_FEATURE_DISTRIBUTION].items():
-            self.my_write_line("Feature: %s" % feature_name, 'B')
+            self.my_write_line("Feature: %s" % field_name, 'B')
             for _, dataset, dataset_name in constants.DATASET_LABEL:
                 if dataset not in data_meta.keys():
                     continue
                 if dataset not in dataset_names:
                     continue
-                all_distribution = data_meta[dataset][constants.KEY_NUMERIC_FEATURE_DISTRIBUTION][feature_name]
+                all_distribution = data_meta[dataset][constants.KEY_NUMERIC_FEATURE_DISTRIBUTION][field_name]
                 image_set = dict()
                 for label_name in all_distribution.keys():
                     if label_name not in colors:
@@ -461,56 +482,58 @@ class ReportGenerator(TrainingReportFPDF):
                     data_distribution = all_distribution[label_name]
 
                     image_path = gg.KdeDistribution(data=data_distribution,
-                                                    title='%s_%s_%s' % (dataset, feature_name, label_name),
-                                                    x_label="", y_label=feature_name).draw(color=colors[label_name])
+                                                    title='%s_%s_%s' % (dataset, field_name, label_name),
+                                                    x_label="", y_label=field_name).draw(color=colors[label_name])
 
                     if label_name == 'all':
                         image_set[0] = image_path
                     else:
-                        if 1 not in image_set:
-                            image_set[1] = image_path
-                        elif 2 not in image_set:
-                            image_set[2] = image_path
+                        if show_sample_classes:
+                            if 1 not in image_set:
+                                image_set[1] = image_path
+                            elif 2 not in image_set:
+                                image_set[2] = image_path
 
                 self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC, caption="- %s" % dataset,
                                      style='I')
 
-        for feature_name, feature_distribution in data_meta[sample_key][
+        for field_name, field_distribution in data_meta[sample_key][
             constants.KEY_TEXT_FEATURE_DISTRIBUTION].items():
-            self.my_write_line("Feature: %s" % feature_name, 'B')
+            self.my_write_line("Feature: %s" % field_name, 'B')
             for _, dataset, dataset_name in constants.DATASET_LABEL:
                 if dataset not in data_meta.keys():
                     continue
                 if dataset not in dataset_names:
                     continue
-                all_distribution = data_meta[dataset][constants.KEY_TEXT_FEATURE_DISTRIBUTION][feature_name]
+                all_distribution = data_meta[dataset][constants.KEY_TEXT_FEATURE_DISTRIBUTION][field_name]
                 image_set = dict()
                 for label_name in all_distribution.keys():
                     data_distribution = all_distribution[label_name]
                     image_path = gg.WordCloudGraph(data=data_distribution,
-                                                   title='%s_%s_%s' % (dataset, feature_name, label_name)).draw()
+                                                   title='%s_%s_%s' % (dataset, field_name, label_name)).draw()
 
                     if label_name == 'all':
                         image_set[0] = image_path
                     else:
-                        # TODO: select to view
-                        if 1 not in image_set:
-                            image_set[1] = image_path
-                        elif 2 not in image_set:
-                            image_set[2] = image_path
+                        if show_sample_classes:
+                            if 1 not in image_set:
+                                image_set[1] = image_path
+                            elif 2 not in image_set:
+                                image_set[2] = image_path
 
                 self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC, caption="- %s" % dataset,
                                      style='I')
 
-        for feature_name, feature_distribution in data_meta[sample_key][
+        colors = dict()
+        for field_name, field_distribution in data_meta[sample_key][
             constants.KEY_LENGTH_FEATURE_DISTRIBUTION].items():
-            self.my_write_line("Feature: %s" % feature_name, 'B')
+            self.my_write_line("Feature: %s" % field_name, 'B')
             for _, dataset, dataset_name in constants.DATASET_LABEL:
                 if dataset not in data_meta.keys():
                     continue
                 if dataset not in dataset_names:
                     continue
-                all_distribution = data_meta[dataset][constants.KEY_LENGTH_FEATURE_DISTRIBUTION][feature_name]
+                all_distribution = data_meta[dataset][constants.KEY_LENGTH_FEATURE_DISTRIBUTION][field_name]
                 image_set = dict()
                 for label_name in all_distribution.keys():
                     if label_name not in colors:
@@ -518,16 +541,18 @@ class ReportGenerator(TrainingReportFPDF):
                     data_distribution = all_distribution[label_name]
 
                     image_path = gg.KdeDistribution(data=data_distribution,
-                                                    title='%s_%s_%s' % (dataset, feature_name, label_name),
-                                                    x_label="", y_label=feature_name).draw(color=colors[label_name])
+                                                    title='%s_%s_%s' % (dataset, field_name, label_name),
+                                                    x_label="", y_label=field_name).draw(color=colors[label_name])
 
                     if label_name == 'all':
                         image_set[0] = image_path
+
                     else:
-                        if 1 not in image_set:
-                            image_set[1] = image_path
-                        elif 2 not in image_set:
-                            image_set[2] = image_path
+                        if show_sample_classes:
+                            if 1 not in image_set:
+                                image_set[1] = image_path
+                            elif 2 not in image_set:
+                                image_set[2] = image_path
 
                 self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC, caption="- %s" % dataset,
                                      style='I')
@@ -689,7 +714,8 @@ class ReportGenerator(TrainingReportFPDF):
         self.ln(10)
 
         self.add_page()
-        self.get_feature_visualization(data_meta, self.report_params.feature_sample_key)
+        self.visualize_data_distribution(data_meta, self.report_params.feature_sample_key,
+                                         show_sample_classes=self.report_params.show_sample_classes)
 
         self.ln(5)
         self.get_missing_value_checking(data_meta)
