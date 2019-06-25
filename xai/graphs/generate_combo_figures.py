@@ -19,8 +19,8 @@ def visualize_feature_for_similar_classes(dataset, feature_name, base_class, sim
         image_path_b = os.path.join(constants.FIGURE_PATH,
                                     ('%s_%s_%s.png' % (constants.KEY_DATA_ALL, feature_name, similar_class)).replace('/',
                                                                                                                   '-'))
-    image_cm = gg.HeatMap(sub_confusion_matrix, 'cm_%s_%s' % (base_class, similar_class), 'True',
-                          'Predicted').draw(x_tick=[base_class, similar_class], y_tick=[base_class, similar_class])
+    image_cm = gg.HeatMap(sub_confusion_matrix, 'cm_%s_%s' % (base_class, similar_class), 'Predicted',
+                          'True').draw(x_tick=[base_class, similar_class], y_tick=[base_class, similar_class])
 
     return {'image_set': [image_cm, image_path_a, image_path_b],
             'grid_spec': graph_constants.ABSOLUTE_3_COMPARISON_2_GRID_SPEC}
