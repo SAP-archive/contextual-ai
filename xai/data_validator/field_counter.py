@@ -23,7 +23,7 @@ class FieldCounter(AbstractValidator):
         for feature_name, feature_value in sample.items():
             if type(feature_value) == str:
                 self.update_info(feature_name, 1)
-            if type(feature_value) == list:
+            elif type(feature_value) == list:
                 self.update_info(feature_name, len(feature_value))
             else:
                 self.update_info(feature_name, 1)

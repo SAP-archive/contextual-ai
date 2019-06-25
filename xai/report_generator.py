@@ -508,7 +508,7 @@ class ReportGenerator(TrainingReportFPDF):
                                          graph_constants.IMAGE_TABLE_GRID_SPEC, caption="- %s" % dataset,
                                          style='I')
                 else:
-                    self.add_grid_images(image_set, graph_constants.IMAGE_TABLE_GRID_SPEC, caption="- %s" % dataset,
+                    self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC, caption="- %s" % dataset,
                                          style='I')
 
         for field_name, field_distribution in data_meta[sample_key][
@@ -541,7 +541,7 @@ class ReportGenerator(TrainingReportFPDF):
                                 image_set[2] = image_path
                 if len(image_set) == 1:
                     table_values,table_values = table_set[0]
-                    self.add_image_table(image_path, table_header, table_values, graph_constants.IMAGE_TABLE_GRID_SPEC,
+                    self.add_image_table(image_set[0], table_header, table_values, graph_constants.IMAGE_TABLE_GRID_SPEC,
                                          caption="- %s" % dataset, style='I')
                 else:
                     self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC,
