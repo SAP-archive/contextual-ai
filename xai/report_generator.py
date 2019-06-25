@@ -381,7 +381,7 @@ class ReportGenerator(TrainingReportFPDF):
                 else:
                     used = 'Yes'
             else:
-                if feature_json['type']:
+                if feature_json['used']:
                     used = 'Yes'
                 else:
                     used = 'No'
@@ -396,7 +396,7 @@ class ReportGenerator(TrainingReportFPDF):
                 else:
                     used = 'Yes'
             else:
-                if feature_json['type']:
+                if feature_json['used']:
                     used = 'Yes'
                 else:
                     used = 'No'
