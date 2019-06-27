@@ -38,7 +38,8 @@ def _get_union_keyset(dist_a, dist_b):
 
 
 def get_training_data_distribution_balance_status(data_meta):
-    dist = data_meta[constants.KEY_DATA_EXTEND_TRAIN][constants.KEY_DATA_DISTRIBUTION]
+    sample_label_key = list(data_meta[constants.KEY_DATA_EXTEND_TRAIN].keys())[0]
+    dist = data_meta[constants.KEY_DATA_EXTEND_TRAIN][sample_label_key][constants.KEY_DATA_DISTRIBUTION]
     labels = list(dist.keys())
     max_quan = max(list(dist.values()))
 
@@ -57,8 +58,9 @@ def get_training_data_distribution_balance_status(data_meta):
 
 
 def get_data_distribution_similar_status(data_meta, dataset_a, dataset_b):
-    dist_a = data_meta[dataset_a][constants.KEY_DATA_DISTRIBUTION]
-    dist_b = data_meta[dataset_b][constants.KEY_DATA_DISTRIBUTION]
+    sample_label_key = list(data_meta[dataset_a].keys())[0]
+    dist_a = data_meta[dataset_a][sample_label_key][constants.KEY_DATA_DISTRIBUTION]
+    dist_b = data_meta[dataset_b][sample_label_key][constants.KEY_DATA_DISTRIBUTION]
     key_names, size_a, size_b, overlap = _get_union_keyset(dist_a, dist_b)
     normalized_dist_a = _get_normalized_distribution(dist_a, key_names)
     normalized_dist_b = _get_normalized_distribution(dist_b, key_names)
@@ -74,8 +76,9 @@ def get_data_distribution_similar_status(data_meta, dataset_a, dataset_b):
 
 
 def get_feature_distribution_similar_status(data_meta, feature_name, dataset_a, dataset_b):
-    dist_a = data_meta[dataset_a][constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION][feature_name]['all']
-    dist_b = data_meta[dataset_b][constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION][feature_name]['all']
+    sample_label_key = list(data_meta[dataset_a].keys())[0]
+    dist_a = data_meta[dataset_a][sample_label_key][constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION][feature_name]['all']
+    dist_b = data_meta[dataset_b][sample_label_key][constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION][feature_name]['all']
     key_names, size_a, size_b, overlap = _get_union_keyset(dist_a, dist_b)
     normalized_dist_a = _get_normalized_distribution(dist_a, key_names)
     normalized_dist_b = _get_normalized_distribution(dist_b, key_names)

@@ -20,7 +20,7 @@ def generate_training_report(data_path, model_path, output_path, eval_result, tr
         if v[constants.META_KEY_FIELD_TYPE] in constants.FEATURE_DATA_TYPE_LABEL:
             key_feature = k
             break
-    label_key = constants.META_KEY_FIELD_LABEL
+    label_keys = [constants.META_KEY_FIELD_LABEL]
     label_type = constants.KEY_FEATURE_CATEGORICAL_TYPE
     fea_sample_key = constants.KEY_DATA_EXTEND_TRAIN
     content_list = [constants.CONTENT_DATA, constants.CONTENT_DEEPLEARNING, constants.CONTENT_TRAINING,
@@ -44,7 +44,8 @@ def generate_training_report(data_path, model_path, output_path, eval_result, tr
 
     # Testing
     training_meta = dict()
-    training_meta[constants.KEY_EVALUATION_RESULT] = eval_result
+    training_meta[constants.KEY_EVALUATION_RESULT] = dict()
+    training_meta[constants.KEY_EVALUATION_RESULT][label_keys[0]] = eval_result
     training_meta[constants.KEY_TRAINING_LOG] = training_log
     training_meta[constants.KEY_PARAMETERS] = train_parameters
     training_meta[constants.KEY_TIMING] = timing
@@ -54,7 +55,7 @@ def generate_training_report(data_path, model_path, output_path, eval_result, tr
     report_setup_meta['data_analysis'] = dict()
     report_setup_meta['data_analysis']['feature_sample_key'] = fea_sample_key
     report_setup_meta['data_analysis']['sequence_feature_name'] = sequence_feature_name
-    report_setup_meta['data_analysis']['label_key'] = label_key
+    report_setup_meta['data_analysis']['label_keys'] = label_keys
     report_setup_meta['data_analysis']['label_type'] = label_type
     report_setup_meta['data_analysis']['label_description'] = label_description
 

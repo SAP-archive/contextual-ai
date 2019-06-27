@@ -158,9 +158,11 @@ class TextHelper:
                 self.tfidf[class_label]['tfidf'][word] = self.tf[class_label][word] * math.log(
                     self.class_doc_num['all'] / self.idf[class_label][word])
                 if word in ['NUMBER', 'EMAIL', 'TIME', 'DATE', 'URL']:
-                    self.tfidf[class_label]['placeholder'][word] = self.idf[class_label][word] / self.class_doc_num['all']
+                    self.tfidf[class_label]['placeholder'][word] = self.idf[class_label][word] / self.class_doc_num[
+                        'all']
                     del (self.tfidf[class_label]['tfidf'][word])
-            self.tfidf[class_label]['tfidf'] = sorted(self.tfidf[class_label]['tfidf'].items(), key=operator.itemgetter(1), reverse=True)
+            self.tfidf[class_label]['tfidf'] = sorted(self.tfidf[class_label]['tfidf'].items(),
+                                                      key=operator.itemgetter(1), reverse=True)
             # warning: return a list of tuple instead of a dict
 
     def get_tfidf(self, limit=None):

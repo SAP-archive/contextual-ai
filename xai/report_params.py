@@ -19,7 +19,7 @@ class Params:
         with open(report_metadata_path, 'r') as f:
             report_setup_meta = json.load(f)
 
-        label_key = report_setup_meta['data_analysis']['label_key']
+        label_keys = report_setup_meta['data_analysis']['label_keys']
         label_type = report_setup_meta['data_analysis']['label_type']
 
         if 'show_sample_classes' in  report_setup_meta['visualize_setup']:
@@ -34,7 +34,7 @@ class Params:
         for dataset_file, dataset_key, dataset_label in constants.DATASET_LABEL:
             self.file_params[dataset_key] = {'data_file': dataset_file, 'att_fea': att_fea,
                                              'seq_fea': seq_fea,
-                                             'metafile_name': dataset_key, 'label_key': label_key,
+                                             'metafile_name': dataset_key, 'label_keys': label_keys,
                                              'label_type': label_type,
                                              'feature_file': None,
                                              'group_criterias': []}

@@ -148,8 +148,9 @@ class TrainingReportFPDF(FPDF):
         self.itemize_level += 1
 
     def end_itemize(self):
-        self.itemize_symbol = ''
         self.itemize_level -= 1
+        if self.itemize_level == 0:
+            self.itemize_symbol = ''
 
     def write_html(self, html):
         # HTML parser
@@ -225,7 +226,7 @@ class TrainingReportFPDF(FPDF):
 
         # Header
         if col_width is None:
-            col_w = int(150 / len(header))
+            col_w = int(180 / len(header))
             w = [col_w] * len(header)
         else:
             w = col_width
