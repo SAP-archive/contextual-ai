@@ -1,5 +1,3 @@
-
-
 CONTENT_SUMMARY = 'Summary'
 CONTENT_DATA = 'Data Analysis'
 CONTENT_FEATURE = 'Feature Analysis'
@@ -15,11 +13,8 @@ TEXT_TRAININGMODE_HYPEROPT = 'Hyperparameter tuning without benchmarking test'
 USECASE_CR = 'Customer Retention'
 USECASE_LS = 'Lead Scoring'
 
-
-
 COLOR_PALLETES = ["Blues_d", "Reds_d", "Greens_d", "Purples_d", "Oranges_d"]
 COLORS = ["b", "r", "g"]
-
 
 MAXIMUM_NUM_ENUM_DISPLAY = 20
 
@@ -43,6 +38,9 @@ FEATURE_DATA_TYPE_DATETIME = ['DateTime', 4, '4']
 FEATURE_DATA_TYPE_LABEL = ['Label', 5, '5']
 FEATURE_DATA_TYPE_KEY = ['Key', 6, '6']
 
+VALID_DATATYPE = FEATURE_DATA_TYPE_NOMINAL + FEATURE_DATA_TYPE_ORDINAL + FEATURE_DATA_TYPE_TEXT \
+                 + FEATURE_DATA_TYPE_CONTINUOUS + FEATURE_DATA_TYPE_DATETIME \
+                 + FEATURE_DATA_TYPE_LABEL + FEATURE_DATA_TYPE_KEY
 
 ## file names
 TRAIN_DATA_FILE = 'train_data.txt'
@@ -95,7 +93,6 @@ META_KEY_SEQUENCE_FEATURE = 'SequenceFeature'
 META_KEY_SCORE = 'Score'
 META_KEY_TRAINING_MODE = 'TrainingMode'
 
-
 KEY_PROBABILITY = "probability"
 KEY_GROUNDTRUTH = "gt"
 KEY_VIS_RESULT = "vis_result"
@@ -125,7 +122,6 @@ KEY_NUMERIC_FEATURE_DISTRIBUTION = 'numeric_feature_distribution'
 KEY_TEXT_FEATURE_DISTRIBUTION = 'text_feature_distribution'
 KEY_LENGTH_FEATURE_DISTRIBUTION = 'length_feature_distribution'
 
-
 KEY_DATA_DISTRIBUTION = 'data_distribution'
 KEY_TOTAL_COUNT = 'total_count'
 
@@ -135,7 +131,7 @@ KEY_FEATURE_TEXT_TYPE = 'text'
 KEY_FEATURE_LABLE_TYPE = 'label'
 KEY_FEATURE_SEQUENCE_TYPE = 'sequence'
 
-DATA_ANALYSIS_TYPES = [KEY_FEATURE_CATEGORICAL_TYPE,KEY_FEATURE_NUMERIC_TYPE,KEY_FEATURE_TEXT_TYPE]
+DATA_ANALYSIS_TYPES = [KEY_FEATURE_CATEGORICAL_TYPE, KEY_FEATURE_NUMERIC_TYPE, KEY_FEATURE_TEXT_TYPE]
 
 KEY_MISSING_VALUE_COUNTER = 'missing_value'
 KEY_FIELD_COUNTER = 'field_count'
@@ -187,7 +183,8 @@ FEATURE_DATA_TYPE = {
 DEFAULT_VALUE = {
     KEY_FEATURE_CATEGORICAL_TYPE: ["", "-", "*"],
     KEY_FEATURE_NUMERIC_TYPE: [0, ""],
-    KEY_FEATURE_TEXT_TYPE:["","N.A.","null","NAN"]
+    KEY_FEATURE_TEXT_TYPE: ["", "N.A.", "null", "NAN"],
+    KEY_FEATURE_LABLE_TYPE: [""]
 }
 
 RELIABILITY_BINSIZE = 15
@@ -197,6 +194,6 @@ LAYER_NAME_LOGITS = 'logits'
 LAYER_NAME_RNN = 'rnn_outputs'
 LAYER_NAME_MERGED = 'merged_outputs'
 
-#LS_VIS_LAYERS = [LAYER_NAME_LOGITS, LAYER_NAME_RNN, LAYER_NAME_MERGED]
+# LS_VIS_LAYERS = [LAYER_NAME_LOGITS, LAYER_NAME_RNN, LAYER_NAME_MERGED]
 ## TODO: set to empty list before solving potential memory issue when storing data in numpy array
 LS_VIS_LAYERS = []

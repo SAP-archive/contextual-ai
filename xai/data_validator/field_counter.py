@@ -5,12 +5,15 @@ from xai import constants
 
 class FieldCounter(AbstractValidator):
 
-    def __init__(self):
+    def __init__(self,feature_list):
         '''
 
         :param schema_meta: dict: for each feature, list of values which are considered as missing
         '''
-        super(FieldCounter, self).__init__(schema_meta=None)
+        schema_meta = {}
+        for fea in feature_list:
+            schema_meta[fea] = None
+        super(FieldCounter, self).__init__(schema_meta=schema_meta)
 
     def update_info(self, feature_name, value):
         if feature_name in self.info_summary.keys():
@@ -21,6 +24,8 @@ class FieldCounter(AbstractValidator):
     def validate_sample(self, sample: dict):
         ## TODO: consider other expections in value type
         for feature_name, feature_value in sample.items():
+            if feature_name not in self.schema_meta.keys():
+                continue
             if type(feature_value) == str:
                 self.update_info(feature_name, 1)
             elif type(feature_value) == list:

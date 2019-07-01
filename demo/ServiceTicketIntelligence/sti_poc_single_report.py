@@ -81,7 +81,7 @@ def convert_csv_to_json(data_folder, csv_files, json_file):
                 print('Error: %s not exist.' % csv_path)
             else:
                 print('Converting file:', csv_path)
-                df = pd.read_csv(csv_path)
+                df = pd.read_csv(csv_path, index_col=False)
                 df.fillna('NAN', inplace=True)
                 json_str = df.to_json(orient='records')
                 json_obj = json.loads(json_str)
@@ -135,7 +135,7 @@ def convert_response_json_to_single_training_meta(response_json_file, meta_json_
         json.dump(meta_json, f)
 
 
-def generate_seperate_reports(data_path):
+def generate_single_report(data_path):
     temp_path = './__temp'
 
     output_path = './_xai_output'
@@ -183,6 +183,7 @@ def generate_seperate_reports(data_path):
             label_type = constants.KEY_FEATURE_CATEGORICAL_TYPE
 
     content_list = [constants.CONTENT_DATA, constants.CONTENT_TRAINING]
+
     usecase_name = 'Service Ticket Intelligence'
     usecase_version = '0.0.1'
 
@@ -243,4 +244,4 @@ To run this demo, you need following files:
         ''' % (DATA_FILENAME, METADATA_FILENAME, RESULT_FILENAME))
     data_path = './data'
     file_check(data_path=data_path)
-    generate_seperate_reports(data_path=data_path)
+    generate_single_report(data_path=data_path)
