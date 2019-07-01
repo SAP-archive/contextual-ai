@@ -73,6 +73,7 @@ class NumericAnalyzer(AbstractAnalyzer):
         numeric_dist['min'] = float(np.min(raw_data))
         numeric_dist['mean'] = float(np.mean(raw_data))
         numeric_dist['median'] = float(np.median(raw_data))
+        numeric_dist['x_limit'] = [np.percentile(raw_data, 5),np.percentile(raw_data, 95)]
         numeric_dist['perc_10'] = float(np.percentile(raw_data, 10))
         numeric_dist['perc_90'] = float(np.percentile(raw_data, 90))
 

@@ -60,7 +60,7 @@ class HeatMap(Graph):
             fig_size = (15, 15)
         super(HeatMap, self).__init__(data, title, figure_size=fig_size, x_label=x_label, y_label=y_label)
 
-    def draw_core(self, x_tick: List[str] = None, y_tick: List[str] = None):
+    def draw_core(self, x_tick: List[str] = None, y_tick: List[str] = None, color_bar=False, grey_scale=False):
         data = np.array(self.data)
         df_data = pd.DataFrame(data, x_tick, y_tick)
         sns.set(font_scale=1.5)  # label size
@@ -73,8 +73,10 @@ class HeatMap(Graph):
         else:
             annot = True
             annot_kws = {"size": 25}
-
-        self.label_ax = sns.heatmap(df_data, annot=annot, annot_kws=annot_kws, fmt='g', cbar=False)  # font size
+        if grey_scale:
+            self.label_ax = sns.heatmap(df_data, annot=annot, annot_kws=annot_kws, fmt='g', cbar=color_bar, cmap='Greys')  # font size
+        else:
+            self.label_ax = sns.heatmap(df_data, annot=annot, annot_kws=annot_kws, fmt='g', cbar=color_bar)  # font size
 
 
 class ResultProbability(Graph):
@@ -104,7 +106,7 @@ class KdeDistribution(Graph):
         super(KdeDistribution, self).__init__(data=data, title=title, figure_size=(10, 5), x_label=x_label,
                                               y_label=y_label)
 
-    def draw_core(self, color='b'):
+    def draw_core(self, color, force_no_log, x_limit):
         data = self.data
         xywh = data['histogram']
         line_data = np.array(data['kde'])
@@ -126,12 +128,16 @@ class KdeDistribution(Graph):
         x = [i[0] for i in xywh]
         w = [i[2] for i in xywh]
         h = [i[3] for i in xywh]
-
-        if len(sorted_perc) < 2 or sorted_perc[-1] - sorted_perc[-2] > 0.5:
-            plt.bar(x=x, height=h, width=w, align='edge', log=True, color=color)
-        else:
+        if force_no_log:
             plt.bar(x=x, height=h, width=w, align='edge', color=color)
-            plt.plot(line_data[:, 0], line_data[:, 1])
+        else:
+            if len(sorted_perc) < 2 or sorted_perc[-1] - sorted_perc[-2] > 0.5:
+                plt.bar(x=x, height=h, width=w, align='edge', log=True, color=color)
+            else:
+                plt.bar(x=x, height=h, width=w, align='edge', color=color)
+                plt.plot(line_data[:, 0], line_data[:, 1])
+        if x_limit:
+            plt.xlim(data['x_limit'])
 
 
 class EvaluationLinePlot(Graph):

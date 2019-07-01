@@ -210,6 +210,8 @@ def generate_seperate_reports(data_path):
 
         report_setup_meta['visualize_setup'] = dict()
         report_setup_meta['visualize_setup']['show_sample_classes'] = False
+        report_setup_meta['visualize_setup']['force_no_log'] = True
+        report_setup_meta['visualize_setup']['x_limit'] = True
 
         report_setup_meta['overall'] = dict()
         report_setup_meta['overall']['content_list'] = content_list

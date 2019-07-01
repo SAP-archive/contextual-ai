@@ -25,7 +25,7 @@ def visualize_feature_for_similar_classes(dataset, label_key, feature_name, base
                                                                                                              '-'))
 
     image_cm = gg.HeatMap(sub_confusion_matrix, 'cm_%s_%s_%s' % (label_key, base_class, similar_class), 'Predicted',
-                          'True').draw(x_tick=[base_class, similar_class], y_tick=[base_class, similar_class])
+                          'True').draw(x_tick=[base_class, similar_class], y_tick=[base_class, similar_class], color_bar=False, grey_scale=True)
 
     return {'image_set': [image_cm, image_path_a, image_path_b],
             'grid_spec': graph_constants.ABSOLUTE_3_COMPARISON_2_GRID_SPEC}

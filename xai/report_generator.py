@@ -192,11 +192,11 @@ class ReportGenerator(TrainingReportFPDF):
                 if metric_name != constants.KEY_VIS_RESULT and metric_name != constants.TRAIN_TEST_CM:
                     if type(metric_value) == dict:
                         if 'average' in metric_value.keys():
-                            value = "%s (average)" % metric_value['average']
+                            value = "%.4f (average)" % metric_value['average']
                         else:
-                            value = np.mean(np.array(metric_value['class']))
+                            value = "%.4f" % np.mean(np.array(metric_value['class']))
                     else:
-                        value = metric_value
+                        value = "%.4f" % metric_value
                     self.my_write_key_value("%s" % metric_name.capitalize(), value)
             self.end_itemize()
             self.ln(2)
@@ -318,9 +318,9 @@ class ReportGenerator(TrainingReportFPDF):
 
         self.get_training_summary(training_meta)
         self.ln(10)
-
+        print('visualization params:', self.report_params.vis_params)
         # prepare all the possible images
-        self.generate_data_distribution_images(data_meta)
+        self.generate_data_distribution_images(data_meta, params=self.report_params.vis_params)
 
         self.my_write_line("The training report includes following sections:", 'B')
 
@@ -441,7 +441,7 @@ class ReportGenerator(TrainingReportFPDF):
 
         self.draw_table(table_header, table_data, [60, 40, 40, 40])
 
-    def generate_data_distribution_images(self, data_meta):
+    def generate_data_distribution_images(self, data_meta, params):
         table_content = dict()
         image_content = dict()
         for sample_dataset_key in data_meta.keys():
@@ -479,8 +479,9 @@ class ReportGenerator(TrainingReportFPDF):
 
                 for field_name, field_distribution in data_meta[sample_dataset_key][sample_label_key][
                     constants.KEY_NUMERIC_FEATURE_DISTRIBUTION].items():
-                    all_distribution = data_meta[sample_dataset_key][sample_label_key][constants.KEY_NUMERIC_FEATURE_DISTRIBUTION][
-                        field_name]
+                    all_distribution = \
+                        data_meta[sample_dataset_key][sample_label_key][constants.KEY_NUMERIC_FEATURE_DISTRIBUTION][
+                            field_name]
                     colors = dict()
                     for label_name in all_distribution.keys():
                         if label_name not in colors:
@@ -489,27 +490,31 @@ class ReportGenerator(TrainingReportFPDF):
                         title = '%s_%s_%s_%s' % (sample_dataset_key, sample_label_key, field_name, label_name)
                         title = title.replace('/', '-')
                         image_path = gg.KdeDistribution(data=data_distribution,
-                                           title=title,
-                                           x_label="", y_label=field_name).draw(color=colors[label_name])
+                                                        title=title,
+                                                        x_label="", y_label=field_name).draw(color=colors[label_name],
+                                                                                             force_no_log=params[
+                                                                                                 'force_no_log'],
+                                                                                             x_limit=params['x_limit'])
                         table_header = ['Statistical Field', 'Value']
                         table_values = []
                         for key, value in data_distribution.items():
-                            if key in ['kde', 'histogram']:
+                            if key in ['kde', 'histogram', 'x_limit']:
                                 continue
-                            table_values.append([key, "%.3f" % value])
+                            table_values.append([key, "%d" % int(value)])
                         table_content[title] = (table_header, table_values)
                         image_content[title] = (image_path, '')
 
                 for field_name, field_distribution in data_meta[sample_dataset_key][sample_label_key][
                     constants.KEY_TEXT_FEATURE_DISTRIBUTION].items():
-                    all_distribution = data_meta[sample_dataset_key][sample_label_key][constants.KEY_TEXT_FEATURE_DISTRIBUTION][
-                        field_name]
+                    all_distribution = \
+                        data_meta[sample_dataset_key][sample_label_key][constants.KEY_TEXT_FEATURE_DISTRIBUTION][
+                            field_name]
                     for label_name in all_distribution.keys():
                         data_distribution = all_distribution[label_name]
                         title = '%s_%s_%s_%s' % (sample_dataset_key, sample_label_key, field_name, label_name)
                         title = title.replace('/', '-')
                         image_path = gg.WordCloudGraph(data=data_distribution['tfidf'],
-                                          title=title).draw()
+                                                       title=title).draw()
                         table_header = ['Placeholder', 'Doc Percentage ']
                         table_values = []
                         for w, v in data_distribution['placeholder'].items():
@@ -520,8 +525,8 @@ class ReportGenerator(TrainingReportFPDF):
                 for field_name, field_distribution in data_meta[sample_dataset_key][sample_label_key][
                     constants.KEY_LENGTH_FEATURE_DISTRIBUTION].items():
                     all_distribution = \
-                    data_meta[sample_dataset_key][sample_label_key][constants.KEY_LENGTH_FEATURE_DISTRIBUTION][
-                        field_name]
+                        data_meta[sample_dataset_key][sample_label_key][constants.KEY_LENGTH_FEATURE_DISTRIBUTION][
+                            field_name]
                     colors = dict()
                     for label_name in all_distribution.keys():
                         if label_name not in colors:
@@ -531,11 +536,14 @@ class ReportGenerator(TrainingReportFPDF):
                         title = title.replace('/', '-')
                         image_path = gg.KdeDistribution(data=data_distribution,
                                                         title=title,
-                                                        x_label="", y_label=field_name).draw(color=colors[label_name])
+                                                        x_label="", y_label=field_name).draw(color=colors[label_name],
+                                                                                             force_no_log=params[
+                                                                                                 'force_no_log'],
+                                                                                             x_limit=params['x_limit'])
                         table_header = ['Statistical Field', 'Value']
                         table_values = []
                         for key, value in data_distribution.items():
-                            if key in ['kde', 'histogram']:
+                            if key in ['kde', 'histogram', 'x_limit']:
                                 continue
                             table_values.append([key, "%d" % int(value)])
                         table_content[title] = (table_header, table_values)
@@ -543,9 +551,9 @@ class ReportGenerator(TrainingReportFPDF):
         self.image_content = image_content
         self.table_content = table_content
 
-    def visualize_data_distribution(self, data_meta, sample_dataset_key, show_sample_classes):
-        self.add_subsection("Feature distribution")
-        self.my_write_line("Below are some frequency plot for each features.")
+    def visualize_data_distribution(self, data_meta, sample_dataset_key, params):
+        self.add_subsection("Data Field Distribution")
+        self.my_write_line("Below are some frequency plot for each data field.")
 
         image_content = self.image_content
         table_content = self.table_content
@@ -553,6 +561,7 @@ class ReportGenerator(TrainingReportFPDF):
         sample_label_keys = list(data_meta[sample_dataset_key].keys())[:1]
 
         sample_classes = ['all']
+        show_sample_classes = params['show_sample_classes']
         if show_sample_classes:
             sample_classes.extend(
                 list(data_meta[sample_dataset_key][sample_label_keys[0]][constants.KEY_DATA_DISTRIBUTION].keys())[:2])
@@ -578,14 +587,14 @@ class ReportGenerator(TrainingReportFPDF):
                     field_image_set[field_name][dataset] = dict()
                     for idx, sample_class in enumerate(sample_classes):
                         title = '%s_%s_%s_%s' % (dataset, sample_label_key, field_name, sample_class)
-                        title = title.replace('/','-')
+                        title = title.replace('/', '-')
                         image_path = '%s/%s.png' % (constants.FIGURE_PATH, title)
                         if not os.path.exists(image_path):
                             print('Figure not exist. Ingored in visualization. [%s]' % image_path)
                             continue
                         else:
                             print('Figure exist. Add to field image set. [%s-%s-%s][%s]' % (
-                            field_name, dataset, idx, image_path))
+                                field_name, dataset, idx, image_path))
                         field_image_set[field_name][dataset][idx] = image_path
                         if sample_class == 'all':
                             comment = image_content[title][1]
@@ -593,7 +602,7 @@ class ReportGenerator(TrainingReportFPDF):
                 if len(field_image_set[field_name][sample_dataset_key]) > 0:
                     self.my_write_line("Data Field: %s" % field_name, 'B')
                     for dataset in dataset_names:
-                        if len(field_image_set[field_name][dataset])>1:
+                        if len(field_image_set[field_name][dataset]) > 1:
                             self.add_grid_images(field_image_set[field_name][dataset],
                                                  graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC,
                                                  caption="- %s %s" % (dataset, comment), style='I')
@@ -630,8 +639,8 @@ class ReportGenerator(TrainingReportFPDF):
                                                  graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC,
                                                  caption="- %s %s" % (dataset, ''), style='I')
                         else:
-                            table_header,table_values = field_table_set[field_name][dataset]
-                            self.add_image_table(field_image_set[field_name][dataset][0], table_header,table_values,
+                            table_header, table_values = field_table_set[field_name][dataset]
+                            self.add_image_table(field_image_set[field_name][dataset][0], table_header, table_values,
                                                  graph_constants.IMAGE_TABLE_GRID_SPEC,
                                                  caption="- %s %s" % (dataset, ''), style='I')
 
@@ -643,9 +652,9 @@ class ReportGenerator(TrainingReportFPDF):
                 for _, dataset, dataset_name in constants.DATASET_LABEL:
                     field_image_set[field_name][dataset] = dict()
                     for idx, sample_class in enumerate(sample_classes):
-                        print(idx,sample_class,sample_classes)
+                        print(idx, sample_class, sample_classes)
                         title = '%s_%s_%s_%s' % (dataset, sample_label_key, field_name, sample_class)
-                        title = title.replace('/','-')
+                        title = title.replace('/', '-')
                         image_path = '%s/%s.png' % (constants.FIGURE_PATH, title)
                         if not os.path.exists(image_path):
                             print('Figure not exist. Ingored in visualization. [%s]' % image_path)
@@ -667,7 +676,7 @@ class ReportGenerator(TrainingReportFPDF):
                                                  caption="- %s %s" % (dataset, ''), style='I')
                         else:
                             table_header, table_values = field_table_set[field_name][dataset]
-                            self.add_image_table(field_image_set[field_name][dataset][0], table_header,table_values,
+                            self.add_image_table(field_image_set[field_name][dataset][0], table_header, table_values,
                                                  graph_constants.IMAGE_TABLE_GRID_SPEC,
                                                  caption="- %s %s" % (dataset, ''), style='I')
 
@@ -701,7 +710,7 @@ class ReportGenerator(TrainingReportFPDF):
                                                  caption="- %s %s" % (dataset, ''), style='I')
                         else:
                             table_header, table_values = field_table_set[field_name][dataset]
-                            self.add_image_table(field_image_set[field_name][dataset][0], table_header,table_values,
+                            self.add_image_table(field_image_set[field_name][dataset][0], table_header, table_values,
                                                  graph_constants.IMAGE_TABLE_GRID_SPEC,
                                                  caption="- %s %s" % (dataset, ''), style='I')
 
@@ -772,7 +781,7 @@ class ReportGenerator(TrainingReportFPDF):
             cm_obj = confusion_matrices[split]
             title = '%s_%s_cm' % (split, label_key)
             image_path = gg.HeatMap(data=cm_obj.get_values(), title=title, x_label='Predict',
-                                    y_label='True').draw(x_tick=cm_obj.get_labels(), y_tick=cm_obj.get_labels())
+                                    y_label='True').draw(x_tick=cm_obj.get_labels(), y_tick=cm_obj.get_labels(),color_bar=True)
             cm_image_paths.append(image_path)
             if similar_class_dict is not None:
                 similar_class_dict[split] = cm_obj.get_top_k_similar_classes(k=1)
@@ -854,7 +863,7 @@ class ReportGenerator(TrainingReportFPDF):
 
         self.add_page()
         self.visualize_data_distribution(data_meta, self.report_params.feature_sample_key,
-                                         show_sample_classes=self.report_params.show_sample_classes)
+                                         params=self.report_params.vis_params)
 
         self.ln(5)
         self.get_missing_value_checking(data_meta)

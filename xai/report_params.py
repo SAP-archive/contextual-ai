@@ -21,11 +21,21 @@ class Params:
 
         label_keys = report_setup_meta['data_analysis']['label_keys']
         label_type = report_setup_meta['data_analysis']['label_type']
-
-        if 'show_sample_classes' in  report_setup_meta['visualize_setup']:
-            self.show_sample_classes = report_setup_meta['visualize_setup']['show_sample_classes']
+        self.vis_params = dict()
+        if 'show_sample_classes' in report_setup_meta['visualize_setup']:
+            self.vis_params['show_sample_classes'] = report_setup_meta['visualize_setup']['show_sample_classes']
         else:
-            self.show_sample_classes = True
+            self.vis_params['show_sample_classes'] = True
+
+        if 'force_no_log' in report_setup_meta['visualize_setup']:
+            self.vis_params['force_no_log'] = report_setup_meta['visualize_setup']['force_no_log']
+        else:
+            self.vis_params['force_no_log'] = False
+
+        if 'x_limit' in report_setup_meta['visualize_setup']:
+            self.vis_params['x_limit'] = report_setup_meta['visualize_setup']['x_limit']
+        else:
+            self.vis_params['x_limit'] = False
 
 
         att_fea, seq_fea, all_fea = self.load_feature_list()
@@ -75,8 +85,6 @@ class Params:
                 att_fea['text'].append(k)
             if feature_type in constants.VALID_DATATYPE:
                 all_valid_field.append(k)
-
-
 
         seq_fea = defaultdict(list)
         for k, v in meta[constants.METADATA_KEY_DATA_SEC][constants.META_KEY_SEQUENCE_FEATURE].items():
