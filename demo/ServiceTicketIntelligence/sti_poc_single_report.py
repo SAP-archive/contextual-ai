@@ -1,12 +1,12 @@
 from xai import constants
 import os
 import shutil
-from copy import deepcopy
 from collections import defaultdict
 import pandas as pd
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix, f1_score
 from xai.util import JsonSerializable
 import json
+import numpy as np
 
 RESPONSE_KEY_RESULT = 'validation_results'
 RESPONSE_KEY_FIELD = 'field'
@@ -23,9 +23,10 @@ RESPONSE_PREFIX_AVE = 'average_'
 DATA_FILENAME = 'sti_data.csv'
 METADATA_FILENAME = 'sti_data_meta.json'
 RESULT_FILENAME = 'result_response.json'
+VIS_RESULT_FILENAME = 'vis_result.json'
 
 
-def get_evaluation_json(field, y_true, y_pred):
+def get_evaluation_json(field, y_true, y_pred, y_conf):
     labels = list(set(y_true.tolist()))
 
     acc = accuracy_score(y_true=y_true, y_pred=y_pred)
@@ -53,24 +54,58 @@ def get_evaluation_json(field, y_true, y_pred):
     evaluation_result[RESPONSE_KEY_CM][RESPONSE_KEY_CM_LABEL] = labels
     evaluation_result[RESPONSE_KEY_CM][RESPONSE_KEY_CM_VALUE] = cm
     evaluation_result[RESPONSE_KEY_FIELD] = field
-    return evaluation_result
+    evaluation_result[constants.KEY_VIS_RESULT] = get_swarm_vis_result(y_true, y_pred, y_conf)
+
+    vis_result = {field: get_swarm_vis_result(y_true, y_pred, y_conf)}
+
+    return evaluation_result, vis_result
 
 
-def get_response_json(params: dict, eva_list: list, data_path: str):
-    result = dict()
+def get_swarm_vis_result(y_true, y_pred, y_conf):
+    vis_result = dict()
+    labels = list(set(y_true.tolist()))
+    for label in labels:
+        bool = y_pred == label
+        cat_gt = y_true[bool]
+        cat_conf = y_conf[bool]
+        vis_result[label] = {constants.KEY_GROUNDTRUTH: cat_gt, constants.KEY_PROBABILITY: cat_conf}
+    return vis_result
 
-    for k, v in params.items():
-        result[k] = v
-    result[RESPONSE_KEY_RESULT] = list()
-    for eva in eva_list:
-        eva_dict = get_evaluation_json(**eva)
-        result[RESPONSE_KEY_RESULT].append(eva_dict)
 
+def convert_result_csv_to_vis_result_dict(csv_file, labels, data_path):
+    params = {}
+    df = pd.read_csv(os.path.join(data_path,csv_file), index_col=False)
+    eva_list = []
+    for label in labels:
+        eva_item = {}
+        eva_item['y_true'] = np.array(df[label])
+        eva_item['y_pred'] = np.array(df['%s_pred' % label])
+        eva_item['y_conf'] = np.array(df['%s_conf' % label])
+        eva_item['field'] = label
+        eva_list.append(eva_item)
+    eva_result, vis_result = generate_result_json_response(params=params, eva_list=eva_list)
     with open(os.path.join(data_path, RESULT_FILENAME), 'w') as f:
-        json.dump(result, f, cls=JsonSerializable)
+        json.dump(eva_result, f, cls=JsonSerializable)
+    with open(os.path.join(data_path, VIS_RESULT_FILENAME), 'w') as f:
+        json.dump(eva_result, f, cls=JsonSerializable)
+
+    return eva_result, vis_result
 
 
-def convert_csv_to_json(data_folder, csv_files, json_file):
+def generate_result_json_response(params: dict, eva_list: list):
+    eva_result = dict()
+    for k, v in params.items():
+        eva_result[k] = v
+    eva_result[RESPONSE_KEY_RESULT] = list()
+    all_vis_result = dict()
+    for eva in eva_list:
+        eva_dict, vis_result = get_evaluation_json(**eva)
+        eva_result[RESPONSE_KEY_RESULT].append(eva_dict)
+        all_vis_result.update(vis_result)
+    return eva_result, all_vis_result
+
+
+def convert_data_csv_to_json(data_folder, csv_files, json_file):
     if os.path.exists(json_file):
         print('%s datajson exist.' % json_file)
         return
@@ -117,6 +152,8 @@ def convert_response_json_to_single_training_meta(response_json_file, meta_json_
         for metric, metric_value in result.items():
             if metric == RESPONSE_KEY_CM:
                 individual_training_result[constants.TRAIN_TEST_CM] = metric_value
+            elif metric == constants.KEY_VIS_RESULT:
+                individual_training_result[constants.KEY_VIS_RESULT] = metric_value
             elif RESPONSE_PREFIX_AVE in metric:
                 _true_metric = metric.replace(RESPONSE_PREFIX_AVE, "")
                 individual_training_result[_true_metric]["average"] = metric_value
@@ -135,11 +172,37 @@ def convert_response_json_to_single_training_meta(response_json_file, meta_json_
         json.dump(meta_json, f)
 
 
-def generate_single_report(data_path):
+def convert_result_csv_to_evaluation_result_json(csv_file, meta_json):
+    df = pd.read_csv(csv_file, index_col=False)
+    with open(meta_json, 'r') as f:
+        meta = json.load(f)
+    labels = []
+    for fea, fea_values in meta[constants.META_KEY_ATTRIBUTE_FEATURE].items():
+        if fea_values[constants.META_KEY_FIELD_TYPE] in constants.FEATURE_DATA_TYPE_LABEL:
+            labels.append(fea)
+    vis_result_dict = {}
+    for label in labels:
+        y_true = df[label]
+        y_pred = df['%s_pred' % label]
+        y_conf = df['%s_conf' % label]
+        vis_result_dict[label] = get_swarm_vis_result(y_true, y_pred, y_conf)
+    return vis_result_dict
+
+
+def generate_single_report(data_path,labels):
     temp_path = './__temp'
 
     output_path = './_xai_output'
     csv_files = ['sti_data.csv']
+    test_csv = 'out_df.csv'
+
+    eva_result, vis_result = convert_result_csv_to_vis_result_dict(test_csv, labels, data_path)
+
+    file_check(data_path=data_path)
+
+    for eva in eva_result['validation_results']:
+        field = eva[RESPONSE_KEY_FIELD]
+        eva['vis_result'] = vis_result[field]
 
     if os.path.exists(temp_path):
         shutil.rmtree(temp_path)
@@ -150,7 +213,7 @@ def generate_single_report(data_path):
     shutil.copytree(data_path, temp_path)
 
     data_json_file = os.path.join(temp_path, constants.ALL_DATA_FILE)
-    convert_csv_to_json(temp_path, csv_files, data_json_file)
+    convert_data_csv_to_json(temp_path, csv_files, data_json_file)
 
     response_json_file = os.path.join(temp_path, RESULT_FILENAME)
     meta_json_file = os.path.join(temp_path, METADATA_FILENAME)
@@ -182,7 +245,7 @@ def generate_single_report(data_path):
             label_keys.append(k)
             label_type = constants.KEY_FEATURE_CATEGORICAL_TYPE
 
-    content_list = [constants.CONTENT_DATA, constants.CONTENT_TRAINING]
+    content_list = [constants.CONTENT_DATA, constants.CONTENT_DEEPLEARNING, constants.CONTENT_TRAINING]
 
     usecase_name = 'Service Ticket Intelligence'
     usecase_version = '0.0.1'
@@ -191,8 +254,9 @@ def generate_single_report(data_path):
     training_meta = dict()
     training_meta.update({constants.KEY_EVALUATION_RESULT: eval_result})
     # training_meta.update(training_log)
-    # training_meta[Const.KEY_PARAMETERS] = train_parameters
-    # training_meta[Const.KEY_TIMING] = timing
+    # training_meta[constants.KEY_PARAMETERS] = train_parameters
+    # training_meta[constants.KEY_TIMING] = timing
+    training_meta[constants.KEY_ILLUSTRATION] = os.path.join(data_path,'model_diagram.png')
 
     report_setup_meta = dict()
 
@@ -207,7 +271,6 @@ def generate_single_report(data_path):
     report_setup_meta['visualize_setup']['show_sample_classes'] = False
     report_setup_meta['visualize_setup']['force_no_log'] = True
     report_setup_meta['visualize_setup']['x_limit'] = True
-
 
     report_setup_meta['overall'] = dict()
     report_setup_meta['overall']['content_list'] = content_list
@@ -246,5 +309,5 @@ To run this demo, you need following files:
     - result response: %s
         ''' % (DATA_FILENAME, METADATA_FILENAME, RESULT_FILENAME))
     data_path = './data'
-    file_check(data_path=data_path)
-    generate_single_report(data_path=data_path)
+    labels = ['category','categoryII']
+    generate_single_report(data_path=data_path, labels=labels)

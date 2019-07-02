@@ -3,7 +3,7 @@ from xai.data_explorer.data_analysis import prepare_data_metafile
 from xai.evaluation.binary_classification_result import BinaryClassificationResult
 from xai.evaluation.multi_classification_result import MultiClassificationResult
 from xai.report_params import Params
-from xai.graphs.generate_combo_figures import visualize_feature_for_similar_classes
+import xai.graphs.generate_combo_figures as figure_tool
 from xai.util import JsonSerializable
 import xai.recommendations.recommendation as rec
 import xai.graphs.graph_generator as gg
@@ -55,8 +55,8 @@ class ReportGenerator(TrainingReportFPDF):
     def output_report(self, output_path):
         self.output('%s/%s' % (output_path, constants.PDF_NAME))
         print('Training report generated.')
-        if os.path.exists(constants.FIGURE_PATH):
-            shutil.rmtree(constants.FIGURE_PATH)
+        # if os.path.exists(constants.FIGURE_PATH):
+        #     shutil.rmtree(constants.FIGURE_PATH)
 
     def setup_report_info(self):
         self.set_report_info(usecase_name=self.report_params.usecase_name, version=self.report_params.usecase_version)
@@ -581,7 +581,6 @@ class ReportGenerator(TrainingReportFPDF):
 
             for field_name, field_distribution in data_meta[sample_dataset_key][sample_label_key][
                 constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION].items():
-                print(field_name)
                 field_image_set = defaultdict(dict)
                 for _, dataset, dataset_name in constants.DATASET_LABEL:
                     field_image_set[field_name][dataset] = dict()
@@ -652,7 +651,6 @@ class ReportGenerator(TrainingReportFPDF):
                 for _, dataset, dataset_name in constants.DATASET_LABEL:
                     field_image_set[field_name][dataset] = dict()
                     for idx, sample_class in enumerate(sample_classes):
-                        print(idx, sample_class, sample_classes)
                         title = '%s_%s_%s_%s' % (dataset, sample_label_key, field_name, sample_class)
                         title = title.replace('/', '-')
                         image_path = '%s/%s.png' % (constants.FIGURE_PATH, title)
@@ -663,7 +661,6 @@ class ReportGenerator(TrainingReportFPDF):
                             print('Figure exist. Add to field image set. [%s-%s-%s][%s]' % (
                                 field_name, dataset, idx, image_path))
                         field_image_set[field_name][dataset][idx] = image_path
-                        print(sample_class)
                         if sample_class == 'all':
                             field_table_set[field_name][dataset] = table_content[title]
 
@@ -682,7 +679,6 @@ class ReportGenerator(TrainingReportFPDF):
 
             for field_name, field_distribution in data_meta[sample_dataset_key][sample_label_key][
                 constants.KEY_LENGTH_FEATURE_DISTRIBUTION].items():
-                print(field_name)
                 field_image_set = defaultdict(dict)
                 field_table_set = defaultdict(dict)
                 for _, dataset, dataset_name in constants.DATASET_LABEL:
@@ -758,7 +754,9 @@ class ReportGenerator(TrainingReportFPDF):
         self.my_write_line("Result for label <B>'%s'</B> " % label_key)
         cm_image_paths = []
         sw_image_paths = []
+        sw_image_spec = None
         rd_image_paths = []
+        rd_image_spec = None
         similar_class_dict = None
         similar_class_img_spec = None
 
@@ -781,7 +779,8 @@ class ReportGenerator(TrainingReportFPDF):
             cm_obj = confusion_matrices[split]
             title = '%s_%s_cm' % (split, label_key)
             image_path = gg.HeatMap(data=cm_obj.get_values(), title=title, x_label='Predict',
-                                    y_label='True').draw(x_tick=cm_obj.get_labels(), y_tick=cm_obj.get_labels(),color_bar=True)
+                                    y_label='True').draw(x_tick=cm_obj.get_labels(), y_tick=cm_obj.get_labels(),
+                                                         color_bar=True)
             cm_image_paths.append(image_path)
             if similar_class_dict is not None:
                 similar_class_dict[split] = cm_obj.get_top_k_similar_classes(k=1)
@@ -790,14 +789,22 @@ class ReportGenerator(TrainingReportFPDF):
             for metric_name in evaluation_result[dataset].keys():
                 if metric_name == constants.KEY_VIS_RESULT:
                     title = '%s_swarm' % dataset
-                    image_path = gg.ResultProbability(data=evaluation_result[dataset][metric_name], title=title).draw(
-                        limit_size=constants.DEFAULT_LIMIT_SIZE)
-                    sw_image_paths.append(image_path)
+                    vis_data = evaluation_result[dataset][metric_name]
+                    if constants.KEY_GROUNDTRUTH in vis_data:
+                        # binary class
+                        image_path = gg.ResultProbability(data=vis_data, title=title).draw(
+                            limit_size=constants.DEFAULT_LIMIT_SIZE)
+                        sw_image_paths.append(image_path)
 
-                    title = '%s_reliability' % dataset
-                    image_path = gg.ReliabilityDiagram(data=evaluation_result[dataset][metric_name], title=title).draw()
-                    rd_image_paths.append(image_path)
-
+                        title = '%s_reliability' % dataset
+                        image_path = gg.ReliabilityDiagram(data=vis_data, title=title).draw()
+                        rd_image_paths.append(image_path)
+                    else:
+                        # multiple class, only plot top K class
+                        sw_image_spec = figure_tool.get_class_confidence_distribution_image_list(label_key, vis_data,
+                                                                                             TOP_K_CLASS=9)
+                        # rd_image_spec = figure_tool.get_class_reliability_diagram_image_list(label_key, vis_data,
+                        #                                                                      TOP_K_CLASS=9)
         if similar_class_dict is not None:
             key_feature = self.report_params.key_feature
             similar_class_img_spec = []
@@ -806,26 +813,35 @@ class ReportGenerator(TrainingReportFPDF):
                     for similar_class, sub_cm in similar_classes:
                         if base_class == similar_class:
                             continue
-                        img_spec = visualize_feature_for_similar_classes(split, label_key, key_feature, base_class,
-                                                                         similar_class,
-                                                                         sub_cm)
+                        img_spec = figure_tool.get_feature_image_for_similar_classes(split, label_key, key_feature,
+                                                                                     base_class,
+                                                                                     similar_class,
+                                                                                     sub_cm)
                         similar_class_img_spec.append(
                             ('%s: %s for class %s and %s' % (split, key_feature, base_class, similar_class), img_spec))
         if len(cm_image_paths) > 0:
             if len(cm_image_paths) == 3:
-                self.add_grid_images(cm_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
-                                     caption="Confusion Matrix", style="B")
+                self.add_list_grid_images(cm_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
+                                          caption="Confusion Matrix", style="B")
             if len(cm_image_paths) == 1:
                 self.add_grid_images(cm_image_paths, {0: (0, 0, 150, 150)},
                                      caption="Confusion Matrix", style="B")
 
         if len(sw_image_paths) > 0:
-            self.add_grid_images(sw_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
-                                 caption="Probability Distribution", style="B")
+            self.add_list_grid_images(sw_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
+                                      caption="Probability Distribution", style="B")
+
+        if sw_image_spec is not None:
+            self.add_list_grid_images(**sw_image_spec,
+                                      caption="Probability Distribution", style="B")
 
         if len(rd_image_paths) > 0:
-            self.add_grid_images(rd_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
-                                 caption="Reliability Diagram", style="B")
+            self.add_list_grid_images(rd_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
+                                      caption="Reliability Diagram", style="B")
+
+        if rd_image_spec is not None:
+            self.add_list_grid_images(**rd_image_spec,
+                                      caption="Reliability Diagram", style="B")
 
         if similar_class_img_spec is not None and len(similar_class_img_spec) > 0:
             self.add_page()
@@ -995,43 +1011,48 @@ class ReportGenerator(TrainingReportFPDF):
 
         training_meta = self.report_data[constants.KEY_TRAINING_META]
 
-        training_log = training_meta[constants.KEY_TRAINING_LOG]
+        if constants.KEY_ILLUSTRATION in training_meta:
+            self.add_subsection("Training Pipeline Illustration")
+            self.add_image(os.path.join(training_meta[constants.KEY_ILLUSTRATION]),graph_constants.LARGE_FIGURE_WIDTH)
 
-        if constants.KEY_HISTORY in training_log:
-            history = training_log[constants.KEY_HISTORY]
-            best_epoch = training_log[constants.KEY_BEST_INDEX]
+        if constants.KEY_TRAINING_LOG in training_meta:
+            training_log = training_meta[constants.KEY_TRAINING_LOG]
 
-            image_path = gg.EvaluationLinePlot(data=history, title='training_history', x_label='Steps',
-                                               y_label='Metrics Score').draw(benchmark_metric=benchmark_metric,
-                                                                             benchmark_value=benchmark_value)
+            if constants.KEY_HISTORY in training_log:
+                history = training_log[constants.KEY_HISTORY]
+                best_epoch = training_log[constants.KEY_BEST_INDEX]
 
-            self.add_subsection("Training Epochs")
-            self.my_write_line("The metric results from several training epochs are shown in the figure.")
+                image_path = gg.EvaluationLinePlot(data=history, title='training_history', x_label='Steps',
+                                                   y_label='Metrics Score').draw(benchmark_metric=benchmark_metric,
+                                                                                 benchmark_value=benchmark_value)
 
-            self.start_itemize()
-            self.my_write_key_value("Benchmark metric", benchmark_metric)
-            self.my_write_key_value("Benchmark value", benchmark_value)
-            self.end_itemize()
+                self.add_subsection("Training Epochs")
+                self.my_write_line("The metric results from several training epochs are shown in the figure.")
 
-            self.ln()
-            self.add_large_image(image_path)
+                self.start_itemize()
+                self.my_write_key_value("Benchmark metric", benchmark_metric)
+                self.my_write_key_value("Benchmark value", benchmark_value)
+                self.end_itemize()
 
-            self.ln()
-            self.add_subsection("Best Epoch from Training")
-            self.my_write_key_value("The best iteration is ", "# %s" % best_epoch)
-            self.my_write_line()
+                self.ln()
+                self.add_large_image(image_path)
 
-            self.my_write_line("Validation Results:", "B")
-            self.start_itemize()
-            if best_epoch not in history:
-                best_epoch = str(best_epoch)
-            for param_name, param_value in history[best_epoch][constants.KEY_HISTORY_EVALUATION].items():
-                if param_name == benchmark_metric:
-                    self.my_write_key_value(param_name.capitalize(), "%s (benchmarking metric)" % param_value)
-                else:
-                    self.my_write_key_value(param_name.capitalize(), param_value)
-            self.end_itemize()
-            self.ln(5)
+                self.ln()
+                self.add_subsection("Best Epoch from Training")
+                self.my_write_key_value("The best iteration is ", "# %s" % best_epoch)
+                self.my_write_line()
+
+                self.my_write_line("Validation Results:", "B")
+                self.start_itemize()
+                if best_epoch not in history:
+                    best_epoch = str(best_epoch)
+                for param_name, param_value in history[best_epoch][constants.KEY_HISTORY_EVALUATION].items():
+                    if param_name == benchmark_metric:
+                        self.my_write_key_value(param_name.capitalize(), "%s (benchmarking metric)" % param_value)
+                    else:
+                        self.my_write_key_value(param_name.capitalize(), param_value)
+                self.end_itemize()
+                self.ln(5)
 
         if constants.KEY_PARAMETERS in training_meta:
             parameters = training_meta[constants.KEY_PARAMETERS]

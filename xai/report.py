@@ -277,7 +277,7 @@ class TrainingReportFPDF(FPDF):
         self.write_html("<B>%s</B>" % str(value))
         self.write_html('<BR>')
 
-    def add_image(self, image_path, width, height):
+    def add_image(self, image_path, width=0, height=0):
         # assert remaining space
         if self.y + height > self.h - self.foot_size:
             print('Warning: figure will exceed the page bottom, adding a new page.')
@@ -357,6 +357,21 @@ class TrainingReportFPDF(FPDF):
         self.y = Y
         self.ln(maximum_y)
         return True
+
+    def add_list_grid_images(self, image_set, grid_spec, ratio=False, grid_width=None, grid_height=None, caption=None,
+                             style=None):
+        grid_size = len(grid_spec)
+        title_drawed = False
+        for idx in range(0, len(image_set), grid_size):
+            if not title_drawed:
+                self.add_grid_images(image_set[idx:idx + grid_size], grid_spec, ratio=ratio, grid_width=grid_width,
+                                     grid_height=grid_height, caption=caption,
+                                     style=style)
+            else:
+                self.add_grid_images(image_set[idx:idx + grid_size], grid_spec, ratio=ratio, grid_width=grid_width,
+                                     grid_height=grid_height, caption=None,
+                                     style=None)
+            title_drawed = True
 
     def add_grid_images(self, image_set, grid_spec, ratio=False, grid_width=None, grid_height=None, caption=None,
                         style=None):

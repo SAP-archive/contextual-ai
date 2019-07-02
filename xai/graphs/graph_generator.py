@@ -6,6 +6,8 @@ import xai.constants as Const
 from wordcloud import WordCloud
 from xai.graphs.basic_graph import Graph
 from typing import List
+from collections import Counter
+import operator
 
 
 class ReliabilityDiagram(Graph):
@@ -50,6 +52,46 @@ class ReliabilityDiagram(Graph):
         plt.legend((x, y), ('accuracy', 'gap'))
 
 
+class ReliabilityDiagramForMultiClass(Graph):
+    def __init__(self, data, title):
+        super(ReliabilityDiagramForMultiClass, self).__init__(data, title, figure_size=(5, 5),
+                                                              x_label="Accuracy",
+                                                              y_label="Confidence")
+
+    def draw_core(self, current_class_label):
+        conf = np.array(self.data[Const.KEY_PROBABILITY])
+        gt = np.array(self.data[Const.KEY_GROUNDTRUTH])
+
+        m = Const.RELIABILITY_BINSIZE
+        # process input
+        accuracy = np.zeros(conf.shape)
+        accuracy[np.where(gt == current_class_label)] = 1
+
+        # generate confidence/accuracy
+        reliability = []
+        for i in range(m):
+            lower = 1 / m * i
+            upper = 1 / m * (1 + i)
+            condition = (conf >= lower) & (conf < upper)
+            sample_num = accuracy[condition].shape[0]
+            ave_acc = np.sum(accuracy[condition]) / sample_num
+            ave_conf = np.mean(conf[condition])
+            reliability.append((lower, upper, ave_conf, ave_acc, sample_num))
+
+        for item in reliability:
+            lower, upper, conf, acc, sample_num = item
+            x = plt.bar(lower, height=acc, width=upper - lower, bottom=0, align='edge', color='b')
+            ece = conf - acc
+            if ece > 0:
+                y = plt.bar(lower, height=conf - acc, width=upper - lower, bottom=acc, align='edge', color='r',
+                            alpha=0.5)
+            else:
+                y = plt.bar(lower, height=acc - conf, width=upper - lower, bottom=conf, align='edge', color='r',
+                            alpha=0.5)
+        plt.legend((x, y), ('accuracy', 'gap'))
+        plt.title('Reliability for Class %s' % current_class_label)
+
+
 class HeatMap(Graph):
     def __init__(self, data, title, x_label=None, y_label=None):
         if len(data) < 3:
@@ -74,7 +116,8 @@ class HeatMap(Graph):
             annot = True
             annot_kws = {"size": 25}
         if grey_scale:
-            self.label_ax = sns.heatmap(df_data, annot=annot, annot_kws=annot_kws, fmt='g', cbar=color_bar, cmap='Greys')  # font size
+            self.label_ax = sns.heatmap(df_data, annot=annot, annot_kws=annot_kws, fmt='g', cbar=color_bar,
+                                        cmap='Greys')  # font size
         else:
             self.label_ax = sns.heatmap(df_data, annot=annot, annot_kws=annot_kws, fmt='g', cbar=color_bar)  # font size
 
@@ -99,6 +142,31 @@ class ResultProbability(Graph):
         data_frame = {'predict_prob': prob, 'gt': gt}
         df = pd.DataFrame(data_frame)
         self.label_ax = sns.swarmplot(x="gt", y="predict_prob", data=df)
+
+
+class ResultProbabilityForMultiClass(Graph):
+    def __init__(self, data, title):
+        super(ResultProbabilityForMultiClass, self).__init__(data=data, title=title, figure_size=(12, 6),
+                                                             x_label='Class',
+                                                             y_label='Probability')
+
+    def draw_core(self, limit_size=Const.DEFAULT_LIMIT_SIZE, TOP_K_CLASS=10):
+        conf = np.array(self.data[Const.KEY_PROBABILITY])
+        gt = np.array(self.data[Const.KEY_GROUNDTRUTH])
+        num_sample = len(conf)
+        if num_sample > limit_size:
+            idx = np.random.rand(num_sample) < limit_size / num_sample
+            conf = conf[idx]
+            gt = gt[idx]
+        else:
+            conf = conf
+        dict_counter = dict(Counter(gt))
+        sorted_dict_counter = sorted(dict_counter.items(), key=operator.itemgetter(1))[::-1]
+        label_top_k = [a for (a, b) in sorted_dict_counter[:TOP_K_CLASS]]
+        data_frame = {'predict_prob': conf, 'gt': gt}
+        df = pd.DataFrame(data_frame)
+        self.label_ax = sns.swarmplot(x="gt", y="predict_prob", data=df, order=label_top_k)
+        plt.title(self.title)
 
 
 class KdeDistribution(Graph):

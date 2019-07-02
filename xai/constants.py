@@ -110,6 +110,7 @@ KEY_TRAINING_MODE = 'training_mode'
 KEY_VIS_LAYERS = 'vis_layers'
 
 KEY_TIMING = 'timing'
+KEY_ILLUSTRATION = 'illustration'
 KEY_TIMING_FEATURE = 'feature extraction'
 KEY_TIMING_DATAPROCESSING = 'data processing'
 KEY_TIMING_TRAINING = 'training'
@@ -188,7 +189,7 @@ DEFAULT_VALUE = {
 }
 
 RELIABILITY_BINSIZE = 15
-DEFAULT_LIMIT_SIZE = 200
+DEFAULT_LIMIT_SIZE = 1000
 
 LAYER_NAME_LOGITS = 'logits'
 LAYER_NAME_RNN = 'rnn_outputs'
