@@ -3,7 +3,7 @@ from xai.data_explorer.data_analysis import prepare_data_metafile
 from xai.evaluation.binary_classification_result import BinaryClassificationResult
 from xai.evaluation.multi_classification_result import MultiClassificationResult
 from xai.report_params import Params
-from xai.graphs.generate_combo_figures import visualize_feature_for_similar_classes
+import xai.graphs.generate_combo_figures as figure_tool
 from xai.util import JsonSerializable
 import xai.recommendations.recommendation as rec
 import xai.graphs.graph_generator as gg
@@ -11,6 +11,7 @@ import xai.graphs.format_contants as graph_constants
 from xai import constants
 from xai import util
 import numpy as np
+from collections import defaultdict
 
 import json
 import os
@@ -31,6 +32,7 @@ class ReportGenerator(TrainingReportFPDF):
             os.mkdir(constants.FIGURE_PATH)
 
     def generate_report(self, output_path):
+
         chapter_links = self.generate_cover_page(self.report_params.content_list, self.report_data)
         for (content_page, chapter_link) in zip(self.report_params.content_list, chapter_links):
             self.add_chapter(content_page, link=chapter_link)
@@ -53,8 +55,8 @@ class ReportGenerator(TrainingReportFPDF):
     def output_report(self, output_path):
         self.output('%s/%s' % (output_path, constants.PDF_NAME))
         print('Training report generated.')
-        if os.path.exists(constants.FIGURE_PATH):
-            shutil.rmtree(constants.FIGURE_PATH)
+        # if os.path.exists(constants.FIGURE_PATH):
+        #     shutil.rmtree(constants.FIGURE_PATH)
 
     def setup_report_info(self):
         self.set_report_info(usecase_name=self.report_params.usecase_name, version=self.report_params.usecase_version)
@@ -77,32 +79,78 @@ class ReportGenerator(TrainingReportFPDF):
 
         self.end_itemize()
 
-    def get_data_summary(self, data_meta):
-        self.my_write_line("Data Summary", 'B')
-        self.start_itemize()
+    def get_data_count_summary(self, data_meta, label_key, sample_count):
+
+        all_num = None, ''
+        train_num = None, ''
+        valid_num = None, ''
+        test_num = None, ''
+        extend_train_num = None, ''
+        extend_valid_num = None, ''
+        extend_test_num = None, ''
+
+        # confirm the test data amount
+        if constants.KEY_DATA_EXTEND_TEST in data_meta.keys():
+            extend_test_num = data_meta[constants.KEY_DATA_EXTEND_TEST][label_key][
+                                  constants.KEY_TOTAL_COUNT], '(after processing)'
+        elif constants.KEY_DATA_TEST in sample_count:
+            extend_test_num = sample_count[constants.KEY_DATA_TEST], '(after processing)'
+
+        # confirm the all data amount
         if constants.KEY_DATA_ALL in data_meta.keys():
-            self.my_write_key_value("Number of all samples",
-                                    data_meta[constants.KEY_DATA_ALL][constants.KEY_TOTAL_COUNT])
+            all_num = data_meta[constants.KEY_DATA_ALL][label_key][constants.KEY_TOTAL_COUNT], ''
 
         if constants.KEY_DATA_EXTEND_TRAIN in data_meta.keys():
-            self.my_write_key_value("Number of training samples (after extension)",
-                                    data_meta[constants.KEY_DATA_EXTEND_TRAIN][constants.KEY_TOTAL_COUNT])
-        elif constants.KEY_DATA_TRAIN in data_meta.keys():
-            self.my_write_key_value("Number of training samples",
-                                    data_meta[constants.KEY_DATA_TRAIN][constants.KEY_TOTAL_COUNT])
+            extend_train_num = data_meta[constants.KEY_DATA_EXTEND_TRAIN][label_key][
+                                   constants.KEY_TOTAL_COUNT], '(after processing)'
+        elif constants.KEY_DATA_TRAIN in sample_count:
+            extend_train_num = sample_count[constants.KEY_DATA_TRAIN], '(after processing)'
+        elif all_num[0] is not None:
+            extend_train_num = (all_num[0] - extend_test_num[0]), '(after processing)'
 
         if constants.KEY_DATA_EXTEND_VALID in data_meta.keys():
-            self.my_write_key_value("Number of validation samples (after extension)",
-                                    data_meta[constants.KEY_DATA_EXTEND_VALID][constants.KEY_TOTAL_COUNT])
-        elif constants.KEY_DATA_TRAIN in data_meta.keys():
-            self.my_write_key_value("Number of validation samples",
-                                    data_meta[constants.KEY_DATA_VALID][constants.KEY_TOTAL_COUNT])
-        if constants.KEY_DATA_EXTEND_TRAIN in data_meta.keys():
-            self.my_write_key_value("Number of testing samples (after extension)",
-                                    data_meta[constants.KEY_DATA_EXTEND_TEST][constants.KEY_TOTAL_COUNT])
-        elif constants.KEY_DATA_TRAIN in data_meta.keys():
-            self.my_write_key_value("Number of testing samples",
-                                    data_meta[constants.KEY_DATA_TEST][constants.KEY_TOTAL_COUNT])
+            extend_valid_num = data_meta[constants.KEY_DATA_EXTEND_VALID][label_key][
+                                   constants.KEY_TOTAL_COUNT], '(after processing)'
+
+        if all_num[0] is None:
+            if (extend_test_num[0] is not None) and (extend_train_num[0] is not None):
+                all_num[0] = extend_test_num[0] + extend_train_num[0]
+
+        if constants.KEY_DATA_TRAIN in data_meta.keys():
+            train_num = data_meta[constants.KEY_DATA_TRAIN][label_key][constants.KEY_TOTAL_COUNT], '(before processing)'
+        if constants.KEY_DATA_VALID in data_meta.keys():
+            valid_num = data_meta[constants.KEY_DATA_VALID][label_key][constants.KEY_TOTAL_COUNT], '(before processing)'
+        if constants.KEY_DATA_TEST in data_meta.keys():
+            test_num = data_meta[constants.KEY_DATA_TEST][label_key][constants.KEY_TOTAL_COUNT], '(before processing)'
+
+        data_summary = dict()
+        data_summary[constants.KEY_DATA_ALL] = all_num
+        data_summary[constants.KEY_DATA_TRAIN] = train_num
+        data_summary[constants.KEY_DATA_VALID] = valid_num
+        data_summary[constants.KEY_DATA_TEST] = test_num
+        data_summary[constants.KEY_DATA_EXTEND_TRAIN] = extend_train_num
+        data_summary[constants.KEY_DATA_EXTEND_VALID] = extend_valid_num
+        data_summary[constants.KEY_DATA_EXTEND_TEST] = extend_test_num
+
+        return data_summary
+
+    def get_data_summary(self, data_summary, notes):
+        self.my_write_line(notes, 'B')
+        self.start_itemize()
+        self.my_write_key_value("Number of all samples %s" % data_summary[constants.KEY_DATA_ALL][1],
+                                data_summary[constants.KEY_DATA_ALL][0])
+        self.my_write_key_value("Number of training samples %s" % data_summary[constants.KEY_DATA_TRAIN][1],
+                                data_summary[constants.KEY_DATA_TRAIN][0])
+        self.my_write_key_value("Number of validation samples %s" % data_summary[constants.KEY_DATA_VALID][1],
+                                data_summary[constants.KEY_DATA_VALID][0])
+        self.my_write_key_value("Number of testing samples %s" % data_summary[constants.KEY_DATA_TEST][1],
+                                data_summary[constants.KEY_DATA_TEST][0])
+        self.my_write_key_value("Number of training samples %s" % data_summary[constants.KEY_DATA_EXTEND_TRAIN][1],
+                                data_summary[constants.KEY_DATA_EXTEND_TRAIN][0])
+        self.my_write_key_value("Number of validation samples %s" % data_summary[constants.KEY_DATA_EXTEND_VALID][1],
+                                data_summary[constants.KEY_DATA_EXTEND_VALID][0])
+        self.my_write_key_value("Number of testing samples %s" % data_summary[constants.KEY_DATA_EXTEND_TEST][1],
+                                data_summary[constants.KEY_DATA_EXTEND_TEST][0])
 
         self.end_itemize()
 
@@ -121,6 +169,7 @@ class ReportGenerator(TrainingReportFPDF):
         self.end_itemize()
 
     def get_evaluation_result(self, evaluation_result, mode='test'):
+
         if mode == 'train':
             set_name = 'Training'
             set_key = constants.KEY_DATA_TRAIN
@@ -131,22 +180,26 @@ class ReportGenerator(TrainingReportFPDF):
             set_name = 'Testing'
             set_key = constants.KEY_DATA_TEST
 
-        if set_key not in evaluation_result.keys():
-            print('Error: Cannot find training result for %s set [%s] in training meta.' % (set_name, set_key))
-            return
-        self.my_write_line("Evaluation Result (on %s Set):" % set_name)
-        self.start_itemize()
-        for metric_name, metric_value in evaluation_result[set_key].items():
-            if metric_name != constants.KEY_VIS_RESULT and metric_name != constants.TRAIN_TEST_CM:
-                if type(metric_value) == dict:
-                    if 'average' in metric_value.keys():
-                        value = "%s (average)" % metric_value['average']
+        self.my_write_line("Evaluation Result (on %s Set)" % (set_name))
+        for label_key, label_evaluation_result in evaluation_result.items():
+            if set_key not in label_evaluation_result.keys():
+                print('Error: Cannot find training result for %s set [%s] in training meta.' % (set_name, set_key))
+                return
+            if len(evaluation_result) > 1:
+                self.my_write_line("(for label <B>'%s'</B>)" % (label_key))
+            self.start_itemize()
+            for metric_name, metric_value in label_evaluation_result[set_key].items():
+                if metric_name != constants.KEY_VIS_RESULT and metric_name != constants.TRAIN_TEST_CM:
+                    if type(metric_value) == dict:
+                        if 'average' in metric_value.keys():
+                            value = "%.4f (average)" % metric_value['average']
+                        else:
+                            value = "%.4f" % np.mean(np.array(metric_value['class']))
                     else:
-                        value = np.mean(np.array(metric_value['class']))
-                else:
-                    value = metric_value
-                self.my_write_key_value("%s" % metric_name.capitalize(), value)
-        self.end_itemize()
+                        value = "%.4f" % metric_value
+                    self.my_write_key_value("%s" % metric_name.capitalize(), value)
+            self.end_itemize()
+            self.ln(2)
 
     def get_training_summary(self, training_meta):
         self.my_write_line("Training Summary", 'B')
@@ -162,7 +215,7 @@ class ReportGenerator(TrainingReportFPDF):
             self.my_write_key_value("Training Mode", training_mode_text)
 
         if constants.KEY_EVALUATION_RESULT in training_meta:
-            self.get_evaluation_result(training_meta[constants.KEY_EVALUATION_RESULT])
+            self.get_evaluation_result(training_meta[constants.KEY_EVALUATION_RESULT], mode='test')
         self.my_write_line(1)
 
         if constants.KEY_TIMING in training_meta:
@@ -178,13 +231,14 @@ class ReportGenerator(TrainingReportFPDF):
         else:
             data_key = constants.KEY_DATA_EXTEND_TRAIN
 
-        numeric_dist = data_meta[data_key][constants.KEY_LENGTH_FEATURE_DISTRIBUTION][
+        sample_label_key = list(data_meta[data_key].keys())[0]
+        numeric_dist = data_meta[data_key][sample_label_key][constants.KEY_LENGTH_FEATURE_DISTRIBUTION][
             '%s_length' % sequence_feature_name]['all']
 
         self.add_subsubsection("Sample characteristics")
         self.my_write_line("The following statistical features are generated from the training data.")
         self.my_write_key_value("Training sample number",
-                                data_meta[constants.KEY_DATA_EXTEND_TRAIN][constants.KEY_TOTAL_COUNT])
+                                data_meta[constants.KEY_DATA_EXTEND_TRAIN][sample_label_key][constants.KEY_TOTAL_COUNT])
         self.my_write_line("Interaction numbers for samples:")
 
         self.start_itemize()
@@ -206,8 +260,9 @@ class ReportGenerator(TrainingReportFPDF):
         for _, data_name, data_title in constants.DATASET_LABEL:
             if data_name not in data_meta:
                 continue
-            missing_value_data = data_meta[data_name][constants.KEY_MISSING_VALUE_COUNTER]
-            all_field_count = data_meta[data_name][constants.KEY_FIELD_COUNTER]
+            sample_label_key = list(data_meta[data_name].keys())[0]
+            missing_value_data = data_meta[data_name][sample_label_key][constants.KEY_MISSING_VALUE_COUNTER]
+            all_field_count = data_meta[data_name][sample_label_key][constants.KEY_FIELD_COUNTER]
             table_data = []
             for feature_name in all_field_count:
                 if feature_name not in missing_value_data:
@@ -223,6 +278,23 @@ class ReportGenerator(TrainingReportFPDF):
                 self.draw_table(table_header, table_data, [70, 50, 50])
                 self.ln()
 
+    def get_data_summary_from_results(self, training_meta):
+        result = training_meta[constants.KEY_EVALUATION_RESULT]
+        sample_count = dict()
+        for label_key, label_eval in result.items():
+            sample_count[label_key] = dict()
+            for dataset in [constants.KEY_DATA_TRAIN, constants.KEY_DATA_VALID, constants.KEY_DATA_TEST]:
+                if dataset in label_eval:
+                    label_dataset_eval = label_eval[dataset]
+                    if constants.TRAIN_TEST_CM in label_dataset_eval:
+                        if type(label_dataset_eval[constants.TRAIN_TEST_CM]) == dict:
+                            cm = label_dataset_eval[constants.TRAIN_TEST_CM]['values']
+                        else:
+                            cm = label_dataset_eval[constants.TRAIN_TEST_CM]
+
+                        sample_count[label_key][dataset] = sum([sum(l) for l in cm])
+        return sample_count
+
     def generate_cover_page(self, content_list, _report_data):
         self.add_page()
         self.chapter_title(constants.CONTENT_SUMMARY)
@@ -230,15 +302,25 @@ class ReportGenerator(TrainingReportFPDF):
         model_meta = _report_data[constants.KEY_MODEL_META]
         data_meta = _report_data[constants.KEY_DATA_META]
         training_meta = _report_data[constants.KEY_TRAINING_META]
+        sample_count = self.get_data_summary_from_results(training_meta)
 
         self.get_model_info(model_meta)
         self.ln(10)
 
-        self.get_data_summary(data_meta)
+        self.my_write_line('Data Summary', 'B')
+        for label_key, label_sample_count in sample_count.items():
+            data_summary = self.get_data_count_summary(data_meta, label_key, label_sample_count)
+            if len(sample_count) == 1:
+                self.get_data_summary(data_summary, "")
+            else:
+                self.get_data_summary(data_summary, " (for label %s) " % label_key)
         self.ln(10)
 
         self.get_training_summary(training_meta)
         self.ln(10)
+        print('visualization params:', self.report_params.vis_params)
+        # prepare all the possible images
+        self.generate_data_distribution_images(data_meta, params=self.report_params.vis_params)
 
         self.my_write_line("The training report includes following sections:", 'B')
 
@@ -256,53 +338,69 @@ class ReportGenerator(TrainingReportFPDF):
         self.my_write_line("The train/validation/test split distribution are as follows.")
         if label_description is not None:
             self.my_write_key_value("Label Type", label_description)
-        table_header = ['', 'Total number of sample', 'Distribution']
 
+        table_header = ['', 'Count', 'Distribution']
         table_data = []
         draw_graph = False
+
         for _, data_name, data_title in constants.DATASET_LABEL:
             if data_name in data_meta.keys():
-                if constants.KEY_DATA_DISTRIBUTION in data_meta[data_name]:
-                    if len(dict(data_meta[data_name][constants.KEY_DATA_DISTRIBUTION])) >= 3:
-                        distribution = 'See below graphs.'
-                        draw_graph = True
+                for label_key, label_data_metadata in data_meta[data_name].items():
+                    if constants.KEY_DATA_DISTRIBUTION in label_data_metadata:
+                        if len(dict(label_data_metadata[constants.KEY_DATA_DISTRIBUTION])) >= 3:
+                            distribution = 'See below graphs.'
+                            draw_graph = True
+                        else:
+                            distribution = dict(label_data_metadata[constants.KEY_DATA_DISTRIBUTION])
                     else:
-                        distribution = dict(data_meta[data_name][constants.KEY_DATA_DISTRIBUTION])
-                else:
-                    distribution = 'N.A.'
-                table_data.append([data_title, data_meta[data_name][constants.KEY_TOTAL_COUNT],
-                                   distribution])
+                        distribution = 'N.A.'
+                    table_data.append(
+                        ['%s(%s)' % (data_title, label_key), label_data_metadata[constants.KEY_TOTAL_COUNT],
+                         distribution])
 
         self.ln()
-        self.draw_table(table_header, table_data)
+        self.draw_table(table_header, table_data, [80, 40, 60])
 
         if draw_graph:
             image_set = dict()
             if constants.KEY_DATA_TRAIN in data_meta.keys():
                 for _, data_name, data_title in constants.DATASET_LABEL:
                     if data_name in data_meta.keys():
-                        distribution = dict(data_meta[data_name][constants.KEY_DATA_DISTRIBUTION])
-                        image_path = gg.BarPlot(data=distribution, title='%s_data_distribution' % data_name,
-                                                x_label='Number of samples', y_label='Category').draw(caption=data_name)
-                        if data_name == constants.KEY_DATA_TRAIN:
-                            image_set[0] = image_path
-                        if data_name == constants.KEY_DATA_VALID:
-                            image_set[1] = image_path
-                        if data_name == constants.KEY_DATA_TEST:
-                            image_set[2] = image_path
+                        for label_key, label_data_metadata in data_meta[data_name].items():
+                            distribution = dict(label_data_metadata[constants.KEY_DATA_DISTRIBUTION])
+                            image_path = gg.BarPlot(data=distribution,
+                                                    title='%s_%s_data_distribution' % (data_name, label_key),
+                                                    x_label='Number of samples', y_label='Category').draw(
+                                caption=data_name,
+                                ratio=True,
+                                limit_length=20)
+                            if data_name == constants.KEY_DATA_TRAIN:
+                                image_set[0] = image_path
+                            if data_name == constants.KEY_DATA_VALID:
+                                image_set[1] = image_path
+                            if data_name == constants.KEY_DATA_TEST:
+                                image_set[2] = image_path
+
                 self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC)
             elif constants.KEY_DATA_ALL in data_meta.keys():
-                distribution = dict(data_meta[constants.KEY_DATA_ALL][constants.KEY_DATA_DISTRIBUTION])
-                image_path = gg.BarPlot(data=distribution, title='%s_data_distribution' % data_name,
-                                        x_label='Number of samples', y_label='Category').draw(caption=data_name)
-
-                self.add_large_image(image_path)
+                for label_key, label_data_metadata in data_meta[constants.KEY_DATA_ALL].items():
+                    distribution = dict(label_data_metadata[constants.KEY_DATA_DISTRIBUTION])
+                    image_path = gg.BarPlot(data=distribution,
+                                            title='%s_%s_data_distribution' % (data_name, label_key),
+                                            x_label='Number of samples', y_label='Category').draw(
+                        caption=constants.KEY_DATA_ALL, ratio=True, limit_length=20)
+                    if len(distribution) > 20:
+                        self.my_write_line(
+                            "For label <B>'%s'</B> (top 20 out of %s shown):" % (label_key, len(distribution)))
+                    else:
+                        self.my_write_line("For label <B>'%s'</B>:" % label_key)
+                    self.add_large_image(image_path)
 
     def get_data_attributes(self, model_meta):
         self.add_subsection("Data attribute")
         self.my_write_line("The data attributes in 'meta.json' are classified as follows.")
 
-        table_header = ['Feature Name', 'Attribute/Sequence', 'Feature Type']
+        table_header = ['Data Field', 'Attribute/Sequence', 'Data Type', 'Used in Training']
 
         table_data = []
 
@@ -313,162 +411,304 @@ class ReportGenerator(TrainingReportFPDF):
 
         for feature_name, feature_json in model_meta[constants.METADATA_KEY_DATA_SEC][
             constants.META_KEY_ATTRIBUTE_FEATURE].items():
-            table_data.append([feature_name, 'Attribute', get_datetype_label(feature_json['type'])])
+            if "used" not in feature_json:
+                if get_datetype_label(feature_json['type']) is 'Key':
+                    used = 'No'
+                else:
+                    used = 'Yes'
+            else:
+                if feature_json['used']:
+                    used = 'Yes'
+                else:
+                    used = 'No'
+
+            table_data.append([feature_name, 'Attribute', get_datetype_label(feature_json['type']), used])
 
         for feature_name, feature_json in model_meta[constants.METADATA_KEY_DATA_SEC][
             constants.META_KEY_SEQUENCE_FEATURE].items():
-            table_data.append([feature_name, 'Sequence', get_datetype_label(feature_json['type'])])
+            if "used" not in feature_json:
+                if get_datetype_label(feature_json['type']) is 'Key':
+                    used = 'No'
+                else:
+                    used = 'Yes'
+            else:
+                if feature_json['used']:
+                    used = 'Yes'
+                else:
+                    used = 'No'
 
-        self.draw_table(table_header, table_data, [70, 50, 50])
+            table_data.append([feature_name, 'Sequence', get_datetype_label(feature_json['type']), used])
 
-    def get_feature_visualization(self, data_meta, sample_key):
-        self.add_subsection("Feature distribution")
-        self.my_write_line("Below are some frequency plot for each features.")
+        self.draw_table(table_header, table_data, [60, 40, 40, 40])
 
-        if sample_key == constants.KEY_DATA_TRAIN:
+    def generate_data_distribution_images(self, data_meta, params):
+        table_content = dict()
+        image_content = dict()
+        for sample_dataset_key in data_meta.keys():
+            for sample_label_key in data_meta[sample_dataset_key].keys():
+                colors = dict()
+                for field_name, field_distribution in data_meta[sample_dataset_key][sample_label_key][
+                    constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION].items():
+
+                    if len(field_distribution['all']) <= 2:
+                        LOGGER.info('%s only have less than 2 values, ignore in visualization.' % field_name)
+                        continue
+                    if len(field_distribution['all']) / sum(field_distribution['all'].values()) > 0.5:
+                        LOGGER.info('%s is probably a unique feature, ignore in visualization.' % field_name)
+                        continue
+                    all_distribution = \
+                        data_meta[sample_dataset_key][sample_label_key][constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION][
+                            field_name]
+                    for label_name in all_distribution.keys():
+                        data_distribution = all_distribution[label_name]
+                        if label_name not in colors:
+                            colors[label_name] = constants.COLOR_PALLETES[len(colors) % len(constants.COLOR_PALLETES)]
+                        if len(data_distribution) > constants.MAXIMUM_NUM_ENUM_DISPLAY:
+                            limit_length = constants.MAXIMUM_NUM_ENUM_DISPLAY
+                            comment = '(%s of %s are displayed)' % (limit_length, len(data_distribution))
+                        else:
+                            limit_length = None
+                            comment = ''
+                        title = '%s_%s_%s_%s' % (sample_dataset_key, sample_label_key, field_name, label_name)
+                        title = title.replace('/', '-')
+                        image_path = gg.BarPlot(data=data_distribution,
+                                                title=title,
+                                                x_label="", y_label=field_name).draw(limit_length=limit_length,
+                                                                                     color_palette=colors[label_name])
+                        image_content[title] = (image_path, comment)
+
+                for field_name, field_distribution in data_meta[sample_dataset_key][sample_label_key][
+                    constants.KEY_NUMERIC_FEATURE_DISTRIBUTION].items():
+                    all_distribution = \
+                        data_meta[sample_dataset_key][sample_label_key][constants.KEY_NUMERIC_FEATURE_DISTRIBUTION][
+                            field_name]
+                    colors = dict()
+                    for label_name in all_distribution.keys():
+                        if label_name not in colors:
+                            colors[label_name] = constants.COLORS[len(colors) % len(constants.COLORS)]
+                        data_distribution = all_distribution[label_name]
+                        title = '%s_%s_%s_%s' % (sample_dataset_key, sample_label_key, field_name, label_name)
+                        title = title.replace('/', '-')
+                        image_path = gg.KdeDistribution(data=data_distribution,
+                                                        title=title,
+                                                        x_label="", y_label=field_name).draw(color=colors[label_name],
+                                                                                             force_no_log=params[
+                                                                                                 'force_no_log'],
+                                                                                             x_limit=params['x_limit'])
+                        table_header = ['Statistical Field', 'Value']
+                        table_values = []
+                        for key, value in data_distribution.items():
+                            if key in ['kde', 'histogram', 'x_limit']:
+                                continue
+                            table_values.append([key, "%d" % int(value)])
+                        table_content[title] = (table_header, table_values)
+                        image_content[title] = (image_path, '')
+
+                for field_name, field_distribution in data_meta[sample_dataset_key][sample_label_key][
+                    constants.KEY_TEXT_FEATURE_DISTRIBUTION].items():
+                    all_distribution = \
+                        data_meta[sample_dataset_key][sample_label_key][constants.KEY_TEXT_FEATURE_DISTRIBUTION][
+                            field_name]
+                    for label_name in all_distribution.keys():
+                        data_distribution = all_distribution[label_name]
+                        title = '%s_%s_%s_%s' % (sample_dataset_key, sample_label_key, field_name, label_name)
+                        title = title.replace('/', '-')
+                        image_path = gg.WordCloudGraph(data=data_distribution['tfidf'],
+                                                       title=title).draw()
+                        table_header = ['Placeholder', 'Doc Percentage ']
+                        table_values = []
+                        for w, v in data_distribution['placeholder'].items():
+                            table_values.append([w, '%.2f%%' % (v * 100)])
+                        table_content[title] = (table_header, table_values)
+                        image_content[title] = (image_path, '')
+
+                for field_name, field_distribution in data_meta[sample_dataset_key][sample_label_key][
+                    constants.KEY_LENGTH_FEATURE_DISTRIBUTION].items():
+                    all_distribution = \
+                        data_meta[sample_dataset_key][sample_label_key][constants.KEY_LENGTH_FEATURE_DISTRIBUTION][
+                            field_name]
+                    colors = dict()
+                    for label_name in all_distribution.keys():
+                        if label_name not in colors:
+                            colors[label_name] = constants.COLORS[len(colors) % len(constants.COLORS)]
+                        data_distribution = all_distribution[label_name]
+                        title = '%s_%s_%s_%s' % (sample_dataset_key, sample_label_key, field_name, label_name)
+                        title = title.replace('/', '-')
+                        image_path = gg.KdeDistribution(data=data_distribution,
+                                                        title=title,
+                                                        x_label="", y_label=field_name).draw(color=colors[label_name],
+                                                                                             force_no_log=params[
+                                                                                                 'force_no_log'],
+                                                                                             x_limit=params['x_limit'])
+                        table_header = ['Statistical Field', 'Value']
+                        table_values = []
+                        for key, value in data_distribution.items():
+                            if key in ['kde', 'histogram', 'x_limit']:
+                                continue
+                            table_values.append([key, "%d" % int(value)])
+                        table_content[title] = (table_header, table_values)
+                        image_content[title] = (image_path, '')
+        self.image_content = image_content
+        self.table_content = table_content
+
+    def visualize_data_distribution(self, data_meta, sample_dataset_key, params):
+        self.add_subsection("Data Field Distribution")
+        self.my_write_line("Below are some frequency plot for each data field.")
+
+        image_content = self.image_content
+        table_content = self.table_content
+
+        sample_label_keys = list(data_meta[sample_dataset_key].keys())[:1]
+
+        sample_classes = ['all']
+        show_sample_classes = params['show_sample_classes']
+        if show_sample_classes:
+            sample_classes.extend(
+                list(data_meta[sample_dataset_key][sample_label_keys[0]][constants.KEY_DATA_DISTRIBUTION].keys())[:2])
+
+        if sample_dataset_key == constants.KEY_DATA_TRAIN:
             dataset_names = [constants.KEY_DATA_TRAIN, constants.KEY_DATA_TEST, constants.KEY_DATA_VALID]
-        elif sample_key == constants.KEY_DATA_EXTEND_TRAIN:
+        elif sample_dataset_key == constants.KEY_DATA_EXTEND_TRAIN:
             dataset_names = [constants.KEY_DATA_EXTEND_TRAIN, constants.KEY_DATA_EXTEND_VALID,
                              constants.KEY_DATA_EXTEND_TEST]
-        elif sample_key == constants.KEY_DATA_ALL:
+        elif sample_dataset_key == constants.KEY_DATA_ALL:
             dataset_names = [constants.KEY_DATA_ALL]
 
-        for feature_name, feature_distribution in data_meta[sample_key][
-            constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION].items():
-            if len(feature_distribution['all']) <= 2:
-                LOGGER.info('%s only have less than 2 values, ignore in visualization.' % feature_name)
-                continue
-            if len(feature_distribution['all']) / sum(feature_distribution['all'].values()) > 0.5:
-                LOGGER.info('%s is probably a unique feature, ignore in visualization.' % feature_name)
-                continue
-            if 'length' in feature_name:
-                continue
-            self.my_write_line("Feature: %s" % feature_name, 'B')
-            colors = dict()
-            for _, dataset, dataset_name in constants.DATASET_LABEL:
-                if dataset not in data_meta.keys():
-                    continue
-                if dataset not in dataset_names:
-                    continue
-                image_set = dict()
-                all_distribution = data_meta[dataset][constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION][feature_name]
-                comment = ''
-                for label_name in all_distribution.keys():
-                    if label_name not in colors:
-                        colors[label_name] = constants.COLOR_PALLETES[len(colors) % len(constants.COLORS)]
-                    data_distribution = all_distribution[label_name]
+        for sample_label_key in sample_label_keys:
+            # write label indicator if more than one label is plotted
+            if len(sample_label_keys) > 1:
+                self.my_write_line("For label '%s': " % sample_label_key)
 
-                    if len(data_distribution) > constants.MAXIMUM_NUM_ENUM_DISPLAY:
-                        limit_length = constants.MAXIMUM_NUM_ENUM_DISPLAY
-                        if label_name == 'all':
-                            comment = '(only top %s are displayed out of %s)' % (
-                                constants.MAXIMUM_NUM_ENUM_DISPLAY, len(data_distribution))
-                    else:
-                        limit_length = None
+            for field_name, field_distribution in data_meta[sample_dataset_key][sample_label_key][
+                constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION].items():
+                field_image_set = defaultdict(dict)
+                for _, dataset, dataset_name in constants.DATASET_LABEL:
+                    field_image_set[field_name][dataset] = dict()
+                    for idx, sample_class in enumerate(sample_classes):
+                        title = '%s_%s_%s_%s' % (dataset, sample_label_key, field_name, sample_class)
+                        title = title.replace('/', '-')
+                        image_path = '%s/%s.png' % (constants.FIGURE_PATH, title)
+                        if not os.path.exists(image_path):
+                            print('Figure not exist. Ingored in visualization. [%s]' % image_path)
+                            continue
+                        else:
+                            print('Figure exist. Add to field image set. [%s-%s-%s][%s]' % (
+                                field_name, dataset, idx, image_path))
+                        field_image_set[field_name][dataset][idx] = image_path
+                        if sample_class == 'all':
+                            comment = image_content[title][1]
 
-                    image_path = gg.BarPlot(data=data_distribution,
-                                            title='%s_%s_%s' % (dataset, feature_name, label_name),
-                                            x_label="", y_label=feature_name).draw(limit_length=limit_length,
-                                                                                   color_palette=colors[label_name])
+                if len(field_image_set[field_name][sample_dataset_key]) > 0:
+                    self.my_write_line("Data Field: %s" % field_name, 'B')
+                    for dataset in dataset_names:
+                        if len(field_image_set[field_name][dataset]) > 1:
+                            self.add_grid_images(field_image_set[field_name][dataset],
+                                                 graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC,
+                                                 caption="- %s %s" % (dataset, comment), style='I')
+                        else:
+                            self.add_large_image(field_image_set[field_name][dataset][0],
+                                                 caption="- %s %s" % (dataset, comment), style='I')
 
-                    if label_name == 'all':
-                        image_set[0] = image_path
-                    else:
-                        if 1 not in image_set:
-                            image_set[1] = image_path
-                        elif 2 not in image_set:
-                            image_set[2] = image_path
+            for field_name, field_distribution in data_meta[sample_dataset_key][sample_label_key][
+                constants.KEY_NUMERIC_FEATURE_DISTRIBUTION].items():
+                print(field_name)
+                field_image_set = defaultdict(dict)
+                field_table_set = defaultdict(dict)
+                for _, dataset, dataset_name in constants.DATASET_LABEL:
+                    field_image_set[field_name][dataset] = dict()
+                    for idx, sample_class in enumerate(sample_classes):
+                        title = '%s_%s_%s_%s' % (dataset, sample_label_key, field_name, sample_class)
+                        title = title.replace('/', '-')
+                        image_path = '%s/%s.png' % (constants.FIGURE_PATH, title)
+                        if not os.path.exists(image_path):
+                            print('Figure not exist. Ingored in visualization. [%s]' % image_path)
+                            continue
+                        else:
+                            print('Figure exist. Add to field image set. [%s-%s-%s][%s]' % (
+                                field_name, dataset, idx, image_path))
+                        field_image_set[field_name][dataset][idx] = image_path
+                        if sample_class == 'all':
+                            field_table_set[field_name][dataset] = table_content[title]
 
-                self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC,
-                                     caption="- %s %s" % (dataset, comment), style='I')
+                if len(field_image_set[field_name][sample_dataset_key]) > 0:
+                    self.my_write_line("Data Field: %s" % field_name, 'B')
+                    for dataset in dataset_names:
+                        if len(field_image_set[field_name][dataset]) > 1:
+                            self.add_grid_images(field_image_set[field_name][dataset],
+                                                 graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC,
+                                                 caption="- %s %s" % (dataset, ''), style='I')
+                        else:
+                            table_header, table_values = field_table_set[field_name][dataset]
+                            self.add_image_table(field_image_set[field_name][dataset][0], table_header, table_values,
+                                                 graph_constants.IMAGE_TABLE_GRID_SPEC,
+                                                 caption="- %s %s" % (dataset, ''), style='I')
 
-        colors = dict()
-        for feature_name, feature_distribution in data_meta[sample_key][
-            constants.KEY_NUMERIC_FEATURE_DISTRIBUTION].items():
-            self.my_write_line("Feature: %s" % feature_name, 'B')
-            for _, dataset, dataset_name in constants.DATASET_LABEL:
-                if dataset not in data_meta.keys():
-                    continue
-                if dataset not in dataset_names:
-                    continue
-                all_distribution = data_meta[dataset][constants.KEY_NUMERIC_FEATURE_DISTRIBUTION][feature_name]
-                image_set = dict()
-                for label_name in all_distribution.keys():
-                    if label_name not in colors:
-                        colors[label_name] = constants.COLORS[len(colors) % len(constants.COLORS)]
-                    data_distribution = all_distribution[label_name]
+            for field_name, field_distribution in data_meta[sample_dataset_key][sample_label_key][
+                constants.KEY_TEXT_FEATURE_DISTRIBUTION].items():
+                print(field_name)
+                field_image_set = defaultdict(dict)
+                field_table_set = defaultdict(dict)
+                for _, dataset, dataset_name in constants.DATASET_LABEL:
+                    field_image_set[field_name][dataset] = dict()
+                    for idx, sample_class in enumerate(sample_classes):
+                        title = '%s_%s_%s_%s' % (dataset, sample_label_key, field_name, sample_class)
+                        title = title.replace('/', '-')
+                        image_path = '%s/%s.png' % (constants.FIGURE_PATH, title)
+                        if not os.path.exists(image_path):
+                            print('Figure not exist. Ingored in visualization. [%s]' % image_path)
+                            continue
+                        else:
+                            print('Figure exist. Add to field image set. [%s-%s-%s][%s]' % (
+                                field_name, dataset, idx, image_path))
+                        field_image_set[field_name][dataset][idx] = image_path
+                        if sample_class == 'all':
+                            field_table_set[field_name][dataset] = table_content[title]
 
-                    image_path = gg.KdeDistribution(data=data_distribution,
-                                                    title='%s_%s_%s' % (dataset, feature_name, label_name),
-                                                    x_label="", y_label=feature_name).draw(color=colors[label_name])
+                if len(field_image_set[field_name][sample_dataset_key]) > 0:
+                    self.my_write_line("Data Field: %s" % field_name, 'B')
+                    for dataset in dataset_names:
+                        if len(field_image_set[field_name][dataset]) > 1:
+                            self.add_grid_images(field_image_set[field_name][dataset],
+                                                 graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC,
+                                                 caption="- %s %s" % (dataset, ''), style='I')
+                        else:
+                            table_header, table_values = field_table_set[field_name][dataset]
+                            self.add_image_table(field_image_set[field_name][dataset][0], table_header, table_values,
+                                                 graph_constants.IMAGE_TABLE_GRID_SPEC,
+                                                 caption="- %s %s" % (dataset, ''), style='I')
 
-                    if label_name == 'all':
-                        image_set[0] = image_path
-                    else:
-                        if 1 not in image_set:
-                            image_set[1] = image_path
-                        elif 2 not in image_set:
-                            image_set[2] = image_path
+            for field_name, field_distribution in data_meta[sample_dataset_key][sample_label_key][
+                constants.KEY_LENGTH_FEATURE_DISTRIBUTION].items():
+                field_image_set = defaultdict(dict)
+                field_table_set = defaultdict(dict)
+                for _, dataset, dataset_name in constants.DATASET_LABEL:
+                    field_image_set[field_name][dataset] = dict()
+                    for idx, sample_class in enumerate(sample_classes):
+                        title = '%s_%s_%s_%s' % (dataset, sample_label_key, field_name, sample_class)
+                        title = title.replace('/', '-')
+                        image_path = '%s/%s.png' % (constants.FIGURE_PATH, title)
+                        if not os.path.exists(image_path):
+                            print('Figure not exist. Ingored in visualization. [%s]' % image_path)
+                            continue
+                        else:
+                            print('Figure exist. Add to field image set. [%s-%s-%s][%s]' % (
+                                field_name, dataset, idx, image_path))
+                        field_image_set[field_name][dataset][idx] = image_path
+                        if sample_class == 'all':
+                            field_table_set[field_name][dataset] = table_content[title]
 
-                self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC, caption="- %s" % dataset,
-                                     style='I')
-
-        for feature_name, feature_distribution in data_meta[sample_key][
-            constants.KEY_TEXT_FEATURE_DISTRIBUTION].items():
-            self.my_write_line("Feature: %s" % feature_name, 'B')
-            for _, dataset, dataset_name in constants.DATASET_LABEL:
-                if dataset not in data_meta.keys():
-                    continue
-                if dataset not in dataset_names:
-                    continue
-                all_distribution = data_meta[dataset][constants.KEY_TEXT_FEATURE_DISTRIBUTION][feature_name]
-                image_set = dict()
-                for label_name in all_distribution.keys():
-                    data_distribution = all_distribution[label_name]
-                    image_path = gg.WordCloudGraph(data=data_distribution,
-                                                   title='%s_%s_%s' % (dataset, feature_name, label_name)).draw()
-
-                    if label_name == 'all':
-                        image_set[0] = image_path
-                    else:
-                        # TODO: select to view
-                        if 1 not in image_set:
-                            image_set[1] = image_path
-                        elif 2 not in image_set:
-                            image_set[2] = image_path
-
-                self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC, caption="- %s" % dataset,
-                                     style='I')
-
-        for feature_name, feature_distribution in data_meta[sample_key][
-            constants.KEY_LENGTH_FEATURE_DISTRIBUTION].items():
-            self.my_write_line("Feature: %s" % feature_name, 'B')
-            for _, dataset, dataset_name in constants.DATASET_LABEL:
-                if dataset not in data_meta.keys():
-                    continue
-                if dataset not in dataset_names:
-                    continue
-                all_distribution = data_meta[dataset][constants.KEY_LENGTH_FEATURE_DISTRIBUTION][feature_name]
-                image_set = dict()
-                for label_name in all_distribution.keys():
-                    if label_name not in colors:
-                        colors[label_name] = constants.COLORS[len(colors) % len(constants.COLORS)]
-                    data_distribution = all_distribution[label_name]
-
-                    image_path = gg.KdeDistribution(data=data_distribution,
-                                                    title='%s_%s_%s' % (dataset, feature_name, label_name),
-                                                    x_label="", y_label=feature_name).draw(color=colors[label_name])
-
-                    if label_name == 'all':
-                        image_set[0] = image_path
-                    else:
-                        if 1 not in image_set:
-                            image_set[1] = image_path
-                        elif 2 not in image_set:
-                            image_set[2] = image_path
-
-                self.add_grid_images(image_set, graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC, caption="- %s" % dataset,
-                                     style='I')
+                if len(field_image_set[field_name][sample_dataset_key]) > 0:
+                    self.my_write_line("Data Field: %s" % field_name, 'B')
+                    for dataset in dataset_names:
+                        if len(field_image_set[field_name][dataset]) > 1:
+                            self.add_grid_images(field_image_set[field_name][dataset],
+                                                 graph_constants.ABSOLUTE_LEFT_BIG_3_GRID_SPEC,
+                                                 caption="- %s %s" % (dataset, ''), style='I')
+                        else:
+                            table_header, table_values = field_table_set[field_name][dataset]
+                            self.add_image_table(field_image_set[field_name][dataset][0], table_header, table_values,
+                                                 graph_constants.IMAGE_TABLE_GRID_SPEC,
+                                                 caption="- %s %s" % (dataset, ''), style='I')
 
         self.my_write_line("Notes:", "B")
         self.my_write_line(
@@ -509,22 +749,16 @@ class ReportGenerator(TrainingReportFPDF):
 
         self.draw_table(header=table_header, data=table_data, col_width=[140, 30])
 
-    def get_training_metrics_score(self, evaluation_result, cm_label):
-        self.add_subsection("Scoring metrics")
-        self.my_write_line(
-            "This section displays the results of several scoring metrics to evaluate the performance of the model.")
-        self.my_write("The metrics used include: <I>accuracy, precision, recall, f1 score, ROC AUC</I>, etc.")
-
+    def get_training_metrics_score(self, evaluation_result, label_key, cm_label):
         self.ln(5)
-
+        self.my_write_line("Result for label <B>'%s'</B> " % label_key)
         cm_image_paths = []
         sw_image_paths = []
+        sw_image_spec = None
         rd_image_paths = []
+        rd_image_spec = None
         similar_class_dict = None
         similar_class_img_spec = None
-
-        unsimilar_class_dict = None
-        unsimilar_class_img_spec = None
 
         if len(cm_label) > 2:
             cr = MultiClassificationResult()
@@ -543,26 +777,34 @@ class ReportGenerator(TrainingReportFPDF):
 
         for split in cr.get_split_list():
             cm_obj = confusion_matrices[split]
-            title = '%s_cm' % split
-            image_path = gg.HeatMap(data=cm_obj.get_values(), title=title, x_label='True',
-                                    y_label='Predict').draw(x_tick=cm_obj.get_labels(), y_tick=cm_obj.get_labels())
+            title = '%s_%s_cm' % (split, label_key)
+            image_path = gg.HeatMap(data=cm_obj.get_values(), title=title, x_label='Predict',
+                                    y_label='True').draw(x_tick=cm_obj.get_labels(), y_tick=cm_obj.get_labels(),
+                                                         color_bar=True)
             cm_image_paths.append(image_path)
             if similar_class_dict is not None:
-                similar_class_dict[split] = cm_obj.get_top_k_similar_classes(k=2)
-            if unsimilar_class_dict is not None:
-                unsimilar_class_dict[split] = cm_obj.get_top_k_unsimilar_classes(k=2)
+                similar_class_dict[split] = cm_obj.get_top_k_similar_classes(k=1)
 
-        for metric_name in evaluation_result[constants.KEY_DATA_TEST].items():
-            if metric_name == constants.KEY_VIS_RESULT:
-                for dataset in [constants.KEY_DATA_TRAIN, constants.KEY_DATA_VALID, constants.KEY_DATA_TEST]:
+        for dataset in cr.get_split_list():
+            for metric_name in evaluation_result[dataset].keys():
+                if metric_name == constants.KEY_VIS_RESULT:
                     title = '%s_swarm' % dataset
-                    image_path = gg.ResultProbability(data=evaluation_result[dataset][metric_name], title=title).draw(
-                        limit_size=constants.DEFAULT_LIMIT_SIZE)
-                    sw_image_paths.append(image_path)
+                    vis_data = evaluation_result[dataset][metric_name]
+                    if constants.KEY_GROUNDTRUTH in vis_data:
+                        # binary class
+                        image_path = gg.ResultProbability(data=vis_data, title=title).draw(
+                            limit_size=constants.DEFAULT_LIMIT_SIZE)
+                        sw_image_paths.append(image_path)
 
-                    title = '%s_reliability' % dataset
-                    image_path = gg.ReliabilityDiagram(data=evaluation_result[dataset][metric_name], title=title).draw()
-                    rd_image_paths.append(image_path)
+                        title = '%s_reliability' % dataset
+                        image_path = gg.ReliabilityDiagram(data=vis_data, title=title).draw()
+                        rd_image_paths.append(image_path)
+                    else:
+                        # multiple class, only plot top K class
+                        sw_image_spec = figure_tool.get_class_confidence_distribution_image_list(label_key, vis_data,
+                                                                                             TOP_K_CLASS=9)
+                        # rd_image_spec = figure_tool.get_class_reliability_diagram_image_list(label_key, vis_data,
+                        #                                                                      TOP_K_CLASS=9)
         if similar_class_dict is not None:
             key_feature = self.report_params.key_feature
             similar_class_img_spec = []
@@ -571,25 +813,35 @@ class ReportGenerator(TrainingReportFPDF):
                     for similar_class, sub_cm in similar_classes:
                         if base_class == similar_class:
                             continue
-                        img_spec = visualize_feature_for_similar_classes(split, key_feature, base_class, similar_class,
-                                                                         sub_cm)
+                        img_spec = figure_tool.get_feature_image_for_similar_classes(split, label_key, key_feature,
+                                                                                     base_class,
+                                                                                     similar_class,
+                                                                                     sub_cm)
                         similar_class_img_spec.append(
                             ('%s: %s for class %s and %s' % (split, key_feature, base_class, similar_class), img_spec))
         if len(cm_image_paths) > 0:
             if len(cm_image_paths) == 3:
-                self.add_grid_images(cm_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
-                                     caption="Confusion Matrix", style="B")
+                self.add_list_grid_images(cm_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
+                                          caption="Confusion Matrix", style="B")
             if len(cm_image_paths) == 1:
                 self.add_grid_images(cm_image_paths, {0: (0, 0, 150, 150)},
                                      caption="Confusion Matrix", style="B")
 
         if len(sw_image_paths) > 0:
-            self.add_grid_images(sw_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
-                                 "Probability Distribution", "B")
+            self.add_list_grid_images(sw_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
+                                      caption="Probability Distribution", style="B")
+
+        if sw_image_spec is not None:
+            self.add_list_grid_images(**sw_image_spec,
+                                      caption="Probability Distribution", style="B")
 
         if len(rd_image_paths) > 0:
-            self.add_grid_images(rd_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
-                                 "Reliability Diagram", "B")
+            self.add_list_grid_images(rd_image_paths, graph_constants.ABSOLUTE_RESULT_3_EQUAL_GRID_SPEC,
+                                      caption="Reliability Diagram", style="B")
+
+        if rd_image_spec is not None:
+            self.add_list_grid_images(**rd_image_spec,
+                                      caption="Reliability Diagram", style="B")
 
         if similar_class_img_spec is not None and len(similar_class_img_spec) > 0:
             self.add_page()
@@ -626,7 +878,8 @@ class ReportGenerator(TrainingReportFPDF):
         self.ln(10)
 
         self.add_page()
-        self.get_feature_visualization(data_meta, self.report_params.feature_sample_key)
+        self.visualize_data_distribution(data_meta, self.report_params.feature_sample_key,
+                                         params=self.report_params.vis_params)
 
         self.ln(5)
         self.get_missing_value_checking(data_meta)
@@ -757,52 +1010,60 @@ class ReportGenerator(TrainingReportFPDF):
         benchmark_value = 0.8
 
         training_meta = self.report_data[constants.KEY_TRAINING_META]
-        parameters = training_meta[constants.KEY_PARAMETERS]
 
-        training_log = training_meta[constants.KEY_TRAINING_LOG]
+        if constants.KEY_ILLUSTRATION in training_meta:
+            self.add_subsection("Training Pipeline Illustration")
+            self.add_image(os.path.join(training_meta[constants.KEY_ILLUSTRATION]),graph_constants.LARGE_FIGURE_WIDTH)
 
-        history = training_log[constants.KEY_HISTORY]
-        best_epoch = training_log[constants.KEY_BEST_INDEX]
+        if constants.KEY_TRAINING_LOG in training_meta:
+            training_log = training_meta[constants.KEY_TRAINING_LOG]
 
-        image_path = gg.EvaluationLinePlot(data=history, title='training_history', x_label='Steps',
-                                           y_label='Metrics Score').draw(benchmark_metric=benchmark_metric,
-                                                                         benchmark_value=benchmark_value)
+            if constants.KEY_HISTORY in training_log:
+                history = training_log[constants.KEY_HISTORY]
+                best_epoch = training_log[constants.KEY_BEST_INDEX]
 
-        self.add_subsection("Training Epochs")
-        self.my_write_line("The metric results from several training epochs are shown in the figure.")
+                image_path = gg.EvaluationLinePlot(data=history, title='training_history', x_label='Steps',
+                                                   y_label='Metrics Score').draw(benchmark_metric=benchmark_metric,
+                                                                                 benchmark_value=benchmark_value)
 
-        self.start_itemize()
-        self.my_write_key_value("Benchmark metric", benchmark_metric)
-        self.my_write_key_value("Benchmark value", benchmark_value)
-        self.end_itemize()
+                self.add_subsection("Training Epochs")
+                self.my_write_line("The metric results from several training epochs are shown in the figure.")
 
-        self.ln()
-        self.add_large_image(image_path)
+                self.start_itemize()
+                self.my_write_key_value("Benchmark metric", benchmark_metric)
+                self.my_write_key_value("Benchmark value", benchmark_value)
+                self.end_itemize()
 
-        self.ln()
-        self.add_subsection("Best Epoch from Training")
-        self.my_write_key_value("The best iteration is ", "# %s" % best_epoch)
+                self.ln()
+                self.add_large_image(image_path)
 
-        self.my_write_line()
-        self.my_write_line("Validation Results:", "B")
-        self.start_itemize()
-        if best_epoch not in history:
-            best_epoch = str(best_epoch)
-        for param_name, param_value in history[best_epoch][constants.KEY_HISTORY_EVALUATION].items():
-            if param_name == benchmark_metric:
-                self.my_write_key_value(param_name.capitalize(), "%s (benchmarking metric)" % param_value)
-            else:
-                self.my_write_key_value(param_name.capitalize(), param_value)
-        self.end_itemize()
-        self.ln(5)
+                self.ln()
+                self.add_subsection("Best Epoch from Training")
+                self.my_write_key_value("The best iteration is ", "# %s" % best_epoch)
+                self.my_write_line()
 
-        self.add_subsection("Model Parameters")
-        self.my_write_line(1)
-        self.my_write_line("Parameters", 'B')
-        self.start_itemize()
-        for param_name, param_value in parameters.items():
-            self.my_write_key_value(param_name, param_value)
-        self.end_itemize()
+                self.my_write_line("Validation Results:", "B")
+                self.start_itemize()
+                if best_epoch not in history:
+                    best_epoch = str(best_epoch)
+                for param_name, param_value in history[best_epoch][constants.KEY_HISTORY_EVALUATION].items():
+                    if param_name == benchmark_metric:
+                        self.my_write_key_value(param_name.capitalize(), "%s (benchmarking metric)" % param_value)
+                    else:
+                        self.my_write_key_value(param_name.capitalize(), param_value)
+                self.end_itemize()
+                self.ln(5)
+
+        if constants.KEY_PARAMETERS in training_meta:
+            parameters = training_meta[constants.KEY_PARAMETERS]
+
+            self.add_subsection("Model Parameters")
+            self.my_write_line(1)
+            self.my_write_line("Parameters", 'B')
+            self.start_itemize()
+            for param_name, param_value in parameters.items():
+                self.my_write_key_value(param_name, param_value)
+            self.end_itemize()
 
     def generate_training_result(self, link=None):
         self.add_page()
@@ -818,11 +1079,21 @@ class ReportGenerator(TrainingReportFPDF):
         elif constants.KEY_DATA_ALL in self.report_data[constants.KEY_DATA_META]:
             sample_dataset_key = constants.KEY_DATA_ALL
 
-        cm_label = list(
-            self.report_data[constants.KEY_DATA_META][sample_dataset_key][constants.KEY_DATA_DISTRIBUTION].keys())
         training_meta = self.report_data[constants.KEY_TRAINING_META]
 
-        self.get_training_metrics_score(training_meta[constants.KEY_EVALUATION_RESULT], cm_label)
+        self.add_subsection("Scoring metrics")
+        self.my_write_line(
+            "This section displays the results of several scoring metrics to evaluate the performance of the model.")
+        self.my_write("The metrics used include: <I>precision, recall, f1 score</I>, etc.")
+
+        self.ln(5)
+
+        for label_key, label_eval in training_meta[constants.KEY_EVALUATION_RESULT].items():
+            cm_label = list(
+                self.report_data[constants.KEY_DATA_META][sample_dataset_key][label_key][
+                    constants.KEY_DATA_DISTRIBUTION].keys())
+
+            self.get_training_metrics_score(label_eval, label_key, cm_label)
 
         if constants.KEY_PARAMETERS in training_meta:
             parameters = training_meta[constants.KEY_PARAMETERS]
@@ -846,9 +1117,10 @@ class ReportGenerator(TrainingReportFPDF):
 
         metric = self.report_params.recommendation_metric
         deeplearning = self.report_params.is_deeplearning
-
-        status, train_eval, valid_eval = rec.get_model_fitting_status(training_meta[constants.KEY_EVALUATION_RESULT],
-                                                                      metric)
+        sample_label_key = list(training_meta[constants.KEY_EVALUATION_RESULT].keys())[0]
+        status, train_eval, valid_eval = rec.get_model_fitting_status(
+            training_meta[constants.KEY_EVALUATION_RESULT][sample_label_key],
+            metric)
 
         self.add_subsection("Overall Performance")
         self.my_write_line(
@@ -945,7 +1217,8 @@ class ReportGenerator(TrainingReportFPDF):
 
         self.add_subsection("Feature Distribution")
         unsimilar_features = {}
-        for feature_name in data_meta[constants.KEY_DATA_EXTEND_TRAIN][
+        sample_label_key = list(data_meta[constants.KEY_DATA_EXTEND_TRAIN].keys())[0]
+        for feature_name in data_meta[constants.KEY_DATA_EXTEND_TRAIN][sample_label_key][
             constants.KEY_CATEGORICAL_FEATURE_DISTRIBUTION].keys():
             result = rec.get_feature_distribution_similar_status(
                 data_meta, feature_name, constants.KEY_DATA_EXTEND_TRAIN, constants.KEY_DATA_EXTEND_VALID)
@@ -992,16 +1265,21 @@ def generate_report(data_folder, output_path,
 
     report_params = Params(data_folder)
 
-    _report_data[constants.KEY_DATA_META] = prepare_data_metafile(data_folder, file_params=report_params.file_params)
+    if not os.path.exists(os.path.join(output_path, 'report_data.json')):
+        _report_data[constants.KEY_DATA_META] = prepare_data_metafile(data_folder,
+                                                                      file_params=report_params.file_params)
 
-    with open(os.path.join(output_path, constants.TRAIN_META_FILE), 'r') as f:
-        model_meta = json.load(f)
+        with open(os.path.join(data_folder, constants.TRAIN_META_FILE), 'r') as f:
+            model_meta = json.load(f)
 
-    _report_data[constants.KEY_MODEL_META] = model_meta
-    _report_data[constants.KEY_TRAINING_META] = training_meta
+        _report_data[constants.KEY_MODEL_META] = model_meta
+        _report_data[constants.KEY_TRAINING_META] = training_meta
 
-    with open(os.path.join(output_path, 'report_data.json'), 'w') as f:
-        json.dump(_report_data, f, cls=JsonSerializable)
+        with open(os.path.join(output_path, 'report_data.json'), 'w') as f:
+            json.dump(_report_data, f, cls=JsonSerializable)
+    else:
+        with open(os.path.join(output_path, 'report_data.json'), 'r') as f:
+            _report_data = json.load(f)
 
     ## generate report
     rg = ReportGenerator(report_params, _report_data)

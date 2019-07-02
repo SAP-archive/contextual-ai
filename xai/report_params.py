@@ -19,18 +19,37 @@ class Params:
         with open(report_metadata_path, 'r') as f:
             report_setup_meta = json.load(f)
 
-        label_key = report_setup_meta['data_analysis']['label_key']
+        label_keys = report_setup_meta['data_analysis']['label_keys']
         label_type = report_setup_meta['data_analysis']['label_type']
-        att_fea, seq_fea = self.load_feature_list()
+        self.vis_params = dict()
+        if 'show_sample_classes' in report_setup_meta['visualize_setup']:
+            self.vis_params['show_sample_classes'] = report_setup_meta['visualize_setup']['show_sample_classes']
+        else:
+            self.vis_params['show_sample_classes'] = True
+
+        if 'force_no_log' in report_setup_meta['visualize_setup']:
+            self.vis_params['force_no_log'] = report_setup_meta['visualize_setup']['force_no_log']
+        else:
+            self.vis_params['force_no_log'] = False
+
+        if 'x_limit' in report_setup_meta['visualize_setup']:
+            self.vis_params['x_limit'] = report_setup_meta['visualize_setup']['x_limit']
+        else:
+            self.vis_params['x_limit'] = False
+
+
+        att_fea, seq_fea, all_fea = self.load_feature_list()
+        print('all_fea',all_fea)
 
         self.file_params = dict()
         for dataset_file, dataset_key, dataset_label in constants.DATASET_LABEL:
-            self.file_params[dataset_key] = {'data_file': dataset_file, 'att_fea': att_fea,
+            self.file_params[dataset_key] = {'data_file': dataset_file,
+                                             'att_fea': att_fea,
                                              'seq_fea': seq_fea,
-                                             'metafile_name': dataset_key, 'label_key': label_key,
-                                             'label_type': label_type,
-                                             'feature_file': None,
-                                             'group_criterias': []}
+                                             'all_fea': all_fea,
+                                             'metafile_name': dataset_key,
+                                             'label_keys': label_keys,
+                                             'label_type': label_type}
 
         self.recommendation_metric = report_setup_meta['overall']['recommendation_metric']
         self.is_deeplearning = report_setup_meta['overall']['is_deeplearning']
@@ -53,6 +72,7 @@ class Params:
         with open(ml_metadata_path, 'r') as f:
             meta = json.load(f)
 
+        all_valid_field = []
         att_fea = defaultdict(list)
 
         for k, v in meta[constants.METADATA_KEY_DATA_SEC][constants.META_KEY_ATTRIBUTE_FEATURE].items():
@@ -63,8 +83,8 @@ class Params:
                 att_fea['numeric'].append(k)
             elif feature_type in constants.FEATURE_DATA_TYPE_TEXT:
                 att_fea['text'].append(k)
-            elif feature_type in constants.FEATURE_DATA_TYPE_LABEL:
-                att_fea['label'].append(k)
+            if feature_type in constants.VALID_DATATYPE:
+                all_valid_field.append(k)
 
         seq_fea = defaultdict(list)
         for k, v in meta[constants.METADATA_KEY_DATA_SEC][constants.META_KEY_SEQUENCE_FEATURE].items():
@@ -75,6 +95,7 @@ class Params:
                 seq_fea['numeric'].append(k)
             elif feature_type in constants.FEATURE_DATA_TYPE_TEXT:
                 seq_fea['text'].append(k)
-            elif feature_type in constants.FEATURE_DATA_TYPE_LABEL:
-                seq_fea['label'].append(k)
-        return att_fea, seq_fea
+            if feature_type in constants.VALID_DATATYPE:
+                all_valid_field.append(k)
+
+        return att_fea, seq_fea, all_valid_field

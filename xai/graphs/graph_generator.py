@@ -6,6 +6,8 @@ import xai.constants as Const
 from wordcloud import WordCloud
 from xai.graphs.basic_graph import Graph
 from typing import List
+from collections import Counter
+import operator
 
 
 class ReliabilityDiagram(Graph):
@@ -50,6 +52,46 @@ class ReliabilityDiagram(Graph):
         plt.legend((x, y), ('accuracy', 'gap'))
 
 
+class ReliabilityDiagramForMultiClass(Graph):
+    def __init__(self, data, title):
+        super(ReliabilityDiagramForMultiClass, self).__init__(data, title, figure_size=(5, 5),
+                                                              x_label="Accuracy",
+                                                              y_label="Confidence")
+
+    def draw_core(self, current_class_label):
+        conf = np.array(self.data[Const.KEY_PROBABILITY])
+        gt = np.array(self.data[Const.KEY_GROUNDTRUTH])
+
+        m = Const.RELIABILITY_BINSIZE
+        # process input
+        accuracy = np.zeros(conf.shape)
+        accuracy[np.where(gt == current_class_label)] = 1
+
+        # generate confidence/accuracy
+        reliability = []
+        for i in range(m):
+            lower = 1 / m * i
+            upper = 1 / m * (1 + i)
+            condition = (conf >= lower) & (conf < upper)
+            sample_num = accuracy[condition].shape[0]
+            ave_acc = np.sum(accuracy[condition]) / sample_num
+            ave_conf = np.mean(conf[condition])
+            reliability.append((lower, upper, ave_conf, ave_acc, sample_num))
+
+        for item in reliability:
+            lower, upper, conf, acc, sample_num = item
+            x = plt.bar(lower, height=acc, width=upper - lower, bottom=0, align='edge', color='b')
+            ece = conf - acc
+            if ece > 0:
+                y = plt.bar(lower, height=conf - acc, width=upper - lower, bottom=acc, align='edge', color='r',
+                            alpha=0.5)
+            else:
+                y = plt.bar(lower, height=acc - conf, width=upper - lower, bottom=conf, align='edge', color='r',
+                            alpha=0.5)
+        plt.legend((x, y), ('accuracy', 'gap'))
+        plt.title('Reliability for Class %s' % current_class_label)
+
+
 class HeatMap(Graph):
     def __init__(self, data, title, x_label=None, y_label=None):
         if len(data) < 3:
@@ -60,21 +102,24 @@ class HeatMap(Graph):
             fig_size = (15, 15)
         super(HeatMap, self).__init__(data, title, figure_size=fig_size, x_label=x_label, y_label=y_label)
 
-    def draw_core(self, x_tick: List[str] = None, y_tick: List[str] = None):
+    def draw_core(self, x_tick: List[str] = None, y_tick: List[str] = None, color_bar=False, grey_scale=False):
         data = np.array(self.data)
         df_data = pd.DataFrame(data, x_tick, y_tick)
         sns.set(font_scale=1.5)  # label size
-        if len(x_tick)>30:
+        if len(x_tick) > 30:
             annot = False
             annot_kws = None
-        elif len(x_tick)>10:
+        elif len(x_tick) > 10:
             annot = True
             annot_kws = {}
         else:
             annot = True
             annot_kws = {"size": 25}
-
-        self.label_ax = sns.heatmap(df_data, annot=annot, annot_kws=annot_kws, fmt='g', cbar=False)  # font size
+        if grey_scale:
+            self.label_ax = sns.heatmap(df_data, annot=annot, annot_kws=annot_kws, fmt='g', cbar=color_bar,
+                                        cmap='Greys')  # font size
+        else:
+            self.label_ax = sns.heatmap(df_data, annot=annot, annot_kws=annot_kws, fmt='g', cbar=color_bar)  # font size
 
 
 class ResultProbability(Graph):
@@ -99,12 +144,37 @@ class ResultProbability(Graph):
         self.label_ax = sns.swarmplot(x="gt", y="predict_prob", data=df)
 
 
+class ResultProbabilityForMultiClass(Graph):
+    def __init__(self, data, title):
+        super(ResultProbabilityForMultiClass, self).__init__(data=data, title=title, figure_size=(12, 6),
+                                                             x_label='Class',
+                                                             y_label='Probability')
+
+    def draw_core(self, limit_size=Const.DEFAULT_LIMIT_SIZE, TOP_K_CLASS=10):
+        conf = np.array(self.data[Const.KEY_PROBABILITY])
+        gt = np.array(self.data[Const.KEY_GROUNDTRUTH])
+        num_sample = len(conf)
+        if num_sample > limit_size:
+            idx = np.random.rand(num_sample) < limit_size / num_sample
+            conf = conf[idx]
+            gt = gt[idx]
+        else:
+            conf = conf
+        dict_counter = dict(Counter(gt))
+        sorted_dict_counter = sorted(dict_counter.items(), key=operator.itemgetter(1))[::-1]
+        label_top_k = [a for (a, b) in sorted_dict_counter[:TOP_K_CLASS]]
+        data_frame = {'predict_prob': conf, 'gt': gt}
+        df = pd.DataFrame(data_frame)
+        self.label_ax = sns.swarmplot(x="gt", y="predict_prob", data=df, order=label_top_k)
+        plt.title(self.title)
+
+
 class KdeDistribution(Graph):
     def __init__(self, data, title, x_label=None, y_label=None):
         super(KdeDistribution, self).__init__(data=data, title=title, figure_size=(10, 5), x_label=x_label,
                                               y_label=y_label)
 
-    def draw_core(self, color='b'):
+    def draw_core(self, color, force_no_log, x_limit):
         data = self.data
         xywh = data['histogram']
         line_data = np.array(data['kde'])
@@ -126,12 +196,16 @@ class KdeDistribution(Graph):
         x = [i[0] for i in xywh]
         w = [i[2] for i in xywh]
         h = [i[3] for i in xywh]
-
-        if len(sorted_perc) < 2 or sorted_perc[-1] - sorted_perc[-2] > 0.5:
-            plt.bar(x=x, height=h, width=w, align='edge', log=True, color=color)
-        else:
+        if force_no_log:
             plt.bar(x=x, height=h, width=w, align='edge', color=color)
-            plt.plot(line_data[:, 0], line_data[:, 1])
+        else:
+            if len(sorted_perc) < 2 or sorted_perc[-1] - sorted_perc[-2] > 0.5:
+                plt.bar(x=x, height=h, width=w, align='edge', log=True, color=color)
+            else:
+                plt.bar(x=x, height=h, width=w, align='edge', color=color)
+                plt.plot(line_data[:, 0], line_data[:, 1])
+        if x_limit:
+            plt.xlim(data['x_limit'])
 
 
 class EvaluationLinePlot(Graph):
@@ -213,7 +287,7 @@ class BarPlot(Graph):
             figsize = (10, 5)
         super(BarPlot, self).__init__(data=data, title=title, figure_size=figsize, x_label=x_label, y_label=y_label)
 
-    def draw_core(self, caption=None, limit_length=None, color_palette="Blues_d"):
+    def draw_core(self, caption=None, limit_length=None, color_palette="Blues_d", ratio=False):
         sns.set(font_scale=1)
         data = self.data
         if type(data) == list:
@@ -232,16 +306,24 @@ class BarPlot(Graph):
         if len(data) > 3 and percentage[0] - percentage[1] > 0.3:  # the top item is quite dominant
             xlimit = values[1] * 1.2
             plt.xlim([0, xlimit])
-
-            ax.text(xlimit, 0, round(values[0], 4), color='red', ha="left")
+            if ratio:
+                ax.text(values[0], 0, "%s%%" % round(percentage[0] * 100, 2), color='black', ha="left")
+            else:
+                ax.text(xlimit, 0, round(values[0], 4), color='red', ha="left")
             plt.autoscale(enable=True, axis='y', tight=True)
 
         else:
-            ax.text(values[0], 0, round(values[0], 4), color='black', ha="left")
+            if ratio:
+                ax.text(values[0], 0, "%s%%" % round(percentage[0] * 100, 2), color='black', ha="left")
+            else:
+                ax.text(values[0], 0, round(values[0], 4), color='black', ha="left")
             plt.autoscale(enable=True, axis='both', tight=True)
 
         for index in range(1, len(values)):
-            ax.text(values[index], index, round(values[index], 4), color='black', ha="left")
+            if ratio:
+                ax.text(values[index], index, "%s%%" % round(percentage[index] * 100, 2), color='black', ha="left")
+            else:
+                ax.text(values[index], index, round(values[index], 4), color='black', ha="left")
         if caption is not None:
             plt.title(caption)
         self.label_ax = ax

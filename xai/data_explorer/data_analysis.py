@@ -5,6 +5,7 @@ import logging
 from xai.data_explorer.text_analyzer import TextAnalyzer
 from xai.data_explorer.categorical_analyzer import CategoricalAnalyzer
 from xai.data_explorer.numeric_analyzer import NumericAnalyzer
+from xai.data_explorer.label_analyzer import LabelAnalyzer
 from xai.data_explorer.sequence_length_analyzer import SequenceLengthAnalyzer
 from xai.data_explorer.data_analyzer_suite import DataAnalyzerSuite
 
@@ -16,14 +17,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 class DataAnalysis:
-    def __init__(self, att_fea, seq_fea, label_key, label_type):
+    def __init__(self, att_fea, seq_fea, all_fea, label_key, label_type):
         self.data_file = None
         self.label_analyzer = None
-
-        if label_type == Const.KEY_FEATURE_CATEGORICAL_TYPE:
-            self.label_analyzer = CategoricalAnalyzer(feature_list=[label_key])
-        elif label_type == Const.KEY_FEATURE_NUMERIC_TYPE:
-            self.label_analyzer = NumericAnalyzer(feature_list=[label_key])
+        self.label_analyzer = LabelAnalyzer(label=label_key, label_type=label_type)
 
         self.feature_type_list = {}
         for type in Const.DATA_ANALYSIS_TYPES:
@@ -33,8 +30,13 @@ class DataAnalysis:
         self.seq_fea = seq_fea
 
         flatten_seq_fea = []
+        flatten_att_fea = []
+        for features in self.att_fea.values():
+            flatten_att_fea.extend(features)
+
         for features in self.seq_fea.values():
             flatten_seq_fea.extend(features)
+        self.feature_type_list[Const.KEY_FEATURE_LABLE_TYPE] = set(all_fea)-set(flatten_att_fea)-set(flatten_seq_fea)
 
         self.total_count = 0
         self.label_key = label_key
@@ -44,7 +46,7 @@ class DataAnalysis:
 
         self.validator_suite = DataValidatorSuite()
         self.validator_suite.add_validator(MissingValueValidator(feature_type_list=self.feature_type_list))
-        self.validator_suite.add_validator(FieldCounter())
+        self.validator_suite.add_validator(FieldCounter(feature_list=all_fea))
 
         # initialize analyzer suite
 
@@ -66,7 +68,7 @@ class DataAnalysis:
                 data = json.loads(line)
                 yield data
 
-    def feature_distribution(self):
+    def data_field_distribution(self):
         if self.data_file is None:
             LOGGER.info('Please input a data file.')
             return
@@ -120,10 +122,8 @@ class DataAnalysis:
         self.meta_json[Const.KEY_DATA_DISTRIBUTION] = self.label_analyzer.summary_info[self.label_key]['all']
         return self.meta_json[Const.KEY_DATA_DISTRIBUTION]
 
-    def generate_meta_data(self, meta_data_name):
+    def get_meta_data(self):
         self.meta_json['total_count'] = self.total_count
-        with open(meta_data_name, 'w') as f:
-            json.dump(self.meta_json, f)
         return self.meta_json
 
 
@@ -139,8 +139,9 @@ def prepare_data_metafile(data_folder, file_params={}):
                                                        metafile_name=data_params['metafile_name'],
                                                        att_fea=data_params['att_fea'],
                                                        seq_fea=data_params['seq_fea'],
+                                                       all_fea=data_params['all_fea'],
                                                        label_type=data_params['label_type'],
-                                                       label_key=data_params['label_key'])
+                                                       label_keys=data_params['label_keys'])
         else:
             print('Cannot find %s' % os.path.join(data_folder, data_params['data_file']))
         LOGGER.info('Finish preparing metadata for raw data!')
@@ -148,27 +149,26 @@ def prepare_data_metafile(data_folder, file_params={}):
     return all_meta
 
 
-def generate_datavis_meta(data_folder, data_file, metafile_name, att_fea, seq_fea, label_key, label_type):
+def generate_datavis_meta(data_folder, data_file, metafile_name, att_fea, seq_fea, all_fea, label_keys, label_type):
     metadata_fpath = os.path.join(data_folder, 'meta_%s.json' % metafile_name)
     if os.path.exists(metadata_fpath):
         with open(metadata_fpath, 'r') as f:
             meta_json = json.load(f)
             return meta_json
+    meta_data_json = dict()
     print('Start generated meta file for:', data_file)
+    for label_key in label_keys:
+        data_analysis = DataAnalysis(att_fea, seq_fea, all_fea, label_key, label_type)
+        LOGGER.info('=============================================')
+        LOGGER.info('Start analysis for data: %s' % metafile_name)
+        data_analysis.input_data(os.path.join(data_folder, data_file))
 
-    data_analysis = DataAnalysis(att_fea, seq_fea, label_key, label_type)
-    LOGGER.info('=============================================')
-    LOGGER.info('Start analysis for data: %s' % metafile_name)
-    data_analysis.input_data(os.path.join(data_folder, data_file))
+        LOGGER.info('Get distribution...')
+        data_analysis.data_field_distribution()
 
-    LOGGER.info('Get feature distribution...')
-    data_analysis.feature_distribution()
+        LOGGER.info('Generate meta file...')
 
-    LOGGER.info('Get data distribution...')
-    data_analysis.data_distribution()
-
-    LOGGER.info('Generate meta file...')
-
-    meta_json = data_analysis.generate_meta_data(metadata_fpath)
+        meta_json = data_analysis.get_meta_data()
+        meta_data_json[label_key] = meta_json
     print('Generated meta file:', metadata_fpath)
-    return meta_json
+    return meta_data_json
