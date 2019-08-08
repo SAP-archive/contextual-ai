@@ -1,17 +1,18 @@
 from abc import ABC, abstractmethod
-import xai.constants as Const
 import matplotlib.pyplot as plt
 from typing import Tuple
+import os
 
 
 class Graph(ABC):
-    def __init__(self, data, title: str, figure_size: Tuple[int, int], x_label: str = None, y_label: str = None):
+    def __init__(self, file_path, data, title: str, figure_size: Tuple[int, int], x_label: str = None,
+                 y_label: str = None):
         self.title = title
         self.x_label = x_label
         self.y_label = y_label
         self.data = data
         self.figure_size = figure_size
-        self.file_path = '%s/%s.png' % (Const.FIGURE_PATH, self.title.replace('/', '-'))
+        self.file_path = file_path
         self.label_ax = None
 
     def draw(self, **kwargs):
@@ -27,6 +28,9 @@ class Graph(ABC):
             self.label_ax.set_xlabel(self.x_label)
             self.label_ax.set_ylabel(self.y_label)
         plt.tight_layout()
+        while os.path.exists(self.file_path):
+            filename = self.file_path.split('.')
+            self.file_path = '%s_%s.%s' % (filename[0], 'n', filename[1])
         plt.savefig(self.file_path, transparent=False, bbox_inches='tight')
         plt.close(fig=f)
 
