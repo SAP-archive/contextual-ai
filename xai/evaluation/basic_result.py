@@ -10,25 +10,21 @@ class ClassificationResult(ABC):
     def __init__(self):
         self.resultdict = dict()
         self.metric_set = OrderedSet()
-        self.split_set = OrderedSet()
         self.label_set = OrderedSet()
         self.confusion_matrices = dict()
 
-    def update_result(self, split: str, metric: str, label: str, value: float):
+    def update_result(self, metric: str, label: str, value: float):
         '''
-        format: [- split: - metric:  - label: - value:]
+        format: [- metric:  - label: - value:]
         '''
-        if split not in self.resultdict.keys():
-            self.resultdict[split] = dict()
-            self.split_set.add(split)
-        if metric not in self.resultdict[split].keys():
-            self.resultdict[split][metric] = dict()
+        if metric not in self.resultdict.keys():
+            self.resultdict[metric] = dict()
             self.metric_set.add(metric)
-        self.resultdict[split][metric][label] = value
+        self.resultdict[metric][label] = value
         self.label_set.add(label)
 
     @abstractmethod
-    def load_results_from_meta(self, metadata: dict, labels: List[str] = None):
+    def load_results_from_meta(self, evaluation_result: dict, labels: List[str] = None):
         raise NotImplementedError('The derived class should implement it.')
 
     @abstractmethod
@@ -39,8 +35,6 @@ class ClassificationResult(ABC):
         '''
         raise NotImplementedError('The derived class should implement it.')
 
-    def get_split_list(self):
-        return list(self.split_set)
 
     def get_metric_list(self):
         return list(self.metric_set)
