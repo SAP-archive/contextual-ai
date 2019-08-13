@@ -11,6 +11,15 @@ class MultiClassificationResult(ClassificationResult):
         self.average_result_dict = defaultdict(lambda: defaultdict(int))
 
     def load_results_from_meta(self, evaluation_result: dict):
+        """
+        save metrics into the object result class
+        Args:
+          - evaluation_result(dict): key-value pair for metric
+                - key: metric name
+                - value: metric dict. The dict should either
+                 (1) have a `class` keyword, with key-value pair of class name and corresponding values, or
+                 (2) have a `average` keyword to show a macro-average metric.
+        """
         for metric, values in evaluation_result.items():
             if metric == constants.TRAIN_TEST_CM:
                 self.confusion_matrices = ConfusionMatrix(label=values['labels'],
@@ -24,7 +33,13 @@ class MultiClassificationResult(ClassificationResult):
                     self.average_result_dict[metric] = values['average']
 
     def convert_metrics_to_table(self, label_as_row=True):
-        output_tables = []
+        """
+        converts the metrics saved in the object to a table that is ready to render in the report.
+        Args:
+            label_as_row (bool): True if each row of the output table is for a class,
+                                 False if each row of the output table is for a metric
+        Returns: a set of table (title, header, values)
+        """
         if label_as_row:
             # set metric as columns, label as rows
             table_header = ['Label']

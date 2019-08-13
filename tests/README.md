@@ -9,7 +9,7 @@ git pull
 ``` 
 - go to the root directory and install the required packages:
 ```
-pip install -t requirements.txt
+pip install -r requirements.txt
 ```
 - set your jupyter notebook kernel correctly to the environment with all required packages.
 

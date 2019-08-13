@@ -7,52 +7,57 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 
+
+
+
 class ReportWriter(FPDF):
-
     def __init__(self,
-                 usecase_name='ML_App_Name',
+                 usecase_name: str,
+                 author: str,
                  version='',
-                 create_date=None,
-                 author='SAP ML Apps',
                  report_name='Training Report'):
-
+        """
+        set up the basic information for report
+        Args:
+            usecase_name(str): use case name, (suggest to be no longer than 20 characters), displayed in header as "[usecase_name] [version]: [report_name]"
+            author(str): use case team name, (suggest to be no longer than 20 characters) displayed in header as "created by [author] on [system datetime]"
+            version(str): version number, (suggest to be no longer than 10 characters) displayed in header as "[usecase_name] [version]: [report_name]"
+            report_name(str): the report name, (suggest to be no longer than 20 characters ) displayed in header as "[usecase_name] [version]: [report_name]"
+        """
         FPDF.__init__(self)
-        # initilize for report information
+        # initialize for report information
         self.usecase_name = usecase_name
         self.version = version
-        if create_date is None:
-            self.create_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-        else:
-            self.create_date = create_date
+        self.create_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
         self.report_name = report_name
         self.author = author
         self.set_title("%s %s: %s" % (self.usecase_name, self.version, self.report_name))
 
         ## initilization for font
         # Font sample: https://www.dafont.com/linux-biolinum.font
-        font_path = os.path.dirname(__file__)
+        font_path = os.path.join(os.path.dirname(__file__), 'fonts')
         try:
-            self.add_font('acm_title', '', os.path.join(font_path, 'fonts/LinBiolinum_R.ttf'),
+            self.add_font('acm_title', '', os.path.join(font_path, 'LinBiolinum_R.ttf'),
                           uni=True)
-            self.add_font('acm_title', 'B', os.path.join(font_path, 'fonts/LinBiolinum_RB.ttf'),
+            self.add_font('acm_title', 'B', os.path.join(font_path, 'LinBiolinum_RB.ttf'),
                           uni=True)
-            self.add_font('acm_title', 'I', os.path.join(font_path, 'fonts/LinBiolinum_RI.ttf'),
+            self.add_font('acm_title', 'I', os.path.join(font_path, 'LinBiolinum_RI.ttf'),
                           uni=True)
-            self.add_font('acm_title', 'IB', os.path.join(font_path, 'fonts/LinBiolinum_aBL.ttf'),
+            self.add_font('acm_title', 'IB', os.path.join(font_path, 'LinBiolinum_aBL.ttf'),
                           uni=True)
 
-            self.add_font('acm_text', '', os.path.join(font_path, 'fonts/LinLibertine_R.ttf'),
+            self.add_font('acm_text', '', os.path.join(font_path, 'LinLibertine_R.ttf'),
                           uni=True)
-            self.add_font('acm_text', 'B', os.path.join(font_path, 'fonts/LinLibertine_RB.ttf'),
+            self.add_font('acm_text', 'B', os.path.join(font_path, 'LinLibertine_RB.ttf'),
                           uni=True)
-            self.add_font('acm_text', 'I', os.path.join(font_path, 'fonts/LinLibertine_RI.ttf'),
+            self.add_font('acm_text', 'I', os.path.join(font_path, 'LinLibertine_RI.ttf'),
                           uni=True)
-            self.add_font('acm_text', 'IB', os.path.join(font_path, 'fonts/LinLibertine_RBI.ttf'),
+            self.add_font('acm_text', 'IB', os.path.join(font_path, 'LinLibertine_RBI.ttf'),
                           uni=True)
             self.title_font = 'acm_title'
             self.content_font = 'acm_text'
         except Exception as e:
-            LOGGER.info("Fail to find font file, load Times and Arial as default fonts.")
+            LOGGER.info("Failed to find the font files. Loading Times and Arial fonts by default.")
             self.title_font = 'Times'
             self.content_font = 'Arial'
 
@@ -76,9 +81,9 @@ class ReportWriter(FPDF):
         # Calculate width of title and position
 
         self.set_font(self.title_font, 'B', 20)
-        w = self.get_string_width(self.title) + 6
+        text_width = self.get_string_width(self.title) + 6
 
-        self.set_x((210 - w) / 2)
+        self.set_x((210 - text_width) / 2)
         # Colors of frame, background and text
 
         # self.set_draw_color(0, 80, 180)
@@ -87,20 +92,20 @@ class ReportWriter(FPDF):
         # Thickness of frame (1 mm)
         self.set_line_width(0)
         # Title
-        self.cell(w, 9, self.title, 0, 0, 'C', 1)
+        self.cell(text_width, 9, self.title, 0, 0, 'C', 1)
         # Line break
         self.ln(10)
 
         author_date = '%s created on %s' % (self.author, self.create_date)
-        w = self.get_string_width(author_date) + 6
-        self.set_x((210 - w) / 2)
+        text_width = self.get_string_width(author_date) + 6
+        self.set_x((210 - text_width) / 2)
 
         self.set_font('', '', 10)
         self.set_fill_color(255, 255, 255)
         self.set_text_color(58, 81, 110)
         self.set_line_width(0)
         # Title
-        self.cell(w, 5, author_date, 0, 0, 'C', 1)
+        self.cell(text_width, 5, author_date, 0, 0, 'C', 1)
         # Line break
         self.ln(10)
 
@@ -144,7 +149,7 @@ class ReportWriter(FPDF):
         add a section title (with blue ribbon)
         Args:
             title (str): section title
-            link (obj): internal anchor
+            link (int): internal anchor
         """
         self.add_page()
         self.cur_sec += 1
@@ -159,7 +164,7 @@ class ReportWriter(FPDF):
         add a subsection title in the format of section_number.subsection_number in bold
         Args:
             title (str): subsection title
-            link (obj): internal anchor
+            link (int): internal anchor
 
         """
         self.cur_subsec += 1
@@ -173,20 +178,20 @@ class ReportWriter(FPDF):
         add a subsubsection title in the format of section_number.subsection_number.subsubsection_number in bold and italic
         Args:
             title (str): subsubsection title
-            link (obj): internal anchor
+            link (int): internal anchor
         """
         self.cur_subsubsec += 1
         if link is not None:
             self.set_link(link)
         self.add_new_line("%s.%s.%s  %s" % (self.cur_sec, self.cur_subsec, self.cur_subsubsec, title), style='BI')
 
-    def start_itemize(self, symbol=' - '):
+    def start_itemize(self, symbol='-'):
         """
         start a new indent block, each line inside the block start with the defined symbol
         Args:
             symbol (str): itemized item header (e.g. '-', '*', '#', '')
         """
-        self.itemize_symbol = symbol
+        self.itemize_symbol = " %s " % symbol
         self.itemize_level += 1
 
     def end_itemize(self):
@@ -197,21 +202,22 @@ class ReportWriter(FPDF):
         if self.itemize_level == 0:
             self.itemize_symbol = ''
 
-    def write_html(self, html, link=''):
+    def write_html(self, html, link=None):
         """
         parse html and write to PDF report
         Args:
              html(str): html content
              link (int): link idx created earlier for internal anchor
         """
-
+        if link is None:
+            link = ''
         def set_style(tag, enable):
             # Modify style and select corresponding font
             t = getattr(self, tag.lower())
             if enable:
                 t += 1
             else:
-                t += -1
+                t -= 1
             setattr(self, tag.lower(), t)
             style = ''
             for s in ('B', 'I', 'U'):
@@ -312,7 +318,7 @@ class ReportWriter(FPDF):
         self.cell(sum(w), 0, '', 'T')
         self.add_new_line()
 
-    def add_text(self, text, link='', style=[]):
+    def add_text(self, text, link=None, style=''):
         """
         add text string to pdf report
         Args:
@@ -334,7 +340,7 @@ class ReportWriter(FPDF):
             html_text = "<U>%s</U>" % html_text
         self.write_html(html_text, link=link)
 
-    def add_new_line(self, line='', link='', style=[]):
+    def add_new_line(self, line='', link=None, style=''):
         """
         add a new line with text string to pdf report
         Args: 

@@ -7,6 +7,9 @@ from xai.evaluation.confusion_matrix import ConfusionMatrix
 
 
 class ClassificationResult(ABC):
+    """
+    The base class for classification problem result.
+    """
     def __init__(self):
         self.resultdict = dict()
         self.metric_set = OrderedSet()
@@ -14,9 +17,16 @@ class ClassificationResult(ABC):
         self.confusion_matrices = dict()
 
     def update_result(self, metric: str, label: str, value: float):
-        '''
-        format: [- metric:  - label: - value:]
-        '''
+        """
+        update the result based on metric name and class label (for each class)
+        Args:
+            metric (str): metric name, e.g. `accuracy`, `recall`
+            label (str): class label name
+            value (float): metric value
+
+        Returns:
+
+        """
         if metric not in self.resultdict.keys():
             self.resultdict[metric] = dict()
             self.metric_set.add(metric)
@@ -29,15 +39,25 @@ class ClassificationResult(ABC):
 
     @abstractmethod
     def convert_metrics_to_table(self) -> List[Tuple[str, List[str], List[List[float]]]]:
-        '''
-
-        :return: a set of tables (title, header, values)
-        '''
+        """
+        converts the metrics saved in the object to a table that is ready to render in the report.
+        Returns: a set of tables (title, header, values)
+        """
         raise NotImplementedError('The derived class should implement it.')
 
 
     def get_metric_list(self):
+        """
+        returns all the metric names
+        Returns: a list of metric names
+
+        """
         return list(self.metric_set)
 
     def get_label_list(self):
+        """
+        returns all the class names
+        Returns: a list of class label names
+
+        """
         return list(self.label_set)
