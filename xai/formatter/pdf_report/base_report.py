@@ -7,9 +7,6 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 
-
-
-
 class ReportWriter(FPDF):
     def __init__(self,
                  usecase_name: str,
@@ -211,6 +208,7 @@ class ReportWriter(FPDF):
         """
         if link is None:
             link = ''
+
         def set_style(tag, enable):
             # Modify style and select corresponding font
             t = getattr(self, tag.lower())
@@ -423,12 +421,32 @@ class ReportWriter(FPDF):
             LOGGER.error("Error in image_table_spec: no 'image' key found.")
             return False
         else:
+            if len(grid_spec['image']) != 2:
+                LOGGER.error("Error in image_table_spec:'image' spec should have 2 elements (width, height)")
+                return False
             image_width, image_height = grid_spec['image']
+
+            if type(image_width) not in [float, int] or type(image_height) not in [float, int]:
+                LOGGER.error("Error in image_table_spec: image_width and image_height should be int or float.")
+                return False
+            if image_width <= 0 or image_height <= 0:
+                LOGGER.error("Error in image_table_spec: image_width and image_height should be larger than zeros.")
+                return False
         if 'table' not in grid_spec:
             LOGGER.error("Error in image_table_spec: no 'table' key found.")
             return False
         else:
+            if len(grid_spec['image']) != 2:
+                LOGGER.error("Error in image_table_spec:'table' spec should have 2 elements (width, height)")
+                return False
             table_width, table_height = grid_spec['table']
+
+            if type(table_width) not in [float, int] or type(table_height) not in [float, int]:
+                LOGGER.error("Error in image_table_spec: table_width and table_height should be int or float.")
+                return False
+            if table_width <= 0 or table_height <= 0:
+                LOGGER.error("Error in image_table_spec: table_width and table_height should be larger than zeros.")
+                return False
 
         if X + image_width + table_width > self.w - self.r_margin:
             LOGGER.warning('Warning: figure will exceed the page edge on the right, rescale the whole group.')
@@ -505,6 +523,11 @@ class ReportWriter(FPDF):
         maximum_x = 0
 
         for image_name, (x, y, w, h) in grid_spec.items():
+            for e in [x, y, w, h]:
+                if type(e) not in [float, int]:
+                    LOGGER.error("Error in image_spec: x,y,w,h should all be int or float and non-negative.")
+                    return False
+
             if ratio:
                 x *= grid_width
                 y *= grid_height
@@ -525,7 +548,7 @@ class ReportWriter(FPDF):
                 LOGGER.warning('Warning: figure will exceed the page bottom, adding a new page.')
                 self.add_page()
         else:
-            ## TODO: estimate the caption height, 10 is hardcoded
+            ## TODO: estimate the caption height, 5 is hardcoded
             if self.y + maximum_y + 5 > self.h - self.foot_size:
                 LOGGER.warning('Warning: figure will exceed the page bottom, adding a new page.')
                 self.add_page()
@@ -537,13 +560,21 @@ class ReportWriter(FPDF):
         Y = self.y
         if type(image_set) == dict:
             for image_name, image_path in image_set.items():
+                if image_name not in grid_spec:
+                    LOGGER.error('Error: Image name [%s] not found in grid_spec.' % image_name)
+                    return False
                 pos = grid_spec[image_name]
                 x, y, w, h = pos
                 self.image(image_set[image_name], X + x, Y + y, w, h, '', '')
 
         if type(image_set) == list:
             ## follow the index
+            if len(image_set)!=len(grid_spec):
+                LOGGER.error('Error: Inconsistent length found. Image set should be of same length with grid spec.')
             for idx, image_path in enumerate(image_set):
+                if idx not in grid_spec:
+                    LOGGER.error('Error: Image index [%s] not found in grid_spec.' % idx)
+                    return False
                 pos = grid_spec[idx]
                 x, y, w, h = pos
                 self.image(image_path, X + x, Y + y, w, h, '', '')
