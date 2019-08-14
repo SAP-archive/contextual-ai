@@ -82,56 +82,81 @@ class TrainingReport(ReportWriter):
         if os.path.exists(self.figure_path):
             shutil.rmtree(self.figure_path)
 
-    def add_content_to_report_buffer(self, title='', section_level=None, content=None, add_to_content_table=False):
+    def add_content_as_section_to_report_buffer(self, title, content=None):
         """
         add a section with title and content
         Args:
             title (str): section title
-            section_level (int, Optional): level of section,
-                Level 0: section (1 xxx)
-                Level 1: subsection (1.1 xxx)
-                Level 2: subsubsection (1.1.1 xxx)
-            content (tuple): report component that want to render in terms of tuple (func, params)
-            add_to_content_table (bool): whether to add to content table.
-                If True, a link will be attached to the section and corresponding title will be added into content table.
-                ignored if section_level is not set to predefined level,
+            content (tuple): report component that want to render in terms of tuple (func, params).
+                             If None, only the title will be added in.
         """
-        if section_level not in [0, 1, 2]:
-            add_to_content_table = False
+        link = self.add_link()
 
-        if add_to_content_table:
-            link = self.add_link()
-            if section_level == 0:
-                self.__current_section_level += 1
-                self.__current_subsection_level = 0
-                self.__current_subsubsection_level = 0
+        self.__current_section_level += 1
+        self.__current_subsection_level = 0
+        self.__current_subsubsection_level = 0
 
-                content_table_title = '<B>%s   %s</B>' % (self.__current_section_level,
-                                                          title)
-                self.__content_table.append((content_table_title, link))
-                self.__content_buffer.append((self.add_section, {'title': title, 'link': link}))
+        content_table_title = '<B>%s   %s</B>' % (self.__current_section_level,
+                                                  title)
+        self.__content_table.append((content_table_title, link))
+        self.__content_buffer.append((self.add_section, {'title': title, 'link': link}))
 
-            elif section_level == 1:
-                self.__current_subsection_level += 1
-                self.__current_subsubsection_level = 0
-                content_table_title = '........ %s.%s   %s' % (self.__current_section_level,
-                                                               self.__current_subsection_level,
-                                                               title)
-                self.__content_table.append((content_table_title, link))
-                self.__content_buffer.append((self.add_subsection, {'title': title, 'link': link}))
+        if content is not None:
+            self.__content_buffer.append(content)
+
+    def add_content_as_subsection_to_report_buffer(self, title, content=None):
+        """
+        add a subsection with title and content
+        Args:
+            title (str): section title
+            content (tuple): report component that want to render in terms of tuple (func, params).
+                             If None, only the title will be added in.
+        """
+        link = self.add_link()
+
+        self.__current_subsection_level += 1
+        self.__current_subsubsection_level = 0
+        content_table_title = '........ %s.%s   %s' % (self.__current_section_level,
+                                                       self.__current_subsection_level,
+                                                       title)
+        self.__content_table.append((content_table_title, link))
+        self.__content_buffer.append((self.add_subsection, {'title': title, 'link': link}))
+
+        if content is not None:
+            self.__content_buffer.append(content)
 
 
-            elif section_level == 2:
-                self.__current_subsubsection_level += 1
-                content_table_title = '.............. <I>%s.%s.%s   %s</I>' % (self.__current_section_level,
-                                                                               self.__current_subsection_level,
-                                                                               self.__current_subsubsection_level,
-                                                                               title)
-                self.__content_table.append((content_table_title, link))
-                self.__content_buffer.append((self.add_subsubsection, {'title': title, 'link': link}))
-        else:
-            if title != '':
-                self.__content_buffer.append((self.add_new_line, {'line': title, 'style': 'BI'}))
+    def add_content_as_subsubsection_to_report_buffer(self, title, content=None):
+        """
+        add a subsubsection with title and content
+        Args:
+            title (str): section title
+            content (tuple): report component that want to render in terms of tuple (func, params).
+                             If None, only the title will be added in.
+        """
+        link = self.add_link()
+
+        self.__current_subsubsection_level += 1
+        content_table_title = '.............. <I>%s.%s.%s   %s</I>' % (self.__current_section_level,
+                                                                       self.__current_subsection_level,
+                                                                       self.__current_subsubsection_level,
+                                                                       title)
+        self.__content_table.append((content_table_title, link))
+        self.__content_buffer.append((self.add_subsubsection, {'title': title, 'link': link}))
+
+        if content is not None:
+            self.__content_buffer.append(content)
+
+    def add_content_to_report_buffer(self, title='', content=None):
+        """
+        add a section with title and content
+        Args:
+            title (str): content title
+            content (tuple): report component that want to render in terms of tuple (func, params)
+        """
+
+        if title != '':
+            self.__content_buffer.append((self.add_new_line, {'line': title, 'style': 'BI'}))
         if content is not None:
             self.__content_buffer.append(content)
 
