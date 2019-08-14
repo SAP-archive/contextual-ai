@@ -1,7 +1,8 @@
-import time
 from abc import ABC, abstractmethod
-import numpy as np
 from typing import List, Dict
+
+import numpy as np
+
 
 # TODO * decide on initialisation specification
 # TODO * decide on methods
@@ -36,30 +37,33 @@ class AbstractExplainer(ABC):
         raise NotImplementedError("Derived class should implement this")
 
     @abstractmethod
-    def decode_explaination(self, exp, sample, score) -> str:
-        # TODO what is decoding for?
+    def save_explainer(self, path: str) -> bool:
+        """
+        Saves the explainer to disk.
+
+        Args:
+            path (str): Path to which the explainer is stored
+
+        Returns:
+            (bool) Whether saving the explainer was successful or not
+        """
         raise NotImplementedError("Derived class should implement this")
 
     @abstractmethod
-    def save_to_file(self):
+    def load_explainer(self, path: str) -> bool:
+        """
+        Loads the explainer from disk.
+
+        Args:
+            path (str): Path to the explainer
+
+        Returns:
+            (bool) Whether the explainer was successfully loaded or not
+
+        Notes:
+            load_explainer should not return the explainer, but it should instead load the
+            AbstractExplainer instance with the explainer (e.g. set the self.explainer to the loaded
+            object)
+        """
         # TODO what is this?
         raise NotImplementedError("Derived class should implement this")
-
-    @abstractmethod
-    def load_from_file(self):
-        # TODO what is this?
-        raise NotImplementedError("Derived class should implement this")
-
-    def explain_instance_with_log(self, sample, predict_fn, num_features=TOP_EXPLAIN_FEATURES):
-        # FIXME | shouldn't implement anything in the abstract class
-        print("---------------- Explanations from %s ----------------------" % self.explainer_name)
-        print('Score:', predict_fn(sample.reshape(1, -1)))
-        print("Start explaining...")
-        start_time = time.time()
-        exp = self.explain_instance(sample, predict_fn, num_features=num_features)
-        t = time.time() - start_time
-        print("Explainations:")
-        print(self.decode_explaination(exp))
-        print("Finish explaining!! Time consumed: %s sec. (feature number: %s)" % (t, sample.shape[0]))
-        print("================================================================")
-        return exp
