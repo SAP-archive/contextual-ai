@@ -60,16 +60,16 @@ class ReportWriter(FPDF):
             self.content_font = 'Arial'
 
         # initilization for format
-        self.b = 0
-        self.i = 0
-        self.u = 0
+        self.b = 0  # bold status
+        self.i = 0  # italic status
+        self.u = 0  # underline status
         self.href = ''
         self.page_links = {}
-        self.cur_sec = 0
-        self.cur_subsec = 0
-        self.cur_subsubsec = 0
-        self.itemize_level = 0
-        self.itemize_symbol = ''
+        self.cur_sec = 0  # current section level
+        self.cur_subsec = 0  # current subsection level
+        self.cur_subsubsec = 0  # current subsubsection level
+        self.itemize_level = 0  # current itemize level
+        self.itemize_symbol = ''  # current itemize symbol
         self.foot_size = 15
 
     def header(self):
