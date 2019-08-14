@@ -1,43 +1,42 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict
 
-import numpy as np
-
-
-# TODO * decide on initialisation specification
-# TODO * decide on methods
-# TODO * decide on specifications of each method (inputs, input types, outputs, and output types)
 
 class AbstractExplainer(ABC):
-    # FIXME | why is the constant outside of __init__? Seems like not-good practice
-    TOP_EXPLAIN_FEATURES = 5
 
-    def __init__(self, explainer_name: str, class_names: List[str], feature_names: List[str],
-                 categorical_dict: Dict[list]):
-        # FIXME | no doc strings
-        # FIXME | feature_names, categorical_dict are not required for text explainers
-        # FIXME | class_names should be optional
-        # FIXME | explainer_name should be optional
-        self.explainer_name = explainer_name
-
-        self.class_names = class_names
-        self.feature_names = feature_names
-        self.categorical_dict = categorical_dict
-
-        self.explainer = None
-        self.predict_fn = None
-        self.train_data = None
+    def __init__(self):
+        self.explainer_object = None
 
     @abstractmethod
-    def initialize_explainer(self, predict_fn, train_data: np.array):
+    def build_explainer(self, **kwargs):
+        """
+        The build method for the explainer. This is called by the Explainer class when the user
+        initializes the explainer. Any explainer implementing a customer Explainer should provide
+        clear documentation on the parameters required to initialize it.
+
+        Args:
+            **kwargs (dict): keyword arguments for initializing the explainer
+
+        Returns:
+            None
+        """
         raise NotImplementedError("Derived class should implement this")
 
     @abstractmethod
-    def explain_instance(self, sample, num_features=TOP_EXPLAIN_FEATURES) -> str:
+    def explain_instance(self, **kwargs):
+        """
+        The explain method for the explainer. This is also called by the Explainer class when the
+        user attempts to explain a particular prediction.
+
+        Args:
+            **kwargs (dict): keyword arguments for calling the explanation method
+
+        Returns:
+            This is left to the implementor to decide
+        """
         raise NotImplementedError("Derived class should implement this")
 
     @abstractmethod
-    def save_explainer(self, path: str) -> bool:
+    def save_explainer(self, path: str):
         """
         Saves the explainer to disk.
 
@@ -45,12 +44,12 @@ class AbstractExplainer(ABC):
             path (str): Path to which the explainer is stored
 
         Returns:
-            (bool) Whether saving the explainer was successful or not
+            None
         """
         raise NotImplementedError("Derived class should implement this")
 
     @abstractmethod
-    def load_explainer(self, path: str) -> bool:
+    def load_explainer(self, path: str):
         """
         Loads the explainer from disk.
 
@@ -58,12 +57,11 @@ class AbstractExplainer(ABC):
             path (str): Path to the explainer
 
         Returns:
-            (bool) Whether the explainer was successfully loaded or not
+            None
 
         Notes:
             load_explainer should not return the explainer, but it should instead load the
-            AbstractExplainer instance with the explainer (e.g. set the self.explainer to the loaded
-            object)
+            AbstractExplainer instance with the explainer
+            (e.g. set the self.explainer to the loaded object)
         """
-        # TODO what is this?
         raise NotImplementedError("Derived class should implement this")
