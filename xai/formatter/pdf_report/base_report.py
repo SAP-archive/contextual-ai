@@ -5,6 +5,7 @@ import logging
 
 from fpdf import FPDF
 
+from xai.formatter.pdf_report import constants
 LOGGER = logging.getLogger(__name__)
 
 
@@ -78,15 +79,14 @@ class ReportWriter(FPDF):
         """
         # Calculate width of title and position
 
-        self.set_font(self.title_font, 'B', 20)
+        self.set_font(self.title_font, 'B', constants.TITLE_FONTSIZE)
         text_width = self.get_string_width(self.title) + 6
 
-        self.set_x((210 - text_width) / 2)
+        self.set_x((constants.A4_PAPER_WIDTH - text_width) / 2)
         # Colors of frame, background and text
 
-        # self.set_draw_color(0, 80, 180)
-        self.set_fill_color(255, 255, 255)
-        self.set_text_color(58, 81, 110)
+        self.set_fill_color(**constants.DEFAULT_FILL_COLOR)
+        self.set_text_color(**constants.DEFAULT_TEXT_COLOR)
         # Thickness of frame (1 mm)
         self.set_line_width(0)
         # Title
@@ -96,11 +96,11 @@ class ReportWriter(FPDF):
 
         author_date = '%s created on %s' % (self.author, self.create_date)
         text_width = self.get_string_width(author_date) + 6
-        self.set_x((210 - text_width) / 2)
+        self.set_x((constants.A4_PAPER_WIDTH - text_width) / 2)
 
-        self.set_font('', '', 10)
-        self.set_fill_color(255, 255, 255)
-        self.set_text_color(58, 81, 110)
+        self.set_font('', '', constants.AUTHOR_DATE_FONTSIZE)
+        self.set_fill_color(**constants.DEFAULT_FILL_COLOR)
+        self.set_text_color(**constants.DEFAULT_TEXT_COLOR)
         self.set_line_width(0)
         # Title
         self.cell(text_width, 5, author_date, 0, 0, 'C', 1)
@@ -119,9 +119,9 @@ class ReportWriter(FPDF):
         # Arial italic 8
         self.set_font(self.content_font, 'I', 8)
         # Text color in gray
-        self.set_text_color(128)
+        self.set_text_color(**constants.DEFAULT_FOOTER_FONT_COLOR)
         # Page number
-        self.cell(0, 10, 'Page ' + str(self.page_no()), 0, 0, 'C')
+        self.cell(0, constants.FOOTER_FONTSIZE, 'Page ' + str(self.page_no()), 0, 0, 'C')
 
     def add_ribbon(self, title):
         """
@@ -132,7 +132,7 @@ class ReportWriter(FPDF):
         # Arial 12
         self.set_font(self.title_font, 'B', 15)
         # Background color
-        self.set_fill_color(200, 220, 255)
+        self.set_fill_color(**constants.DEFAULT_RIBBON_COLOR)
         # Title
         self.cell(0, 6, title, 0, 1, 'L', 1)
 
@@ -140,7 +140,7 @@ class ReportWriter(FPDF):
         self.ln(4)
 
         # reset back the font
-        self.set_font(self.content_font, '', 12)
+        self.set_font(self.content_font, '', constants.CONTEXT_FONTSIZE)
 
     def add_section(self, title, link=None):
         """
@@ -284,9 +284,9 @@ class ReportWriter(FPDF):
             y (int): y position of current page to start the table (left top corner)
         """
         # Colors, line width and bold font
-        self.set_fill_color(23, 63, 95)
-        self.set_text_color(255)
-        self.set_draw_color(23, 63, 95)
+        self.set_fill_color(**constants.TABLE_HEADER_COLOR)
+        self.set_text_color(**constants.DEFAULT_CONTEXT_FONT_COLOR)
+        self.set_draw_color(**constants.TABLE_HEADER_COLOR)
         self.set_line_width(0.3)
         self.set_font('', 'B')
 
@@ -304,8 +304,8 @@ class ReportWriter(FPDF):
             self.cell(w[i], row_height, header[i], 1, 0, 'L', 1)
         self.ln()
         # Color and font restoration
-        self.set_fill_color(224, 235, 255)
-        self.set_text_color(0)
+        self.set_fill_color(**constants.TABLE_ROW_DARK_COLOR)
+        self.set_text_color(**constants.TABLE_ROW_TEXT_COLOR)
         self.set_font('')
         # Data
         fill = 0
@@ -388,8 +388,7 @@ class ReportWriter(FPDF):
                 LOGGER.warning('Warning: figure will exceed the page bottom, adding a new page.')
                 self.add_page()
         else:
-            ## TODO: estimate the caption height, 10 is hardcoded
-            if self.y + height + 5 > self.h - self.foot_size:
+            if self.y + height + constants.LINE_HEIGHT > self.h - self.foot_size:
                 LOGGER.warning('Warning: figure will exceed the page bottom, adding a new page.')
                 self.add_page()
         if caption is not None:
@@ -467,8 +466,7 @@ class ReportWriter(FPDF):
                 LOGGER.warning('Warning: figure will exceed the page bottom, adding a new page.')
                 self.add_page()
         else:
-            ## TODO: estimate the caption height, 5 is hardcoded
-            if Y + block_height + 5 > self.h - self.foot_size:
+            if Y + block_height + constants.LINE_HEIGHT> self.h - self.foot_size:
                 LOGGER.warning('Warning: figure will exceed the page bottom, adding a new page.')
                 self.add_page()
             self.add_new_line(caption, style=style)
@@ -549,8 +547,7 @@ class ReportWriter(FPDF):
                 LOGGER.warning('Warning: figure will exceed the page bottom, adding a new page.')
                 self.add_page()
         else:
-            ## TODO: estimate the caption height, 5 is hardcoded
-            if self.y + maximum_y + 5 > self.h - self.foot_size:
+            if self.y + maximum_y + constants.LINE_HEIGHT > self.h - self.foot_size:
                 LOGGER.warning('Warning: figure will exceed the page bottom, adding a new page.')
                 self.add_page()
 
