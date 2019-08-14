@@ -1,18 +1,19 @@
-from xai.formatter.pdf_report.base_report import ReportWriter
-
 import tempfile
 import datetime
 import shutil
 import logging
 import os
 import inspect
-import numpy as np
 from collections import defaultdict
+from typing import Tuple, Dict, List
+
+import numpy as np
+
 from xai.graphs import format_contants as gg_constants
 from xai.graphs import graph_generator as gg
+from xai.formatter.pdf_report.base_report import ReportWriter
 from xai.evaluation.multi_classification_result import MultiClassificationResult
 from xai.evaluation.binary_classification_result import BinaryClassificationResult
-from typing import Tuple, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 

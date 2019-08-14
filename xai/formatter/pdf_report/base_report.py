@@ -1,8 +1,9 @@
-from fpdf import FPDF
 import datetime
 import re
 import os
 import logging
+
+from fpdf import FPDF
 
 LOGGER = logging.getLogger(__name__)
 
@@ -569,7 +570,7 @@ class ReportWriter(FPDF):
 
         if type(image_set) == list:
             ## follow the index
-            if len(image_set)!=len(grid_spec):
+            if len(image_set) != len(grid_spec):
                 LOGGER.error('Error: Inconsistent length found. Image set should be of same length with grid spec.')
             for idx, image_path in enumerate(image_set):
                 if idx not in grid_spec:
