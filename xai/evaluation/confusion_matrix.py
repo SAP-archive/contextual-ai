@@ -24,6 +24,8 @@ class ConfusionMatrix:
         top_classes = np.argsort(class_count)[::-1]
         similar_class = defaultdict(list)
 
+        if len(top_classes) < top_n_class:
+            top_n_class = len(top_classes)
         for i in range(top_n_class):
             targeted_class = top_classes[i]
             predicted_distribution = values[targeted_class, :]

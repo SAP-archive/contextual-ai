@@ -11,8 +11,8 @@ import operator
 
 
 class ReliabilityDiagram(Graph):
-    def __init__(self, data, title):
-        super(ReliabilityDiagram, self).__init__(data, title, figure_size=(5, 5),
+    def __init__(self, figure_path, data, title):
+        super(ReliabilityDiagram, self).__init__(file_path=figure_path, data=data, title=title, figure_size=(5, 5),
                                                  x_label="Accuracy",
                                                  y_label="Confidence")
 
@@ -93,14 +93,13 @@ class ReliabilityDiagramForMultiClass(Graph):
 
 
 class HeatMap(Graph):
-    def __init__(self, data, title, x_label=None, y_label=None):
+    def __init__(self, figure_path, data, title, x_label=None, y_label=None):
         if len(data) < 3:
             fig_size = (5, 5)
-        elif len(data) < 10:
-            fig_size = (10, 10)
         else:
-            fig_size = (15, 15)
-        super(HeatMap, self).__init__(data, title, figure_size=fig_size, x_label=x_label, y_label=y_label)
+            fig_size = (10, 10)
+        super(HeatMap, self).__init__(file_path=figure_path, data=data, title=title, figure_size=fig_size,
+                                      x_label=x_label, y_label=y_label)
 
     def draw_core(self, x_tick: List[str] = None, y_tick: List[str] = None, color_bar=False, grey_scale=False):
         data = np.array(self.data)
@@ -123,14 +122,15 @@ class HeatMap(Graph):
 
 
 class ResultProbability(Graph):
-    def __init__(self, data, title):
-        super(ResultProbability, self).__init__(data=data, title=title, figure_size=(6, 6),
+    def __init__(self, figure_path, data, title):
+        super(ResultProbability, self).__init__(file_path=figure_path, data=data, title=title,
+                                                figure_size=(6, 6),
                                                 x_label='Class',
                                                 y_label='Probability')
 
     def draw_core(self, limit_size=Const.DEFAULT_LIMIT_SIZE):
-        prob = np.array(self.data[Const.KEY_PROBABILITY])
-        gt = np.array(self.data[Const.KEY_GROUNDTRUTH])
+        prob = np.array(self.data['probability'])
+        gt = np.array(self.data['gt'])
         num_sample = len(prob)
         if num_sample > limit_size:
             idx = np.random.rand(num_sample) < limit_size / num_sample
@@ -141,14 +141,15 @@ class ResultProbability(Graph):
 
         data_frame = {'predict_prob': prob, 'gt': gt}
         df = pd.DataFrame(data_frame)
-        self.label_ax = sns.swarmplot(x="gt", y="predict_prob", data=df)
+        self.label_ax = sns.violinplot(x="gt", y="predict_prob", data=df)
 
 
 class ResultProbabilityForMultiClass(Graph):
-    def __init__(self, data, title):
-        super(ResultProbabilityForMultiClass, self).__init__(data=data, title=title, figure_size=(12, 6),
-                                                             x_label='Class',
-                                                             y_label='Probability')
+    def __init__(self, figure_path, data, title):
+        super(ResultProbabilityForMultiClass, self).__init__(file_path=figure_path, data=data, title=title,
+                                                             figure_size=(12, 6),
+                                                             x_label='Ground Truth Class',
+                                                             y_label='Confidence')
 
     def draw_core(self, limit_size=Const.DEFAULT_LIMIT_SIZE, TOP_K_CLASS=10):
         conf = np.array(self.data[Const.KEY_PROBABILITY])
@@ -165,14 +166,14 @@ class ResultProbabilityForMultiClass(Graph):
         label_top_k = [a for (a, b) in sorted_dict_counter[:TOP_K_CLASS]]
         data_frame = {'predict_prob': conf, 'gt': gt}
         df = pd.DataFrame(data_frame)
-        self.label_ax = sns.swarmplot(x="gt", y="predict_prob", data=df, order=label_top_k)
+        self.label_ax = sns.violinplot(x="gt", y="predict_prob", data=df, order=label_top_k)
         plt.title(self.title)
 
 
 class KdeDistribution(Graph):
-    def __init__(self, data, title, x_label=None, y_label=None):
-        super(KdeDistribution, self).__init__(data=data, title=title, figure_size=(10, 5), x_label=x_label,
-                                              y_label=y_label)
+    def __init__(self, figure_path, data, title, x_label=None, y_label=None):
+        super(KdeDistribution, self).__init__(file_path=figure_path, data=data, title=title, figure_size=(10, 5),
+                                              x_label=x_label, y_label=y_label)
 
     def draw_core(self, color, force_no_log, x_limit):
         data = self.data
@@ -194,10 +195,11 @@ class KdeDistribution(Graph):
         sorted_perc = sorted(perc)
 
         x = [i[0] for i in xywh]
-        w = [i[2] for i in xywh]
+        w = [i[2] * 0.95 for i in xywh]
         h = [i[3] for i in xywh]
         if force_no_log:
             plt.bar(x=x, height=h, width=w, align='edge', color=color)
+            plt.plot(line_data[:, 0], line_data[:, 1], color='k')
         else:
             if len(sorted_perc) < 2 or sorted_perc[-1] - sorted_perc[-2] > 0.5:
                 plt.bar(x=x, height=h, width=w, align='edge', log=True, color=color)
@@ -209,11 +211,12 @@ class KdeDistribution(Graph):
 
 
 class EvaluationLinePlot(Graph):
-    def __init__(self, data, title, x_label=None, y_label=None):
-        super(EvaluationLinePlot, self).__init__(data=data, title=title, figure_size=(14, 7), x_label=x_label,
+    def __init__(self, figure_path, data, title, x_label=None, y_label=None):
+        super(EvaluationLinePlot, self).__init__(file_path=figure_path, data=data, title=title, figure_size=(14, 7),
+                                                 x_label=x_label,
                                                  y_label=y_label)
 
-    def draw_core(self, benchmark_metric, benchmark_value):
+    def draw_core(self, benchmark_metric=None, benchmark_value=None):
         sample_index = list(self.data.keys())
         sample_index = sample_index[0]
         metric_keys = list(self.data[sample_index][Const.KEY_HISTORY_EVALUATION].keys())
@@ -230,31 +233,32 @@ class EvaluationLinePlot(Graph):
         for idx, metric in enumerate(metric_keys):
             values = metrics[metric]
             ax = sns.pointplot(x=iterations, y=values, color=Const.PLOT_LINE_COLORS[idx], scale=0.5)
-
-        ax = sns.lineplot(x=iterations, y=[benchmark_value] * len(iterations), color='red', dashes=True)
-        ax.lines[-1].set_linestyle("--")
-
-        metric_keys.append('benchmark (%s)' % benchmark_metric)
+        if benchmark_value is not None:
+            ax = sns.lineplot(x=iterations, y=[benchmark_value] * len(iterations), color='red', dashes=True)
+            ax.lines[-1].set_linestyle("--")
+            if benchmark_metric is not None:
+                metric_keys.append('benchmark (%s)' % benchmark_metric)
 
         ax.legend(handles=ax.lines[::len(iterations) + 1], labels=metric_keys, bbox_to_anchor=(1, 1))
         self.label_ax = ax
 
 
 class FeatureImportance(Graph):
-    def __init__(self, data, title):
-        super(FeatureImportance, self).__init__(data=data, title=title, figure_size=(10, 5), x_label="Importance Score",
+    def __init__(self, figure_path, data, title):
+        super(FeatureImportance, self).__init__(file_path=figure_path, data=data, title=title, figure_size=(10, 5),
+                                                x_label="Importance Score",
                                                 y_label="Features")
 
     def draw_core(self, limit_length=None, color_palette="Blues_d"):
         if type(self.data) == 'dict':
             data = sorted(self.data.items(), key=lambda kv: int(kv[1]), reverse=True)
+        else:
+            data = self.data
         if limit_length is not None:
             data = data[:limit_length]
 
         features = np.array([a for a, _ in data])
         scores = np.array([b for _, b in data])
-
-        plt.figure(figsize=(10, 5))
 
         ax = sns.barplot(x=scores, y=features, palette=sns.color_palette(color_palette), orient='h')
         for index, score_value in enumerate(scores.tolist()):
@@ -264,8 +268,9 @@ class FeatureImportance(Graph):
 
 
 class WordCloudGraph(Graph):
-    def __init__(self, data, title):
-        super(WordCloudGraph, self).__init__(data=data, title=title, figure_size=(10, 10), x_label=None, y_label=None)
+    def __init__(self, figure_path, data, title):
+        super(WordCloudGraph, self).__init__(file_path=figure_path, data=data, title=title, figure_size=(10, 10),
+                                             x_label=None, y_label=None)
 
     def draw_core(self, limit_words=None):
         if limit_words is None:
@@ -273,19 +278,59 @@ class WordCloudGraph(Graph):
         wc = WordCloud(background_color="white", max_words=limit_words)
         # generate word cloud
         if type(self.data) == list:
-            data = {word: freq for (word, freq) in self.data}
+            data = {word: freq for (word, freq) in self.data if freq > 0}
         wc.generate_from_frequencies(data)
         plt.imshow(wc, interpolation="bilinear")
         plt.axis("off")
 
 
+class DatePlot(Graph):
+    def __init__(self, figure_path, data, title, x_label=None, y_label=None):
+        figsize = (10, 5)
+        super(DatePlot, self).__init__(file_path=figure_path, data=data, title=title, figure_size=figsize,
+                                       x_label=x_label, y_label=y_label)
+
+    def draw_core(self):
+        data_dist = {k: v for (k, v) in sorted(self.data.items())}
+        min_year = list(data_dist.keys())[0]
+        max_year = list(data_dist.keys())[-1]
+
+        earliest = (min_year, min([int(month) for month in data_dist[min_year].keys()]))
+        latest = (max_year, max([int(month) for month in data_dist[max_year].keys()]))
+
+        line_num = len(data_dist)
+        data_frame = []
+        for year in data_dist:
+            year_data = [0] * 13
+            year_data[0] = year
+            for month in data_dist[year]:
+                year_data[int(month)] = int(data_dist[year][month])
+            data_frame.append(year_data)
+        data_frame = np.array(data_frame).astype(int)
+        bars = []
+        colors = ['#1abc9c', '#2ecc71', '#3498db', '#7f8c8d', '#9b59b6', '#34495e', '#f1c40f', '#e67e22', '#e74c3c',
+                  '#95a5a6', '#d35400', '#bdc3c7']
+        legends = ['Jan', 'Feb', 'Mar', 'April', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        current_sum = np.zeros(line_num)
+        for month in range(1, 13):
+            p = plt.barh(y=list(range(0, line_num)), width=data_frame[:, month].tolist(), left=current_sum.tolist(),
+                         color=colors[month - 1])
+            bars.append(p)
+            current_sum = data_frame[:, month] + current_sum
+        for idx in range(line_num):
+            plt.text(current_sum[idx], idx, int(current_sum[idx]), color='black', ha="left")
+
+        plt.yticks(list(range(0, line_num)), list(data_dist.keys()))
+        plt.legend(bars, legends, bbox_to_anchor=(1.04, 1), loc="upper left")
+        plt.title(
+            'Date Range: %s.%s - %s.%s' % (earliest[0], legends[earliest[1] - 1], latest[0], legends[latest[1] - 1]))
+
+
 class BarPlot(Graph):
-    def __init__(self, data, title, x_label=None, y_label=None):
-        if len(data) < 5:
-            figsize = (6, 3)
-        else:
-            figsize = (10, 5)
-        super(BarPlot, self).__init__(data=data, title=title, figure_size=figsize, x_label=x_label, y_label=y_label)
+    def __init__(self, file_path, data, title, x_label=None, y_label=None):
+        figsize = (10, 5)
+        super(BarPlot, self).__init__(file_path=file_path, data=data, title=title, figure_size=figsize, x_label=x_label,
+                                      y_label=y_label)
 
     def draw_core(self, caption=None, limit_length=None, color_palette="Blues_d", ratio=False):
         sns.set(font_scale=1)
@@ -307,7 +352,7 @@ class BarPlot(Graph):
             xlimit = values[1] * 1.2
             plt.xlim([0, xlimit])
             if ratio:
-                ax.text(values[0], 0, "%s%%" % round(percentage[0] * 100, 2), color='black', ha="left")
+                ax.text(xlimit, 0, "%s%%" % round(percentage[0] * 100, 2), color='black', ha="left")
             else:
                 ax.text(xlimit, 0, round(values[0], 4), color='red', ha="left")
             plt.autoscale(enable=True, axis='y', tight=True)
