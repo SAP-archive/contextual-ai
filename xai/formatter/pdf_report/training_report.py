@@ -12,6 +12,7 @@ from xai.graphs import format_contants as gg_constants
 from xai.graphs import graph_generator as gg
 from xai.evaluation.multi_classification_result import MultiClassificationResult
 from xai.evaluation.binary_classification_result import BinaryClassificationResult
+from typing import Tuple, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ class TrainingReport(ReportWriter):
 
         """
 
-    def __init__(self, usecase_name, version, usecase_team):
+    def __init__(self, usecase_name: str, version: str, usecase_team: str):
         """
 
         Args:
@@ -41,8 +42,9 @@ class TrainingReport(ReportWriter):
                                              report_name='Training Report')
         LOGGER.info('Training report initialized.')
 
-        # set up temperary image folder
+        # set up temporary image folder
         self.figure_path = tempfile.TemporaryDirectory().name
+
         os.mkdir(self.figure_path)
 
         LOGGER.info('Temporary figure path created: %s' % self.figure_path)
@@ -55,7 +57,7 @@ class TrainingReport(ReportWriter):
         self.__current_subsection_level = 0
         self.__current_subsubsection_level = 0
 
-    def output_report(self, output_path, report_name='training_report'):
+    def output_report(self, output_path: str, report_name='training_report'):
         """
         generate pdf report and output to defined path, clean up the figure path
         Args:
@@ -133,7 +135,7 @@ class TrainingReport(ReportWriter):
             self.__content_buffer.append(content)
 
     def __component_content_table(self):
-        def __add_content_table():
+        def func():
             """
             add content table based on current __content_table title and link
             """
@@ -144,12 +146,12 @@ class TrainingReport(ReportWriter):
         frame = inspect.currentframe()
         kwargs, varargs, _, values = inspect.getargvalues(frame)
         if varargs is not None:
-            return __add_content_table, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[varargs]
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[varargs]
         else:
-            return __add_content_table, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
 
-    def component_paragraph_in_html(self, text):
-        def __add_component_paragraph_in_html(text):
+    def component_paragraph_in_html(self, text: str):
+        def func(text: str):
             """
             add a paragraph into the report
             Args:
@@ -161,16 +163,16 @@ class TrainingReport(ReportWriter):
         frame = inspect.currentframe()
         kwargs, varargs, _, values = inspect.getargvalues(frame)
         if varargs is not None:
-            return __add_component_paragraph_in_html, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[
                 varargs]
         else:
-            return __add_component_paragraph_in_html, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
 
     """ Data section
     """
 
-    def component_data_missing_value(self, missing_count, total_count={}, ratio=False, notes=None):
-        def __add_component_data_missing_value(missing_count, total_count={}, ratio=False, notes=None):
+    def component_data_missing_value(self, missing_count: dict, total_count={}, ratio=False, notes=None):
+        def func(missing_count: dict, total_count={}, ratio=False, notes=None):
             """
             add information of missing value for data fields to the report
             Args:
@@ -241,13 +243,12 @@ class TrainingReport(ReportWriter):
         frame = inspect.currentframe()
         kwargs, varargs, _, values = inspect.getargvalues(frame)
         if varargs is not None:
-            return __add_component_data_missing_value, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, \
-                   values[varargs]
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[varargs]
         else:
-            return __add_component_data_missing_value, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
 
-    def component_dataset_distribution(self, *dataset_distribution, max_class_shown=20, notes=None):
-        def __add_component_dataset_distribution(*dataset_distribution, max_class_shown=20, notes=None):
+    def component_dataset_distribution(self, *dataset_distribution: Tuple[str, dict], max_class_shown=20, notes=None):
+        def func(*dataset_distribution: Tuple[str, dict], max_class_shown=20, notes=None):
             """
             add information of distribution on data set to the report
             Args:
@@ -291,14 +292,12 @@ class TrainingReport(ReportWriter):
         frame = inspect.currentframe()
         kwargs, varargs, _, values = inspect.getargvalues(frame)
         if varargs is not None:
-            return __add_component_dataset_distribution, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, \
-                   values[
-                       varargs]
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[varargs]
         else:
-            return __add_component_dataset_distribution, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
 
-    def component_data_attributes(self, data_attribute, notes=None):
-        def __add_component_data_attributes(data_attribute, notes=None):
+    def component_data_attributes(self, data_attribute: Dict, notes=None):
+        def func(data_attribute, notes=None):
             """
             add information of data attribute for data fields to the report
             Args:
@@ -338,16 +337,13 @@ class TrainingReport(ReportWriter):
         frame = inspect.currentframe()
         kwargs, varargs, _, values = inspect.getargvalues(frame)
         if varargs is not None:
-            return __add_component_data_attributes, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, \
-                   values[
-                       varargs]
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[varargs]
         else:
-            return __add_component_data_attributes, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
 
-    def component_categorical_field_distribution(self, field_name, field_distribution, max_values_display=20,
+    def component_categorical_field_distribution(self, field_name: str, field_distribution: dict, max_values_display=20,
                                                  colors=None, notes=None):
-        def __add_component_categorical_field_distribution(field_name, field_distribution, max_values_display=20,
-                                                           colors=None, notes=None):
+        def func(field_name: str, field_distribution: dict, max_values_display=20, colors=None, notes=None):
             """
             add information of field value distribution for categorical type to the report.
             Details see analyzers inside `xai.data_explorer.categorical_analyzer`
@@ -393,18 +389,14 @@ class TrainingReport(ReportWriter):
         frame = inspect.currentframe()
         kwargs, varargs, _, values = inspect.getargvalues(frame)
         if varargs is not None:
-            return __add_component_categorical_field_distribution, \
-                   {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, \
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, \
                    values[varargs]
         else:
-            return __add_component_categorical_field_distribution, \
-                   {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
 
-    def component_numeric_field_distribution(self, field_name, field_distribution, force_no_log=False, x_limit=False,
-                                             colors=None, notes=None):
-        def __add_component_numeric_field_distribution(field_name, field_distribution, force_no_log=False,
-                                                       x_limit=False,
-                                                       colors=None, notes=None):
+    def component_numeric_field_distribution(self, field_name: str, field_distribution: dict, force_no_log=False,
+                                             x_limit=False, colors=None, notes=None):
+        def func(field_name, field_distribution, force_no_log=False, x_limit=False, colors=None, notes=None):
             """
             add information of field value distribution for numerical type to the report.
             Details see analyzers inside `xai.data_explorer.numerical_analyzer`
@@ -455,15 +447,12 @@ class TrainingReport(ReportWriter):
         frame = inspect.currentframe()
         kwargs, varargs, _, values = inspect.getargvalues(frame)
         if varargs is not None:
-            return __add_component_numeric_field_distribution, \
-                   {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, \
-                   values[varargs]
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[varargs]
         else:
-            return __add_component_numeric_field_distribution, \
-                   {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
 
-    def component_text_field_distribution(self, field_name, field_distribution, notes=None):
-        def __add_component_text_field_distribution(field_name, field_distribution, notes=None):
+    def component_text_field_distribution(self, field_name: str, field_distribution: dict, notes=None):
+        def func(field_name, field_distribution, notes=None):
             """
             add information of field value distribution for text type to the report.
             Details see analyzers inside `xai.data_explorer.text_analyzer`
@@ -503,15 +492,12 @@ class TrainingReport(ReportWriter):
         frame = inspect.currentframe()
         kwargs, varargs, _, values = inspect.getargvalues(frame)
         if varargs is not None:
-            return __add_component_text_field_distribution, \
-                   {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, \
-                   values[varargs]
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[varargs]
         else:
-            return __add_component_text_field_distribution, \
-                   {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
 
-    def component_datetime_field_distribution(self, field_name, field_distribution, notes=None):
-        def __add_component_datetime_field_distribution(field_name, field_distribution, notes=None):
+    def component_datetime_field_distribution(self, field_name: str, field_distribution: Dict, notes=None):
+        def func(field_name: str, field_distribution: Dict, notes=None):
             """
             add information of field value distribution for datetime type to the report.
             Details see analyzers inside `xai.data_explorer.datetime_analyzer`
@@ -546,18 +532,16 @@ class TrainingReport(ReportWriter):
         frame = inspect.currentframe()
         kwargs, varargs, _, values = inspect.getargvalues(frame)
         if varargs is not None:
-            return __add_component_datetime_field_distribution, \
-                   {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, \
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, \
                    values[varargs]
         else:
-            return __add_component_datetime_field_distribution, \
-                   {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
 
     """ Feature section
     """
 
-    def component_feature_importance(self, importance_ranking, importance_threshold, maximum_number_feature=20,
-                                     notes=None):
+    def component_feature_importance(self, importance_ranking: List[List], importance_threshold: float,
+                                     maximum_number_feature=20, notes=None):
         def func(importance_ranking, importance_threshold,
                  maximum_number_feature=20, notes=None):
             """
@@ -612,22 +596,7 @@ class TrainingReport(ReportWriter):
     """Training part
     """
 
-    def component_training_illustration(self, figure_path=None, pipeline_nested_list=None, notes=None):
-        def func():
-            if notes is not None:
-                self.add_new_line(notes)
-            if figure_path is not None:
-                self.add_large_image(figure_path)
-
-        frame = inspect.currentframe()
-        kwargs, varargs, _, values = inspect.getargvalues(frame)
-        if varargs is not None:
-            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, \
-                   values[varargs]
-        else:
-            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
-
-    def component_hyperparameter_tuning(self, history, best_idx, search_space=None, benchmark_metric=None,
+    def component_hyperparameter_tuning(self, history: dict, best_idx: str, search_space=None, benchmark_metric=None,
                                         benchmark_threshold=None, non_hyperopt_score=None, notes=None):
         def func(history, best_idx, search_space=None,
                  benchmark_metric=None,
@@ -1012,10 +981,11 @@ class TrainingReport(ReportWriter):
             """
             if notes is not None:
                 self.add_new_line(notes)
-            image_list= []
+            image_list = []
             for eval_name, eval_vis_result in visual_result_tuple:
-                image_path = "%s/%s_prob_dist.png"%(self.figure_path,eval_name)
-                image_path = gg.ResultProbability(figure_path=image_path, data=eval_vis_result, title='Probability Distribution').draw()
+                image_path = "%s/%s_prob_dist.png" % (self.figure_path, eval_name)
+                image_path = gg.ResultProbability(figure_path=image_path, data=eval_vis_result,
+                                                  title='Probability Distribution').draw()
                 image_list.append(image_path)
 
             if len(image_list) == 1:
@@ -1051,10 +1021,11 @@ class TrainingReport(ReportWriter):
             """
             if notes is not None:
                 self.add_new_line(notes)
-            image_list= []
+            image_list = []
             for eval_name, eval_vis_result in visual_result_tuple:
-                image_path = "%s/%s_reliability_diagram.png"%(self.figure_path,eval_name)
-                image_path = gg.ReliabilityDiagram(figure_path=image_path, data=eval_vis_result, title='Reliability Diagram').draw()
+                image_path = "%s/%s_reliability_diagram.png" % (self.figure_path, eval_name)
+                image_path = gg.ReliabilityDiagram(figure_path=image_path, data=eval_vis_result,
+                                                   title='Reliability Diagram').draw()
                 image_list.append(image_path)
 
             if len(image_list) == 1:
@@ -1079,8 +1050,8 @@ class TrainingReport(ReportWriter):
     """ Cover page section
     """
 
-    def component_training_timing(self, timing, notes=None):
-        def __add_component_training_timing(timing, notes=None):
+    def component_training_timing(self, timing: List[Tuple[str, int]], notes=None):
+        def func(timing, notes=None):
             """
             add information of timing to the report
             Args:
@@ -1101,13 +1072,12 @@ class TrainingReport(ReportWriter):
         frame = inspect.currentframe()
         kwargs, varargs, _, values = inspect.getargvalues(frame)
         if varargs is not None:
-            return __add_component_training_timing, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[
-                varargs]
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[varargs]
         else:
-            return __add_component_training_timing, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
 
-    def component_dataset_summary(self, data_summary, notes=None):
-        def __add_component_dataset_summary(data_summary, notes=None):
+    def component_dataset_summary(self, data_summary: List[Tuple[str, int]], notes=None):
+        def func(data_summary, notes=None):
             """
             add information of dataset summary to the report
             Args:
@@ -1130,13 +1100,12 @@ class TrainingReport(ReportWriter):
         frame = inspect.currentframe()
         kwargs, varargs, _, values = inspect.getargvalues(frame)
         if varargs is not None:
-            return __add_component_dataset_summary, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[
-                varargs]
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[varargs]
         else:
-            return __add_component_dataset_summary, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
 
     def component_evaluation_result_summary(self, *evaluation_result, notes=None):
-        def __add_component_evaluation_result_summary(*evaluation_result, notes=None):
+        def func(*evaluation_result, notes=None):
             """
             add information of training performance to the result
 
@@ -1193,14 +1162,12 @@ class TrainingReport(ReportWriter):
         frame = inspect.currentframe()
         kwargs, varargs, _, values = inspect.getargvalues(frame)
         if varargs is not None:
-            return __add_component_evaluation_result_summary, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, \
-                   values[
-                       varargs]
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[varargs]
         else:
-            return __add_component_evaluation_result_summary, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
 
     def component_model_info_summary(self, model_info=None, notes=None):
-        def __add_component_model_info(model_info, notes=None):
+        def func(model_info, notes=None):
             """
             add information of dataset summary to the report
             Args:
@@ -1230,10 +1197,9 @@ class TrainingReport(ReportWriter):
         frame = inspect.currentframe()
         kwargs, varargs, _, values = inspect.getargvalues(frame)
         if varargs is not None:
-            return __add_component_model_info, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[
-                varargs]
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}, values[varargs]
         else:
-            return __add_component_model_info, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
+            return func, {kvar: values[kvar] for kvar in kwargs if kvar != 'self'}
 
     def generate_cover_page(self, summary_notes=None, model_info=None, data_summary=None, timing=None,
                             evaluation_result=None):
