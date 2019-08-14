@@ -4,8 +4,15 @@ class DomainNotSupported(Exception):
         Exception.__init__(self, message)
         self.message = message
 
+
 class AlgorithmNotFoundInDomain(Exception):
     def __init__(self, domain, algorithm):
         message = 'Algorithm {} is not found in domain {}.'.format(algorithm, domain)
+        Exception.__init__(self, message)
+        self.message = message
+
+
+class ExplainerUninitializedError(Exception):
+    def __init__(self, message):
         Exception.__init__(self, message)
         self.message = message
