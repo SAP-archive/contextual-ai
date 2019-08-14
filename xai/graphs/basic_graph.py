@@ -7,6 +7,16 @@ import os
 class Graph(ABC):
     def __init__(self, file_path, data, title: str, figure_size: Tuple[int, int], x_label: str = None,
                  y_label: str = None):
+        """
+        initialize the graph
+        Args:
+            file_path (str): figure path to save the generated plot
+            data: data used to render the plot, extended classes need to define the data type
+            title (str): figure title render on the plot
+            figure_size (tuple): figure size in terms of width and height
+            x_label (str): x-axis label for the figure
+            y_label (str): y-axis label for the figure
+        """
         self.title = title
         self.x_label = x_label
         self.y_label = y_label
@@ -16,6 +26,8 @@ class Graph(ABC):
         self.label_ax = None
 
     def draw(self, **kwargs):
+        """generate the plot and save to the figure
+        """
         if self.figure_size is not None:
             f = plt.figure(figsize=self.figure_size)
 
