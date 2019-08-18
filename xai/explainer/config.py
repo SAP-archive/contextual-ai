@@ -1,11 +1,16 @@
 from xai.explainer.lime_tabular_explainer import LimeTabularExplainer
+from xai.explainer.lime_text_explainer import LimeTextExplainer
 
-DEFAULT_ALGORITHM = 'lime'
 DICT_DOMAIN_TO_CLASS = {
     'text': {
-        DEFAULT_ALGORITHM: ''
+        'lime': LimeTextExplainer
     },
     'tabular': {
-        DEFAULT_ALGORITHM: LimeTabularExplainer
+        'lime': LimeTabularExplainer
     }
+}
+
+DICT_DOMAIN_TO_DEFAULT_ALG = {
+    'text': 'lime',
+    'tabular': 'lime'
 }
