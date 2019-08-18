@@ -6,7 +6,7 @@ import numpy as np
 from lime.lime_tabular import LimeTabularExplainer as OriginalLimeTabularExplainer
 
 from xai.explainer.abstract_explainer import AbstractExplainer
-from xai.explainer.explainer_exceptions import ExplainerUninitializedError
+from xai.explainer.explainer_exceptions import ExplainerUninitializedError, UnsupportedModeError
 
 LOGGER = logging.getLogger(__name__)
 
@@ -68,9 +68,9 @@ class LimeTabularExplainer(AbstractExplainer):
         """
 
         if mode not in self.available_modes:
-            LOGGER.error('Mode must be one of {}! Failed to build explainer'.format(
-                self.available_modes))
-            return
+            msg = 'Mode must be one of {}! Failed to build explainer'.format(
+                self.available_modes)
+            raise UnsupportedModeError(msg)
 
         self.explainer_object = OriginalLimeTabularExplainer(
             training_data=training_data,
