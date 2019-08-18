@@ -10,3 +10,4 @@ nltk==3.2.1
 ordered-set==3.1
 lime==0.1.1.32
 dill==0.3.0
+shap==0.29.3
