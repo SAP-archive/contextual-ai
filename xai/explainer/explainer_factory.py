@@ -6,13 +6,13 @@ from xai.explainer import Explainer
 from typing import Dict
 
 from xai.explainer.abstract_explainer import AbstractExplainer
-from xai.explainer.config import DEFAULT_ALGORITHM, DICT_DOMAIN_TO_CLASS
+from xai.explainer.config import DICT_DOMAIN_TO_CLASS, DICT_DOMAIN_TO_DEFAULT_ALG
 from xai.explainer.explainer_exceptions import DomainNotSupported, AlgorithmNotFoundInDomain
 
 
 class Explainer(object):
 
-    def __init__(self, domain: str, algorithm: str = DEFAULT_ALGORITHM):
+    def __init__(self, domain: str, algorithm: str = None):
         """
         Constructor of the Explainer class
 
@@ -21,15 +21,19 @@ class Explainer(object):
             algorithm (str): Unique name of the algorithm for the particular domain
         """
         self.domain = domain
-        self.algorithm = algorithm
-        self.explainer = self._get_explainer(DICT_DOMAIN_TO_CLASS, self.domain, self.algorithm)
+
+        if algorithm:
+            self.algorithm = algorithm
+        else:
+            self.algorithm = DICT_DOMAIN_TO_DEFAULT_ALG[self.domain]
+        self.explainer = self.create_explainer(DICT_DOMAIN_TO_CLASS, self.domain, self.algorithm)
 
         # Set the base functions to those of the explainer class
         self.build_explainer = self.explainer.build_explainer
         self.explain_instance = self.explainer.explain_instance
 
-    def _get_explainer(self, dict_domain: Dict[str, Dict[str, AbstractExplainer]],
-                       domain: str, algorithm: str) -> AbstractExplainer:
+    def create_explainer(self, dict_domain: Dict[str, Dict[str, AbstractExplainer]],
+                         domain: str, algorithm: str) -> AbstractExplainer:
         """
         Checks whether the given domain and algorithm leads to an existing explainer implementation
 
