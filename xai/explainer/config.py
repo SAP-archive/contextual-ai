@@ -1,5 +1,5 @@
-from xai.explainer.lime_tabular_explainer import LimeTabularExplainer
-from xai.explainer.lime_text_explainer import LimeTextExplainer
+from xai.explainer.tabular.lime_tabular_explainer import LimeTabularExplainer
+from xai.explainer.text.lime_text_explainer import LimeTextExplainer
 
 DICT_DOMAIN_TO_CLASS = {
     'text': {
