@@ -26,14 +26,11 @@ class Explainer(object):
             self.algorithm = algorithm
         else:
             self.algorithm = DICT_DOMAIN_TO_DEFAULT_ALG[self.domain]
-        self.explainer = self.create_explainer(DICT_DOMAIN_TO_CLASS, self.domain, self.algorithm)
 
-        # Set the base functions to those of the explainer class
-        self.build_explainer = self.explainer.build_explainer
-        self.explain_instance = self.explainer.explain_instance
+        self.create_explainer(DICT_DOMAIN_TO_CLASS, self.domain, self.algorithm)
 
     def create_explainer(self, dict_domain: Dict[str, Dict[str, AbstractExplainer]],
-                         domain: str, algorithm: str) -> AbstractExplainer:
+                         domain: str, algorithm: str):
         """
         Checks whether the given domain and algorithm leads to an existing explainer implementation
 
@@ -43,7 +40,7 @@ class Explainer(object):
             algorithm (str): User-provided unique identifier of the algorithm
 
         Returns:
-            An child instance of AbstractExplainer
+            None
 
         Raises:
             DomainNotSupported: If the domain is not in dict_domain
@@ -56,7 +53,10 @@ class Explainer(object):
         if algorithm not in dict_domain[domain]:
             raise AlgorithmNotFoundInDomain(domain, algorithm)
 
-        return dict_domain[domain][algorithm].__init__()
+        self.explainer = dict_domain[domain][algorithm].__init__()
+        # Set the base functions to those of the explainer class
+        self.build_explainer = self.explainer.build_explainer
+        self.explain_instance = self.explainer.explain_instance
 
     def save_explainer(self, path: str):
         """
