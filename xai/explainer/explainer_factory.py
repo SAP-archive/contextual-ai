@@ -21,12 +21,7 @@ class Explainer(object):
             algorithm (str): Unique name of the algorithm for the particular domain
         """
         self.domain = domain
-
-        if algorithm:
-            self.algorithm = algorithm
-        else:
-            self.algorithm = DICT_DOMAIN_TO_DEFAULT_ALG[self.domain]
-
+        self.algorithm = algorithm
         self.create_explainer(DICT_DOMAIN_TO_CLASS, self.domain, self.algorithm)
 
     def create_explainer(self, dict_domain: Dict[str, Dict[str, AbstractExplainer]],
@@ -50,39 +45,21 @@ class Explainer(object):
         if domain not in dict_domain:
             raise DomainNotSupported(domain)
 
+        # We know that the domain is available, now see whether the user supplied an algorithm
+        # or not
+        if algorithm:
+            self.algorithm = algorithm
+        else:
+            self.algorithm = DICT_DOMAIN_TO_DEFAULT_ALG[domain]
+
         if algorithm not in dict_domain[domain]:
             raise AlgorithmNotFoundInDomain(domain, algorithm)
 
-        self.explainer = dict_domain[domain][algorithm].__init__()
+        alg_class = dict_domain[domain][algorithm]
+        self.explainer = alg_class()
+
         # Set the base functions to those of the explainer class
         self.build_explainer = self.explainer.build_explainer
         self.explain_instance = self.explainer.explain_instance
-
-    def save_explainer(self, path: str):
-        """
-        Saves the explainer to disk.
-
-        Args:
-            path (str): Path to which the explainer is stored
-
-        Returns:
-            (bool) Whether saving the explainer was successful or not
-        """
-        self.explainer.save_explainer(path)
-
-    def load_explainer(self, path: str):
-        """
-        Loads the explainer from disk.
-
-        Args:
-            path (str): Path to the explainer
-
-        Returns:
-            (bool) Whether the explainer was successfully loaded or not
-
-        Notes:
-            load_explainer should not return the explainer, but it should instead load the
-            AbstractExplainer instance with the explainer (e.g. set the self.explainer to the loaded
-            object)
-        """
-        self.explainer.load_explainer(path)
+        self.save_explainer = self.explainer.save_explainer
+        self.load_explainer = self.explainer.load_explainer
