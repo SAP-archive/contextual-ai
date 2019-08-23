@@ -1,1 +1,1 @@
-from xai.explainer.explainer_factory import Explainer
+from .explainer_factory import Explainer

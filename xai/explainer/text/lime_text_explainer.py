@@ -5,8 +5,8 @@ import dill
 import numpy as np
 from lime.lime_text import LimeTextExplainer as OriginalLimeTextExplainer
 
-from xai.explainer.abstract_explainer import AbstractExplainer
-from xai.explainer.explainer_exceptions import ExplainerUninitializedError
+from ..abstract_explainer import AbstractExplainer
+from ..explainer_exceptions import ExplainerUninitializedError
 
 LOGGER = logging.getLogger(__name__)
 
