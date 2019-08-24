@@ -10,3 +10,7 @@ __pycache__/
 build/
 dist/
 sap_explainable_ai.egg-info/
+
+**/.ipynb*
+**/*.pdf
+**/*.pkl
