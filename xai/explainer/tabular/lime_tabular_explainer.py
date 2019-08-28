@@ -3,11 +3,11 @@ from typing import List, Dict, Optional, Callable
 
 import dill
 import numpy as np
-from lime.explanation import Explanation
 from lime.lime_tabular import LimeTabularExplainer as OriginalLimeTabularExplainer
 
 from ..abstract_explainer import AbstractExplainer
 from ..explainer_exceptions import ExplainerUninitializedError, UnsupportedModeError
+from ..utils import explanation_to_json
 
 LOGGER = logging.getLogger(__name__)
 
@@ -133,7 +133,6 @@ class LimeTabularExplainer(AbstractExplainer):
             ExplainerUninitializedError: Raised if self.explainer_object is None
         """
         if self.explainer_object:
-            confidences = np.array(predict_fn(instance.reshape(1, -1))).ravel()
             explanation = self.explainer_object.explain_instance(
                 data_row=instance,
                 predict_fn=predict_fn,
@@ -149,7 +148,9 @@ class LimeTabularExplainer(AbstractExplainer):
             else:
                 labels_to_extract = labels
 
-            return self._explanation_to_json(explanation, labels_to_extract, confidences)
+            confidences = explanation.predict_proba
+
+            return explanation_to_json(explanation, labels_to_extract, confidences)
         else:
             raise ExplainerUninitializedError('This explainer is not yet instantiated! '
                                               'Please call build_explainer()'
@@ -180,33 +181,3 @@ class LimeTabularExplainer(AbstractExplainer):
         """
         with open(path, 'rb') as fp:
             self.explainer_object = dill.load(fp)
-
-    def _explanation_to_json(self,
-                             explanation: Explanation,
-                             labels: List[int],
-                             confidences: np.ndarray) -> Dict[int, Dict]:
-        """
-        Parses LIME explanation to produce JSON-parseable output format.
-
-        Args:
-            explanation (lime.explanation.Explanation): The explanation output from LIME
-            labels (list): List of labels for which to get explanations
-            confidences (np.ndarray): Model output for a particular instance, which should be a list
-                of confidences that sum to one
-
-        Returns:
-            (dict) Explanations in JSON format
-        """
-        dict_explanation = {}
-
-        for label in labels:
-            list_explanations = explanation.as_list(label)
-            tmp = []
-            for exp in list_explanations:
-                tmp.append({'feature': exp[0], 'score': exp[1]})
-            dict_explanation[label] = {
-                'confidence': confidences[label],
-                'explanation': tmp
-            }
-
-        return dict_explanation
