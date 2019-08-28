@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional, Callable
+from typing import List, Optional, Callable, Dict
 
 import dill
 import numpy as np
@@ -7,6 +7,7 @@ from lime.lime_text import LimeTextExplainer as OriginalLimeTextExplainer
 
 from ..abstract_explainer import AbstractExplainer
 from ..explainer_exceptions import ExplainerUninitializedError
+from ..utils import explanation_to_json
 
 LOGGER = logging.getLogger(__name__)
 
@@ -55,13 +56,16 @@ class LimeTextExplainer(AbstractExplainer):
             bow=bow
         )
 
+        if verbose:
+            LOGGER.info('Explainer built successfully!')
+
     def explain_instance(self, predict_fn: Callable,
                          instance: np.ndarray,
                          labels: List = (1,),
                          top_labels: Optional[int] = None,
                          num_features: Optional[int] = NUM_TOP_FEATURES,
                          num_samples: int = 5000,
-                         distance_metric: str = 'cosine'):
+                         distance_metric: str = 'cosine') -> Dict[int, Dict]:
         """
         Explain a prediction instance using the LIME text explainer.
         Like with `build_explainer`, the parameters of `explain_instance` are exactly those of
@@ -81,7 +85,7 @@ class LimeTextExplainer(AbstractExplainer):
             distance_metric (str): The distance metric to use for weighting the loss function
 
         Returns:
-            (list) A list of tuples of the form (token, weight)
+            (dict) A valid JSON response
 
         Raises:
             ExplainerUninitializedError: Raised if self.explainer_object is None
@@ -96,7 +100,15 @@ class LimeTextExplainer(AbstractExplainer):
                 num_samples=num_samples,
                 distance_metric=distance_metric
             )
-            return explanation.as_list()
+
+            if top_labels:
+                labels_to_extract = list(explanation.as_map().keys())
+            else:
+                labels_to_extract = labels
+
+            confidences = explanation.predict_proba
+
+            return explanation_to_json(explanation, labels_to_extract, confidences)
         else:
             raise ExplainerUninitializedError('This explainer is not yet instantiated! '
                                               'Please call build_explainer()'
