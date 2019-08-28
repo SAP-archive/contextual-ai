@@ -1,12 +1,11 @@
-import unittest
 import os
-import numpy as np
+import unittest
 
-from xai.explainer.config import DICT_DOMAIN_TO_DEFAULT_ALG, DICT_DOMAIN_TO_CLASS
-from xai.explainer.explainer_exceptions import DomainNotSupported, AlgorithmNotFoundInDomain, \
-    UnsupportedModeError, ExplainerUninitializedError
-from xai.explainer.tabular.lime_tabular_explainer import LimeTabularExplainer
+import numpy as np
 from lime.lime_tabular import LimeTabularExplainer as OriginalLimeTabularExplainer
+
+from xai.explainer.explainer_exceptions import UnsupportedModeError, ExplainerUninitializedError
+from xai.explainer.tabular.lime_tabular_explainer import LimeTabularExplainer
 
 
 class DummyExplanation(object):
