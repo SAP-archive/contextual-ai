@@ -16,7 +16,7 @@ NUM_TOP_FEATURES = 5
 class LimeTextExplainer(AbstractExplainer):
 
     def __init__(self):
-        super(AbstractExplainer, self).__init__()
+        super(LimeTextExplainer, self).__init__()
 
     def build_explainer(self, kernel_width: float = 25,
                         verbose: bool = False,

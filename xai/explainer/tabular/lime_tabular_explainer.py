@@ -17,8 +17,8 @@ NUM_TOP_FEATURES = 5
 class LimeTabularExplainer(AbstractExplainer):
 
     def __init__(self):
+        super(LimeTabularExplainer, self).__init__()
         self.available_modes = ['classification', 'regression']
-        super(AbstractExplainer, self).__init__()
 
     def build_explainer(self, training_data: np.ndarray,
                         mode: str,

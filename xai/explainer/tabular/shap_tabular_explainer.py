@@ -15,7 +15,7 @@ NUM_TOP_FEATURES = 5
 class SHAPTabularExplainer(AbstractExplainer):
 
     def __init__(self):
-        super(AbstractExplainer, self).__init__()
+        super(SHAPTabularExplainer, self).__init__()
 
     def build_explainer(self, predict_fn: Callable,
                         data: Any):
