@@ -43,7 +43,7 @@ class TestLimeTabularExplainer(unittest.TestCase):
 
     def test_build_explainer_unsupported_mode(self):
         """
-        Test exception handling when unsupported mode is raised
+        Test exception check when unsupported mode is provided
         """
         with self.assertRaises(UnsupportedModeError, msg='Algorithm should raise unsupported mode'
                                                          'error'):
@@ -90,52 +90,55 @@ class TestLimeTabularExplainer(unittest.TestCase):
         self.assertIsNotNone(new_explainer.explainer_object)
 
     def test_explanation_to_json(self):
+        """
+        Test the parsing of explanations
+        """
         dummy_explanation = DummyExplanation()
         labels = [0, 1]
         confidences = np.array([0.0, 1.0])
 
         expected = {0: {'confidence': 0.0,
                         'explanation': [{'feature': 'worst perimeter <= 83.79',
-                                         'importance': -0.10275161028167702},
+                                         'score': -0.10275161028167702},
                                         {'feature': 'worst area <= 509.25',
-                                         'importance': -0.09479442043867894},
+                                         'score': -0.09479442043867894},
                                         {'feature': 'worst radius <= 12.93',
-                                         'importance': -0.060148145614287524},
+                                         'score': -0.060148145614287524},
                                         {'feature': 'worst texture <= 21.41',
-                                         'importance': -0.057578312942073995},
+                                         'score': -0.057578312942073995},
                                         {'feature': 'mean area <= 419.25',
-                                         'importance': -0.05598211138713413},
+                                         'score': -0.05598211138713413},
                                         {'feature': 'worst concave points <= 0.06',
-                                         'importance': -0.05063258480760927},
+                                         'score': -0.05063258480760927},
                                         {'feature': 'mean texture <= 16.34',
-                                         'importance': -0.042193966171229905},
+                                         'score': -0.042193966171229905},
                                         {'feature': 'mean concavity <= 0.03',
-                                         'importance': -0.028153608385264327},
+                                         'score': -0.028153608385264327},
                                         {'feature': 'area error <= 18.17',
-                                         'importance': -0.027911303586217028},
+                                         'score': -0.027911303586217028},
                                         {'feature': 'worst compactness <= 0.15',
-                                         'importance': -0.024483076857988333}]},
+                                         'score': -0.024483076857988333}]},
                     1: {'confidence': 1.0,
                         'explanation': [{'feature': 'worst perimeter <= 83.79',
-                                         'importance': 0.10275161028167702},
+                                         'score': 0.10275161028167702},
                                         {'feature': 'worst area <= 509.25',
-                                         'importance': 0.09479442043867897},
+                                         'score': 0.09479442043867897},
                                         {'feature': 'worst radius <= 12.93',
-                                         'importance': 0.06014814561428753},
+                                         'score': 0.06014814561428753},
                                         {'feature': 'worst texture <= 21.41',
-                                         'importance': 0.057578312942073995},
+                                         'score': 0.057578312942073995},
                                         {'feature': 'mean area <= 419.25',
-                                         'importance': 0.05598211138713414},
+                                         'score': 0.05598211138713414},
                                         {'feature': 'worst concave points <= 0.06',
-                                         'importance': 0.05063258480760927},
+                                         'score': 0.05063258480760927},
                                         {'feature': 'mean texture <= 16.34',
-                                         'importance': 0.0421939661712299},
+                                         'score': 0.0421939661712299},
                                         {'feature': 'mean concavity <= 0.03',
-                                         'importance': 0.028153608385264303},
+                                         'score': 0.028153608385264303},
                                         {'feature': 'area error <= 18.17',
-                                         'importance': 0.027911303586217028},
+                                         'score': 0.027911303586217028},
                                         {'feature': 'worst compactness <= 0.15',
-                                         'importance': 0.024483076857988346}]}}
+                                         'score': 0.024483076857988346}]}}
 
         explainer = LimeTabularExplainer()
         actual = explainer._explanation_to_json(

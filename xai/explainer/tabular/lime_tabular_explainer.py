@@ -203,7 +203,7 @@ class LimeTabularExplainer(AbstractExplainer):
             list_explanations = explanation.as_list(label)
             tmp = []
             for exp in list_explanations:
-                tmp.append({'feature': exp[0], 'importance': exp[1]})
+                tmp.append({'feature': exp[0], 'score': exp[1]})
             dict_explanation[label] = {
                 'confidence': confidences[label],
                 'explanation': tmp
