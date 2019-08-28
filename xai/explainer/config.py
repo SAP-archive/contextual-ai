@@ -1,16 +1,19 @@
+from .constants import DOMAIN, ALG
 from .tabular.lime_tabular_explainer import LimeTabularExplainer
+from .tabular.shap_tabular_explainer import SHAPTabularExplainer
 from .text.lime_text_explainer import LimeTextExplainer
 
 DICT_DOMAIN_TO_CLASS = {
-    'text': {
-        'lime': LimeTextExplainer
+    DOMAIN.TEXT: {
+        ALG.LIME: LimeTextExplainer
     },
-    'tabular': {
-        'lime': LimeTabularExplainer
+    DOMAIN.TABULAR: {
+        ALG.LIME: LimeTabularExplainer,
+        ALG.SHAP: SHAPTabularExplainer
     }
 }
 
 DICT_DOMAIN_TO_DEFAULT_ALG = {
-    'text': 'lime',
-    'tabular': 'lime'
+    DOMAIN.TEXT: ALG.LIME,
+    DOMAIN.TABULAR: ALG.LIME
 }
