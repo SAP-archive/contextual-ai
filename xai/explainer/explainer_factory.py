@@ -51,6 +51,7 @@ class Explainer(object):
             self.algorithm = algorithm
         else:
             self.algorithm = DICT_DOMAIN_TO_DEFAULT_ALG[domain]
+            algorithm = self.algorithm
 
         if algorithm not in dict_domain[domain]:
             raise AlgorithmNotFoundInDomain(domain, algorithm)
