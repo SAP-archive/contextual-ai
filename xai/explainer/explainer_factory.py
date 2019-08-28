@@ -58,9 +58,26 @@ class Explainer(object):
 
         alg_class = dict_domain[domain][algorithm]
         self.explainer = alg_class()
+        self._set_methods()
 
-        # Set the base functions to those of the explainer class
+    def load_explainer(self, path: str) -> None:
+        """
+        Load the explainer
+
+        Args:
+            path (str): Path to load the explainer
+
+        Returns:
+            None
+        """
+        self.explainer = DICT_DOMAIN_TO_CLASS[self.domain][self.algorithm]()
+        self.explainer.load_explainer(path)
+        self._set_methods()
+
+    def _set_methods(self) -> None:
+        """
+        Set the base functions to those of the explainer class
+        """
         self.build_explainer = self.explainer.build_explainer
         self.explain_instance = self.explainer.explain_instance
         self.save_explainer = self.explainer.save_explainer
-        self.load_explainer = self.explainer.load_explainer
