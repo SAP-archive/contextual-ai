@@ -48,6 +48,7 @@ class SHAPTabularExplainer(AbstractExplainer):
             instance (np.array): A 1D numpy array corresponding to a row/single example
             nsamples (int): The number of re-evaluations to conduct. The higher the samples,
                 the lower the variance
+            num_features (int): Number of features to include in an explanation
 
         Returns:
             (list) A list of tuples of the form (feature, weight)
