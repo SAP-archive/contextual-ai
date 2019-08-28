@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from typing import Dict
+
 
 class AbstractExplainer(ABC):
 
@@ -10,7 +12,7 @@ class AbstractExplainer(ABC):
     def build_explainer(self, **kwargs):
         """
         The build method for the explainer. This is called by the Explainer class when the user
-        initializes the explainer. Any explainer implementing a customer Explainer should provide
+        initializes the explainer. Any explainer implementing a custom Explainer should provide
         clear documentation on the parameters required to initialize it.
 
         Args:
@@ -22,7 +24,7 @@ class AbstractExplainer(ABC):
         raise NotImplementedError("Derived class should implement this")
 
     @abstractmethod
-    def explain_instance(self, **kwargs):
+    def explain_instance(self, **kwargs) -> Dict:
         """
         The explain method for the explainer. This is also called by the Explainer class when the
         user attempts to explain a particular prediction.
@@ -31,7 +33,7 @@ class AbstractExplainer(ABC):
             **kwargs (dict): keyword arguments for calling the explanation method
 
         Returns:
-            This is left to the implementor to decide
+            A dictionary that maps a class index to explanations
         """
         raise NotImplementedError("Derived class should implement this")
 
