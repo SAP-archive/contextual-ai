@@ -72,6 +72,14 @@ class LimeTabularExplainer(AbstractExplainer):
                 self.available_modes)
             raise UnsupportedModeError(msg)
 
+        if verbose:
+            if not column_names:
+                LOGGER.warning('Column names are not specified! Explanations will refer to'
+                               'columns by their indices.')
+            if not class_names:
+                LOGGER.warning('Class names are not specified! Explanations will refer to classes'
+                               'by their indices.')
+
         self.explainer_object = OriginalLimeTabularExplainer(
             training_data=training_data,
             mode=mode,
@@ -88,6 +96,9 @@ class LimeTabularExplainer(AbstractExplainer):
             sample_around_instance=sample_around_instance,
             random_state=random_state
         )
+
+        if verbose:
+            LOGGER.info('Explainer built successfully!')
 
     def explain_instance(self, predict_fn: Callable,
                          instance: np.ndarray,
@@ -130,7 +141,7 @@ class LimeTabularExplainer(AbstractExplainer):
                 num_samples=num_samples,
                 distance_metric=distance_metric
             )
-            return explanation.as_list()
+            return explanation
         else:
             raise ExplainerUninitializedError('This explainer is not yet instantiated! '
                                               'Please call build_explainer()'
