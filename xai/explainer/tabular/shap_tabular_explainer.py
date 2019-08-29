@@ -7,6 +7,7 @@ import shap
 
 from ..abstract_explainer import AbstractExplainer
 from ..explainer_exceptions import ExplainerUninitializedError
+from ..utils import parse_shap_values
 
 LOGGER = logging.getLogger(__name__)
 
@@ -17,6 +18,7 @@ class SHAPTabularExplainer(AbstractExplainer):
 
     def __init__(self):
         super(SHAPTabularExplainer, self).__init__()
+        self.feature_names = None
 
     def build_explainer(self,
                         predict_fn: Callable,
@@ -66,25 +68,25 @@ class SHAPTabularExplainer(AbstractExplainer):
         Raises:
             ExplainerUninitializedError: Raised if self.explainer_object is None
         """
-        if len(instance.shape) != 2:
-            instance = instance.reshape([1, -1])
-
-        confidences = list(np.array(self.predict_fn(instance)).ravel())
-
         if nsamples is None:
             # Let SHAP figure out default number of samples
             nsamples = 'auto'
 
         if self.explainer_object:
+            if len(instance.shape) != 2:
+                instance = instance.reshape([1, -1])
+
+            confidences = list(np.array(self.predict_fn(instance)).ravel())
+
             explanation = self.explainer_object.shap_values(
                 X=instance,
                 nsamples=nsamples,
                 l1_reg='num_features({})'.format(NUM_TOP_FEATURES)
             )
-            return self.parse_shap_values(shap_values=explanation,
-                                          confidences=confidences,
-                                          feature_names=self.feature_names,
-                                          feature_values=list(instance.ravel()))
+            return parse_shap_values(shap_values=explanation,
+                                     confidences=confidences,
+                                     feature_names=self.feature_names,
+                                     feature_values=list(instance.ravel()))
         else:
             raise ExplainerUninitializedError('This explainer is not yet instantiated! '
                                               'Please call build_explainer()'
@@ -122,46 +124,3 @@ class SHAPTabularExplainer(AbstractExplainer):
             self.explainer_object = dict_loaded['explainer_object']
             self.feature_names = dict_loaded['feature_names']
             self.predict_fn = self.explainer_object.model.f
-
-    def parse_shap_values(self, shap_values: List[np.ndarray], confidences: List[float],
-                          feature_names: Optional[List[str]] = None,
-                          feature_values: Optional[List[Any]] = None) -> Dict[int, Dict]:
-        """
-        Parse SHAP values to fit XAI output format
-
-        Args:
-            shap_values (list): A list of shap values, a set for each class
-            confidences (list): Confidences for each class
-            feature_names (list): List of feature names
-            feature_values (list): List of values corresponding to feature_names
-
-        Returns:
-            (dict) A mapping of class to explanations
-
-        """
-        assert len(shap_values) == len(confidences), 'Number of SHAP values should be equal to ' \
-                                                     'number of classes!'
-
-        dict_explanation = {}
-
-        for label, confidence in enumerate(confidences):
-            tmp = []
-
-            shap_value_class = shap_values[label][0]
-            for feature_idx, shap_value in enumerate(shap_value_class):
-                # We ignore features which SHAP values are 0, which indicate that they had no
-                # impact on the model's decision
-                if shap_value != 0:
-                    if feature_names and feature_values:
-                        feature = '{} = {}'.format(
-                            feature_names[feature_idx], feature_values[feature_idx])
-                        tmp.append({'feature': feature, 'score': shap_value})
-                    else:
-                        tmp.append({'feature': feature_idx, 'score': shap_value})
-
-            dict_explanation[label] = {
-                'confidence': confidence,
-                'explanation': tmp
-            }
-
-        return dict_explanation
