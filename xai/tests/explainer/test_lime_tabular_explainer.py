@@ -20,7 +20,8 @@ class TestLimeTabularExplainer(unittest.TestCase):
         with self.assertRaises(UnsupportedModeError, msg='Algorithm should raise unsupported mode'
                                                          'error'):
             explainer = LimeTabularExplainer()
-            explainer.build_explainer(np.arange(9).reshape((3, 3)), mode='unsupported_mode')
+            explainer.build_explainer(np.arange(9).reshape((3, 3)), mode='unsupported_mode',
+                                      predict_fn=None)
 
     def test_build_explainer_uninitialized_explainer(self):
         """
@@ -37,7 +38,8 @@ class TestLimeTabularExplainer(unittest.TestCase):
         Test building the explainer
         """
         explainer = LimeTabularExplainer()
-        explainer.build_explainer(np.arange(9).reshape((3, 3)), mode='classification', verbose=True)
+        explainer.build_explainer(np.arange(9).reshape((3, 3)),
+                                  mode='classification', predict_fn=None, verbose=True)
         self.assertIsInstance(explainer.explainer_object, OriginalLimeTabularExplainer)
 
     def test_save_explainer(self):
@@ -45,7 +47,8 @@ class TestLimeTabularExplainer(unittest.TestCase):
         Test the saving of the explainer
         """
         explainer = LimeTabularExplainer()
-        explainer.build_explainer(np.arange(9).reshape((3, 3)), mode='classification')
+        explainer.build_explainer(np.arange(9).reshape((3, 3)), mode='classification',
+                                  predict_fn=None)
         explainer.save_explainer(self.save_path)
         self.assertTrue(os.path.exists(self.save_path))
 
@@ -54,7 +57,8 @@ class TestLimeTabularExplainer(unittest.TestCase):
         Test loading the explainer
         """
         explainer = LimeTabularExplainer()
-        explainer.build_explainer(np.arange(9).reshape((3, 3)), mode='classification')
+        explainer.build_explainer(np.arange(9).reshape((3, 3)), mode='classification',
+                                  predict_fn=None)
         explainer.save_explainer(self.save_path)
 
         new_explainer = LimeTabularExplainer()

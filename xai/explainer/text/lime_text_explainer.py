@@ -19,7 +19,9 @@ class LimeTextExplainer(AbstractExplainer):
     def __init__(self):
         super(LimeTextExplainer, self).__init__()
 
-    def build_explainer(self, kernel_width: float = 25,
+    def build_explainer(self,
+                        predict_fn: Callable[[np.ndarray], np.ndarray],
+                        kernel_width: float = 25,
                         verbose: bool = False,
                         class_names: Optional[List[str]] = None,
                         feature_selection: str = 'auto',
@@ -32,6 +34,8 @@ class LimeTextExplainer(AbstractExplainer):
         https://lime-ml.readthedocs.io/en/latest/lime.html#lime.lime_text.LimeTextExplainer
 
         Args:
+            predict_fn (Callable): A function that takes in a 1D numpy array and outputs a vector
+                of probabilities which should sum to 1.
             kernel_width (float): Width of the exponential kernel used in the LIME loss function
             verbose (bool): Control verbosity. If true, local prediction values of the LIME model
                 are printed
@@ -47,6 +51,7 @@ class LimeTextExplainer(AbstractExplainer):
         Returns:
             None
         """
+        self.predict_fn = predict_fn
         self.explainer_object = OriginalLimeTextExplainer(
             kernel_width=kernel_width,
             verbose=verbose,
@@ -59,7 +64,7 @@ class LimeTextExplainer(AbstractExplainer):
         if verbose:
             LOGGER.info('Explainer built successfully!')
 
-    def explain_instance(self, predict_fn: Callable,
+    def explain_instance(self,
                          instance: np.ndarray,
                          labels: List = (1,),
                          top_labels: Optional[int] = None,
@@ -74,8 +79,6 @@ class LimeTextExplainer(AbstractExplainer):
         https://lime-ml.readthedocs.io/en/latest/lime.html#lime.lime_text.LimeTextExplainer.explain_instance
 
         Args:
-            predict_fn (Callable): A function that takes in a 1D numpy array and outputs a vector
-                of probabilities which should sum to 1.
             instance (np.ndarray): A 1D numpy array corresponding to a row/single example
             labels (list): The list of class indexes to produce explanations for
             top_labels (int): If not None, this overwrites labels and the explainer instead produces
@@ -93,7 +96,7 @@ class LimeTextExplainer(AbstractExplainer):
         if self.explainer_object:
             explanation = self.explainer_object.explain_instance(
                 text_instance=instance,
-                classifier_fn=predict_fn,
+                classifier_fn=self.predict_fn,
                 labels=labels,
                 top_labels=top_labels,
                 num_features=num_features,
@@ -124,8 +127,12 @@ class LimeTextExplainer(AbstractExplainer):
         Returns:
             None
         """
+        dict_to_save = {
+            'explainer_object': self.explainer_object,
+            'predict_fn': self.predict_fn
+        }
         with open(path, 'wb') as fp:
-            dill.dump(self.explainer_object, fp)
+            dill.dump(dict_to_save, fp)
 
     def load_explainer(self, path: str):
         """
@@ -138,4 +145,6 @@ class LimeTextExplainer(AbstractExplainer):
             None
         """
         with open(path, 'rb') as fp:
-            self.explainer_object = dill.load(fp)
+            dict_loaded = dill.load(fp)
+            self.explainer_object = dict_loaded['explainer_object']
+            self.predict_fn = dict_loaded['predict_fn']

@@ -22,6 +22,7 @@ class LimeTabularExplainer(AbstractExplainer):
 
     def build_explainer(self, training_data: np.ndarray,
                         mode: str,
+                        predict_fn: Callable[[np.ndarray], np.ndarray],
                         training_labels: Optional[List[int]] = None,
                         column_names: Optional[List[str]] = None,
                         categorical_features: Optional[List[int]] = None,
@@ -44,6 +45,8 @@ class LimeTabularExplainer(AbstractExplainer):
             training_data (np.ndarray): 2d Numpy array representing the training data 
                 (or some representative subset)
             mode (str): Whether the problem is 'classification' or 'regression'
+            predict_fn (Callable): A function that takes in a 1D numpy array and outputs a vector
+                of probabilities which should sum to 1.
             training_labels (list): Training labels, which can be used by the continuous feature
                 discretizer
             column_names (list): The names of the columns of the training data
@@ -81,6 +84,7 @@ class LimeTabularExplainer(AbstractExplainer):
                 LOGGER.warning('Class names are not specified! Explanations will refer to classes'
                                'by their indices.')
 
+        self.predict_fn = predict_fn
         self.explainer_object = OriginalLimeTabularExplainer(
             training_data=training_data,
             mode=mode,
@@ -101,7 +105,7 @@ class LimeTabularExplainer(AbstractExplainer):
         if verbose:
             LOGGER.info('Explainer built successfully!')
 
-    def explain_instance(self, predict_fn: Callable[[np.ndarray], np.ndarray],
+    def explain_instance(self,
                          instance: np.ndarray,
                          labels: List = (1,),
                          top_labels: Optional[int] = None,
@@ -116,8 +120,6 @@ class LimeTabularExplainer(AbstractExplainer):
         https://lime-ml.readthedocs.io/en/latest/lime.html#lime.lime_tabular.LimeTabularExplainer.explain_instance
 
         Args:
-            predict_fn (Callable): A function that takes in a 1D numpy array and outputs a vector
-                of probabilities which should sum to 1.
             instance (np.ndarray): A 1D numpy array corresponding to a row/single example
             labels (list): The list of class indexes to produce explanations for
             top_labels (int): If not None, this overwrites labels and the explainer instead produces
@@ -135,7 +137,7 @@ class LimeTabularExplainer(AbstractExplainer):
         if self.explainer_object:
             explanation = self.explainer_object.explain_instance(
                 data_row=instance,
-                predict_fn=predict_fn,
+                predict_fn=self.predict_fn,
                 labels=labels,
                 top_labels=top_labels,
                 num_features=num_features,
@@ -166,8 +168,12 @@ class LimeTabularExplainer(AbstractExplainer):
         Returns:
             None
         """
+        dict_to_save = {
+            'explainer_object': self.explainer_object,
+            'predict_fn': self.predict_fn
+        }
         with open(path, 'wb') as fp:
-            dill.dump(self.explainer_object, fp)
+            dill.dump(dict_to_save, fp)
 
     def load_explainer(self, path: str):
         """
@@ -180,4 +186,6 @@ class LimeTabularExplainer(AbstractExplainer):
             None
         """
         with open(path, 'rb') as fp:
-            self.explainer_object = dill.load(fp)
+            dict_loaded = dill.load(fp)
+            self.explainer_object = dict_loaded['explainer_object']
+            self.predict_fn = dict_loaded['predict_fn']

@@ -27,7 +27,7 @@ class TestLimeTextExplainer(unittest.TestCase):
         Test building the explainer
         """
         explainer = LimeTextExplainer()
-        explainer.build_explainer()
+        explainer.build_explainer(predict_fn=None)
         self.assertIsInstance(explainer.explainer_object, OriginalLimeTextExplainer)
 
     def test_save_explainer(self):
@@ -35,7 +35,7 @@ class TestLimeTextExplainer(unittest.TestCase):
         Test the saving of the explainer
         """
         explainer = LimeTextExplainer()
-        explainer.build_explainer()
+        explainer.build_explainer(predict_fn=None)
         explainer.save_explainer(self.save_path)
         self.assertTrue(os.path.exists(self.save_path))
 
@@ -44,7 +44,7 @@ class TestLimeTextExplainer(unittest.TestCase):
         Test loading the explainer
         """
         explainer = LimeTextExplainer()
-        explainer.build_explainer()
+        explainer.build_explainer(predict_fn=None)
         explainer.save_explainer(self.save_path)
 
         new_explainer = LimeTextExplainer()
