@@ -8,3 +8,6 @@ __pycache__/
 *$py.class
 .ipynb_checkpoints
 	
+build/
+dist/
+sap_explainable_ai.egg-info/

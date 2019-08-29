@@ -1,0 +1,12 @@
+{
+  "Category I": {
+    "OTHER": 5651,
+    "OFFENSE": 2890
+  },
+  "Category II": {
+    "OTHER": 5651,
+    "INSULT": 976,
+    "PROFANITY": 119,
+    "ABUSE": 1795
+  }
+}
