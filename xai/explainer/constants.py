@@ -12,3 +12,10 @@ class ALG:
     """
     LIME = 'lime'
     SHAP = 'shap'
+
+class MODE:
+    """
+    Problem types for the explainer
+    """
+    CLASSIFICATION = 'classification'
+    REGRESSION = 'regression'

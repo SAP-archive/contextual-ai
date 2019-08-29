@@ -4,6 +4,7 @@ import unittest
 import numpy as np
 from lime.lime_tabular import LimeTabularExplainer as OriginalLimeTabularExplainer
 
+import xai
 from xai.explainer.explainer_exceptions import UnsupportedModeError, ExplainerUninitializedError
 from xai.explainer.tabular.lime_tabular_explainer import LimeTabularExplainer
 
@@ -39,7 +40,7 @@ class TestLimeTabularExplainer(unittest.TestCase):
         """
         explainer = LimeTabularExplainer()
         explainer.build_explainer(np.arange(9).reshape((3, 3)),
-                                  mode='classification', predict_fn=None, verbose=True)
+                                  mode=xai.MODE.CLASSIFICATION, predict_fn=None, verbose=True)
         self.assertIsInstance(explainer.explainer_object, OriginalLimeTabularExplainer)
 
     def test_save_explainer(self):
@@ -47,7 +48,7 @@ class TestLimeTabularExplainer(unittest.TestCase):
         Test the saving of the explainer
         """
         explainer = LimeTabularExplainer()
-        explainer.build_explainer(np.arange(9).reshape((3, 3)), mode='classification',
+        explainer.build_explainer(np.arange(9).reshape((3, 3)), mode=xai.MODE.CLASSIFICATION,
                                   predict_fn=None)
         explainer.save_explainer(self.save_path)
         self.assertTrue(os.path.exists(self.save_path))
@@ -57,7 +58,7 @@ class TestLimeTabularExplainer(unittest.TestCase):
         Test loading the explainer
         """
         explainer = LimeTabularExplainer()
-        explainer.build_explainer(np.arange(9).reshape((3, 3)), mode='classification',
+        explainer.build_explainer(np.arange(9).reshape((3, 3)), mode=xai.MODE.CLASSIFICATION,
                                   predict_fn=None)
         explainer.save_explainer(self.save_path)
 

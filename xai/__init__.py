@@ -1,1 +1,1 @@
-from .explainer.constants import DOMAIN, ALG
+from .explainer.constants import DOMAIN, ALG, MODE
