@@ -5,8 +5,8 @@ from lime.explanation import Explanation
 
 
 def explanation_to_json(explanation: Explanation,
-                         labels: List[int],
-                         confidences: np.ndarray) -> Dict[int, Dict]:
+                        labels: List[int],
+                        confidences: np.ndarray) -> Dict[int, Dict]:
     """
     Parses LIME explanation to produce JSON-parseable output format.
 
@@ -14,7 +14,7 @@ def explanation_to_json(explanation: Explanation,
         explanation (lime.explanation.Explanation): The explanation output from LIME
         labels (list): List of labels for which to get explanations
         confidences (np.ndarray): Model output for a particular instance, which should be a list
-            of confidences that sum to one
+        of confidences that sum to one
 
     Returns:
         (dict) Explanations in JSON format

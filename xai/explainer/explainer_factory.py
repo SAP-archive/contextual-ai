@@ -10,7 +10,7 @@ from .config import DICT_DOMAIN_TO_CLASS, DICT_DOMAIN_TO_DEFAULT_ALG
 from .explainer_exceptions import DomainNotSupported, AlgorithmNotFoundInDomain
 
 
-class Explainer(object):
+class Explainer:
 
     def __init__(self, domain: str, algorithm: str = None):
         """
