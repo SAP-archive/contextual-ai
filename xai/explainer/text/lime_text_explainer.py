@@ -85,7 +85,7 @@ class LimeTextExplainer(AbstractExplainer):
             distance_metric (str): The distance metric to use for weighting the loss function
 
         Returns:
-            (dict) A valid JSON response
+            (dict) A mapping of class to explanations
 
         Raises:
             ExplainerUninitializedError: Raised if self.explainer_object is None
