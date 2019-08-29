@@ -3,8 +3,8 @@ import os
 import xai.constants as Const
 import logging
 from xai.data_explorer.text_analyzer import TextAnalyzer
-from xai.data_explorer.categorical_analyzer import CategoricalAnalyzer
-from xai.data_explorer.numeric_analyzer import NumericAnalyzer
+from xai.data_explorer.categorical.categorical_analyzer import CategoricalDataAnalyzer
+from xai.data_explorer.numerical_analyzer import NumericDataAnalyzer
 from xai.data_explorer.label_analyzer import LabelAnalyzer
 from xai.data_explorer.sequence_length_analyzer import SequenceLengthAnalyzer
 from xai.data_explorer.data_analyzer_suite import DataAnalyzerSuite
@@ -52,9 +52,9 @@ class DataAnalysis:
 
         self.analyzer_suite = DataAnalyzerSuite()
         self.analyzer_suite.add_analyzer(self.label_analyzer)
-        self.analyzer_suite.add_analyzer(CategoricalAnalyzer(
+        self.analyzer_suite.add_analyzer(CategoricalDataAnalyzer(
             feature_list=self.feature_type_list[Const.KEY_FEATURE_CATEGORICAL_TYPE]))
-        self.analyzer_suite.add_analyzer(NumericAnalyzer(feature_list=self.feature_type_list[Const.KEY_FEATURE_NUMERIC_TYPE]))
+        self.analyzer_suite.add_analyzer(NumericDataAnalyzer(feature_list=self.feature_type_list[Const.KEY_FEATURE_NUMERIC_TYPE]))
         self.analyzer_suite.add_analyzer(TextAnalyzer(feature_list=self.feature_type_list[Const.KEY_FEATURE_TEXT_TYPE]))
         self.analyzer_suite.add_analyzer(SequenceLengthAnalyzer(feature_list=flatten_seq_fea))
 

@@ -2,7 +2,7 @@ from xai.data_validator.abstract_validator import AbstractValidator
 from typing import Dict, Iterator
 from xai import constants
 
-class MissingValueValidator(AbstractValidator):
+class EnumValidator(AbstractValidator):
 
     def __init__(self, schema_meta: Dict = None, feature_type_list: Dict = None):
         '''

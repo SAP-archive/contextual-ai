@@ -1,18 +1,29 @@
-from xai.data_explorer.abstract_analyzer import AbstractAnalyzer
-from xai import constants
+from collections import defaultdict
+from typing import Iterator, List
+
+from xai.data_explorer.abstract_analyzer import AbstractDataAnalyzer
+from xai.data_explorer.numerical.categorical_stats import CategoricalStats
+from xai.data_explorer.config import DICT_ANALYZER_TO_SUPPORTED_ITEM_DATA_TYPE
+from xai.data_explorer.data_exceptions import ItemDataTypeNotSupported
 from collections import defaultdict
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-class NumericAnalyzer(AbstractAnalyzer):
+class NumericDataAnalyzer(AbstractDataAnalyzer):
 
     def __init__(self, feature_list):
-        super(NumericAnalyzer, self).__init__(feature_list=feature_list)
+        super(NumericDataAnalyzer, self).__init__(feature_list=feature_list)
         self.summary_info = defaultdict(lambda: defaultdict(list))
 
-    def analyze_sample(self, sample, label_value):
+    def feed(self, value):
+        """
+        add numerical value into temp buffer for further statistical analysis
+        Args:
+           value: numerical value
+
+        """
         for feature_key in self.feature_list:
             if feature_key in sample:
                 feature_value = sample[feature_key]
@@ -22,7 +33,7 @@ class NumericAnalyzer(AbstractAnalyzer):
                 else:
                     self.summary_info[feature_key][label_value].append(feature_value)
 
-    def aggregate(self):
+    def feed_all(self):
         for fea in self.summary_info.keys():
             if 'all' not in self.summary_info.keys():
                 overall_list = []
@@ -38,8 +49,16 @@ class NumericAnalyzer(AbstractAnalyzer):
                 numeric_dist = self._get_numeric_curve_from_data(class_values, fea, label_name)
                 self.summary_info[fea][label_name] = numeric_dist
 
-    def summarize_info(self):
-        return {constants.KEY_NUMERIC_FEATURE_DISTRIBUTION: self.summary_info}
+    def get_statistics(self) -> CategoricalStats:
+        """
+        return stats for the analyzer
+        Returns:
+            a NumericalStats object that stores key stats for numerical data
+        """
+        self.stats = CategoricalStats()
+        for value, count in self._frequency_count.items():
+            self.stats.update_count_by_value(value, count)
+        return self.stats
 
     def _get_numeric_curve_from_data(self, data, feature, label_name):
         if type(data) == list:
