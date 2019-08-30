@@ -1,6 +1,5 @@
 from abc import abstractmethod, ABC
 from typing import Iterator, Dict
-from xai.data_explorer.abstract_stats import AbstractStats
 
 
 class AbstractLabelledDataAnalyzer(ABC):
@@ -31,10 +30,10 @@ class AbstractLabelledDataAnalyzer(ABC):
         raise NotImplementedError('The derived helper needs to implement it.')
 
     @abstractmethod
-    def get_statistics(self) -> Dict[AbstractStats]:
+    def get_statistics(self) -> Dict:
         """
         The function returns the up-to-date statistics that the analyzer keeps track
         Returns:
-            A dictionary maps label to its stats object extends AbstractStats based on data type.
+            A dictionary maps label to its stats json object extends AbstractStats based on data type.
         """
         raise NotImplementedError('The derived helper needs to implement it.')

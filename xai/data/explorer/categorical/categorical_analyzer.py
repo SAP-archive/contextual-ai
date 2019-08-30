@@ -1,16 +1,17 @@
 from collections import defaultdict
-from typing import Iterator, List
+from typing import Iterator, List, Dict
 
-from xai.data_explorer.abstract_analyzer import AbstractDataAnalyzer
-from xai.data_explorer.categorical.categorical_stats import CategoricalStats
-from xai.data_explorer.config import DICT_ANALYZER_TO_SUPPORTED_ITEM_DATA_TYPE
-from xai.data_explorer.data_exceptions import ItemDataTypeNotSupported
+from xai.data.exceptions import ItemDataTypeNotSupported
+from xai.data.explorer.abstract_analyzer import AbstractDataAnalyzer
+from xai.data.explorer.categorical.categorical_stats import CategoricalStats
 
 
 class CategoricalDataAnalyzer(AbstractDataAnalyzer):
     """
     CategoricalDataAnalyzer accumulate frequency count for all values fed into the analyzer.
     """
+
+    SUPPORTED_TYPES = [str, int]
 
     def __init__(self):
         super(CategoricalDataAnalyzer, self).__init__()
@@ -28,8 +29,8 @@ class CategoricalDataAnalyzer(AbstractDataAnalyzer):
             value = [value]
 
         for v in value:
-            if type(v) not in DICT_ANALYZER_TO_SUPPORTED_ITEM_DATA_TYPE[type(self)]:
-                raise ItemDataTypeNotSupported(type(v), type(self))
+            if type(v) not in CategoricalDataAnalyzer.SUPPORTED_TYPES:
+                raise ItemDataTypeNotSupported(type(v), type(self), CategoricalDataAnalyzer.SUPPORTED_TYPES)
             self._frequency_count[v] += 1
 
     def feed_all(self, values: Iterator):
@@ -42,13 +43,13 @@ class CategoricalDataAnalyzer(AbstractDataAnalyzer):
         for value in values:
             self.feed(value)
 
-    def get_statistics(self) -> CategoricalStats:
+    def get_statistics(self) -> Dict:
         """
         return stats for the analyzer
         Returns:
-            a CategoricalStats object that keeps track of frequency count
+            a CategoricalStats json object that keeps track of frequency count
         """
         self.stats = CategoricalStats()
         for value, count in self._frequency_count.items():
             self.stats.update_count_by_value(value, count)
-        return self.stats
+        return self.stats.to_json()

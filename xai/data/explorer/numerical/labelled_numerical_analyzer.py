@@ -1,17 +1,17 @@
 from typing import List, Iterator, Dict
 
 from xai.data.explorer.abstract_labelled_analyzer import AbstractLabelledDataAnalyzer
-from xai.data.explorer.categorical.categorical_analyzer import CategoricalDataAnalyzer
+from xai.data.explorer.numerical.numerical_analyzer import NumericDataAnalyzer
 from xai.data.exceptions import InconsistentIteratorSize
 
 
-class LabelledCategoricalDataAnalyzer(AbstractLabelledDataAnalyzer):
+class LabelledNumericalDataAnalyzer(AbstractLabelledDataAnalyzer):
     """
-    LablledCategoricalDataAnalyzer aggregates categorical stats based on labels.
+    LablledNumericalDataAnalyzer aggregates numerical stats based on labels.
     """
 
     def __init__(self):
-        super(LabelledCategoricalDataAnalyzer, self).__init__()
+        super(LabelledNumericalDataAnalyzer, self).__init__()
         self._label_analyzer = dict()
         self._stats = None
 
@@ -24,7 +24,7 @@ class LabelledCategoricalDataAnalyzer(AbstractLabelledDataAnalyzer):
             label: corresponding label for the categorical value
         """
         if label not in self._label_analyzer:
-            self._label_analyzer[label] = CategoricalDataAnalyzer()
+            self._label_analyzer[label] = NumericDataAnalyzer()
         self._label_analyzer[label].feed(value)
 
     def feed_all(self, values: Iterator, labels: Iterator):
@@ -46,7 +46,7 @@ class LabelledCategoricalDataAnalyzer(AbstractLabelledDataAnalyzer):
         """
         get stats based on labels
         Returns:
-            a dictionary maps label to the aggregated stats json obj
+            a dictionary maps label to the aggregated stats obj
         """
         self._stats = dict()
         for label, analyzer in self._label_analyzer.items():

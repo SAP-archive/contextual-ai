@@ -1,7 +1,7 @@
 from typing import Dict
 
-from xai.data_explorer.abstract_stats import AbstractStats
-from xai.data_explorer.constants import STATSKEY
+from xai.data.explorer.abstract_stats import AbstractStats
+from xai.data.constants import STATSKEY
 
 
 class CategoricalStats(AbstractStats):
@@ -15,7 +15,7 @@ class CategoricalStats(AbstractStats):
         self._total_count = 0
         self._frequency_count = dict()
 
-    def update_count_by_value(self, value: str or int, count: int) -> Dict[str or int: int]:
+    def update_count_by_value(self, value: str or int, count: int) -> Dict[str or int, int]:
         """
         update the frequency by value and count pair
 
@@ -51,7 +51,7 @@ class CategoricalStats(AbstractStats):
         json_obj[STATSKEY.DISTRIBUTION] = []
 
         for attribute_name, attribute_count in self._frequency_count.items():
-            json_obj[STATSKEY.DISTRIBUTION].append({STATSKEY.DISTRIBUTIONKEY.ATTRIBUTE_NAME: attribute_name,
-                                                    STATSKEY.DISTRIBUTIONKEY.ATTRIBUTE_COUNT: attribute_count})
+            json_obj[STATSKEY.DISTRIBUTION].append({STATSKEY.DISTRIBUTION_KEY.ATTRIBUTE_NAME: attribute_name,
+                                                    STATSKEY.DISTRIBUTION_KEY.ATTRIBUTE_COUNT: attribute_count})
 
         return json_obj

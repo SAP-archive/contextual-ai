@@ -1,9 +1,10 @@
 from abc import abstractmethod, ABC
-from typing import Iterator
-from xai.data_explorer.abstract_stats import AbstractStats
+from typing import Iterator, Dict
 
 
 class AbstractDataAnalyzer(ABC):
+
+    SUPPORTED_TYPES = []
 
     @abstractmethod
     def feed(self, value):
@@ -25,11 +26,11 @@ class AbstractDataAnalyzer(ABC):
         raise NotImplementedError('The derived helper needs to implement it.')
 
     @abstractmethod
-    def get_statistics(self) -> AbstractStats:
+    def get_statistics(self) -> Dict:
         """
         The function returns the up-to-date statistics that the analyzer keeps track
         Returns:
-            A Stats object extends AbstractStats based on data type
+            A Stats jsonobject extends AbstractStats based on data type
 
         """
         raise NotImplementedError('The derived helper needs to implement it.')
