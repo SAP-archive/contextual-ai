@@ -50,3 +50,11 @@ class STATSKEY:
     MEAN = 'mean'
     MEDIAN = 'median'
     STDDEV = 'standard_deviation'
+
+    TFIDF = 'tfidf'
+    PATTERN = 'pattern'
+
+    class PATTERN:
+        PATTERN_NAME = 'pattern_name'
+        PATTERN_TF = 'occurrence'
+        PATTERN_DF = 'doc_with_pattern'

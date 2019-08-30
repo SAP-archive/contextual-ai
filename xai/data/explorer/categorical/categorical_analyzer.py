@@ -18,20 +18,16 @@ class CategoricalDataAnalyzer(AbstractDataAnalyzer):
         self._frequency_count = defaultdict(int)
         self.stats = None
 
-    def feed(self, value: List or int or str):
+    def feed(self, value: int or str):
         """
         accumulate count for value
         Args:
            value: value that fed for frequency count update
 
         """
-        if type(value) != list:
-            value = [value]
-
-        for v in value:
-            if type(v) not in CategoricalDataAnalyzer.SUPPORTED_TYPES:
-                raise ItemDataTypeNotSupported(type(v), type(self), CategoricalDataAnalyzer.SUPPORTED_TYPES)
-            self._frequency_count[v] += 1
+        if type(value) not in CategoricalDataAnalyzer.SUPPORTED_TYPES:
+            raise ItemDataTypeNotSupported(type(value), type(self), CategoricalDataAnalyzer.SUPPORTED_TYPES)
+        self._frequency_count[value] += 1
 
     def feed_all(self, values: Iterator):
         """
