@@ -2,9 +2,11 @@
 
 This module houses all algorithms which are used to generate explanations for model predictions.
 
+## A simple example
+
 ```python
 from sklearn import datasets
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 
 # Main XAI imports
@@ -34,6 +36,7 @@ explainer.build_explainer(
     class_names=list(raw_data['target_names'])
 )
 
+# Explain an instance
 explainer.explain_instance(
     instance=X_test[0],
     top_labels=2,
