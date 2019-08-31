@@ -31,7 +31,7 @@ class NumericalStats(AbstractStats):
         self._histogram = []
         self._kde = []
 
-    def updates_stats_from_values(self, values: List[float]):
+    def update_stats_from_values(self, values: List[float]):
         """
         update the key stats based on values
         Args:

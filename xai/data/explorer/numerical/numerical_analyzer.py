@@ -27,16 +27,6 @@ class NumericDataAnalyzer(AbstractDataAnalyzer):
             raise ItemDataTypeNotSupported(type(value), type(self), NumericDataAnalyzer.SUPPORTED_TYPES)
         self._values.append(value)
 
-    def feed_all(self, values: Iterator):
-        """
-        fed the values
-        Args:
-            values: values that fed for frequency count update
-
-        """
-        for value in values:
-            self.feed(value)
-
     def get_statistics(self) -> Dict:
         """
         return stats for the analyzer

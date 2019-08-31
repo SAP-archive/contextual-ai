@@ -16,14 +16,14 @@ class AbstractDataAnalyzer(ABC):
         """
         raise NotImplementedError('The derived helper needs to implement it.')
 
-    @abstractmethod
     def feed_all(self, values: Iterator):
         """
         The function takes one iterator of values into analyzer and update the stats object.
         Args:
             values: values fed into the analyzer in sequence
         """
-        raise NotImplementedError('The derived helper needs to implement it.')
+        for value in values:
+            self.feed(value)
 
     @abstractmethod
     def get_statistics(self) -> Dict:

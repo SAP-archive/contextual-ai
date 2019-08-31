@@ -23,6 +23,17 @@ class InconsistentIteratorSize(Exception):
         self.message = message
 
 
+class InconsistentSize(Exception):
+    """
+    Raised when two lists have different lengths
+    """
+
+    def __init__(self, column_A, column_B, length_A, length_B):
+        message = '"{}" is different from "{}" has different size: {}, {}.'.format(column_A, column_B, length_A, length_B)
+        Exception.__init__(self, message)
+        self.message = message
+
+
 class AnalyzerDataTypeNotSupported(Exception):
     """
     Raised when two iterator has different length

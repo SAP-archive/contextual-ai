@@ -29,16 +29,6 @@ class CategoricalDataAnalyzer(AbstractDataAnalyzer):
             raise ItemDataTypeNotSupported(type(value), type(self), CategoricalDataAnalyzer.SUPPORTED_TYPES)
         self._frequency_count[value] += 1
 
-    def feed_all(self, values: Iterator):
-        """
-        accumulate count for each value in value list
-        Args:
-            values: values that fed for frequency count update
-
-        """
-        for value in values:
-            self.feed(value)
-
     def get_statistics(self) -> Dict:
         """
         return stats for the analyzer

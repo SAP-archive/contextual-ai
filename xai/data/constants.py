@@ -27,6 +27,7 @@ class STATSKEY:
     DATA_COLUMN_NAME = 'attribute_name'
 
     DISTRIBUTION = 'frequency'
+    FIELDS = 'fields'
 
     class DISTRIBUTION_KEY:
         ATTRIBUTE_NAME = 'value'
