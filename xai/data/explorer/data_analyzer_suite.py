@@ -3,7 +3,7 @@ from typing import Optional, Dict, Iterator
 from xai.data.config import DICT_DATATYPE_TO_ANALYZER, DICT_ANALYZER_TO_DATATYPE
 from xai.data.constants import STATSKEY
 from xai.data.exceptions import AttributeNotFound, InconsistentIteratorSize, AnalyzerDataTypeNotSupported
-from xai.data.explorer.abstract_labelled_analyzer import AbstractLabelledDataAnalyzer
+from xai.data.explorer.labelled_analyzer import LabelledDataAnalyzer
 
 
 class DataAnalyzerSuite:
@@ -14,14 +14,14 @@ class DataAnalyzerSuite:
     def __init__(self):
         self.analyzers = dict()
 
-    def add_analyzer(self, attribute_name: str or int, analyzer: AbstractLabelledDataAnalyzer):
+    def add_analyzer(self, attribute_name: str or int, analyzer_cls):
         """
         add data analyzer by initializing the analyzer object
         Args:
             attribute_name: name to identify a column/attribute in sample
-            analyzer: analyzer implements AbstractLabelledDataAnalyzer
+            analyzer_cls: analyzer implements AbstractLabelledDataAnalyzer
         """
-        self.analyzers[attribute_name] = analyzer
+        self.analyzers[attribute_name] = LabelledDataAnalyzer(data_analyzer_cls=analyzer_cls)
 
     def add_analyzer_by_data_type(self, attribute_name: str or int, data_type: str):
         """

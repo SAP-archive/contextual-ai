@@ -1,8 +1,8 @@
 from xai.data.constants import DATATYPE
-from xai.data.explorer.categorical import categorical_analyzer, labelled_categorical_analyzer
-from xai.data.explorer.datetime import datetime_analyzer, labelled_datetime_analyzer
-from xai.data.explorer.numerical import numerical_analyzer, labelled_numerical_analyzer
-from xai.data.explorer.text import text_analyzer, labelled_text_analyzer
+from xai.data.explorer.categorical import categorical_analyzer
+from xai.data.explorer.datetime import datetime_analyzer
+from xai.data.explorer.numerical import numerical_analyzer
+from xai.data.explorer.text import text_analyzer
 
 DICT_DATATYPE_TO_ANALYZER = {
     DATATYPE.CATEGORY: categorical_analyzer,
