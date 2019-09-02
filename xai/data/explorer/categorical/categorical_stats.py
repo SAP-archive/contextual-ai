@@ -1,6 +1,6 @@
 from typing import Dict
 
-from xai.data.explorer.abstract_stats import AbstractStats
+from xai.data.abstract_stats import AbstractStats
 from xai.data.constants import STATSKEY
 
 

@@ -5,7 +5,7 @@ from sklearn.neighbors import KernelDensity
 
 from xai.data.constants import STATSKEY, STATSCONSTANTS
 from xai.data.exceptions import NoItemsError
-from xai.data.explorer.abstract_stats import AbstractStats
+from xai.data.abstract_stats import AbstractStats
 
 
 class NumericalStats(AbstractStats):

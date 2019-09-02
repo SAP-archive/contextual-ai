@@ -1,11 +1,9 @@
-from typing import Dict, List, Tuple
+from typing import Dict
 import math
 import operator
-import numpy as np
 from collections import defaultdict, Counter
-from xai.data.constants import STATSKEY, STATSCONSTANTS
-from xai.data.exceptions import NoItemsError
-from xai.data.explorer.abstract_stats import AbstractStats
+from xai.data.constants import STATSKEY
+from xai.data.abstract_stats import AbstractStats
 
 
 class TextStats(AbstractStats):
