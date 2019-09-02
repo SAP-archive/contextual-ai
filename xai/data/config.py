@@ -7,8 +7,8 @@ from xai.data.explorer.text import text_analyzer, labelled_text_analyzer
 DICT_DATATYPE_TO_ANALYZER = {
     DATATYPE.CATEGORY: categorical_analyzer,
     DATATYPE.NUMBER: numerical_analyzer,
-    # DATATYPE.FREETEXT: text_analyzer,
-    # DATATYPE.DATETIME: datetime_analyzer
+    DATATYPE.FREETEXT: text_analyzer,
+    DATATYPE.DATETIME: datetime_analyzer
 }
 
 
@@ -16,6 +16,6 @@ DICT_DATATYPE_TO_ANALYZER = {
 DICT_ANALYZER_TO_DATATYPE = {
     labelled_categorical_analyzer: DATATYPE.CATEGORY,
     labelled_numerical_analyzer: DATATYPE.NUMBER,
-    # labelled_text_analyzer: DATATYPE.FREETEXT,
-    # labelled_datetime_analyzer: DATATYPE.DATETIME
+    labelled_text_analyzer: DATATYPE.FREETEXT,
+    labelled_datetime_analyzer: DATATYPE.DATETIME
 }
