@@ -1,6 +1,3 @@
-from xai.data.constants import DATATYPE
-
-
 class AttributeNotFound(Exception):
     """
     Raised when an defined attribute name not found in the sample
@@ -8,6 +5,17 @@ class AttributeNotFound(Exception):
 
     def __init__(self, attribute_name, sample):
         message = 'Attribute name "{}" is not found in the sample: {}.'.format(attribute_name, sample)
+        Exception.__init__(self, message)
+        self.message = message
+
+
+class ColumnNotFound(Exception):
+    """
+    Raised when an defined column name not found in the dataframe
+    """
+
+    def __init__(self, column_name, columns):
+        message = 'Column name "{}" is not found in the dataframe: {}.'.format(column_name, columns)
         Exception.__init__(self, message)
         self.message = message
 

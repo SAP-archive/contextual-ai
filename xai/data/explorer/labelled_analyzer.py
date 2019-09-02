@@ -1,21 +1,16 @@
-from typing import List, Iterator, Dict
+from abc import ABC
+from typing import Iterator, Dict
 
-from xai.data.explorer.abstract_labelled_analyzer import AbstractLabelledDataAnalyzer
-from xai.data.explorer.categorical.categorical_analyzer import CategoricalDataAnalyzer
 from xai.data.exceptions import InconsistentIteratorSize
 
 
-class LabelledCategoricalDataAnalyzer(AbstractLabelledDataAnalyzer):
-    """
-    LablledCategoricalDataAnalyzer aggregates categorical stats based on labels.
-    """
+class LabelledDataAnalyzer(ABC):
 
-    def __init__(self):
-        super(LabelledCategoricalDataAnalyzer, self).__init__()
-        self._label_analyzer = dict()
-        self._stats = None
+    def __init__(self, data_analyzer_cls):
+        self.labelled_stats = dict()
+        self.analyzer_cls = data_analyzer_cls
 
-    def feed(self, value: str or int or List, label: str or int):
+    def feed(self, value: str or int, label: str or int):
         """
         update the analyzer with value and its corresponding label
 
@@ -24,7 +19,7 @@ class LabelledCategoricalDataAnalyzer(AbstractLabelledDataAnalyzer):
             label: corresponding label for the categorical value
         """
         if label not in self._label_analyzer:
-            self._label_analyzer[label] = CategoricalDataAnalyzer()
+            self._label_analyzer[label] = self.analyzer_cls()
         self._label_analyzer[label].feed(value)
 
     def feed_all(self, values: Iterator, labels: Iterator):
