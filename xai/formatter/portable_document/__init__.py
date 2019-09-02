@@ -9,6 +9,8 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
+
+from xai.formatter.portable_document.publisher import CustomPdf
 from xai.formatter.portable_document.writer import PdfWriter
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())

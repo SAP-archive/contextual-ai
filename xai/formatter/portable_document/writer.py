@@ -9,661 +9,22 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import logging
 import os
+import tempfile
 
-import datetime
-import re
 from typing import Tuple, Dict, List
-from fpdf import FPDF
 
-LOGGER = logging.getLogger(__name__)
+from xai.formatter.contents.base import Title, SectionTitle, Header
+from xai.formatter.report.section import CoverSection, DetailSection
 
+from xai.formatter.portable_document.publisher import CustomPdf
 
-################################################################################
-### Extend FPDF
-################################################################################
-class CustomPdf(FPDF):
+from xai.formatter.writer.base import Writer
 
-    """
-    default setting for report constants
-    """
-    A4_PAPER_WIDTH = 210
-    LINE_HEIGHT = 10
-
-    DEFAULT_TEXT_COLOR = {'r': 58, 'g': 81, 'b': 110}
-    DEFAULT_FILL_COLOR = {'r': 255, 'g': 255, 'b': 255}
-    DEFAULT_RIBBON_COLOR = {'r': 200, 'g': 220, 'b': 255}
-    DEFAULT_CONTEXT_FONT_COLOR = {'r': 255, 'g': 255, 'b': 255}
-    DEFAULT_FOOTER_FONT_COLOR = {'r': 128, 'g': 128, 'b': 128}
-
-    TABLE_HEADER_COLOR = {'r': 23, 'g': 63, 'b': 95}
-    TABLE_ROW_DARK_COLOR = {'r': 224, 'g': 235, 'b': 255}
-    TABLE_ROW_TEXT_COLOR = {'r': 0, 'g': 0, 'b': 0}
-
-    AUTHOR_DATE_FONTSIZE = 10
-    TITLE_FONTSIZE = 20
-    FOOTER_FONTSIZE = 10
-    CONTEXT_FONTSIZE = 12
-
-    def __init__(self) -> None:
-        """
-        Custom PDF
-        """
-        super(CustomPdf, self).__init__()
-        # initialize for report information
-        self._create_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-
-        # initialization for font
-        # Font sample: https://www.dafont.com/linux-biolinum.font
-        font_path = os.path.join(os.path.dirname(__file__), 'fonts')
-        self.add_font('acm_title', '',
-                      os.path.join(font_path, 'LinBiolinum_R.ttf'),  uni=True)
-        self.add_font('acm_title', 'B',
-                      os.path.join(font_path, 'LinBiolinum_RB.ttf'), uni=True)
-        self.add_font('acm_title', 'I',
-                      os.path.join(font_path, 'LinBiolinum_RI.ttf'), uni=True)
-        self.add_font('acm_title', 'IB',
-                      os.path.join(font_path, 'LinBiolinum_aBL.ttf'), uni=True)
-
-        self.add_font('acm_text', '',
-                      os.path.join(font_path, 'LinLibertine_R.ttf'), uni=True)
-        self.add_font('acm_text', 'B',
-                      os.path.join(font_path, 'LinLibertine_RB.ttf'), uni=True)
-        self.add_font('acm_text', 'I',
-                      os.path.join(font_path, 'LinLibertine_RI.ttf'), uni=True)
-        self.add_font('acm_text', 'IB',
-                      os.path.join(font_path, 'LinLibertine_RBI.ttf'),
-                      uni=True)
-        self.title_font = 'acm_title'
-        self.content_font = 'acm_text'
-
-        # initialization for format
-        self.b = 0  # bold status
-        self.i = 0  # italic status
-        self.u = 0  # underline status
-        self.x = None
-        self.y = None
-        self.global_x = None
-        self.global_y = None
-        self.href = ''
-        self.page_links = {}
-
-        self.itemize_level = 0  # current itemize level
-        self.itemize_symbol = ''  # current itemize symbol
-        self.foot_size = 15
-
-    ################################################################################
-    ### PDF Customization
-    ################################################################################
-    def header(self):
-        """
-        override FPDF header function, show report name, author and create date
-        """
-        # Calculate width of title and position
-
-        self.set_font(self.title_font, 'B', CustomPdf.TITLE_FONTSIZE)
-        text_width = self.get_string_width(self.title) + 6
-
-        self.set_x((CustomPdf.A4_PAPER_WIDTH - text_width) / 2)
-        # Colors of frame, background and text
-
-        self.set_fill_color(**CustomPdf.DEFAULT_FILL_COLOR)
-        self.set_text_color(**CustomPdf.DEFAULT_TEXT_COLOR)
-        # Thickness of frame (1 mm)
-        self.set_line_width(0)
-        # Title
-        self.cell(text_width, 9, self.title, 0, 0, 'C', 1)
-        # Line break
-        self.ln(10)
-
-        author_date = 'created on %s' % self._create_date
-        text_width = self.get_string_width(author_date) + 6
-        self.set_x((CustomPdf.A4_PAPER_WIDTH - text_width) / 2)
-
-        self.set_font('', '', CustomPdf.AUTHOR_DATE_FONTSIZE)
-        self.set_fill_color(**CustomPdf.DEFAULT_FILL_COLOR)
-        self.set_text_color(**CustomPdf.DEFAULT_TEXT_COLOR)
-        self.set_line_width(0)
-        # Title
-        self.cell(text_width, 5, author_date, 0, 0, 'C', 1)
-        # Line break
-        self.ln(10)
-
-        # reset back the font
-        self.set_font(self.content_font, '', 12)
-
-    def footer(self):
-        """
-        override FPDF footer function, show page number
-        """
-        # Position at 1.5 cm from bottom
-        self.set_y(-self.foot_size)
-        # Arial italic 8
-        self.set_font(self.content_font, 'I', 8)
-        # Text color in gray
-        self.set_text_color(**CustomPdf.DEFAULT_FOOTER_FONT_COLOR)
-        # Page number
-        self.cell(0, CustomPdf.FOOTER_FONTSIZE, 'Page ' +
-                  str(self.page_no()), 0, 0, 'C')
-
-    def add_ribbon(self, title):
-        """
-        add a blue color ribbon with title
-        Args:
-            title(str): text to display on the ribbon
-        """
-        # Arial 12
-        self.set_font(self.title_font, 'B', 15)
-        # Background color
-        self.set_fill_color(**CustomPdf.DEFAULT_RIBBON_COLOR)
-        # Title
-        self.cell(0, 6, title, 0, 1, 'L', 1)
-
-        # Line break
-        self.ln(4)
-
-        # reset back the font
-        self.set_font(self.content_font, '', CustomPdf.CONTEXT_FONTSIZE)
-
-
-    def start_itemize(self, symbol='-'):
-        """
-        start a new indent block, each line inside the block
-          start with the defined symbol
-        Args:
-            symbol (str): itemized item header (e.g. '-', '*', '#', '')
-        """
-        self.itemize_symbol = " %s " % symbol
-        self.itemize_level += 1
-
-    def end_itemize(self):
-        """
-        end the current indent block, pair with "start_itemize"
-        """
-        self.itemize_level -= 1
-        if self.itemize_level == 0:
-            self.itemize_symbol = ''
-
-    def write_html(self, html, link=None):
-        """
-        parse html and write to PDF report
-        Args:
-             html(str): html content
-             link (int): link idx created earlier for internal anchor
-        """
-        if link is None:
-            link = ''
-
-        def set_style(tag, enable):
-            # Modify style and select corresponding font
-            t = getattr(self, tag.lower())
-            if enable:
-                t += 1
-            else:
-                t -= 1
-            setattr(self, tag.lower(), t)
-            style = ''
-            for s in ('B', 'I', 'U'):
-                if getattr(self, s.lower()) > 0:
-                    style += s
-            self.set_font('', style)
-
-        def open_tag(tag, attr):
-            # Opening tag
-            if tag in ('B', 'I', 'U'):
-                set_style(tag, 1)
-            if tag == 'A':
-                self.href = attr['HREF']
-            if tag == 'BR':
-                self.ln(5)
-
-        def close_tag(tag):
-            # Closing tag
-            if tag in ('B', 'I', 'U'):
-                set_style(tag, 0)
-            if tag == 'A':
-                self.href = ''
-
-        def put_link(url, txt):
-            # Put a hyperlink
-            self.set_text_color(0, 0, 255)
-            set_style('U', 1)
-            self.write(5, txt, url)
-            set_style('U', 0)
-            self.set_text_color(0)
-
-        # HTML parser
-        html = html.replace("\n", ' ')
-        a = re.split('<(.*?)>', html)
-        for i, e in enumerate(a):
-            if i % 2 == 0:
-                # Text
-                if self.href:
-                    put_link(self.href, e)
-                else:
-                    self.write(5, e, link=link)
-            else:
-                # Tag
-                if e[0] == '/':
-                    close_tag(e[1:].upper())
-                else:
-                    # Extract attributes
-                    attr = {}
-                    a2 = e.split(' ')
-                    tag = a2.pop(0).upper()
-                    for v in a2:
-                        a3 = re.findall('''^([^=]*)=["']?([^"']*)["']?''', v)
-                        if a3:
-                            attr[a3[0].upper()] = a3[1]
-                    open_tag(tag, attr)
-
-    def add_table(self, header, data,
-                  col_width=None, row_height=6,
-                  x=None, y=None):
-        """
-        add a table into the pdf report
-           (not support auto-text-swapping for now)
-        Args:
-            header (list(str)): table header
-            data (list(list)): table data
-            col_width (list(int)): column width.
-                                   Set to balanced column width if None.
-            row_height (int): row height
-            x (int): x position of current page
-                     to start the table (left top corner)
-            y (int): y position of current page
-                     to start the table (left top corner)
-        """
-        # Colors, line width and bold font
-        self.set_fill_color(**CustomPdf.TABLE_HEADER_COLOR)
-        self.set_text_color(**CustomPdf.DEFAULT_CONTEXT_FONT_COLOR)
-        self.set_draw_color(**CustomPdf.TABLE_HEADER_COLOR)
-        self.set_line_width(0.3)
-        self.set_font('', 'B')
-
-        # Header
-        if col_width is None:
-            col_w = int(180 / len(header))
-            w = [col_w] * len(header)
-        else:
-            w = col_width
-        if y is not None:
-            self.global_y = y
-        for i in range(0, len(header)):
-            if x is not None:
-                self.global_x = x
-            self.cell(w[i], row_height, header[i], 1, 0, 'L', 1)
-        self.ln()
-        # Color and font restoration
-        self.set_fill_color(**CustomPdf.TABLE_ROW_DARK_COLOR)
-        self.set_text_color(**CustomPdf.TABLE_ROW_TEXT_COLOR)
-        self.set_font('')
-        # Data
-        fill = 0
-        for row in data:
-            for i in range(len(data[0])):
-                self.cell(w[i], row_height, str(row[i]), 'LR', 0, 'L', fill)
-            self.ln()
-            fill = not fill
-        self.cell(sum(w), 0, '', 'T')
-        self.add_new_line()
-
-    def add_text(self, text, link=None, style=''):
-        """
-        add text string to pdf report
-        Args:
-            text (str): text string written to pdf, with current
-                        global indent level
-            link (int): link idx created earlier for internal anchor
-            style (str): styles applied to the text
-                        'B': bold,
-                        'I': italic,
-                        'U': underline,
-                        or any combination of above
-        """
-        html_text = "%s%s%s" % ("   " * self.itemize_level,
-                                self.itemize_symbol, text)
-
-        if 'B' in style:
-            html_text = "<B>%s</B>" % html_text
-        if 'I' in style:
-            html_text = "<I>%s</I>" % html_text
-        if 'U' in style:
-            html_text = "<U>%s</U>" % html_text
-        self.write_html(html_text, link=link)
-
-    def add_new_line(self, line='', link=None, style=''):
-        """
-        add a new line with text string to pdf report
-        Args:
-            line (str): text string written to pdf,
-                        with current global indent level
-            link (int): link idx created earlier for internal anchor
-            style (str): styles applied to the text
-                        'B': bold,
-                        'I': italic,
-                        'U': underline,
-                        or any combination of above
-        """
-        if type(line) == str:
-            self.add_text(line, link=link, style=style)
-            self.write_html('<BR>')
-        if type(line) == int:
-            for i in range(int(line)):
-                self.write_html('<BR>')
-
-    def add_key_value_pair(self, key, value):
-        """
-        add a key-value pair in the format of "KEY: VALUE" (with a new line)
-           to pdf, with current global indent level
-        Args:
-            key (str): item key
-            value (str): item value
-        """
-        if value is None or value == '':
-            return
-        self.write_html("%s%s" % ("   " * self.itemize_level,
-                                  self.itemize_symbol))
-        self.write_html("%s: " % key)
-        self.write_html("<B>%s</B>" % str(value))
-        self.write_html('<BR>')
-
-    def add_large_image(self, image_path, caption=None, style=None):
-        """
-        add an default large image to pdf with a caption above
-           (80% of the report width, w/h = 2.0)
-        Args:
-            image_path (str): path of the image
-            caption (str): image caption above the image
-            style (str): style for caption
-        """
-        width = (self.w - self.r_margin - self.l_margin) * 0.80
-        height = width / 2
-
-        if caption is None:
-            if self.y + height > self.h - self.foot_size:
-                LOGGER.warning('Warning: figure will exceed the page bottom, '
-                               'adding a new page.')
-                self.add_page()
-        else:
-            if self.y + height + CustomPdf.LINE_HEIGHT > self.h - self.foot_size:
-                LOGGER.warning('Warning: figure will exceed the page bottom, '
-                               'adding a new page.')
-                self.add_page()
-        if caption is not None:
-            self.add_new_line(caption, style=style)
-        local_x = self.x
-        local_y = self.y
-
-        self.image(image_path, local_x, local_y, width, height, '', '')
-        self.ln(height)
-
-    def add_table_image_group(self, image_path, table_header,
-                              table_content, grid_spec, caption=None, style=None):
-        """
-        add a block of image with table (table on the left, image on the right)
-        Args:
-            image_path (str): path of the image
-            table_header (list(str)):  table header
-            table_content: list(list(string)), 2D nested list with table content
-            grid_spec (dict): with "table", "image" as key
-            - 'table': (w,h), width and height of the table
-            - 'image': (w,h), width and height of the image
-            caption (str): group caption
-            style (str): caption style
-        Returns:
-            (bool) True if an image-table block written to PDF successfully,
-               otherwise False
-        """
-        local_x = self.x
-        local_y = self.y
-
-        if 'image' not in grid_spec:
-            LOGGER.error("Error in image_table_spec: no 'image' key found.")
-            return False
-        else:
-            if len(grid_spec['image']) != 2:
-                LOGGER.error("Error in image_table_spec:'image' "
-                             "spec should have 2 elements (width, height)")
-                return False
-            image_width, image_height = grid_spec['image']
-
-            if type(image_width) not in [float, int] \
-                    or type(image_height) not in [float, int]:
-                LOGGER.error("Error in image_table_spec: image_width and "
-                             "image_height should be int or float.")
-                return False
-            if image_width <= 0 or image_height <= 0:
-                LOGGER.error("Error in image_table_spec: image_width and "
-                             "image_height should be larger than zeros.")
-                return False
-        if 'table' not in grid_spec:
-            LOGGER.error("Error in image_table_spec: no 'table' key found.")
-            return False
-        else:
-            if len(grid_spec['image']) != 2:
-                LOGGER.error("Error in image_table_spec:'table' spec "
-                             "should have 2 elements (width, height)")
-                return False
-            table_width, table_height = grid_spec['table']
-
-            if type(table_width) not in [float, int] \
-                    or type(table_height) not in [float, int]:
-                LOGGER.error("Error in image_table_spec: table_width and "
-                             "table_height should be int or float.")
-                return False
-            if table_width <= 0 or table_height <= 0:
-                LOGGER.error("Error in image_table_spec: table_width and "
-                             "table_height should be larger than zeros.")
-                return False
-
-        if local_x + image_width + table_width > self.w - self.r_margin:
-            LOGGER.warning('Warning: figure will exceed the page edge '
-                           'on the right, rescale the whole group.')
-            total_maximum_width = self.w - self.r_margin - local_x
-
-            rescale_ratio = total_maximum_width / (image_width + table_width)
-
-            image_width *= rescale_ratio
-            image_height *= rescale_ratio
-            table_width *= rescale_ratio
-            table_height *= rescale_ratio
-
-        block_height = max(table_height, image_height)
-
-        if caption is None:
-            if local_y + block_height > self.h - self.foot_size:
-                LOGGER.warning('Warning: figure will exceed the page bottom, '
-                               'adding a new page.')
-                self.add_page()
-        else:
-            if local_y + block_height + CustomPdf.LINE_HEIGHT> self.h - self.foot_size:
-                LOGGER.warning('Warning: figure will exceed the page bottom, '
-                               'adding a new page.')
-                self.add_page()
-            self.add_new_line(caption, style=style)
-
-        local_x = self.x
-        local_y = self.y
-
-        if table_header is not None and table_content is not None:
-            self.add_table(table_header,
-                               table_content,
-                           col_width=[table_width / len(table_header)] * len(table_header),
-                           row_height=min(table_height / len(table_content), 6),
-                               x=local_x, y=local_y)
-        if image_path is not None:
-            self.image(image_path, x=local_x + table_width, y=local_y,
-                       w=image_width, h=image_height)
-
-        # reset to original point and advance
-        self.x = local_x
-        self.y = local_y
-        self.ln(block_height)
-        return True
-
-    def add_grid_images(self, image_set, grid_spec, ratio=False,
-                        grid_width=None, grid_height=None, caption=None,
-                        style=None):
-        """
-        add an block of images formatted with grid specification
-        Args:
-            image_set (dict or list):
-                dict, indicate image paths
-                    - key: image_name
-                    - value: image_path
-                or list, indicate image paths in sequence
-
-            grid_spec (dict): indicate image size and position
-                - key: image_name, or index if image_set is a list
-                - value: (x,y,w,h) position and weight/height of image,
-                   with left top corner of the block as (0,0), unit in mm
-
-            ratio (bool): indicate grid specification by ratio
-                instead of absolute size.
-                If True, grid_width and grid_height are required.
-
-            grid_width (int): width of the entire grid block (unit in mm)
-
-            grid_height (int): height of the entire grid block (unit in mm)
-
-            caption (str): caption of the entire grid block
-
-            style (str): style of caption
-        Returns:
-            (bool) True if image blocks generate successfully, otherwise False
-        """
-
-        local_x = self.x
-        local_y = self.y
-
-        maximum_y = 0
-        maximum_x = 0
-
-        for image_name, (x, y, w, h) in grid_spec.items():
-            for e in [x, y, w, h]:
-                if type(e) not in [float, int]:
-                    LOGGER.error("Error in image_spec: x,y,w,h "
-                                 "should all be int or float and non-negative.")
-                    return False
-
-            if ratio:
-                x *= grid_width
-                y *= grid_height
-                w *= grid_width
-                h *= grid_height
-                grid_spec[image_name] = (x, y, w, h)
-                maximum_y = grid_height
-                maximum_x = grid_width
-            else:
-                maximum_y = max(maximum_y, y + h)
-
-        if local_x + maximum_x > self.w:
-            LOGGER.error('Error: figure will exceed the page edge '
-                         'on the right, exiting plotting.')
-            return False
-
-        if caption is None:
-            if local_y + maximum_y > self.h - self.foot_size:
-                LOGGER.warning('Warning: figure will exceed the page bottom, '
-                               'adding a new page.')
-                self.add_page()
-        else:
-            if self.y + maximum_y + CustomPdf.LINE_HEIGHT > \
-                    self.h - self.foot_size:
-                LOGGER.warning('Warning: figure will exceed the page bottom, '
-                               'adding a new page.')
-                self.add_page()
-
-        if caption is not None:
-            self.add_new_line(caption, style=style)
-
-        local_x = self.x
-        local_y = self.y
-        if type(image_set) == dict:
-            for image_name, image_path in image_set.items():
-                if image_name not in grid_spec:
-                    LOGGER.error('Error: Image name [%s] '
-                                 'not found in grid_spec.' % image_name)
-                    return False
-                pos = grid_spec[image_name]
-                x, y, w, h = pos
-                self.image(image_set[image_name], local_x + x, local_y + y, w, h, '', '')
-
-        if type(image_set) == list:
-            ## follow the index
-            if len(image_set) != len(grid_spec):
-                LOGGER.error('Error: Inconsistent length found. '
-                             'Image set should be of same length with grid spec.')
-            for idx, image_path in enumerate(image_set):
-                if idx not in grid_spec:
-                    LOGGER.error('Error: Image index [%s] '
-                                 'not found in grid_spec.' % idx)
-                    return False
-                pos = grid_spec[idx]
-                x, y, w, h = pos
-                self.image(image_path, local_x + x, local_y + y, w, h, '', '')
-
-        self.ln(maximum_y)
-        return True
-
-    def add_list_of_grid_images(self, image_set, grid_spec, ratio=False,
-                                grid_width=None, grid_height=None,
-                                caption=None, style=None):
-        """
-        add a list of image blocks with each block formatted by a grid specification
-        Args
-            image_set: list, the list of image_paths
-
-            grid_spec (dict): indicate image size and position
-                - key: image_name, or index if image_set is a list
-                - value: (x,y,w,h) position and weight/height of image,
-                      with left top corner of the block as (0,0), unit in mm
-
-            ratio (bool): indicate grid specification by ratio
-                          instead of absolute size.
-                      If True, grid_width and grid_height are required.
-
-            grid_width (int): width of the entire grid block (unit in mm)
-
-            grid_height (int): height of the entire grid block (unit in mm)
-
-            caption (str): caption of the entire grid block
-
-            style (str): style of caption
-        Returns:
-            (bool) True if image blocks generate successfully, otherwise False
-        """
-        grid_size = len(grid_spec)
-        title_drawed = False
-        for idx in range(0, len(image_set), grid_size):
-            if not title_drawed:
-                success = self.add_grid_images(image_set[idx:idx + grid_size],
-                                               grid_spec, ratio=ratio,
-                                               grid_width=grid_width,
-                                               grid_height=grid_height,
-                                               caption=caption,
-                                               style=style)
-            else:
-                success = self.add_grid_images(image_set[idx:idx + grid_size],
-                                               grid_spec, ratio=ratio,
-                                               grid_width=grid_width,
-                                               grid_height=grid_height)
-            if not success:
-                return False
-            title_drawed = True
-        return True
 
 ################################################################################
 ### Pdf Writer Strategy
 ################################################################################
-import tempfile
-from xai.formatter.content import Title, SectionTitle, Header
-from xai.formatter.section import CoverSection, DetailSection
-
-from xai.formatter.writer import Writer
-
 class PdfWriter(Writer):
 
     def __init__(self, name='training_report',
@@ -842,6 +203,131 @@ class PdfWriter(Writer):
         self.pdf.add_new_line(text, style='')
         self.pdf.ln()
 
+    ################################################################################
+    ###  Summary Section
+    ################################################################################
+    def draw_training_time(self, notes: str, timing: List[Tuple[str, int]]):
+        """
+        Draw information of timing to the report
+        Args:
+            notes(str): Explain the block
+            timing (:obj:`list` of :obj:`tuple`): list of tuple
+                        (name, time in second)
+        """
+        import datetime
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+        self.pdf.start_itemize()
+        for name, time_in_sec in timing:
+            self.pdf.add_key_value_pair(key=name,
+                                        value=str(datetime.timedelta(
+                                            seconds=time_in_sec)))
+        self.pdf.end_itemize()
+        self.pdf.ln()
+
+    def draw_data_set_summary(self, notes: str,
+                              data_summary: List[Tuple[str, int]]):
+        """
+        Draw information of dataset summary to the report
+        Args:
+            notes(str): Explain the block
+            data_summary (:obj:`list` of :obj:`tuple`): list of tuple
+                        (dataset_name, dataset_sample_number)
+        """
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+        self.pdf.start_itemize()
+        for name, quantity in data_summary:
+            self.pdf.add_key_value_pair(key="Number of %s samples" % name,
+                                        value=str(quantity))
+        self.pdf.end_itemize()
+        self.pdf.ln()
+
+    def draw_evaluation_result_summary(self, notes: str,
+                                       evaluation_result: dict):
+        """
+        Draw information of training performance to the result
+
+        Args:
+            evaluation_result (dict): evaluation metric
+                - key: metric_name
+                - value: metric_value: single float value for average/overall metric,
+                                        list for class metrics
+                sample input 1: {'precision': 0.5}, report value directly
+                sample input 2: {'precision': {'class':[0.5,0.4,0.3],'average':0.5}},
+                                            report "average" value
+                sample input 3: {'precision': {'class':[0.5,0.4,0.3]},
+                                    report unweighted average for "class" value
+            notes (str, Optional): explain the block
+        """
+        import numpy as np
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+
+        for result in evaluation_result:
+            self.pdf.start_itemize()
+            for metric_name, metric_value in result.items():
+                valid = False
+                if type(metric_value) == dict:
+                    if 'average' in metric_value.keys():
+                        key = "%s (average)" % metric_name.capitalize()
+                        if type(metric_value['average']) == float or type(
+                                metric_value['average']) == str:
+                            value = "%.4f " % metric_value['average']
+                    elif 'class' in metric_value.keys():
+                        key = "%s (macro average)" % metric_name.capitalize()
+                        if type(metric_value['class']) == list:
+                            valid = True
+                            for e in metric_value['class']:
+                                if type(e) != float and type(e) != str:
+                                    valid = False
+                        if not valid:
+                            continue
+                        value = "%.4f" % np.mean(
+                            np.array(metric_value['class']))
+                    else:
+                        print(
+                            'No defined keys (`class`,`average`) found in metric value: %s' % (
+                                metric_value.keys()))
+                        continue
+
+                elif type(metric_value) == float:
+                    key = "%s" % metric_name.capitalize()
+                    value = "%.4f" % metric_value
+                elif type(metric_value) == str:
+                    key = "%s" % metric_name.capitalize()
+                    value = metric_value
+                else:
+                    print(
+                        'Unsupported metric value type for metric (%s): %s' % (
+                        metric_name, type(metric_value)))
+                    continue
+                self.pdf.add_key_value_pair(key, value)
+            self.pdf.end_itemize()
+            self.pdf.ln()
+
+    def draw_model_info_summary(self, notes: str, model_info: list):
+        """
+        Draw information of model info to the result
+
+        Args:
+            model_info (:obj:`list` of :obj:
+              `tuple`, Optional): list of tuple (model info attribute, model info value).
+               Default information include `use case name`, `version`, `use case team`.
+            notes (str, Optional): explain the block
+        """
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+
+        self.pdf.start_itemize()
+        for attribute, value in model_info:
+            self.pdf.add_key_value_pair(key=attribute, value=value)
+        self.pdf.end_itemize()
+        self.pdf.ln()
+
+    ################################################################################
+    ###  Data Section
+    ################################################################################
     def draw_data_missing_value(self, notes: str, missing_count: dict,
                                 total_count: dict, ratio=False):
         """
@@ -889,7 +375,7 @@ class PdfWriter(Writer):
                                 data_dict[feature_name]['total_count']
             if len(total_count) > 0:
                 table_header = ['Feature', 'Missing Value Count',
-                                 'Percentage']
+                                'Percentage']
                 table_data = []
                 for field_name, field_data in data_dict.items():
                     table_data.append(
@@ -919,13 +405,13 @@ class PdfWriter(Writer):
         self.pdf.add_new_line(notes)
         _table_header, _table_data, _col_width = get_missing_data_info()
         if len(_table_data) > 0:
-             self.pdf.add_table(_table_header, _table_data,
-                                col_width=_col_width)
-             self.pdf.add_new_line()
+            self.pdf.add_table(_table_header, _table_data,
+                               col_width=_col_width)
+            self.pdf.add_new_line()
 
     def draw_data_set_distribution(self, notes: str,
-                                  data_set_distribution: Tuple[str, dict],
-                                  max_class_shown=20):
+                                   data_set_distribution: Tuple[str, dict],
+                                   max_class_shown=20):
         """
         Draw information of distribution on data set
         Args:
@@ -956,7 +442,7 @@ class PdfWriter(Writer):
             self.pdf.add_new_line('Distribution for <B>%s</B>' % _dataset_name)
             if len(_dataset_dist) > max_class_shown:
                 self.pdf.add_new_line('(Only %s shown amount %s classes)' % (
-                max_class_shown, len(_dataset_dist)))
+                    max_class_shown, len(_dataset_dist)))
             image_path = graph_generator.BarPlot(
                 file_path='%s/%s_data_distribution.png' % (self.figure_path,
                                                            _dataset_name),
@@ -967,3 +453,760 @@ class PdfWriter(Writer):
                                          ratio=True,
                                          limit_length=max_class_shown)
             self.pdf.add_large_image(image_path)
+
+    def draw_data_attributes(self, notes: str, data_attribute: Dict):
+        """
+        Draw information of data attribute for data fields to the report
+        Args:
+            notes(str): Explain the block
+            data_attribute (:dict of :dict):
+                -key: data field name
+                -value: attributes (dict)
+                    - key: attribute name
+                    - value: attribute value
+        """
+
+        def get_data_attributes():
+            attribute_list = list(
+                set().union(*[set(attribute_dict.keys())
+                              for attribute_dict in data_attribute.values()]))
+            table_header = ['Field Name'] + [attribute.capitalize()
+                                             for attribute in attribute_list]
+
+            table_data = []
+            for field_name, field_attributes in data_attribute.items():
+                row = [field_name]
+                for attribute_name in attribute_list:
+                    if attribute_name in field_attributes.keys():
+                        row.append(field_attributes[attribute_name])
+                    else:
+                        row.append('-')
+                table_data.append(row)
+
+            return table_header, table_data
+
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+        _table_header, _table_data = get_data_attributes()
+        self.pdf.add_table(_table_header, _table_data)
+        self.pdf.add_new_line()
+
+    def draw_categorical_field_distribution(self, notes: str,
+                                            field_name: str,
+                                            field_distribution: dict,
+                                            max_values_display=20,
+                                            colors=None):
+        """
+        Draw information of field value distribution for categorical type to
+        the report.
+        Details see analyzers inside `xai.data_explorer.categorical_analyzer`
+        Args:
+            notes(str): Explain the block
+            field_name (str): data field name
+            field_distribution (:dict of :dict):
+                -key: label_name
+                -value: frequency distribution under the `label_name`(dict)
+                    - key: field value
+                    - value: field value frequency
+            max_values_display (int): maximum number of values displayed
+            colors (list): the list of color code for rendering different class
+        """
+        from xai.graphs import graph_generator
+        if colors is None:
+            colors = ["Blues_d", "Reds_d", "Greens_d", "Purples_d",
+                      "Oranges_d"]
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+        self.pdf.start_itemize(' - ')
+        for idx, (label_name, frequency_distribution) in enumerate(
+                field_distribution.items()):
+            if len(frequency_distribution) / sum(
+                    frequency_distribution.values()) > 0.5:
+                self.pdf.start_itemize('-')
+                self.pdf.add_new_line(
+                    'Warning: %s unique values found in %s samples.' % (
+                        len(frequency_distribution),
+                        sum(frequency_distribution.values())))
+                self.pdf.end_itemize()
+                break
+
+            if len(field_distribution) > max_values_display:
+                self.pdf.add_new_line('%s of %s are displayed)' % (
+                    max_values_display, len(field_distribution)))
+
+            figure_path = '%s/%s_%s_field_distribution.png' % (
+                self.figure_path, field_name, label_name)
+            image_path = graph_generator.BarPlot(file_path=figure_path,
+                                                 data=frequency_distribution,
+                                                 title="",
+                                                 x_label="",
+                                                 y_label=field_name).draw(
+                limit_length=max_values_display,
+                color_palette=colors[idx % len(colors)])
+            self.pdf.add_large_image(image_path=image_path,
+                                     caption='For %s samples' % label_name,
+                                     style='I')
+        self.pdf.end_itemize()
+
+    def draw_numeric_field_distribution(self, notes: str,
+                                        field_name: str,
+                                        field_distribution: dict,
+                                        force_no_log=False,
+                                        x_limit=False,
+                                        colors=None):
+        """
+         Draw information of field value distribution for numerical type to
+         the report.
+         Args:
+             notes(str): Explain the block
+             field_name (str): data field name
+             field_distribution (:dict of :dict):
+                 -key: label_name
+                 -value: numeric statistics
+                     - key: statistics name
+                     - value: statistics value
+                 each field_distribution should must have 2 following predefined keys:
+                 - histogram (:list of :list): a list of bar specification
+                                                (x, y, width, height)
+                 - kde (:list of :list, Optional): a list of points which
+                                    draw`kernel density estimation` curve.
+
+             force_no_log (bool): whether to change y-scale to logrithmic
+                                              scale for a more balanced view
+             x_limit (list:): whether x-axis only display the required percentile range.
+                             If True, field_distribution should have a
+                             key "x_limit" and value of [x_min, x_max].
+             colors (list): the list of color code for rendering different class
+        """
+        from xai.graphs import graph_generator
+        from xai.graphs.format_contants import IMAGE_TABLE_GRID_SPEC_NEW
+        if colors is None:
+            colors = ["#3498db", "#2ecc71", "#e74c3c"]
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+        self.pdf.start_itemize(' - ')
+        for idx, (label_name, data_distribution) in enumerate(
+                field_distribution.items()):
+
+            figure_path = '%s/%s_%s_field_distribution.png' % (
+                self.figure_path, field_name, label_name)
+            figure_path = graph_generator.KdeDistribution(
+                figure_path=figure_path,
+                data=data_distribution,
+                title="",
+                x_label=field_name,
+                y_label="").draw(
+                color=colors[idx % len(colors)],
+                force_no_log=force_no_log,
+                x_limit=x_limit)
+            table_header = ['Statistical Field', 'Value']
+            table_values = []
+            for key, value in data_distribution.items():
+                if key in ['kde', 'histogram', 'x_limit']:
+                    continue
+                table_values.append([key, "%d" % int(value)])
+
+            self.pdf.add_table_image_group(image_path=figure_path,
+                                           table_header=table_header,
+                                           table_content=table_values,
+                                           grid_spec=IMAGE_TABLE_GRID_SPEC_NEW,
+                                           caption='Distribution for %s' % label_name,
+                                           style='I')
+        self.pdf.end_itemize()
+
+    def draw_text_field_distribution(self, notes: str,
+                                     field_name: str,
+                                     field_distribution: dict):
+        """
+        Draw information of field value distribution for text type to the
+        report.
+        Args:
+            notes(str): Explain the block
+            field_name (str): data field name
+            field_distribution (:dict of :dict):
+                -key: label_name
+                -value: tfidf and placeholder distribution under the `label_name`(dict):
+                    {'tfidf': tfidf, 'placeholder': placeholder}
+                    - tfidf (:list of :list): each sublist has 2 items: word and tfidf
+                    - placeholder (:dict):
+                        - key: PATTERN
+                        - value: percentage
+        """
+        from xai.graphs import graph_generator
+        from xai.graphs.format_contants import IMAGE_TABLE_GRID_SPEC_NEW
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+        self.pdf.start_itemize(' - ')
+        for idx, (label_name, data_distribution) in enumerate(
+                field_distribution.items()):
+
+            figure_path = '%s/%s_%s_field_distribution.png' % (
+                self.figure_path, field_name, label_name)
+            figure_path = graph_generator.WordCloudGraph(
+                figure_path=figure_path,
+                data=data_distribution['tfidf'],
+                title='').draw()
+            table_header = ['Placeholder', 'Doc Percentage ']
+            table_values = []
+            for w, v in data_distribution['placeholder'].items():
+                table_values.append([w, '%.2f%%' % (v * 100)])
+
+            self.pdf.add_table_image_group(image_path=figure_path,
+                                           table_header=table_header,
+                                           table_content=table_values,
+                                           grid_spec=IMAGE_TABLE_GRID_SPEC_NEW,
+                                           caption='Distribution for %s' % label_name,
+                                           style='I')
+        self.pdf.end_itemize()
+
+    def draw_datetime_field_distribution(self, notes: str,
+                                         field_name: str,
+                                         field_distribution: dict):
+        """
+        Draw information of field value distribution for datetime type to the
+        report.
+        Args:
+            notes(str): Explain the block
+            field_name (str): data field name
+            field_distribution (:dict of :dict):
+                -key: label_name
+                -value (:dict of :dict):
+                    - 1st level key: year_X(int)
+                    - 1st level value:
+                        - 2nd level key: month_X(int)
+                        - 2nd level value: count of sample in month_X of year_X
+        """
+        from xai.graphs import graph_generator
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+        self.pdf.start_itemize(' - ')
+        for idx, (label_name, data_distribution) in enumerate(
+                field_distribution.items()):
+            figure_path = '%s/%s_%s_field_distribution.png' % (
+                self.figure_path, field_name, label_name)
+            figure_path = graph_generator.DatePlot(figure_path=figure_path,
+                                                   data=data_distribution,
+                                                   title='Datetime '
+                                                         'distribution for %s (for %s samples) ' % (
+                                                             field_name,
+                                                             label_name),
+                                                   x_label="",
+                                                   y_label="").draw()
+
+            self.pdf.add_large_image(image_path=figure_path,
+                                     caption='Distribution for %s' %
+                                             label_name,
+                                     style='I')
+        self.pdf.end_itemize()
+
+    ################################################################################
+    ###  Feature Section
+    ################################################################################
+    def draw_feature_importance(self, notes: str,
+                                importance_ranking: List[List],
+                                importance_threshold: float,
+                                maximum_number_feature=20):
+        """
+        Add information of feature importance to the report.
+        Args:
+            notes(str): Explain the block
+            importance_ranking(:list of :list): a list of 2-item lists,
+                                        item[0]: score, item[1] feature_name
+            importance_threshold(float): threshold for displaying the feature
+                                        name and score in tables
+            maximum_number_feature(int): maximum number of features shown in bar-chart diagram
+        """
+        from xai.graphs import graph_generator
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+
+        feature_ranking = [(score, name) for name, score in importance_ranking]
+        image_path = '%s/feature_importance.png' % self.figure_path
+        image_path = graph_generator.FeatureImportance(figure_path=image_path,
+                                                       data=feature_ranking,
+                                                       title='feature_importance').draw(
+            limit_length=maximum_number_feature)
+
+        if maximum_number_feature < len(feature_ranking):
+            self.pdf.add_new_line(
+                "The figure below shows the top %s important features for the trained model." % maximum_number_feature)
+        else:
+            self.pdf.add_new_line(
+                "The figure below shows importance ranking for all features from the trained model.")
+
+        self.pdf.ln()
+
+        self.pdf.add_large_image(image_path)
+
+        self.pdf.add_new_line(
+            "The features which have an importance score larger than %s are listed in the below table." %
+            importance_threshold)
+        self.pdf.ln()
+
+        table_header = ['Feature', 'Importance']
+        table_data = []
+
+        for feature_name, importance in feature_ranking:
+            if float(importance) < importance_threshold:
+                break
+            table_data.append([feature_name, importance])
+
+        self.pdf.add_table(header=table_header, data=table_data,
+                           col_width=[140, 30])
+
+    ################################################################################
+    ###  Training Section
+    ################################################################################
+    def draw_hyperparameter_tuning(self, notes: str,
+                                   history: dict, best_idx: str,
+                                   search_space=None, benchmark_metric=None,
+                                   benchmark_threshold=None,
+                                   non_hyperopt_score=None):
+        """
+        Add information of hyperparameter tuning to the report.
+        Args:
+            notes(str): Explain the block
+            history(:dict of dict): a dict of training log dict.
+                key: iteration index
+                value: hyperparameter tuning information
+                        Each dict has two keys:
+                            - params: a dict of which key is the parameter name
+                                        and value is parameter value
+                            - val_scores: a dict of which key is the metric name
+                                        and value is metric value
+            best_idx(str):
+                - the best idx based on benchmark metric, corresponding the `history` dict key
+            search_space(:dict): parameter name and the search space for each parameter
+            benchmark_metric(:str): the metric used for benchmarking during hyperparameter tuning
+            benchmark_threshold(:float, Optional): the benchmarking threshold to accept the training
+            non_hyperopt_score(:float, Optional): the training metric without hyperparameter tuning
+        """
+        from xai.graphs import graph_generator
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+        self.pdf.add_new_line("Hyperparameter Tuning Search Space", style='B')
+        self.pdf.start_itemize()
+        for params, params_search_space in search_space.items():
+            self.pdf.add_key_value_pair(params, params_search_space)
+        self.pdf.end_itemize()
+
+        self.pdf.ln(5)
+
+        self.pdf.add_new_line("Hyperparameter Tuning History Result",
+                              style='B')
+        self.pdf.add_new_line(
+            "The metric results from hyperparameter tuning are shown in the figure.")
+        self.pdf.start_itemize()
+        self.pdf.add_key_value_pair("Benchmark metric", benchmark_metric)
+        self.pdf.add_key_value_pair("Benchmark value", benchmark_threshold)
+        self.pdf.end_itemize()
+        self.pdf.ln()
+
+        image_path = "%s/hyperopt_history.png" % self.figure_path
+        image_path = graph_generator.EvaluationLinePlot(figure_path=image_path,
+                                                        data=history,
+                                                        title='hyper_history',
+                                                        x_label='Iterations',
+                                                        y_label='Metrics Score').draw(
+            benchmark_metric=benchmark_metric,
+            benchmark_value=benchmark_threshold)
+
+        self.pdf.add_large_image(image_path)
+        self.pdf.ln()
+
+        # best result for hyperopt
+        self.pdf.add_new_line("Best Result from Hyperparameter Tuning",
+                              style="B")
+        self.pdf.add_new_line("The best iteration is ", int(best_idx))
+        self.pdf.add_new_line("Parameters:", style='B')
+
+        self.pdf.start_itemize()
+        for param_name, param_value in history[best_idx]['params'].items():
+            self.pdf.add_key_value_pair("%s" % param_name, param_value)
+        self.pdf.end_itemize()
+        self.pdf.ln()
+
+        self.pdf.add_new_line("Validation Results:", style='B')
+
+        self.pdf.start_itemize()
+        final_metric_value = 0
+        for param_name, param_value in history[best_idx]['val_scores'].items():
+            if param_name == benchmark_metric:
+                self.pdf.add_key_value_pair("%s" % param_name.capitalize(),
+                                            "%s (benchmarking metric)" % param_value)
+                final_metric_value = param_value
+            else:
+                self.pdf.add_key_value_pair("%s" % param_name.capitalize(),
+                                            "%s" % param_value)
+        self.pdf.end_itemize()
+
+        self.pdf.ln(5)
+
+        self.pdf.add_new_line("Hyperparameter Tuning Final Conclusion",
+                              style='B')
+
+        if non_hyperopt_score is None:
+            self.pdf.add_new_line(
+                "There is no benchmarking conducted in this training. ")
+            self.pdf.add_new_line(
+                "We will accept the best result from hyperparameter tuning as final parameter set.")
+        else:
+            if final_metric_value > non_hyperopt_score:
+                self.pdf.add_text(
+                    "Hyperparameter tuning best result (%.4f) is better than benchmark score (%.4f)," % (
+                        final_metric_value, non_hyperopt_score))
+                if final_metric_value > benchmark_threshold:
+                    self.pdf.add_new_line(
+                        ' and it is better than acceptance benchmark scoring (%.4f).' % benchmark_threshold)
+                    self.pdf.add_new_line(
+                        '<BR>We accept it as the final parameter setting for the trained model.')
+                else:
+                    self.pdf.add_new_line(
+                        ' but it fails to meet the acceptance benchmark scoring (%.4f).' % benchmark_threshold)
+                    self.pdf.add_new_line(
+                        'We still accept it as the final parameter setting for the trained model, ' \
+                        'but will continue to improve it.')
+
+            else:
+                self.pdf.add_text(
+                    "Hyperparameter tuning best result (%.4f) is worse than benchmark score (%.4f), " % (
+                        final_metric_value, non_hyperopt_score))
+
+                if final_metric_value > benchmark_threshold:
+                    self.pdf.add_new_line(
+                        'and benchmarking result is better than acceptance benchmark scoring (%.4f).' % benchmark_threshold)
+                    self.pdf.add_new_line(
+                        'We accept default parameters as the final solution for the trained model.')
+                else:
+                    self.pdf.add_new_line(
+                        'but it fails to meet the acceptance benchmark scoring (%.4f).' % benchmark_threshold)
+                    self.pdf.add_new_line(
+                        'We still accept default parameters as the final solution for the trained model, ' \
+                        'but will continue to improve it.')
+                    self.pdf.ln(5)
+
+    def draw_learning_curve(self, notes: str,
+                            history: dict, best_idx: str,
+                            benchmark_metric=None, benchmark_threshold=None,
+                            training_params=None):
+        """
+        Add information of learning curve to report.
+        Args:
+            notes(str): Explain the block
+            history(:dict of dict): a dict of training log dict.
+                key: epoch index
+                value: learning epoch information
+                        Each dict has two keys:
+                            - params: a dict of params on current epochs (Optional)
+                            - val_scores: a dict of which key is the metric name
+                                      and value is metric value
+            best_idx(str):
+                - the best epoch based on benchmark metric, corresponding the `history` dict key
+            benchmark_metric(:str): the metric used for benchmarking during learning
+            benchmark_threshold(:float, Optional): the benchmarking threshold to accept the training
+            training_params(:dict): a dict of which key is training parameter name and
+                                    value is training parameter value
+        """
+        from xai.graphs import graph_generator
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+        image_path = "%s/deep_learning_curve.png" % self.figure_path
+        image_path = graph_generator.EvaluationLinePlot(figure_path=image_path,
+                                                        data=history,
+                                                        title='training_history',
+                                                        x_label='Steps',
+                                                        y_label='Metrics Score').draw(
+            benchmark_metric=benchmark_metric,
+            benchmark_value=benchmark_threshold)
+        if training_params is not None:
+            self.pdf.add_new_line("Training Parameters", style='B')
+            self.pdf.start_itemize()
+            for param_name, param_value in training_params.items():
+                self.pdf.add_key_value_pair(param_name, param_value)
+            self.pdf.end_itemize()
+            self.pdf.ln()
+
+        self.pdf.add_new_line("Learning Curve", style='B')
+        self.pdf.add_new_line(
+            "The metric results from several training epochs are shown in the figure.")
+
+        self.pdf.start_itemize()
+        self.pdf.add_key_value_pair("Benchmark metric", benchmark_metric)
+        self.pdf.add_key_value_pair("Benchmark value", benchmark_threshold)
+        self.pdf.end_itemize()
+
+        self.pdf.ln()
+        self.pdf.add_large_image(image_path)
+
+        self.pdf.ln()
+        self.pdf.add_new_line("Best Epoch from Training", style='B')
+        self.pdf.add_key_value_pair("The best iteration is ", best_idx)
+        self.pdf.ln()
+
+        self.pdf.add_new_line("Validation Results:", style='B')
+        self.pdf.start_itemize()
+        if best_idx not in history:
+            best_idx = str(best_idx)
+        for param_name, param_value in history[best_idx]['val_scores'].items():
+            if param_name == benchmark_metric:
+                self.pdf.add_key_value_pair(param_name.capitalize(),
+                                            "%s (benchmarking metric)" % param_value)
+            else:
+                self.pdf.add_key_value_pair(param_name.capitalize(),
+                                            param_value)
+        self.pdf.end_itemize()
+        self.pdf.ln(5)
+
+    ################################################################################
+    ###  Evaluation Section
+    ################################################################################
+    def draw_multi_class_evaluation_metric_results(self, notes: str,
+                                                   metric_tuple):
+        """
+        Add information about metric results for multi-class evaluation
+        Args:
+            notes(str): Explain the block
+            *metric_tuple(tuple): (evaluation_header, evaluation_metric_dict)
+                - evaluation_header(str): a header for current evaluation,
+                                            can be split or round number.
+                - evaluation_metric_dict(dict): key-value pair for metric
+                    - key: metric name
+                    - value: metric dict. The dict should either
+                     (1) have a `class` keyword, with key-value pair of class name
+                                            and corresponding values, or
+                     (2) have a `average` keyword to show a macro-average metric.
+        """
+        from xai.evaluation.multi_classification_result import \
+            MultiClassificationResult
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+        for eval_name, eval_metric_dict in metric_tuple:
+            cr = MultiClassificationResult()
+            cr.load_results_from_meta(eval_metric_dict)
+            table_name, table_header, table_data, table_layout = cr.convert_metrics_to_table()
+
+            self.pdf.add_new_line(table_name, style='B')
+            self.pdf.add_table(table_header, table_data, table_layout)
+
+    def draw_binary_class_evaluation_metric_results(self, notes: str,
+                                                    metric_tuple: tuple,
+                                                    aggregated=True):
+        """
+        Add information about metric results for binary-class evaluation
+        Args:
+            notes(str): Explain the block
+            metric_tuple(tuple): (evaluation_header, evaluation_metric_dict)
+                - evaluation_header(str): a header for current evaluation,
+                                        can be split or round number.
+                - evaluation_metric_dict(dict): key-value pair for metric
+                    - key: metric name
+                    - value: metric value
+            aggregated(bool): whether to aggregate multiple result tables into one
+        """
+        from collections import defaultdict
+        from xai.evaluation.binary_classification_result import \
+            BinaryClassificationResult
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+
+        combined_table_dict = defaultdict(list)
+        combined_table_header = ["Split/Round"]
+        table_name = ''
+        for eval_name, eval_metric_dict in metric_tuple:
+            combined_table_header.append(eval_name)
+            cr = BinaryClassificationResult()
+            cr.load_results_from_meta(eval_metric_dict)
+            table_name, table_header, table_data, table_layout = cr.convert_metrics_to_table()
+            if aggregated:
+                table_data_dict = {row[0]: row[1] for row in table_data}
+                for metric_name, metric_value in table_data_dict.items():
+                    combined_table_dict[metric_name].append(metric_value)
+            else:
+                self.pdf.add_new_line('For split/round <B>%s</B>' % eval_name)
+                self.pdf.add_table(table_header, table_data)
+
+        if aggregated:
+            combined_table_values = []
+            for metric_name, metric_value_list in combined_table_dict.items():
+                combined_table_values.append([metric_name] + metric_value_list)
+
+            self.pdf.add_new_line(table_name, style='B')
+            self.pdf.add_table(combined_table_header, combined_table_values)
+
+    def draw_confusion_metric_results(self, notes: str,
+                                      confusion_matrix_tuple: tuple):
+        """
+        add information about confusion matrix to report
+        Args:
+            notes(str): Explain the block
+            confusion_matrix_tuple(tuple): (confusion_matrix_header, confusion_matrix_dict)
+                - confusion_matrix_header(str): a header for confusion_matrix,
+                                                can be split or round number.
+                - confusion_matrix_dict(dict):
+                    - `labels`(:list of :str): label of classes
+                    - `values`(:list of :list): 2D list for confusion matrix value,
+                                            row for predicted, column for true.
+        """
+        from xai.graphs import graph_generator
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+
+        image_list = []
+        for idx, (eval_name, confusion_matrix_mat) in enumerate(
+                confusion_matrix_tuple):
+            figure_path = '%s/%s_%s_cm.png' % (
+                self.figure_path, idx, eval_name)
+            image_path = graph_generator.HeatMap(figure_path=figure_path,
+                                                 data=confusion_matrix_mat[
+                                                     'values'],
+                                                 title=eval_name,
+                                                 x_label='Predict',
+                                                 y_label='True').draw(
+                x_tick=confusion_matrix_mat['labels'],
+                y_tick=confusion_matrix_mat['labels'],
+                color_bar=True)
+            image_list.append(image_path)
+        if len(image_list) == 1:
+            self.pdf.add_grid_images(image_set=image_list,
+                                     grid_spec={0: (0, 0, 80, 80)})
+        else:
+            column_width = 180 / (len(image_list) + 1)
+            cur_w = column_width
+            spec_list = dict()
+            for i in range(len(image_list)):
+                spec_list[i] = (cur_w, 0, column_width, column_width)
+                cur_w += column_width
+            self.pdf.add_list_of_grid_images(image_list, spec_list)
+
+    def draw_multi_class_confidence_distribution(self, notes: str,
+                                                 visual_result_tuple: tuple,
+                                                 max_num_classes=9):
+        """
+        Add information about multi class confidence distribution to report
+        Args:
+            notes(str): Explain the block
+            visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
+               - visual_result_header(str): a header for confusion_matrix,
+                                            can be split or round number.
+               - visual_result_dict(dict): key-value
+                   - key(str): the predicted class
+                   - value(dit): result dict
+                        - `gt` (:list of :str): ground truth class label for all samples
+                        - `values` (:list of :float): probability for all samples
+            max_num_classes(int, Optional): maximum number of classes
+                                    displayed for each graph, default 9
+        """
+        import operator
+        from xai.graphs import graph_generator
+        from xai.graphs.format_contants import ABSOLUTE_3_EQUAL_GRID_SPEC
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+
+        top_classes = list()
+        for eval_name, eval_vis_result in visual_result_tuple:
+            predicted_class_count = dict()
+            label = ''
+            for label in eval_vis_result.keys():
+                data = eval_vis_result[label]
+                num_sample = len(data['gt'])
+                predicted_class_count[label] = num_sample
+
+                sorted_class_size = sorted(predicted_class_count.items(),
+                                           key=operator.itemgetter(1))[::-1]
+                top_classes = [a for (a, _) in sorted_class_size]
+
+            image_path_list = []
+            for class_label in top_classes:
+                data = eval_vis_result[class_label]
+                num_sample = len(data['gt'])
+                if num_sample > 0:
+                    image_path = '%s/%s_%s_conf_dist.png' % (
+                        self.figure_path, label, class_label)
+                    sw_image_path = graph_generator.ResultProbabilityForMultiClass(
+                        image_path, data,
+                        'Predicted as %s' % label).draw()
+                    image_path_list.append(sw_image_path)
+                if len(image_path_list) >= max_num_classes:
+                    break
+            self.pdf.add_list_of_grid_images(image_set=image_path_list,
+                                             grid_spec=ABSOLUTE_3_EQUAL_GRID_SPEC)
+
+    def draw_binary_class_confidence_distribution(self, notes: str,
+                                                  visual_result_tuple: tuple):
+        """
+        Add information about binary class confidence distribution to report
+        Args:
+            notes(str): Explain the block
+            visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
+               - visual_result_header(str): a header for confusion_matrix,
+                                                can be split or round number.
+               - visual_result_dict(dict): key-value
+                    - `gt` (:list of :str): ground truth class label for all samples
+                    - `probability` (:list of :list): 2D list (N sample * 2) to
+                                    present probability distribution of each sample
+        """
+        from xai.graphs import graph_generator
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+
+        image_list = []
+        for eval_name, eval_vis_result in visual_result_tuple:
+            image_path = "%s/%s_prob_dist.png" % (self.figure_path, eval_name)
+            image_path = graph_generator.ResultProbability(
+                figure_path=image_path,
+                data=eval_vis_result,
+                title='Probability Distribution').draw()
+            image_list.append(image_path)
+
+        if len(image_list) == 1:
+            self.pdf.add_grid_images(image_set=image_list,
+                                     grid_spec={0: (0, 0, 80, 80)})
+        else:
+            column_width = 180 / (len(image_list) + 1)
+            cur_w = column_width
+            spec_list = dict()
+            for i, _ in enumerate(image_list):
+                spec_list[i] = (cur_w, 0, column_width, column_width)
+                cur_w += column_width
+            self.pdf.add_list_of_grid_images(image_list, spec_list)
+
+    def draw_binary_class_reliability_diagram(self,
+                                              visual_result_tuple: tuple,
+                                              notes=None):
+        """
+        Add information about reliability to report
+        Args:
+            notes(str): Explain the block
+            visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
+               - visual_result_header(str): a header for confusion_matrix,
+                                        can be split or round number.
+               - visual_result_dict(dict): key-value
+                    - `gt` (:list of :str): ground truth class label for all samples
+                    - `probability` (:list of :list): 2D list (N sample * 2) to
+                            present probability distribution of each sample
+        """
+        from xai.graphs import graph_generator
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+
+        image_list = []
+        for eval_name, eval_vis_result in visual_result_tuple:
+            image_path = "%s/%s_reliability_diagram.png" % (
+                self.figure_path, eval_name)
+            image_path = graph_generator.ReliabilityDiagram(
+                figure_path=image_path,
+                data=eval_vis_result,
+                title='Reliability Diagram').draw()
+            image_list.append(image_path)
+
+        if len(image_list) == 1:
+            self.pdf.add_grid_images(image_set=image_list,
+                                     grid_spec={0: (0, 0, 80, 80)})
+        else:
+            column_width = 180 / (len(image_list) + 1)
+            cur_w = column_width
+            spec_list = dict()
+            for i, _ in enumerate(image_list):
+                spec_list[i] = (cur_w, 0, column_width, column_width)
+                cur_w += column_width
+            self.pdf.add_list_of_grid_images(image_list, spec_list)

@@ -9,8 +9,7 @@ import sys
 sys.path.append('../')
 import json
 
-from xai.formatter.report import Report
-from xai.formatter.portable_document import PdfWriter
+from xai.formatter import Report, PdfWriter
 
 ################################################################################
 ### Sample Report

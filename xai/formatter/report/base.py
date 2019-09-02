@@ -9,11 +9,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from xai.formatter.section import (
+from xai.formatter.report.section import (
     CoverSection,
     DetailSection
 )
-from xai.formatter.writer import Writer
+from xai.formatter.writer.base import Writer
 
 
 ################################################################################
