@@ -18,7 +18,7 @@ found in `xai/explainer`.
     * Target model: RandomForest
     * Dataset: Wisconsin breast cancer
     
-* [lime_text_explainer_with_keras.ipynb](lime_explainer_with_keras.ipynb):
+* [lime_text_explainer_with_keras.ipynb](lime_text_explainer_with_keras.ipynb):
     * Explanation algorithm: [LIME text explainer](https://lime-ml.readthedocs.io/en/latest/lime.html#lime.lime_text.LimeTextExplainer)
     * Target model: Convolutional Neural Network
     * Dataset: 20newsgroups
