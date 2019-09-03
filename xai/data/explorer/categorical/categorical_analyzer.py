@@ -29,13 +29,11 @@ class CategoricalDataAnalyzer(AbstractDataAnalyzer):
             raise ItemDataTypeNotSupported(type(value), type(self), CategoricalDataAnalyzer.SUPPORTED_TYPES)
         self._frequency_count[value] += 1
 
-    def get_statistics(self) -> Dict:
+    def get_statistics(self) -> CategoricalStats:
         """
         return stats for the analyzer
         Returns:
             a CategoricalStats json object that keeps track of frequency count
         """
-        self.stats = CategoricalStats()
-        for value, count in self._frequency_count.items():
-            self.stats.update_count_by_value(value, count)
-        return self.stats.to_json()
+        self.stats = CategoricalStats(frequency_count=self._frequency_count)
+        return self.stats

@@ -1,6 +1,10 @@
+import math
+import operator
 import re
-from typing import Callable, Optional, Dict, List, Set
 from collections import Counter
+from collections import defaultdict
+from typing import Callable, Optional, Dict, List, Set
+
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
@@ -47,7 +51,15 @@ class TextDataAnalyzer(AbstractDataAnalyzer):
             for lang in stop_words_by_languages:
                 stop_words.update(stopwords.words(lang))
         self.stop_words = frozenset(stop_words)
-        self.stats = TextStats()
+
+        self._total_count = 0
+        self._pattern_occurrence_counter = defaultdict(int)
+        self._pattern_document_counter = defaultdict(int)
+        self._word_counter = defaultdict(int)
+        self._character_counter = defaultdict(int)
+        self._term_frequency = Counter()
+        self._document_frequency = Counter()
+        self.stats = None
 
     def feed(self, doc):
         """
@@ -57,29 +69,47 @@ class TextDataAnalyzer(AbstractDataAnalyzer):
         """
 
         tokens, pattern_count, doc = self.preprocessor(doc)
-        self.stats.update_pattern_counters(pattern_counter_per_doc=pattern_count)
-        self.stats.update_length_counters(word_count=len(tokens), char_count=len(doc))
 
+        # update pattern count
+        for pattern_name, pattern_count in pattern_count.items():
+            self.pattern_occurence_counter[pattern_name] += pattern_count
+            if pattern_count > 0:
+                self._pattern_document_counter[pattern_name] += 1
+
+        # update word count and char count
+        self._word_counter[len(tokens)] += 1
+        self._character_counter[len(doc)] += 1
+
+        # get tf per doc
         word_counter = Counter(tokens)
         for word in self.stop_words:
             del word_counter[word]
 
-        self.stats.update_term_and_document_frequency(word_counter=word_counter)
-        self.stats.update_document_total_count(increment_by=1)
+        # update tf and df
+        self._term_frequency.update(word_counter)
+        self._document_frequency.update(word_counter.keys())
+        self._total_count += 1
 
-    def feed_all(self, docs):
-        for doc in docs:
-            self.feed(doc)
-
-    def get_statistics(self)->Dict:
+    def get_statistics(self) -> TextStats:
         """
         map stats information into a json object
 
         Returns:
             a json that represent frequency count and total count
         """
-        return self.stats.to_json()
+        tfidf = dict()
+        for word in self._term_frequency.keys():
+            self.tfidf[word] = self._term_frequency[word] * math.log(
+                self._total_count / self._document_frequency[word])
 
+        TFIDF = {word: tfidf for word, tfidf in sorted(tfidf.items(), key=operator.itemgetter(1), reverse=True)}
 
-
-
+        pattern_stats = dict()
+        for pattern_name in self._pattern_occurrence_counter.keys():
+            pattern_stats[pattern_name] = (
+                self._pattern_occurrence_counter[pattern_name], self._pattern_document_counter[pattern_name])
+        self.stats = TextStats(total_count=self._total_count, pattern_stats=pattern_stats,
+                               word_count=self._word_counter, char_count=self._character_counter,
+                               term_frequency=self._term_frequency, document_frequency=self._document_frequency,
+                               tfidf=TFIDF)
+        return self.stats

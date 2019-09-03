@@ -2,6 +2,7 @@ from typing import Dict
 
 from xai.data.abstract_stats import AbstractStats
 from xai.data.constants import STATSKEY
+from xai.data.exceptions import InvalidTypeError
 
 
 class CategoricalStats(AbstractStats):
@@ -11,32 +12,25 @@ class CategoricalStats(AbstractStats):
         - _frequency_count: a dictionary maps categorical value to its frequency count
     """
 
-    def __init__(self):
-        self._total_count = 0
-        self._frequency_count = dict()
+    def __init__(self, frequency_count: Dict[str or int, int]):
+        super(CategoricalStats).__init__()
+        self._frequency_count = frequency_count
 
-    def update_count_by_value(self, value: str or int, count: int) -> Dict[str or int, int]:
-        """
-        update the frequency by value and count pair
-
-        Args:
-            value: value that is tracked
-            count: frequency count for the value
-        Returns:
-            a dictionary maps value to its up-to-date frequency count
-        """
-        self._frequency_count[value] = count
+    @property
+    def frequency_count(self):
         return self._frequency_count
 
-    def get_total_count(self) -> int:
-        """
-        return the total count of values for the stats object
-
-        Returns:
-            total count of values
-        """
-        self._total_count = sum(list(self._frequency_count.items()))
-        return self._total_count
+    @frequency_count.setter
+    def frequency_count(self, frequency: Dict[str, int]):
+        if type(frequency) != dict:
+            raise InvalidTypeError('frequency_count', type(frequency), '<dict>')
+        for key, value in self._frequency_count.items():
+            if type(key) not in [str, int]:
+                raise InvalidTypeError('frequency_count:key', type(key), '<str> or <int>')
+            if type(value) != int:
+                raise InvalidTypeError('frequency_count:value', type(value), '<int>')
+        self._frequency_count = frequency
+        self._total_count = sum(list(self._frequency_count.values()))
 
     def to_json(self) -> Dict:
         """

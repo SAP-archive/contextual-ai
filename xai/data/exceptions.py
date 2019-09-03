@@ -37,7 +37,8 @@ class InconsistentSize(Exception):
     """
 
     def __init__(self, column_A, column_B, length_A, length_B):
-        message = '"{}" is different from "{}" has different size: {}, {}.'.format(column_A, column_B, length_A, length_B)
+        message = '"{}" is different from "{}" has different size: {}, {}.'.format(column_A, column_B, length_A,
+                                                                                   length_B)
         Exception.__init__(self, message)
         self.message = message
 
@@ -72,5 +73,27 @@ class NoItemsError(Exception):
 
     def __init__(self, stats_type):
         message = 'No items passed to the stats object: {}.'.format(stats_type)
+        Exception.__init__(self, message)
+        self.message = message
+
+
+class InvalidTypeError(Exception):
+    """
+    Raised when object type is invalid
+    """
+
+    def __init__(self, att_name, obj_type, supported_types):
+        message = "The '{}' type [{}] is invalid, should be {} .".format(att_name, obj_type, supported_types)
+        Exception.__init__(self, message)
+        self.message = message
+
+
+class InvalidSizeError(Exception):
+    """
+    Raised when object type is invalid
+    """
+
+    def __init__(self, att_name, obj_size, supported_sizes):
+        message = "The '{}' has invalid size: {}, should be {} .".format(att_name, obj_size, supported_sizes)
         Exception.__init__(self, message)
         self.message = message

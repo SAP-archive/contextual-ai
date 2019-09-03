@@ -10,17 +10,12 @@ class AbstractStats(ABC):
     def __init__(self):
         self._total_count = 0
 
-    @abstractmethod
-    def get_total_count(self)->int:
-        """
-        update the _total_count attribute
-        Returns:
-            total number of samples in the stats object
-        """
-        raise NotImplementedError('The derived helper needs to implement it.')
+    @property
+    def total_count(self):
+        return self._total_count
 
     @abstractmethod
-    def to_json(self)-> Dict:
+    def to_json(self) -> Dict:
         """
         map the stats to json object
         Returns:

@@ -1,104 +1,145 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
-import numpy as np
-from sklearn.neighbors import KernelDensity
-
-from xai.data.constants import STATSKEY, STATSCONSTANTS
-from xai.data.exceptions import NoItemsError
 from xai.data.abstract_stats import AbstractStats
+from xai.data.constants import STATSKEY
+from xai.data.exceptions import InvalidTypeError, InvalidSizeError
 
 
 class NumericalStats(AbstractStats):
     """
     NumericalStats contains following basic information:
         - _total_count: total count of values
-        - min: minimum of all values
-        - max: maximum of all values
-        - mean: mean of the values
-        - median: median of the values
-        - sd: standard deviation of the values
+        - _min: minimum of all values
+        - _max: maximum of all values
+        - _mean: mean of the values
+        - _median: median of the values
+        - _sd: standard deviation of the values
         - _histogram: a histogram of value distribution represented by a list of (x_left, x_right, count).
         - _kde: a kernel density estimation curve represented by a list of points
     """
 
-    def __init__(self):
-        self._total_count = 0
-        self.min = None
-        self.max = None
-        self.mean = None
-        self.median = None
-        self.sd = None
-        self._histogram = []
-        self._kde = []
+    def __init__(self,
+                 min: Optional[float or int] = None,
+                 max: Optional[float or int] = None,
+                 mean: Optional[float] = None,
+                 median: Optional[float or int] = None,
+                 sd: Optional[float or int] = None,
+                 histogram: Optional[List[Tuple[float or int, float or int, int]]] = None,
+                 kde: Optional[List[Tuple[float or int, float or int]]] = None,
+                 total_count: Optional[float or int] = None):
+        self.total_count = total_count
+        self.min = min
+        self.max = max
+        self.mean = mean
+        self.median = median
+        self.sd = sd
+        self.histogram = histogram
+        self.kde = kde
 
-    def update_stats_from_values(self, values: List[float]):
-        """
-        update the key stats based on values
-        Args:
-            values: the list of all numerical values
-        """
-        if not values or len(values) == 0:
-            raise NoItemsError(type(self))
+    @property
+    def min(self):
+        return self._min
 
-        self._total_count = len(values)
+    @min.setter
+    def min(self, value: int or float):
+        if type(value) not in [float, int]:
+            raise InvalidTypeError('min', type(value), '<int> or <float>')
+        self._min = value
 
-        np_values = np.array(values)
+    @property
+    def max(self):
+        return self._max
 
-        self.min = float(np.min(np_values))
-        self.max = float(np.max(np_values))
-        self.mean = float(np.mean(np_values))
-        self.median = float(np.median(np_values))
-        self.sd = float(np.std(np_values))
+    @max.setter
+    def max(self, value: int or float):
+        if type(value) not in [float, int]:
+            raise InvalidTypeError('max', type(value), '<int> or <float>')
+        self._max = value
 
-        # update histogram
-        x_percentile_05 = np.percentile(np_values, 5)
-        x_percentile_95 = np.percentile(np_values, 95)
+    @property
+    def mean(self):
+        return self._mean
 
-        bin_edges = list()
-        bin_edges.append(self.min)
-        bin_size = (x_percentile_95 - x_percentile_05) / STATSCONSTANTS.DEFAULT_BIN_SIZE
-        for bin_idx in range(STATSCONSTANTS.DEFAULT_BIN_SIZE):
-            bin_edges.append(x_percentile_05 + bin_size * bin_idx)
-        bin_edges.append(x_percentile_95)
-        bin_edges.append(self.max)
+    @mean.setter
+    def mean(self, value: int or float):
+        if type(value) not in [float, int]:
+            raise InvalidTypeError('mean', type(value), '<int> or <float>')
+        self._mean = value
 
-        count, _ = np.histogram(np_values, bins=bin_edges)
-        for bin_idx, bin_count in enumerate(count):
-            self._histogram.append((bin_edges[bin_idx], bin_edges[bin_idx + 1], bin_count))
+    @property
+    def median(self):
+        return self._median
 
-        # update kde curve
-        kde_skl = KernelDensity(bandwidth=STATSCONSTANTS.KDE_BAND_WIDTH)
-        kde_skl.fit(np_values[:, np.newaxis])
-        x_grid = np.linspace(self.min, self.max, STATSCONSTANTS.KDE_XGRID_RESOLUTION)
-        log_pdf = kde_skl.score_samples(x_grid[:, np.newaxis])
-        self._kde = list(zip(list(x_grid), list(np.exp(log_pdf))))
+    @median.setter
+    def median(self, value: int or float):
+        if type(value) not in [float, int]:
+            raise InvalidTypeError('median', type(value), '<int> or <float>')
+        self._median = value
 
-    def get_total_count(self) -> int:
-        """
-        return the total count of values for the stats object
+    @property
+    def sd(self):
+        return self._sd
 
-        Returns:
-            total count of values
-        """
+    @sd.setter
+    def sd(self, value: int or float):
+        if type(value) not in [float, int]:
+            raise InvalidTypeError('sd', type(value), '<int> or <float>')
+        self._sd = value
+
+    @property
+    def total_count(self):
         return self._total_count
 
-    def get_histogram(self) -> List[Tuple[float, float, int]]:
-        """
-        return a list of tuple to present histogram of the values
+    @total_count.setter
+    def total_count(self, value: int):
+        if type(value) == int:
+            raise InvalidTypeError('total_count', type(value), '<int>')
+        self._total_count = value
 
-        Returns:
-            a list of tuple, each tuple has 3 elements (bin_left_x, bin_right_x, count_within_the_bin)
-        """
+    @property
+    def histogram(self):
         return self._histogram
 
-    def get_kde(self) -> List[Tuple[float, float]]:
-        """
-        return a list of points to present kernel density estimation curve
+    @histogram.setter
+    def histogram(self, value: List[Tuple[float or int, float or int, int]]):
+        if type(value) != list:
+            raise InvalidTypeError('histogram', type(value), '<list>')
 
-        Returns:
-            a list of point, each point is represented by X,Y
-        """
+        for item in value:
+            if type(item) != tuple:
+                raise InvalidTypeError('histogram: bin', type(item), '<tuple>')
+            if len(item) != 3:
+                raise InvalidSizeError('histogram: bin', len(item), 3)
+            if type(item[0]) not in [float, int]:
+                raise InvalidTypeError('histogram: bin: bin_edge_left', type(item[0]), '<int> or <float>')
+            if type(item[1]) not in [float, int]:
+                raise InvalidTypeError('histogram: bin: bin_edge_right', type(item[1]), '<int> or <float>')
+            if type(item[2]) != int:
+                raise InvalidTypeError('histogram: bin: bin_edge_count', type(item[2]), '<int>')
+
+        self._histogram = value
+        self._total_count = sum([item[2] for item in self._histogram])
+
+    @property
+    def kde(self):
         return self._kde
+
+    @kde.setter
+    def kde(self, value: List[Tuple[float or int, float or int]]):
+        if type(value) != list:
+            raise InvalidTypeError('kde', type(value), '<list>')
+
+        for item in value:
+            if type(item) != tuple:
+                raise InvalidTypeError('kde: point', type(item), '<tuple>')
+            if len(item) != 2:
+                raise InvalidSizeError('kde: point', len(item), 2)
+            if type(item[0]) not in [float, int]:
+                raise InvalidTypeError('kde: point: x', type(item[0]), '<int> or <float>')
+            if type(item[1]) not in [float, int]:
+                raise InvalidTypeError('kde: point: y', type(item[1]), '<int> or <float>')
+
+        self._kde = value
 
     def to_json(self) -> Dict:
         """
@@ -110,11 +151,11 @@ class NumericalStats(AbstractStats):
 
         json_obj = dict()
         json_obj[STATSKEY.TOTAL_COUNT] = self._total_count
-        json_obj[STATSKEY.MAX] = self.max
-        json_obj[STATSKEY.MIN] = self.min
-        json_obj[STATSKEY.MEAN] = self.mean
-        json_obj[STATSKEY.MEDIAN] = self.median
-        json_obj[STATSKEY.STDDEV] = self.sd
+        json_obj[STATSKEY.MAX] = self._max
+        json_obj[STATSKEY.MIN] = self._min
+        json_obj[STATSKEY.MEAN] = self._mean
+        json_obj[STATSKEY.MEDIAN] = self._median
+        json_obj[STATSKEY.STDDEV] = self._sd
 
         json_obj[STATSKEY.DISTRIBUTION] = []
 

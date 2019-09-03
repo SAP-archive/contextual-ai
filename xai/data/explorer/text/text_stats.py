@@ -1,9 +1,8 @@
 from typing import Dict
-import math
-import operator
-from collections import defaultdict, Counter
 from xai.data.constants import STATSKEY
 from xai.data.abstract_stats import AbstractStats
+from xai.data.exceptions import InvalidTypeError, InvalidSizeError
+from typing import Optional, Tuple
 
 
 class TextStats(AbstractStats):
@@ -12,50 +11,133 @@ class TextStats(AbstractStats):
 
     """
 
-    def __init__(self):
-        self._total_count = 0
-        self.pattern_occurrence_counter = defaultdict(int)
-        self.pattern_document_counter = defaultdict(int)
-        self.word_counter = defaultdict(int)
-        self.character_counter = defaultdict(int)
-        self.term_frequency = Counter()
-        self.document_frequency = Counter()
-        self._TFIDF = dict()
+    def __init__(self, total_count: Optional[int],
+                 pattern_stats: Optional[Dict[str, Tuple[int, int]]] = None,
+                 word_count: Optional[Dict[int, int]] = None,
+                 char_count: Optional[Dict[int, int]] = None,
+                 term_frequency: Optional[Dict[str, int]] = None,
+                 document_frequency: Optional[Dict[str, int]] = None,
+                 tfidf: Optional[Dict[str, int]] = None):
+        self.total_count = total_count
+        self.pattern_stats = pattern_stats
+        self.word_count = word_count
+        self.char_count = char_count
+        self.term_frequency = term_frequency
+        self.document_frequency = document_frequency
+        self.tfidf = tfidf
 
-    def update_pattern_counters(self, pattern_counter_per_doc: Dict[str, int]):
-        for pattern_name, pattern_count in pattern_counter_per_doc.items():
-            self.pattern_occurence_counter[pattern_name] += pattern_count
-            if pattern_count > 0:
-                self.pattern_document_counter[pattern_name] += 1
-
-    def update_length_counters(self, word_count: int, char_count: int):
-        self.word_counter[word_count] += 1
-        self.character_counter[char_count] += 1
-
-    def update_term_and_document_frequency(self, token_counter: Counter):
-        self.term_frequency.update(token_counter)
-        self.document_frequency.update(token_counter.keys())
-
-    def update_document_total_count(self, increment_by: int):
-        self._total_count += increment_by
-
-    def get_tfidf(self):
-        tfidf = dict()
-        for word in self.term_frequency.keys():
-            tfidf[word] = self.term_frequency[word] * math.log(
-                self._total_count / self.document_frequency[word])
-
-        self._TFIDF = {word: tfidf for word, tfidf in sorted(tfidf.items(), key=operator.itemgetter(1), reverse=True)}
-        return self._TFIDF
-
-    def get_total_count(self) -> int:
-        """
-        return the total count of values for the stats object
-
-        Returns:
-            total count of values
-        """
+    @property
+    def total_count(self):
         return self._total_count
+
+    @total_count.setter
+    def total_count(self, value: int):
+        if type(value) != int:
+            raise InvalidTypeError('total_count', type(value), '<int>')
+        self._total_count = value
+
+    @property
+    def pattern_stats(self):
+        return self._pattern_stats
+
+    @pattern_stats.setter
+    def pattern_stats(self, value: Dict[str, int]):
+        if type(value) != dict:
+            raise InvalidTypeError('pattern_stats', type(value), '<dict>')
+
+        for name, count in value.items():
+            if type(name) != str:
+                raise InvalidTypeError('pattern_stats: key', type(name), '<str>')
+            if type(count) != tuple:
+                raise InvalidTypeError('pattern_stats: count', type(count), '<tuple>')
+            if len(count) != 2:
+                raise InvalidSizeError('pattern_stats: count', len(count), 2)
+            if type(count[0]) == int:
+                raise InvalidTypeError('pattern_stats: count: term_count', type(count[0]), '<int>')
+            if type(count[1]) == int:
+                raise InvalidTypeError('pattern_stats: count: document_count', type(count[1]), '<int>')
+
+        self._pattern_stats = value
+
+    @property
+    def word_count(self):
+        return self._word_count
+
+    @word_count.setter
+    def word_count(self, value: Dict[str, int]):
+        if type(value) != dict:
+            raise InvalidTypeError('word_count', type(value), '<dict>')
+
+        for key, count in value.items():
+            if type(key) != int:
+                raise InvalidTypeError('word_count: key', type(key), '<int>')
+            if type(count) != int:
+                raise InvalidTypeError('word_count: count', type(count), '<int>')
+        self._word_count = value
+
+    @property
+    def char_count(self):
+        return self._char_count
+
+    @char_count.setter
+    def char_count(self, value: Dict[str, int]):
+        if type(value) != dict:
+            raise InvalidTypeError('char_count', type(value), '<dict>')
+
+        for key, count in value.items():
+            if type(key) != int:
+                raise InvalidTypeError('char_count: key', type(key), '<int>')
+            if type(count) != int:
+                raise InvalidTypeError('char_count: count', type(count), '<int>')
+        self._char_count = value
+
+    @property
+    def term_frequency(self):
+        return self._term_frequency
+
+    @term_frequency.setter
+    def term_frequency(self, value: Dict[str, int]):
+        if type(value) != dict:
+            raise InvalidTypeError('term_frequency', type(value), '<dict>')
+
+        for key, count in value.items():
+            if type(key) != str:
+                raise InvalidTypeError('term_frequency: key', type(key), '<str>')
+            if type(count) != int:
+                raise InvalidTypeError('term_frequency: count', type(count), '<int>')
+        self._term_frequency = value
+
+    @property
+    def document_frequency(self):
+        return self._document_frequency
+
+    @document_frequency.setter
+    def document_frequency(self, value: Dict[str, int]):
+        if type(value) != dict:
+            raise InvalidTypeError('document_frequency', type(value), '<dict>')
+
+        for key, count in value.items():
+            if type(key) != str:
+                raise InvalidTypeError('document_frequency: key', type(key), '<str>')
+            if type(count) != int:
+                raise InvalidTypeError('document_frequency: count', type(count), '<int>')
+        self._document_frequency = value
+
+    @property
+    def tfidf(self):
+        return self._tfidf
+
+    @tfidf.setter
+    def tfidf(self, value: Dict[str, int]):
+        if type(value) != dict:
+            raise InvalidTypeError('tfidf', type(value), '<dict>')
+
+        for key, count in value.items():
+            if type(key) != str:
+                raise InvalidTypeError('tfidf: key', type(key), '<str>')
+            if type(count) != int:
+                raise InvalidTypeError('tfidf: count', type(count), '<int>')
+        self._tfidf = value
 
     def to_json(self) -> Dict:
         """
@@ -68,13 +150,15 @@ class TextStats(AbstractStats):
         json_obj = dict()
         json_obj[STATSKEY.TOTAL_COUNT] = self._total_count
         json_obj[STATSKEY.PATTERN] = []
-        for pattern_name in self.pattern_occurrence_counter.keys():
+        for pattern_name in self._pattern_stats.keys():
             pattern_obj = dict()
             pattern_obj[STATSKEY.PATTERN.PATTERN_NAME] = pattern_name
-            pattern_obj[STATSKEY.PATTERN.PATTERN_TF] = self.pattern_occurrence_counter[pattern_name]
-            pattern_obj[STATSKEY.PATTERN.PATTERN_DF] = self.pattern_document_counter[pattern_name]
+            pattern_obj[STATSKEY.PATTERN.PATTERN_TF] = self._pattern_stats[pattern_name][0]
+            pattern_obj[STATSKEY.PATTERN.PATTERN_DF] = self._pattern_stats[pattern_name][1]
             json_obj[STATSKEY.PATTERN].append(pattern_obj)
 
-        json_obj[STATSKEY.TFIDF] = self.get_tfidf()
+        json_obj[STATSKEY.TF] = self._term_frequency
+        json_obj[STATSKEY.DF] = self._document_frequency
+        json_obj[STATSKEY.TFIDF] = self._tfidf
 
         return json_obj

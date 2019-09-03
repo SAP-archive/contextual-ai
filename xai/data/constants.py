@@ -53,6 +53,8 @@ class STATSKEY:
     STDDEV = 'standard_deviation'
 
     TFIDF = 'tfidf'
+    TF = 'term_frequency'
+    DF = 'document_frequency'
     PATTERN = 'pattern'
 
     class PATTERN:
