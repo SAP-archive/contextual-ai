@@ -435,7 +435,7 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_confusion_metric_results(self, notes: str,
+    def draw_confusion_matrix_results(self, notes: str,
                                       confusion_matrix_tuple: tuple):
         """
         Add information about confusion matrix to report

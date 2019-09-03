@@ -106,26 +106,6 @@ class Section:
         from xai.formatter.contents import Paragraph
         self.contents.append(Paragraph(text=text))
 
-    def add_data_missing_value(self, missing_count: dict,
-                               total_count: list, ratio=False, notes=None):
-        """
-        add information of missing value for data fields to the report
-        Args:
-            missing_count (dict):
-                - key: data field name
-                - value: the count or the percentage of missing value in the field
-            total_count (dict, Optinal):
-                - key: data field name
-                - value: the count of missing value in the field
-            ratio (bool): True if `missing_value` is the percentage
-            notes (str, Optional):
-                explain the block
-        """
-        from xai.formatter.contents import DataMissingValue
-        self.contents.append(DataMissingValue(missing_count=missing_count,
-                                              total_count=total_count,
-                                              ratio=ratio, notes=notes))
-
     ################################################################################
     ###  Content Summary Section
     ################################################################################
@@ -192,6 +172,26 @@ class Section:
     ################################################################################
     ###  Content Data Section
     ################################################################################
+    def add_data_missing_value(self, missing_count: dict,
+                               total_count: list, ratio=False, notes=None):
+        """
+        add information of missing value for data fields to the report
+        Args:
+            missing_count (dict):
+                - key: data field name
+                - value: the count or the percentage of missing value in the field
+            total_count (dict, Optinal):
+                - key: data field name
+                - value: the count of missing value in the field
+            ratio (bool): True if `missing_value` is the percentage
+            notes (str, Optional):
+                explain the block
+        """
+        from xai.formatter.contents import DataMissingValue
+        self.contents.append(DataMissingValue(missing_count=missing_count,
+                                              total_count=total_count,
+                                              ratio=ratio, notes=notes))
+
     def add_data_set_distribution(self, dataset_distribution: Tuple[str, dict],
                                   max_class_shown=20, notes=None):
         """
@@ -434,7 +434,7 @@ class Section:
             metric_tuple=metric_tuple, notes=notes))
 
     def add_binary_class_evaluation_metric_results(self, metric_tuple: tuple,
-                                                   aggregated: bool,
+                                                   aggregated=True,
                                                    notes=None):
         """
         add information about metric results for binary-class evaluation
@@ -446,13 +446,14 @@ class Section:
                     - key: metric name
                     - value: metric value
             aggregated(bool): whether to aggregate multiple result tables into one
+                            default: True
             notes(str): text to explain the block
         """
         from xai.formatter.contents import BinaryClassEvaluationMetricResult
         self.contents.append(BinaryClassEvaluationMetricResult(
             metric_tuple=metric_tuple, aggregated=aggregated, notes=notes))
 
-    def add_confusion_metric_results(self, confusion_matrix_tuple: tuple,
+    def add_confusion_matrix_results(self, confusion_matrix_tuple: tuple,
                                      notes=None):
         """
         Add information about confusion matrix to report

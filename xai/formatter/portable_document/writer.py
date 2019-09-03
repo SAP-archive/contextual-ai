@@ -10,6 +10,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import copy
 import tempfile
 
 from typing import Tuple, Dict, List
@@ -102,7 +103,7 @@ class PdfWriter(Writer):
         Args:
             section(CoverSection): Cover Section of report
         """
-        if len(section.contents) > 0:
+        if len(section.contents) > 1:
             for content in section.contents:
                 content.draw(writer=self)
 
@@ -115,10 +116,11 @@ class PdfWriter(Writer):
             content_table (bool): is content table enabled
                             default False
         """
+        dc_contents = copy.deepcopy(section.contents)
         if content_table:
             self.pdf.add_page()
             self.pdf.add_ribbon('Content Table')
-            for content in section.contents:
+            for content in dc_contents:
                 if isinstance(content, SectionTitle) and \
                         content.level == Title.SECTION_TITLE:
                     content.link = self.pdf.add_link()
@@ -152,8 +154,8 @@ class PdfWriter(Writer):
                         self.pdf.add_new_line(line='.... <I>%s</I>' %
                                                    content.text,
                                               link=content.link)
-        if len(section.contents) > 0:
-            for content in section.contents:
+        if len(dc_contents) > 0:
+            for content in dc_contents:
                 content.draw(writer=self)
 
     def draw_header(self, text: str, level: int, link=None):
@@ -216,7 +218,7 @@ class PdfWriter(Writer):
         """
         import datetime
         # -- Draw Content --
-        self.pdf.add_new_line(notes)
+        self.pdf.add_new_line(notes, style='BI')
         self.pdf.start_itemize()
         for name, time_in_sec in timing:
             self.pdf.add_key_value_pair(key=name,
@@ -235,7 +237,7 @@ class PdfWriter(Writer):
                         (dataset_name, dataset_sample_number)
         """
         # -- Draw Content --
-        self.pdf.add_new_line(notes)
+        self.pdf.add_new_line(notes, style='BI')
         self.pdf.start_itemize()
         for name, quantity in data_summary:
             self.pdf.add_key_value_pair(key="Number of %s samples" % name,
@@ -262,7 +264,7 @@ class PdfWriter(Writer):
         """
         import numpy as np
         # -- Draw Content --
-        self.pdf.add_new_line(notes)
+        self.pdf.add_new_line(notes, style='BI')
 
         for result in evaluation_result:
             self.pdf.start_itemize()
@@ -317,7 +319,7 @@ class PdfWriter(Writer):
             notes (str, Optional): explain the block
         """
         # -- Draw Content --
-        self.pdf.add_new_line(notes)
+        self.pdf.add_new_line(notes, style='BI')
 
         self.pdf.start_itemize()
         for attribute, value in model_info:
@@ -717,8 +719,6 @@ class PdfWriter(Writer):
             maximum_number_feature(int): maximum number of features shown in bar-chart diagram
         """
         from xai.graphs import graph_generator
-        # -- Draw Content --
-        self.pdf.add_new_line(notes)
 
         feature_ranking = [(score, name) for name, score in importance_ranking]
         image_path = '%s/feature_importance.png' % self.figure_path
@@ -727,21 +727,24 @@ class PdfWriter(Writer):
                                                        title='feature_importance').draw(
             limit_length=maximum_number_feature)
 
-        if maximum_number_feature < len(feature_ranking):
+        # -- Draw Content --
+        if not (notes is None):
+            self.pdf.add_new_line(notes)
+        elif maximum_number_feature < len(feature_ranking):
             self.pdf.add_new_line(
-                "The figure below shows the top %s important features for the trained model." % maximum_number_feature)
+                "The figure below shows the top %s important features for the trained model."
+                % maximum_number_feature)
         else:
             self.pdf.add_new_line(
                 "The figure below shows importance ranking for all features from the trained model.")
 
-        self.pdf.ln()
-
         self.pdf.add_large_image(image_path)
+
+        self.pdf.ln()
 
         self.pdf.add_new_line(
             "The features which have an importance score larger than %s are listed in the below table." %
             importance_threshold)
-        self.pdf.ln()
 
         table_header = ['Feature', 'Importance']
         table_data = []
@@ -783,25 +786,25 @@ class PdfWriter(Writer):
         """
         from xai.graphs import graph_generator
         # -- Draw Content --
-        self.pdf.add_new_line(notes)
-        self.pdf.add_new_line("Hyperparameter Tuning Search Space", style='B')
+        if not (notes is None):
+            self.pdf.add_new_line(notes)
+        # tuning search space
+        self.pdf.add_new_line("Hyperparameter Tuning Search Space", style='BI')
         self.pdf.start_itemize()
         for params, params_search_space in search_space.items():
             self.pdf.add_key_value_pair(params, params_search_space)
         self.pdf.end_itemize()
-
         self.pdf.ln(5)
 
+        # tuning history result
         self.pdf.add_new_line("Hyperparameter Tuning History Result",
-                              style='B')
+                              style='BI')
         self.pdf.add_new_line(
             "The metric results from hyperparameter tuning are shown in the figure.")
         self.pdf.start_itemize()
         self.pdf.add_key_value_pair("Benchmark metric", benchmark_metric)
         self.pdf.add_key_value_pair("Benchmark value", benchmark_threshold)
         self.pdf.end_itemize()
-        self.pdf.ln()
-
         image_path = "%s/hyperopt_history.png" % self.figure_path
         image_path = graph_generator.EvaluationLinePlot(figure_path=image_path,
                                                         data=history,
@@ -810,13 +813,12 @@ class PdfWriter(Writer):
                                                         y_label='Metrics Score').draw(
             benchmark_metric=benchmark_metric,
             benchmark_value=benchmark_threshold)
-
         self.pdf.add_large_image(image_path)
         self.pdf.ln()
 
         # best result for hyperopt
         self.pdf.add_new_line("Best Result from Hyperparameter Tuning",
-                              style="B")
+                              style="BI")
         self.pdf.add_new_line("The best iteration is ", int(best_idx))
         self.pdf.add_new_line("Parameters:", style='B')
 
@@ -839,12 +841,11 @@ class PdfWriter(Writer):
                 self.pdf.add_key_value_pair("%s" % param_name.capitalize(),
                                             "%s" % param_value)
         self.pdf.end_itemize()
-
         self.pdf.ln(5)
 
+        # Tuning final conclusion
         self.pdf.add_new_line("Hyperparameter Tuning Final Conclusion",
-                              style='B')
-
+                              style='BI')
         if non_hyperopt_score is None:
             self.pdf.add_new_line(
                 "There is no benchmarking conducted in this training. ")
@@ -883,7 +884,7 @@ class PdfWriter(Writer):
                     self.pdf.add_new_line(
                         'We still accept default parameters as the final solution for the trained model, ' \
                         'but will continue to improve it.')
-                    self.pdf.ln(5)
+        self.pdf.ln(5)
 
     def draw_learning_curve(self, notes: str,
                             history: dict, best_idx: str,
@@ -909,7 +910,9 @@ class PdfWriter(Writer):
         """
         from xai.graphs import graph_generator
         # -- Draw Content --
-        self.pdf.add_new_line(notes)
+        if not (notes is None):
+            self.pdf.add_new_line(notes)
+
         image_path = "%s/deep_learning_curve.png" % self.figure_path
         image_path = graph_generator.EvaluationLinePlot(figure_path=image_path,
                                                         data=history,
@@ -918,32 +921,31 @@ class PdfWriter(Writer):
                                                         y_label='Metrics Score').draw(
             benchmark_metric=benchmark_metric,
             benchmark_value=benchmark_threshold)
+
         if training_params is not None:
-            self.pdf.add_new_line("Training Parameters", style='B')
+            self.pdf.add_new_line("Training Parameters", style='BI')
             self.pdf.start_itemize()
             for param_name, param_value in training_params.items():
                 self.pdf.add_key_value_pair(param_name, param_value)
             self.pdf.end_itemize()
             self.pdf.ln()
 
-        self.pdf.add_new_line("Learning Curve", style='B')
+        self.pdf.add_new_line("Learning Curve", style='BI')
         self.pdf.add_new_line(
             "The metric results from several training epochs are shown in the figure.")
-
         self.pdf.start_itemize()
         self.pdf.add_key_value_pair("Benchmark metric", benchmark_metric)
         self.pdf.add_key_value_pair("Benchmark value", benchmark_threshold)
         self.pdf.end_itemize()
 
-        self.pdf.ln()
         self.pdf.add_large_image(image_path)
-
         self.pdf.ln()
-        self.pdf.add_new_line("Best Epoch from Training", style='B')
+
+        self.pdf.add_new_line("Best Epoch from Training", style='BI')
         self.pdf.add_key_value_pair("The best iteration is ", best_idx)
         self.pdf.ln()
 
-        self.pdf.add_new_line("Validation Results:", style='B')
+        self.pdf.add_new_line("Validation Results:", style='BI')
         self.pdf.start_itemize()
         if best_idx not in history:
             best_idx = str(best_idx)
@@ -985,8 +987,9 @@ class PdfWriter(Writer):
             cr.load_results_from_meta(eval_metric_dict)
             table_name, table_header, table_data, table_layout = cr.convert_metrics_to_table()
 
-            self.pdf.add_new_line(table_name, style='B')
+            self.pdf.add_new_line(table_name, style='BI')
             self.pdf.add_table(table_header, table_data, table_layout)
+        self.pdf.ln(5)
 
     def draw_binary_class_evaluation_metric_results(self, notes: str,
                                                     metric_tuple: tuple,
@@ -1030,10 +1033,11 @@ class PdfWriter(Writer):
             for metric_name, metric_value_list in combined_table_dict.items():
                 combined_table_values.append([metric_name] + metric_value_list)
 
-            self.pdf.add_new_line(table_name, style='B')
+            self.pdf.add_new_line(table_name, style='BI')
             self.pdf.add_table(combined_table_header, combined_table_values)
+        self.pdf.ln(5)
 
-    def draw_confusion_metric_results(self, notes: str,
+    def draw_confusion_matrix_results(self, notes: str,
                                       confusion_matrix_tuple: tuple):
         """
         add information about confusion matrix to report
@@ -1077,6 +1081,7 @@ class PdfWriter(Writer):
                 spec_list[i] = (cur_w, 0, column_width, column_width)
                 cur_w += column_width
             self.pdf.add_list_of_grid_images(image_list, spec_list)
+        self.pdf.ln(5)
 
     def draw_multi_class_confidence_distribution(self, notes: str,
                                                  visual_result_tuple: tuple,
@@ -1130,6 +1135,7 @@ class PdfWriter(Writer):
                     break
             self.pdf.add_list_of_grid_images(image_set=image_path_list,
                                              grid_spec=ABSOLUTE_3_EQUAL_GRID_SPEC)
+        self.pdf.ln(5)
 
     def draw_binary_class_confidence_distribution(self, notes: str,
                                                   visual_result_tuple: tuple):
@@ -1169,6 +1175,7 @@ class PdfWriter(Writer):
                 spec_list[i] = (cur_w, 0, column_width, column_width)
                 cur_w += column_width
             self.pdf.add_list_of_grid_images(image_list, spec_list)
+        self.pdf.ln(5)
 
     def draw_binary_class_reliability_diagram(self,
                                               visual_result_tuple: tuple,
@@ -1210,3 +1217,4 @@ class PdfWriter(Writer):
                 spec_list[i] = (cur_w, 0, column_width, column_width)
                 cur_w += column_width
             self.pdf.add_list_of_grid_images(image_list, spec_list)
+        self.pdf.ln(5)

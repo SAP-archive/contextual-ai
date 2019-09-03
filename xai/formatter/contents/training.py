@@ -55,10 +55,7 @@ class HyperParameterTuning(Content):
         self._benchmark_metric = benchmark_metric
         self._benchmark_threshold = benchmark_threshold
         self._non_hyperopt_score = non_hyperopt_score
-        if not (notes is None):
-            self._notes = notes
-        else:
-            self._notes = "This section shows hyper-parameter tuning."
+        self._notes = notes
 
     @property
     def history(self):
@@ -149,10 +146,7 @@ class LearningCurve(Content):
         self._benchmark_metric = benchmark_metric
         self._benchmark_threshold = benchmark_threshold
         self._training_params = training_params
-        if not (notes is None):
-            self._notes = notes
-        else:
-            self._notes = "This section shows learning curve."
+        self._notes = notes
 
     @property
     def history(self):

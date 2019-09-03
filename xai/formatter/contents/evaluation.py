@@ -167,7 +167,7 @@ class ConfusionMatrixResult(Content):
         Args:
             writer (Writer): Report Writer
         """
-        writer.draw_confusion_metric_results(notes=self.notes,
+        writer.draw_confusion_matrix_results(notes=self.notes,
                                              confusion_matrix_tuple=self.confusion_matrix_tuple)
 
 

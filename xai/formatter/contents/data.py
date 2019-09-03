@@ -220,8 +220,7 @@ class CategoricalFieldDistribution(Content):
        if not (notes is None):
            self._notes = notes
        else:
-           self._notes = "This section shows the categorical data field " \
-                         "distribution."
+           self._notes = "Distribution for %s" % self.field_name
 
     @property
     def field_name(self):
@@ -308,8 +307,7 @@ class NumericFieldDistribution(Content):
         if not (notes is None):
            self._notes = notes
         else:
-           self._notes = "This section shows the numeric data field " \
-                         "distribution."
+           self._notes = "Distribution for %s" % self.field_name
 
     @property
     def field_name(self):
@@ -386,7 +384,7 @@ class TextFieldDistribution(Content):
         if not (notes is None):
            self._notes = notes
         else:
-           self._notes = "This section shows the text data field distribution."
+           self._notes = "Distribution for %s" % self.field_name
 
     @property
     def field_name(self):
@@ -445,8 +443,7 @@ class DateTimeFieldDistribution(Content):
         if not (notes is None):
            self._notes = notes
         else:
-           self._notes = "This section shows the date time data field " \
-                         "distribution."
+           self._notes = "Distribution for %s" % self.field_name
 
     @property
     def field_name(self):

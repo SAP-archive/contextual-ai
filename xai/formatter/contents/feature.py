@@ -42,10 +42,7 @@ class FeatureImportance(Content):
         self._importance_ranking = importance_ranking
         self._importance_threshold = importance_threshold
         self._maximum_number_feature = maximum_number_feature
-        if not (notes is None):
-            self._notes = notes
-        else:
-            self._notes = "This section shows feature importance."
+        self._notes = notes
 
     @property
     def importance_ranking(self):
