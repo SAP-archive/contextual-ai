@@ -13,7 +13,7 @@ class STATSCONSTANTS:
     """
     constants for stats generation
     """
-    DEFAULT_BIN_SIZE = 20
+    DEFAULT_BIN_SIZE = 10
     KDE_BAND_WIDTH = 0.2
     KDE_XGRID_RESOLUTION = 100
 

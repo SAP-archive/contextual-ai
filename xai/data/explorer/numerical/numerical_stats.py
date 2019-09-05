@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Union
 
 from xai.data.abstract_stats import AbstractStats
 from xai.data.constants import STATSKEY
@@ -19,14 +19,15 @@ class NumericalStats(AbstractStats):
     """
 
     def __init__(self,
-                 min: Optional[float or int] = None,
-                 max: Optional[float or int] = None,
+                 min: Optional[Union[float, int, None]] = None,
+                 max: Optional[Union[float, int, None]] = None,
                  mean: Optional[float] = None,
-                 median: Optional[float or int] = None,
-                 sd: Optional[float or int] = None,
-                 histogram: Optional[List[Tuple[float or int, float or int, int]]] = None,
-                 kde: Optional[List[Tuple[float or int, float or int]]] = None,
-                 total_count: Optional[float or int] = None):
+                 median: Optional[Union[float, int, None]] = None,
+                 sd: Optional[Union[float, int, None]] = None,
+                 histogram: Optional[List[Tuple[Union[float, int, None], Union[float, int, None], int]]] = [],
+                 kde: Optional[List[Tuple[Union[float, int, None], Union[float, int, None]]]] = [],
+                 total_count: Optional[Union[float, int, None]] = 0):
+        super(NumericalStats).__init__()
         self.total_count = total_count
         self.min = min
         self.max = max
@@ -41,9 +42,9 @@ class NumericalStats(AbstractStats):
         return self._min
 
     @min.setter
-    def min(self, value: int or float):
-        if type(value) not in [float, int]:
-            raise InvalidTypeError('min', type(value), '<int> or <float>')
+    def min(self, value: Union[float, int, None]):
+        if not isinstance(value, float) and not isinstance(value, int) and value is not None:
+            raise InvalidTypeError('min', type(value), '<int> or <float> or None')
         self._min = value
 
     @property
@@ -51,9 +52,9 @@ class NumericalStats(AbstractStats):
         return self._max
 
     @max.setter
-    def max(self, value: int or float):
-        if type(value) not in [float, int]:
-            raise InvalidTypeError('max', type(value), '<int> or <float>')
+    def max(self, value: Union[float, int, None]):
+        if not isinstance(value, float) and not isinstance(value, int) and value is not None:
+            raise InvalidTypeError('max', type(value), '<int> or <float> or None')
         self._max = value
 
     @property
@@ -61,9 +62,9 @@ class NumericalStats(AbstractStats):
         return self._mean
 
     @mean.setter
-    def mean(self, value: int or float):
-        if type(value) not in [float, int]:
-            raise InvalidTypeError('mean', type(value), '<int> or <float>')
+    def mean(self, value: Union[float, int, None]):
+        if not isinstance(value, float) and not isinstance(value, int) and value is not None:
+            raise InvalidTypeError('mean', type(value), '<int> or <float> or None')
         self._mean = value
 
     @property
@@ -71,9 +72,9 @@ class NumericalStats(AbstractStats):
         return self._median
 
     @median.setter
-    def median(self, value: int or float):
-        if type(value) not in [float, int]:
-            raise InvalidTypeError('median', type(value), '<int> or <float>')
+    def median(self, value: Union[float, int, None]):
+        if not isinstance(value, float) and not isinstance(value, int) and value is not None:
+            raise InvalidTypeError('median', type(value), '<int> or <float> or None')
         self._median = value
 
     @property
@@ -81,52 +82,42 @@ class NumericalStats(AbstractStats):
         return self._sd
 
     @sd.setter
-    def sd(self, value: int or float):
-        if type(value) not in [float, int]:
-            raise InvalidTypeError('sd', type(value), '<int> or <float>')
+    def sd(self, value: Union[float, int, None]):
+        if not isinstance(value, float) and not isinstance(value, int) and value is not None:
+            raise InvalidTypeError('sd', type(value), '<int> or <float> or None')
         self._sd = value
-
-    @property
-    def total_count(self):
-        return self._total_count
-
-    @total_count.setter
-    def total_count(self, value: int):
-        if type(value) == int:
-            raise InvalidTypeError('total_count', type(value), '<int>')
-        self._total_count = value
 
     @property
     def histogram(self):
         return self._histogram
 
     @histogram.setter
-    def histogram(self, value: List[Tuple[float or int, float or int, int]]):
-        if type(value) != list:
+    def histogram(self, value: List[Tuple[Union[float, int, None], Union[float, int, None], int]]):
+        if not isinstance(value,list):
             raise InvalidTypeError('histogram', type(value), '<list>')
 
         for item in value:
-            if type(item) != tuple:
+            if not isinstance(value, list):
                 raise InvalidTypeError('histogram: bin', type(item), '<tuple>')
             if len(item) != 3:
                 raise InvalidSizeError('histogram: bin', len(item), 3)
-            if type(item[0]) not in [float, int]:
+            if not isinstance(item[0], float) and not isinstance(item[0], int):
                 raise InvalidTypeError('histogram: bin: bin_edge_left', type(item[0]), '<int> or <float>')
-            if type(item[1]) not in [float, int]:
+            if not isinstance(item[1], float) and not isinstance(item[1], int):
                 raise InvalidTypeError('histogram: bin: bin_edge_right', type(item[1]), '<int> or <float>')
-            if type(item[2]) != int:
+            if not isinstance(item[2], int):
                 raise InvalidTypeError('histogram: bin: bin_edge_count', type(item[2]), '<int>')
 
         self._histogram = value
-        self._total_count = sum([item[2] for item in self._histogram])
+        self.total_count = sum([item[2] for item in self._histogram])
 
     @property
     def kde(self):
         return self._kde
 
     @kde.setter
-    def kde(self, value: List[Tuple[float or int, float or int]]):
-        if type(value) != list:
+    def kde(self, value: List[Tuple[Union[float, int, None], Union[float, int, None]]]):
+        if not isinstance(value, list):
             raise InvalidTypeError('kde', type(value), '<list>')
 
         for item in value:
@@ -134,9 +125,9 @@ class NumericalStats(AbstractStats):
                 raise InvalidTypeError('kde: point', type(item), '<tuple>')
             if len(item) != 2:
                 raise InvalidSizeError('kde: point', len(item), 2)
-            if type(item[0]) not in [float, int]:
+            if not isinstance(item[0], float) and not isinstance(item[0], int):
                 raise InvalidTypeError('kde: point: x', type(item[0]), '<int> or <float>')
-            if type(item[1]) not in [float, int]:
+            if not isinstance(item[0], float) and not isinstance(item[1], int):
                 raise InvalidTypeError('kde: point: y', type(item[1]), '<int> or <float>')
 
         self._kde = value

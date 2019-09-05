@@ -1,6 +1,8 @@
 from abc import abstractmethod, ABC
 from typing import Dict
 
+from xai.data.exceptions import InvalidTypeError
+
 
 class AbstractStats(ABC):
     """
@@ -8,11 +10,17 @@ class AbstractStats(ABC):
     """
 
     def __init__(self):
-        self._total_count = 0
+        self.total_count = 0
 
     @property
     def total_count(self):
         return self._total_count
+
+    @total_count.setter
+    def total_count(self, value: int):
+        if not isinstance(value, int):
+            raise InvalidTypeError('total_count', type(value), '<int>')
+        self._total_count = value
 
     @abstractmethod
     def to_json(self) -> Dict:

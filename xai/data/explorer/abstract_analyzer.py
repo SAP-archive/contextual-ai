@@ -1,7 +1,6 @@
 from abc import abstractmethod, ABC
-from typing import Iterator, Dict
-
-
+from typing import Iterator
+from xai.data.abstract_stats import AbstractStats
 class AbstractDataAnalyzer(ABC):
 
     SUPPORTED_TYPES = []
@@ -26,7 +25,7 @@ class AbstractDataAnalyzer(ABC):
             self.feed(value)
 
     @abstractmethod
-    def get_statistics(self) -> Dict:
+    def get_statistics(self) -> AbstractStats:
         """
         The function returns the up-to-date statistics that the analyzer keeps track
         Returns:
