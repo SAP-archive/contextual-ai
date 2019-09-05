@@ -8,7 +8,7 @@ class AbstractValidator(ABC):
         self.schema = schema
 
     @abstractmethod
-    def validate(self, sample: Dict) -> Dict[bool]:
+    def validate(self, sample: Dict) -> Dict:
         raise NotImplementedError('The derived helper needs to implement it.')
 
     def validate_all(self, sample_list: Iterator[dict]):

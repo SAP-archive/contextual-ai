@@ -17,6 +17,7 @@ class ReportWriter(FPDF):
                  report_name='Training Report'):
         """
         set up the basic information for report
+
         Args:
             usecase_name(str): use case name, (suggest to be no longer than 20 characters), displayed in header as "[usecase_name] [version]: [report_name]"
             author(str): use case team name, (suggest to be no longer than 20 characters) displayed in header as "created by [author] on [system datetime]"
@@ -126,6 +127,7 @@ class ReportWriter(FPDF):
     def add_ribbon(self, title):
         """
         add a blue color ribbon with title
+
         Args: 
             title(str): text to display on the ribbon
         """
@@ -145,6 +147,7 @@ class ReportWriter(FPDF):
     def add_section(self, title, link=None):
         """
         add a section title (with blue ribbon)
+
         Args:
             title (str): section title
             link (int): internal anchor
@@ -160,6 +163,7 @@ class ReportWriter(FPDF):
     def add_subsection(self, title, link=None):
         """
         add a subsection title in the format of section_number.subsection_number in bold
+
         Args:
             title (str): subsection title
             link (int): internal anchor
@@ -174,6 +178,7 @@ class ReportWriter(FPDF):
     def add_subsubsection(self, title, link=None):
         """
         add a subsubsection title in the format of section_number.subsection_number.subsubsection_number in bold and italic
+
         Args:
             title (str): subsubsection title
             link (int): internal anchor
@@ -186,6 +191,7 @@ class ReportWriter(FPDF):
     def start_itemize(self, symbol='-'):
         """
         start a new indent block, each line inside the block start with the defined symbol
+
         Args:
             symbol (str): itemized item header (e.g. '-', '*', '#', '')
         """
@@ -203,6 +209,7 @@ class ReportWriter(FPDF):
     def write_html(self, html, link=None):
         """
         parse html and write to PDF report
+
         Args:
              html(str): html content
              link (int): link idx created earlier for internal anchor
@@ -276,6 +283,7 @@ class ReportWriter(FPDF):
     def add_table(self, header, data, col_width=None, row_height=6, x=None, y=None):
         """
         add a table into the pdf report (not support auto-text-swapping for now)
+
         Args:
             header (list(str)): table header
             data (list(list)): table data
@@ -320,6 +328,7 @@ class ReportWriter(FPDF):
     def add_text(self, text, link=None, style=''):
         """
         add text string to pdf report
+
         Args:
             text (str): text string written to pdf, with current global indent level
             link (int): link idx created earlier for internal anchor
@@ -342,6 +351,7 @@ class ReportWriter(FPDF):
     def add_new_line(self, line='', link=None, style=''):
         """
         add a new line with text string to pdf report
+
         Args: 
             line (str): text string written to pdf, with current global indent level
             link (int): link idx created earlier for internal anchor
@@ -361,6 +371,7 @@ class ReportWriter(FPDF):
     def add_key_value_pair(self, key, value):
         """
         add a key-value pair in the format of "KEY: VALUE" (with a new line) to pdf, with current global indent level
+
         Args:
             key (str): item key
             value (str): item value
@@ -375,6 +386,7 @@ class ReportWriter(FPDF):
     def add_large_image(self, image_path, caption=None, style=None):
         '''
         add an default large image to pdf with a caption above (80% of the report width, w/h = 2.0)
+
         Args:
             image_path (str): path of the image
             caption (str): image caption above the image
@@ -402,6 +414,7 @@ class ReportWriter(FPDF):
     def add_table_image_group(self, image_path, table_header, table_content, grid_spec, caption=None, style=None):
         '''
         add a block of image with table (table on the left, image on the right)
+
         Args:
             image_path (str): path of the image
             table_header (list(str)):  table header
@@ -411,6 +424,7 @@ class ReportWriter(FPDF):
             - 'image': (w,h), width and height of the image
             caption (str): group caption
             style (str): caption style
+
         Returns:
             (bool) True if an image-table block written to PDF successfully, otherwise False
         '''
@@ -490,27 +504,23 @@ class ReportWriter(FPDF):
                         style=None):
         """
         add an block of images formatted with grid specification
+
         Args:
             image_set (dict or list):
                 dict, indicate image paths
                     - key: image_name
                     - value: image_path
                 or list, indicate image paths in sequence
-
             grid_spec (dict): indicate image size and position
                 - key: image_name, or index if image_set is a list
                 - value: (x,y,w,h) position and weight/height of image, with left top corner of the block as (0,0), unit in mm
-
             ratio (bool): indicate grid specification by ratio instead of absolute size.
-                      If True, grid_width and grid_height are required.
-
+                If True, grid_width and grid_height are required.
             grid_width (int): width of the entire grid block (unit in mm)
-
             grid_height (int): height of the entire grid block (unit in mm)
-
             caption (str): caption of the entire grid block
-
             style (str): style of caption
+
         Returns:
             (bool) True if image blocks generate successfully, otherwise False
         """
@@ -584,6 +594,7 @@ class ReportWriter(FPDF):
                                 caption=None, style=None):
         """
         add a list of image blocks with each block formatted by a grid specification
+
         Args
             image_set: list, the list of image_paths
 
@@ -592,7 +603,7 @@ class ReportWriter(FPDF):
                 - value: (x,y,w,h) position and weight/height of image, with left top corner of the block as (0,0), unit in mm
 
             ratio (bool): indicate grid specification by ratio instead of absolute size.
-                      If True, grid_width and grid_height are required.
+                If True, grid_width and grid_height are required.
 
             grid_width (int): width of the entire grid block (unit in mm)
 
@@ -601,6 +612,7 @@ class ReportWriter(FPDF):
             caption (str): caption of the entire grid block
 
             style (str): style of caption
+
         Returns:
             (bool) True if image blocks generate successfully, otherwise False
         """

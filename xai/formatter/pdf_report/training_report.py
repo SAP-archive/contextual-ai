@@ -85,10 +85,11 @@ class TrainingReport(ReportWriter):
     def add_content_as_section_to_report_buffer(self, title, content=None):
         """
         add a section with title and content
+
         Args:
             title (str): section title
             content (tuple): report component that want to render in terms of tuple (func, params).
-                             If None, only the title will be added in.
+                If None, only the title will be added in.
         """
         link = self.add_link()
 
@@ -107,10 +108,11 @@ class TrainingReport(ReportWriter):
     def add_content_as_subsection_to_report_buffer(self, title, content=None):
         """
         add a subsection with title and content
+
         Args:
             title (str): section title
             content (tuple): report component that want to render in terms of tuple (func, params).
-                             If None, only the title will be added in.
+                If None, only the title will be added in.
         """
         link = self.add_link()
 
@@ -129,10 +131,11 @@ class TrainingReport(ReportWriter):
     def add_content_as_subsubsection_to_report_buffer(self, title, content=None):
         """
         add a subsubsection with title and content
+
         Args:
             title (str): section title
             content (tuple): report component that want to render in terms of tuple (func, params).
-                             If None, only the title will be added in.
+                If None, only the title will be added in.
         """
         link = self.add_link()
 
@@ -150,6 +153,7 @@ class TrainingReport(ReportWriter):
     def add_content_to_report_buffer(self, title='', content=None):
         """
         add a section with title and content
+
         Args:
             title (str): content title
             content (tuple): report component that want to render in terms of tuple (func, params)
@@ -180,6 +184,7 @@ class TrainingReport(ReportWriter):
         def func(text: str):
             """
             add a paragraph into the report
+
             Args:
                 text(str): html text to render in the report
             """
@@ -201,8 +206,9 @@ class TrainingReport(ReportWriter):
         def func(missing_count: dict, total_count={}, ratio=False, notes=None):
             """
             add information of missing value for data fields to the report
+
             Args:
-                missing_count (dict):
+                missing_count (dict):\
                     - key: data field name
                     - value: the count or the percentage of missing value in the field
                 total_value (dict, Optinal):
@@ -277,6 +283,7 @@ class TrainingReport(ReportWriter):
         def func(*dataset_distribution: Tuple[str, dict], max_class_shown=20, notes=None):
             """
             add information of distribution on data set to the report
+
             Args:
                 dataset_distribution (tuple: (str,dict)):
                     - tuple[0] str: label/split name
@@ -308,7 +315,7 @@ class TrainingReport(ReportWriter):
                                         data=dataset_dist,
                                         title="Data Distribution for %s" % (dataset_name),
                                         x_label='Number of samples', y_label='Category').draw(
-                    caption=dataset_name,
+                    caption=datadccset_name,
                     ratio=True,
                     limit_length=max_class_shown)
                 self.add_large_image(image_path)
@@ -326,6 +333,7 @@ class TrainingReport(ReportWriter):
         def func(data_attribute, notes=None):
             """
             add information of data attribute for data fields to the report
+
             Args:
                 data_attribute (:dict of :dict):
                     -key: data field name
@@ -373,6 +381,7 @@ class TrainingReport(ReportWriter):
             """
             add information of field value distribution for categorical type to the report.
             Details see analyzers inside `xai.data_explorer.categorical_analyzer`
+
             Args:
                 field_name (str): data field name
                 field_distribution (:dict of :dict):
@@ -426,6 +435,7 @@ class TrainingReport(ReportWriter):
             """
             add information of field value distribution for numerical type to the report.
             Details see analyzers inside `xai.data_explorer.numerical_analyzer`
+
             Args:
                 field_name (str): data field name
                 field_distribution (:dict of :dict):
@@ -482,6 +492,7 @@ class TrainingReport(ReportWriter):
             """
             add information of field value distribution for text type to the report.
             Details see analyzers inside `xai.data_explorer.text_analyzer`
+
             Args:
                 field_name (str): data field name
                 field_distribution (:dict of :dict):
@@ -527,6 +538,7 @@ class TrainingReport(ReportWriter):
             """
             add information of field value distribution for datetime type to the report.
             Details see analyzers inside `xai.data_explorer.datetime_analyzer`
+
             Args:
                 field_name (str): data field name
                 field_distribution (:dict of :dict):
@@ -572,6 +584,7 @@ class TrainingReport(ReportWriter):
                  maximum_number_feature=20, notes=None):
             """
             Add information of feature importance to the report.
+
             Args:
                 importance_ranking(:list of :list): a list of 2-item lists, item[0]: score, item[1] feature_name
                 importance_threshold(float): threshold for displaying the feature name and score in tables
@@ -632,6 +645,7 @@ class TrainingReport(ReportWriter):
 
             """
             Add information of hyperparameter tuning to the report.
+
             Args:
                 history(:dict of dict): a dict of training log dict.
                     key: iteration index
@@ -749,6 +763,7 @@ class TrainingReport(ReportWriter):
                  benchmark_threshold=None, notes=None):
             """
             Add information of learning curve to report.
+
             Args:
                 history(:dict of dict): a dict of training log dict.
                     key: epoch index
@@ -824,6 +839,7 @@ class TrainingReport(ReportWriter):
         def func(*metric_tuple, notes=None):
             """
             add information about metric results for multi-class evaluation
+
             Args:
                 label_name(str): the label name for current evaluation result
                 *metric_tuple(tuple): (evaluation_header, evaluation_metric_dict)
@@ -858,6 +874,7 @@ class TrainingReport(ReportWriter):
         def func(*metric_tuple, notes=None, aggregated=True):
             """
             add information about metric results for binary-class evaluation
+
             Args:
                 *metric_tuple(tuple): (evaluation_header, evaluation_metric_dict)
                     - evaluation_header(str): a header for current evaluation, can be split or round number.
@@ -906,6 +923,7 @@ class TrainingReport(ReportWriter):
         def func(*confusion_matrix_tuple, notes=None):
             """
             add information about confusion matrix to report
+
             Args:
                 *confusion_matrix_tuple(tuple): (confusion_matrix_header, confusion_matrix_dict)
                     - confusion_matrix_header(str): a header for confusion_matrix, can be split or round number.
@@ -948,6 +966,7 @@ class TrainingReport(ReportWriter):
         def func(*visual_result_tuple, max_num_classes=9, notes=None):
             """
             add information about confusion matrix to report
+
             Args:
                 *visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
                    - visual_result_header(str): a header for confusion_matrix, can be split or round number.
@@ -996,6 +1015,7 @@ class TrainingReport(ReportWriter):
         def func(*visual_result_tuple, notes=None):
             """
             add information about confusion matrix to report
+
             Args:
                 *visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
                    - visual_result_header(str): a header for confusion_matrix, can be split or round number.
@@ -1037,6 +1057,7 @@ class TrainingReport(ReportWriter):
         def func(*visual_result_tuple, notes=None):
             """
             add information about reliability to report
+
             Args:
                 *visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
                    - visual_result_header(str): a header for confusion_matrix, can be split or round number.
@@ -1080,6 +1101,7 @@ class TrainingReport(ReportWriter):
         def func(timing, notes=None):
             """
             add information of timing to the report
+
             Args:
                 timing（:obj:`list` of :obj:`tuple`): list of tuple (name, time in second)
                 notes (str): explain the block
@@ -1106,6 +1128,7 @@ class TrainingReport(ReportWriter):
         def func(data_summary, notes=None):
             """
             add information of dataset summary to the report
+
             Args:
                 data_summary (:obj:`list` of :obj:`tuple`): list of tuple (dataset_name, dataset_sample_number)
                 notes (str, Optional): explain the block
@@ -1196,6 +1219,7 @@ class TrainingReport(ReportWriter):
         def func(model_info, notes=None):
             """
             add information of dataset summary to the report
+
             Args:
                 model_info (:obj:`list` of :obj:
                     `tuple`, Optional): list of tuple (model info attribute, model info value).
@@ -1231,6 +1255,7 @@ class TrainingReport(ReportWriter):
                             evaluation_result=None):
         """
         add a summary cover page for the report
+
         Args:
             summary_notes: html component, see `component_paragraph_in_html`
             model_info: model_info component, see `component_model_info`
