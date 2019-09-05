@@ -1,16 +1,18 @@
 from abc import ABC
-from typing import Iterator, Dict
+from typing import List, Dict, Union, Tuple
 
+from xai.data.abstract_stats import AbstractStats
 from xai.data.exceptions import InconsistentIteratorSize
 
 
 class LabelledDataAnalyzer(ABC):
 
     def __init__(self, data_analyzer_cls):
-        self.labelled_stats = dict()
-        self.analyzer_cls = data_analyzer_cls
+        self._label_analyzer = dict()
+        self._analyzer_cls = data_analyzer_cls
+        self._all_analyzer = data_analyzer_cls()
 
-    def feed(self, value: str or int, label: str or int):
+    def feed(self, value: Union[str, int], label: Union[str, int]):
         """
         update the analyzer with value and its corresponding label
 
@@ -19,10 +21,11 @@ class LabelledDataAnalyzer(ABC):
             label: corresponding label for the categorical value
         """
         if label not in self._label_analyzer:
-            self._label_analyzer[label] = self.analyzer_cls()
+            self._label_analyzer[label] = self._analyzer_cls()
         self._label_analyzer[label].feed(value)
+        self._all_analyzer.feed(value)
 
-    def feed_all(self, values: Iterator, labels: Iterator):
+    def feed_all(self, values: List, labels: List):
         """
         update the analyzer with a list of values and their corresponding labels
 
@@ -37,13 +40,14 @@ class LabelledDataAnalyzer(ABC):
         for value, label in value_label:
             self.feed(value, label)
 
-    def get_statistics(self) -> Dict[str or int:Dict]:
+    def get_statistics(self) -> Tuple[Dict[Union[str, int], AbstractStats], AbstractStats]:
         """
         get stats based on labels
         Returns:
             a dictionary maps label to the aggregated stats json obj
         """
-        self._stats = dict()
+        _stats = dict()
         for label, analyzer in self._label_analyzer.items():
-            self._stats[label] = analyzer.get_statistics()
-        return self._stats
+            _stats[label] = analyzer.get_statistics()
+        _all_stats = self._all_analyzer.get_statistics()
+        return _stats, _all_stats
