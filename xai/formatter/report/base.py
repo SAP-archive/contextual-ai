@@ -69,8 +69,7 @@ class Report:
         Args:
             writer (Writer): report writer
         """
-        writer.set_report_title(title=self.name)
-        writer.build_cover_section(section=self.cover)
-        writer.build_content_section(section=self.content,
-                                     content_table=self.has_content_table)
+        writer.build(title=self.name, cover=self.cover,
+                     detail=self.content,
+                     content_table=self.has_content_table)
         writer.out()

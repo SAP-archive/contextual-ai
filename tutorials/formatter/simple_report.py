@@ -200,7 +200,7 @@ def main():
         evaluation_result=evaluation_result_data)
 
     ### Lastly generate report with the writer instance
-    report.generate(writer=PdfWriter(name='sample-report'))
+    report.generate(writer=PdfWriter(name='formatter-sample-report'))
 
 if __name__ == "__main__":
     main()

@@ -47,30 +47,14 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def set_report_title(self, title: str):
+    def build(self, title: str, cover: CoverSection,
+              detail: DetailSection, content_table=False):
         """
-        Add new page
+        Build Report
         Args:
             title(str): header title
-        """
-        pass
-
-    @abstractmethod
-    def build_cover_section(self, section: CoverSection):
-        """
-        Build Cover Section
-        Args:
-            section(CoverSection): Cover Section of report
-        """
-        pass
-
-    @abstractmethod
-    def build_content_section(self, section: DetailSection,
-                              content_table=False):
-        """
-        Build Details Section
-        Args:
-            section(DetailSection): Details Section of report
+            cover(CoverSection): Cover Section of report
+            detail(DetailSection): Details Section of report
             content_table (bool): is content table enabled
                             default False
         """

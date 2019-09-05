@@ -83,40 +83,24 @@ class PdfWriter(Writer):
         report_path = '%s/%s.pdf' % (self.path, self.name)
         self.pdf.output(name=report_path, dest=self.dest)
 
-    def set_report_title(self, title: str):
+    def build(self, title: str, cover: CoverSection,
+              detail: DetailSection, content_table=False):
         """
-        Add new page
+        Build Report
         Args:
             title(str): header title
-        """
-        self.pdf.set_title(title)
-
-    def add_new_page(self):
-        """
-        Add new page
-        """
-        self.pdf.add_page()
-
-    def build_cover_section(self, section: CoverSection):
-        """
-        Build Cover Section
-        Args:
-            section(CoverSection): Cover Section of report
-        """
-        if len(section.contents) > 1:
-            for content in section.contents:
-                content.draw(writer=self)
-
-    def build_content_section(self, section: DetailSection,
-                              content_table=False):
-        """
-        Build Details Section
-        Args:
-            section(DetailSection): Details Section of report
+            cover(CoverSection): Cover Section of report
+            detail(DetailSection): Details Section of report
             content_table (bool): is content table enabled
                             default False
         """
-        dc_contents = copy.deepcopy(section.contents)
+        self.pdf.set_title(title)
+        # -- Draw Cover Contents --
+        if len(cover.contents) > 1:
+            for content in cover.contents:
+                content.draw(writer=self)
+        # -- Draw Content Table --
+        dc_contents = copy.deepcopy(detail.contents)
         if content_table:
             self.pdf.add_page()
             self.pdf.add_ribbon('Content Table')
@@ -154,9 +138,16 @@ class PdfWriter(Writer):
                         self.pdf.add_new_line(line='.... <I>%s</I>' %
                                                    content.text,
                                               link=content.link)
+        # -- Draw Details Contents --
         if len(dc_contents) > 0:
             for content in dc_contents:
                 content.draw(writer=self)
+
+    def add_new_page(self):
+        """
+        Add new page
+        """
+        self.pdf.add_page()
 
     def draw_header(self, text: str, level: int, link=None):
         """
