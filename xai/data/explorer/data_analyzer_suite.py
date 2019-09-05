@@ -67,7 +67,7 @@ class DataAnalyzerSuite:
                     raise AttributeNotFound(attribute_name, sample)
                 analyzer.feed(value=sample[attribute_name], label=label)
 
-    def get_statistics(self) -> Dict[str:Dict]:
+    def get_statistics(self) -> Dict[str, Dict]:
         """
         get overall stats for the entire data analyzer suite.
         Returns:

@@ -12,10 +12,9 @@ DICT_DATATYPE_TO_ANALYZER = {
 }
 
 
-
 DICT_ANALYZER_TO_DATATYPE = {
-    labelled_categorical_analyzer: DATATYPE.CATEGORY,
-    labelled_numerical_analyzer: DATATYPE.NUMBER,
-    labelled_text_analyzer: DATATYPE.FREETEXT,
-    labelled_datetime_analyzer: DATATYPE.DATETIME
+    categorical_analyzer: DATATYPE.CATEGORY,
+    numerical_analyzer: DATATYPE.NUMBER,
+    text_analyzer: DATATYPE.FREETEXT,
+    datetime_analyzer: DATATYPE.DATETIME
 }
