@@ -64,3 +64,15 @@ class Explainer:
         self.explain_instance = self.explainer.explain_instance
         self.save_explainer = self.explainer.save_explainer
         self.load_explainer = self.explainer.load_explainer
+
+    def build_explainer(self):
+        raise NotImplementedError('No explanation algorithm loaded yet!')
+
+    def explain_instance(self):
+        raise NotImplementedError('No explanation algorithm loaded yet!')
+
+    def save_explainer(self):
+        raise NotImplementedError('No explanation algorithm loaded yet!')
+
+    def load_explainer(self):
+        raise NotImplementedError('No explanation algorithm loaded yet!')
