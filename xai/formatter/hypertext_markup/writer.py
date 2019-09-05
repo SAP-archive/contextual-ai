@@ -3,50 +3,77 @@
 
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
-""" Abstract Writer """
+"""HTML Report Formatter - Base"""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from abc import ABC, abstractmethod
+import os
+import copy
+import shutil
+import tempfile
 
 from typing import Tuple, Dict, List
 
+from xai.formatter.contents import Header, SectionTitle, Title
 from xai.formatter.report.section import CoverSection, DetailSection
 
+from xai.formatter.hypertext_markup.publisher import CustomHtml, Div
+from xai.formatter.writer import Writer
+
 
 ################################################################################
-### Writer Visitor
+### HTML Writer Visitor
 ################################################################################
-class Writer(ABC):
-    """
-    The Strategy interface declares operations common to all
-    supported report output.
-    """
+class HtmlWriter(Writer):
 
-    def __init__(self, *values) -> None:
+    def __init__(self, name='training_report',
+                 path='./', ) -> None:
         """
-        Abstract Writer
+        Generate HTML report
+
+        Args:
+            name (str, Optional): filename of report,
+                        default is 'training_report'
+            path (str, Optional): output path (default current dict './')
         """
-        self._values = values
+        super(HtmlWriter, self).__init__()
+        self._path = path
+        self._name = name
+        self._html = CustomHtml(name=name, path=path)
+
+        # create article division list
+        self.html.article.append(Div())
+
+        # set up temporary image folder
+        self.figure_path = tempfile.TemporaryDirectory().name
+        os.mkdir(self.figure_path)
 
     @property
-    def values(self):
-        """Returns keyword-ed variable."""
-        return self._values
+    def path(self):
+        """Returns PDF output path"""
+        return self._path
 
-    def __str__(self):
-        return 'Writer:(' + str(self.values) + ')'
+    @property
+    def name(self):
+        """Returns PDF report name."""
+        return self._name
 
-    @abstractmethod
+    @property
+    def html(self):
+        """Returns HTML File object."""
+        return self._html
+
     def out(self):
         """
         Output Report
         """
-        pass
+        self.html.to_file()
+        # clean up temp folder
+        if os.path.exists(self.figure_path):
+            shutil.rmtree(self.figure_path)
 
-    @abstractmethod
     def build(self, title: str, cover: CoverSection,
               detail: DetailSection, content_table=False):
         """
@@ -59,19 +86,47 @@ class Writer(ABC):
             content_table (bool): is content table enabled
                             default False
         """
-        pass
+        # -- Create HTML Body Section Header --
+        self.html.header.append(self.html.add_header(text=title, heading='h1'))
+
+        # -- Create HTML Body Section Article --
+        if len(cover.contents) > 1:
+            for content in cover.contents:
+                content.draw(writer=self)
+
+        _h1_count = 0
+        _h2_count = 0
+        _h3_count = 0
+        dc_contents = copy.deepcopy(detail.contents)
+        for content in dc_contents:
+            if isinstance(content, Header):
+                if content.level == Header.LEVEL_1:
+                    _h1_count += 1
+                    _h2_count = 0
+                    _h3_count = 0
+                    content.text = '%s %s' % (_h1_count, content.text)
+                elif content.level == Header.LEVEL_2:
+                    _h2_count += 1
+                    _h3_count = 0
+                    content.text = '%s.%s %s' % (_h1_count, _h2_count,
+                                                 content.text)
+                elif content.level == Header.LEVEL_3:
+                    _h3_count += 1
+                    content.text = '%s.%s.%s %s' % (_h1_count, _h2_count,
+                                                    _h3_count, content.text)
+        if len(dc_contents) > 1:
+            for content in dc_contents:
+                content.draw(writer=self)
 
     ################################################################################
     ###  Base Section
     ################################################################################
-    @abstractmethod
     def add_new_page(self):
         """
         Add new page
         """
-        pass
+        self.html.article.append(Div())
 
-    @abstractmethod
     def draw_header(self, text: str, level: int, link=None):
         """
         Draw Header
@@ -81,9 +136,16 @@ class Writer(ABC):
             level(int): header level
             link: header link
         """
-        pass
+        if level == Header.LEVEL_1:
+            self.html.article[-1].items.append(
+                self.html.add_header(text=text, heading='h2', link=link))
+        elif level == Header.LEVEL_2:
+            self.html.article[-1].items.append(
+                self.html.add_header(text=text, heading='h3', link=link))
+        elif level == Header.LEVEL_3:
+            self.html.article[-1].items.append(
+                self.html.add_header(text=text, heading='h4', link=link))
 
-    @abstractmethod
     def draw_title(self, text: str, level: int, link=None):
         """
         Draw Title
@@ -93,9 +155,13 @@ class Writer(ABC):
             level(int): title type (section or paragraph)
             link: title link
         """
-        pass
+        # each section == new page
+        self.add_new_page()
+        self.html.article[-1].title = text
+        self.html.article[-1].items.append(
+            self.html.add_header(text=text, heading='h2',
+                                 link=link, style=True))
 
-    @abstractmethod
     def draw_paragraph(self, text: str):
         """
         Draw Paragraph
@@ -103,12 +169,12 @@ class Writer(ABC):
         Args:
             text(str): html text to render in the report
         """
-        pass
+        self.html.article[-1].items.append(self.html.add_paragraph(text=text))
 
     ################################################################################
     ###  Summary Section
     ################################################################################
-    @abstractmethod
+
     def draw_training_time(self, notes: str, timing: List[Tuple[str, int]]):
         """
         Draw information of timing to the report
@@ -118,10 +184,17 @@ class Writer(ABC):
             timing (:obj:`list` of :obj:`tuple`): list of tuple
                         (name, time in second)
         """
-        pass
+        # -- Draw Content --
+        self.html.article[-1].items.append(self.html.add_header(text=notes,
+                                                                heading='h3'))
+        # self.html.article[-1].items.append(
+        #     self.html.create_unordered_kay_value_pair_list(items=timing))
+        self.html.article[-1].items.append(
+            self.html.create_overview_table(data=timing))
 
-    @abstractmethod
-    def draw_data_set_summary(self, notes: str, data_summary: List[Tuple[str, int]]):
+
+    def draw_data_set_summary(self, notes: str,
+                              data_summary: List[Tuple[str, int]]):
         """
         Draw information of dataset summary to the report
 
@@ -130,10 +203,16 @@ class Writer(ABC):
             data_summary (:obj:`list` of :obj:`tuple`): list of tuple
                         (dataset_name, dataset_sample_number)
         """
-        pass
+        # -- Draw Content --
+        self.html.article[-1].items.append(self.html.add_header(text=notes,
+                                                                heading='h3'))
+        # self.html.article[-1].items.append(
+        #     self.html.create_unordered_kay_value_pair_list(items=data_summary))
+        self.html.article[-1].items.append(
+            self.html.create_overview_table(data=data_summary))
 
-    @abstractmethod
-    def draw_evaluation_result_summary(self, notes: str, evaluation_result: dict):
+    def draw_evaluation_result_summary(self, notes: str,
+                                       evaluation_result: dict):
         """
         Draw information of training performance to the result
 
@@ -149,9 +228,55 @@ class Writer(ABC):
                                     report unweighted average for "class" value
             notes (str, Optional): explain the block
         """
-        pass
+        import numpy as np
+        # -- Draw Content --
+        self.html.article[-1].items.append(self.html.add_header(text=notes,
+                                                                heading='h3'))
+        items = dict()
+        for result in evaluation_result:
+            for metric_name, metric_value in result.items():
+                valid = False
+                if type(metric_value) == dict:
+                    if 'average' in metric_value.keys():
+                        key = "%s (average)" % metric_name.capitalize()
+                        if type(metric_value['average']) == float or type(
+                                metric_value['average']) == str:
+                            value = "%.4f " % metric_value['average']
+                    elif 'class' in metric_value.keys():
+                        key = "%s (macro average)" % metric_name.capitalize()
+                        if type(metric_value['class']) == list:
+                            valid = True
+                            for e in metric_value['class']:
+                                if type(e) != float and type(e) != str:
+                                    valid = False
+                        if not valid:
+                            continue
+                        value = "%.4f" % np.mean(
+                            np.array(metric_value['class']))
+                    else:
+                        print(
+                            'No defined keys (`class`,`average`) found in metric value: %s' % (
+                                metric_value.keys()))
+                        continue
 
-    @abstractmethod
+                elif type(metric_value) == float:
+                    key = "%s" % metric_name.capitalize()
+                    value = "%.4f" % metric_value
+                elif type(metric_value) == str:
+                    key = "%s" % metric_name.capitalize()
+                    value = metric_value
+                else:
+                    print(
+                        'Unsupported metric value type for metric (%s): %s' % (
+                        metric_name, type(metric_value)))
+                    continue
+                if key not in items:
+                    items[key] = list()
+                items.get(key).append(value)
+
+        self.html.article[-1].items.append(
+            self.html.add_overview_table_with_dict(data=items))
+
     def draw_model_info_summary(self, notes: str, model_info: list):
         """
         Draw information of model info to the result
@@ -162,12 +287,19 @@ class Writer(ABC):
                Default information include `use case name`, `version`, `use case team`.
             notes (str, Optional): explain the block
         """
-        pass
+        # -- Draw Content --
+        self.html.article[-1].items.append(self.html.add_header(text=notes,
+                                                                heading='h3'))
+        # self.html.article[-1].items.append(
+        #     self.html.create_unordered_kay_value_pair_list(items=model_info))
+        self.html.article[-1].items.append(
+            self.html.create_overview_table(data=model_info))
+
 
     ################################################################################
     ###  Data Section
     ################################################################################
-    @abstractmethod
+
     def draw_data_missing_value(self, notes: str, missing_count: dict,
                                 total_count: dict, ratio=False):
         """
@@ -179,9 +311,75 @@ class Writer(ABC):
             total_count(dict): Total Count
             ratio(bool): True if `missing_value` is the percentage
         """
-        pass
+        from collections import defaultdict
+        def get_missing_data_info():
+            """
+            Build missing data summary
+            Returns: Missing data summary
+                table_header (list):
+                table_data (list):
+                col_width (list):
+            """
+            data_dict = defaultdict(dict)
+            field_set = set(total_count.keys())
+            field_set.update(set(missing_count.keys()))
+            for feature_name in field_set:
+                if feature_name not in total_count:
+                    data_dict[feature_name]['total_count'] = '-'
+                else:
+                    data_dict[feature_name]['total_count'] = \
+                        total_count[feature_name]
 
-    @abstractmethod
+                if feature_name not in missing_count:
+                    data_dict[feature_name]['missing_value_count'] = 0
+                    data_dict[feature_name]['percentage'] = 0
+                else:
+                    if ratio:
+                        data_dict[feature_name]['percentage'] = \
+                            missing_count[feature_name]
+                        data_dict[feature_name]['missing_value_count'] = '-'
+                    else:
+                        data_dict[feature_name]['missing_value_count'] = \
+                            missing_count[feature_name]
+                        if data_dict[feature_name]['total_count'] != '-':
+                            data_dict[feature_name]['percentage'] = \
+                                data_dict[feature_name][
+                                    'missing_value_count'] / \
+                                data_dict[feature_name]['total_count']
+            if len(total_count) > 0:
+                table_header = ['Feature', 'Missing Value Count',
+                                'Percentage(%)']
+                table_data = []
+                for field_name, field_data in data_dict.items():
+                    table_data.append(
+                        [field_name, "%s / %s" % (
+                            field_data['missing_value_count'],
+                            field_data['total_count']),
+                         "%.2f%%" % field_data['percentage']])
+            else:
+                if ratio:
+                    table_header = ['Feature', 'Missing Value Percentage']
+                    table_data = []
+                    for field_name, field_data in data_dict.items():
+                        table_data.append(
+                            [field_name, field_data['percentage']])
+                else:
+                    table_header = ['Feature', 'Missing Value Count']
+                    table_data = []
+                    for field_name, field_data in data_dict.items():
+                        table_data.append(
+                            [field_name, field_data['missing_value_count']])
+
+            return table_header, table_data
+
+         # -- Draw Content --
+        self.html.article[-1].items.append(
+            self.html.add_paragraph(text=notes))
+        header, data = get_missing_data_info()
+        if len(data) > 0:
+            self.html.article[-1].items.append(
+                self.html.add_table(header=header, data=data))
+
     def draw_data_set_distribution(self, notes: str,
                                    data_set_distribution: Tuple[str, dict],
                                    max_class_shown=20):
@@ -199,9 +397,42 @@ class Writer(ABC):
             notes (str, Optional):
                 explain the block
         """
-        pass
+        from xai.graphs import graph_generator
+        def get_data_set_distribution():
+            code = dict()
+            for ds_name, ds_dist in data_set_distribution:
+                code[ds_name] = sum(list(ds_dist.values()))
+            return code
 
-    @abstractmethod
+        # -- Draw Content --
+        self.html.article[-1].items.append(
+            self.html.add_paragraph(text=notes))
+        dist_count = get_data_set_distribution()
+
+        for name, dist in data_set_distribution:
+            title = "Data Distribution for %s" % name
+            self.html.article[-1].items.append(
+                self.html.add_header(text=title, heading='h3'))
+            self.html.article[-1].items.append(
+                self.html.add_paragraph(text='Count: %s' %
+                                             dist_count.get(name), style='B'))
+            if len(dist) > max_class_shown:
+                self.html.article[-1].items.append(
+                    self.html.add_paragraph(
+                        text='(Only %s shown amount %s classes)' % (
+                            max_class_shown, len(dist))))
+
+            image_path = graph_generator.BarPlot(
+                file_path='%s/%s_data_distribution.png' % (self.figure_path,
+                                                           name),
+                data=dist, title=title,
+                x_label='Number of samples',
+                y_label='Category').draw(caption=name,
+                                         ratio=True,
+                                         limit_length=max_class_shown)
+            self.html.article[-1].items.append(
+                self.html.add_image(src=image_path, alt=title))
+
     def draw_data_attributes(self, notes: str, data_attribute: Dict):
         """
         Draw information of data attribute for data fields to the report
@@ -214,9 +445,32 @@ class Writer(ABC):
                     - key: attribute name
                     - value: attribute value
         """
-        pass
+        def get_data_attributes():
+            attribute_list = list(
+                set().union(*[set(attribute_dict.keys())
+                              for attribute_dict in data_attribute.values()]))
+            table_header = ['Field Name'] + [attribute.capitalize()
+                                             for attribute in attribute_list]
 
-    @abstractmethod
+            table_data = []
+            for field_name, field_attributes in data_attribute.items():
+                row = [field_name]
+                for attribute_name in attribute_list:
+                    if attribute_name in field_attributes.keys():
+                        row.append(field_attributes[attribute_name])
+                    else:
+                        row.append('-')
+                table_data.append(row)
+
+            return table_header, table_data
+
+        # -- Draw Content --
+        self.html.article[-1].items.append(
+            self.html.add_paragraph(text=notes))
+        header, data = get_data_attributes()
+        self.html.article[-1].items.append(
+            self.html.add_table(header=header, data=data))
+
     def draw_categorical_field_distribution(self, notes: str,
                                             field_name: str,
                                             field_distribution: dict,
@@ -237,9 +491,44 @@ class Writer(ABC):
             max_values_display (int): maximum number of values displayed
             colors (list): the list of color code for rendering different class
         """
-        pass
+        from xai.graphs import graph_generator
+        if colors is None:
+            colors = ["Blues_d", "Reds_d", "Greens_d", "Purples_d",
+                      "Oranges_d"]
+        # -- Draw Content --
+        self.html.article[-1].items.append(
+            self.html.add_paragraph(text=notes))
+        for idx, (label_name, frequency_distribution) in enumerate(
+                field_distribution.items()):
+            title = 'For %s samples' % label_name
+            self.html.article[-1].items.append(
+                self.html.add_header(text=title, heading='h5'))
+            if len(frequency_distribution) / sum(
+                    frequency_distribution.values()) > 0.5:
+                self.html.article[-1].items.append(
+                    self.html.add_paragraph(text=
+                    'Warning: %s unique values found in %s samples.' % (
+                        len(frequency_distribution),
+                        sum(frequency_distribution.values()))), style='BI')
+                break
 
-    @abstractmethod
+            if len(field_distribution) > max_values_display:
+                self.html.article[-1].items.append(
+                    self.html.add_paragraph(text='%s of %s are displayed)' % (
+                    max_values_display, len(field_distribution))))
+
+            figure_path = '%s/%s_%s_field_distribution.png' % (
+                self.figure_path, field_name, label_name)
+            image_path = graph_generator.BarPlot(file_path=figure_path,
+                                                 data=frequency_distribution,
+                                                 title=title,
+                                                 x_label="",
+                                                 y_label=field_name).draw(
+                limit_length=max_values_display,
+                color_palette=colors[idx % len(colors)])
+            self.html.article[-1].items.append(
+                self.html.add_image(src=image_path, alt=title))
+
     def draw_numeric_field_distribution(self, notes: str,
                                         field_name: str,
                                         field_distribution: dict,
@@ -273,7 +562,6 @@ class Writer(ABC):
         """
         pass
 
-    @abstractmethod
     def draw_text_field_distribution(self, notes: str,
                                      field_name: str,
                                      field_distribution: dict):
@@ -295,7 +583,6 @@ class Writer(ABC):
         """
         pass
 
-    @abstractmethod
     def draw_datetime_field_distribution(self, notes: str,
                                          field_name: str,
                                          field_distribution: dict):
@@ -319,7 +606,7 @@ class Writer(ABC):
     ################################################################################
     ###  Feature Section
     ################################################################################
-    @abstractmethod
+
     def draw_feature_importance(self, notes: str,
                                 importance_ranking: List[List],
                                 importance_threshold: float,
@@ -340,7 +627,7 @@ class Writer(ABC):
     ################################################################################
     ###  Training Section
     ################################################################################
-    @abstractmethod
+
     def draw_hyperparameter_tuning(self, notes: str,
                                    history: dict, best_idx: str,
                                    search_space=None, benchmark_metric=None,
@@ -368,7 +655,6 @@ class Writer(ABC):
         """
         pass
 
-    @abstractmethod
     def draw_learning_curve(self, notes: str,
                             history: dict, best_idx: str,
                             benchmark_metric=None, benchmark_threshold=None,
@@ -397,7 +683,7 @@ class Writer(ABC):
     ################################################################################
     ###  Evaluation Section
     ################################################################################
-    @abstractmethod
+
     def draw_multi_class_evaluation_metric_results(self, notes: str,
                                                    metric_tuple):
         """
@@ -417,7 +703,6 @@ class Writer(ABC):
         """
         pass
 
-    @abstractmethod
     def draw_binary_class_evaluation_metric_results(self, notes: str,
                                                     metric_tuple: tuple,
                                                     aggregated=True):
@@ -436,7 +721,6 @@ class Writer(ABC):
         """
         pass
 
-    @abstractmethod
     def draw_confusion_matrix_results(self, notes: str,
                                       confusion_matrix_tuple: tuple):
         """
@@ -454,7 +738,6 @@ class Writer(ABC):
         """
         pass
 
-    @abstractmethod
     def draw_multi_class_confidence_distribution(self, notes: str,
                                                  visual_result_tuple: tuple,
                                                  max_num_classes=9):
@@ -476,7 +759,6 @@ class Writer(ABC):
         """
         pass
 
-    @abstractmethod
     def draw_binary_class_confidence_distribution(self, notes: str,
                                                   visual_result_tuple: tuple):
         """
@@ -494,7 +776,6 @@ class Writer(ABC):
         """
         pass
 
-    @abstractmethod
     def draw_binary_class_reliability_diagram(self,
                                               visual_result_tuple: tuple,
                                               notes=None):

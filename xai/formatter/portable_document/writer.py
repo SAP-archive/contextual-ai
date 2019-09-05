@@ -11,66 +11,44 @@ from __future__ import print_function
 
 import os
 import copy
+import shutil
 import tempfile
 
 from typing import Tuple, Dict, List
 
-from xai.formatter.contents.base import Title, SectionTitle, Header
+from xai.formatter.contents import Title, SectionTitle, Header
 from xai.formatter.report.section import CoverSection, DetailSection
 
 from xai.formatter.portable_document.publisher import CustomPdf
 
-from xai.formatter.writer.base import Writer
+from xai.formatter.writer import Writer
 
 
 ################################################################################
-### Pdf Writer Strategy
+### Pdf Writer Visitor
 ################################################################################
 class PdfWriter(Writer):
 
-    def __init__(self, name='training_report',
+    def __init__(self, name='pdf_report',
                  path='./', dest='F') -> None:
         """
         Generate PDF report
 
         Args:
             name (str, Optional): filename of report,
-                        default is 'training_report'
+                        default is 'pdf_report'
             path (str, Optional): output path (default current dict './')
-
             dest (str, Optional): PDF destination (default 'F' == file)
         """
         super(PdfWriter, self).__init__()
-        self._path = path
-        self._name = name
-        self._dest = dest
-        self._pdf = CustomPdf()
+        self._pdf = CustomPdf(name=name, path=path, dest=dest)
         # default report header title is the report name
         self._pdf.set_title(title=name)
-
-        self._header_1_count = 0
-        self._header_2_count = 0
-        self._header_3_count = 0
 
         # set up temporary image folder
         self.figure_path = tempfile.TemporaryDirectory().name
 
         os.mkdir(self.figure_path)
-
-    @property
-    def path(self):
-        """Returns PDF output path"""
-        return self._path
-
-    @property
-    def name(self):
-        """Returns PDF report name."""
-        return self._name
-
-    @property
-    def dest(self):
-        """Returns PDF report output destination ."""
-        return self._dest
 
     @property
     def pdf(self):
@@ -81,8 +59,10 @@ class PdfWriter(Writer):
         """
         Output PDF to some destination
         """
-        report_path = '%s/%s.pdf' % (self.path, self.name)
-        self.pdf.output(name=report_path, dest=self.dest)
+        self.pdf.to_file()
+        # clean up temp folder
+        if os.path.exists(self.figure_path):
+            shutil.rmtree(self.figure_path)
 
     def build(self, title: str, cover: CoverSection,
               detail: DetailSection, content_table=False):
@@ -96,6 +76,10 @@ class PdfWriter(Writer):
             content_table (bool): is content table enabled
                             default False
         """
+        _h1_count = 0
+        _h2_count = 0
+        _h3_count = 0
+
         self.pdf.set_title(title)
         # -- Draw Cover Contents --
         if len(cover.contents) > 1:
@@ -106,42 +90,45 @@ class PdfWriter(Writer):
         if content_table:
             self.pdf.add_page()
             self.pdf.add_ribbon('Content Table')
-            for content in dc_contents:
-                if isinstance(content, SectionTitle) and \
-                        content.level == Title.SECTION_TITLE:
+
+        for content in dc_contents:
+            if isinstance(content, SectionTitle) and \
+                    content.level == Title.SECTION_TITLE:
+                if content_table:
                     content.link = self.pdf.add_link()
                     self.pdf.add_new_line(line='<B>%s</B>' % content.text,
                                           link=content.link)
-                elif isinstance(content, Header):
-                    if content.level == Header.LEVEL_1:
-                        self._header_1_count += 1
-                        self._header_2_count = 0
-                        self._header_3_count = 0
+            elif isinstance(content, Header):
+                if content.level == Header.LEVEL_1:
+                    _h1_count += 1
+                    _h2_count = 0
+                    _h3_count = 0
+                    content.text = '%s   %s' % (_h1_count, content.text)
+                    if content_table:
                         content.link = self.pdf.add_link()
-                        content.text = '%s   %s' % (self._header_1_count,
-                                                    content.text)
                         self.pdf.add_new_line(line='<B>%s</B>' % content.text,
                                               link=content.link)
-                    elif content.level == Header.LEVEL_2:
-                        self._header_2_count += 1
-                        self._header_3_count = 0
+                elif content.level == Header.LEVEL_2:
+                    _h2_count += 1
+                    _h3_count = 0
+                    content.text = '%s.%s   %s' % (_h1_count, _h2_count,
+                                                   content.text)
+                    if content_table:
                         content.link = self.pdf.add_link()
-                        content.text = '%s.%s   %s' % (self._header_1_count,
-                                                       self._header_2_count,
-                                                       content.text)
                         self.pdf.add_new_line(line='.. %s' % content.text,
                                               link=content.link)
-                    elif content.level == Header.LEVEL_3:
-                        self._header_3_count += 1
-                        content.text = '%s.%s.%s   %s' % (self._header_1_count,
-                                                          self._header_2_count,
-                                                          self._header_3_count,
-                                                          content.text)
+                elif content.level == Header.LEVEL_3:
+                    _h3_count += 1
+                    content.text = '%s.%s.%s   %s' % (_h1_count, _h2_count,
+                                                      _h3_count,
+                                                      content.text)
+                    if content_table:
+                        content.link = self.pdf.add_link()
                         self.pdf.add_new_line(line='.... <I>%s</I>' %
                                                    content.text,
                                               link=content.link)
         # -- Draw Details Contents --
-        if len(dc_contents) > 0:
+        if len(dc_contents) > 1:
             for content in dc_contents:
                 content.draw(writer=self)
 
@@ -468,7 +455,6 @@ class PdfWriter(Writer):
                     - key: attribute name
                     - value: attribute value
         """
-
         def get_data_attributes():
             attribute_list = list(
                 set().union(*[set(attribute_dict.keys())

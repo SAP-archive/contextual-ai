@@ -7,7 +7,7 @@
 
 import os
 import sys
-sys.path.append('../../../')
+sys.path.append('../../')
 import json
 
 from xai.formatter import Report, PdfWriter
@@ -45,7 +45,7 @@ def main():
     ### Add Header Level 2
     report.content.add_header_level_2(text='Data Class Distribution')
     ### Add Dataset distribution
-    with open('./sample_data/data_distribution.json', 'r') as f:
+    with open('./../sample_data/data_distribution.json', 'r') as f:
         data_dist = json.load(f)
     data_distributions = []
     for k, v in data_dist.items():
@@ -56,7 +56,7 @@ def main():
     ### Add Header Level 2
     report.content.add_header_level_2(text='Data Field Attribute')
     ### Data Field Attribute
-    with open('./sample_data/data_attribute.json', 'r') as f:
+    with open('./../sample_data/data_attribute.json', 'r') as f:
         data_attribute = json.load(f)
     print(data_attribute)
     report.content.add_data_attributes(data_attribute)
@@ -64,7 +64,7 @@ def main():
     ### Add Header Level 2
     report.content.add_header_level_2(text='Data Missing Value Check')
     ### Missing value
-    with open('./sample_data/missing_value.json', 'r') as f:
+    with open('./../sample_data/missing_value.json', 'r') as f:
         missing_value = json.load(f)
 
     missing_count = missing_value["missing_count"]
@@ -83,7 +83,7 @@ def main():
     ### Add Header Level 3
     report.content.add_header_level_3(text='Categorical Field Distribution')
     ### Categorical field distribution
-    with open('./sample_data/categorical_data.json', 'r') as f:
+    with open('./../sample_data/categorical_data.json', 'r') as f:
         categorical_data = json.load(f)
     print(categorical_data)
 
@@ -94,7 +94,7 @@ def main():
     ### Add Header Level 3
     report.content.add_header_level_3(text='Numerical Field Distribution')
     ### Numerical field distribution
-    with open('./sample_data/numerical_data.json', 'r') as f:
+    with open('./../sample_data/numerical_data.json', 'r') as f:
         numerical_data = json.load(f)
 
     print('SAMPLE DATA FORMAT')
@@ -116,7 +116,7 @@ def main():
     ### Add Header Level 3
     report.content.add_header_level_3(text='Text Field Distribution')
     ### Text field distribution
-    with open('./sample_data/text_data.json', 'r') as f:
+    with open('./../sample_data/text_data.json', 'r') as f:
         text_data = json.load(f)
 
     print('SAMPLE DATA FORMAT')
@@ -138,7 +138,7 @@ def main():
     ### Add Header Level 3
     report.content.add_header_level_3(text='Datetime Field Distribution')
     ### Datetime field distribution
-    with open('./sample_data/datetime_data.json', 'r') as f:
+    with open('./../sample_data/datetime_data.json', 'r') as f:
         datetime_data = json.load(f)
     print(datetime_data)
 
@@ -149,7 +149,7 @@ def main():
     ### Add Header Level 2
     report.content.add_header_level_2(text='Confusion Matrix')
     ### Confusion Matrix
-    with open('./sample_data/binary_evaluation_results.json', 'r') as f:
+    with open('./../sample_data/binary_evaluation_results.json', 'r') as f:
         eval_result = json.load(f)
     splits = eval_result.keys()
     confusion_matrix_list = []
@@ -163,11 +163,14 @@ def main():
 
     report.content.add_confusion_matrix_results(confusion_matrix_list)
 
+    ### Create Data Evaluation Section
+    report.content.add_new_page()
+    report.content.add_section_title("Example for Data Evaluation ")
     ### Add Header Level 1
     report.content.add_header_level_1(
         text='Multi-class Classification Evaluation Analysis')
 
-    with open('./sample_data/multi_evaluation_results.json', 'r') as f:
+    with open('./../sample_data/multi_evaluation_results.json', 'r') as f:
         eval_result = json.load(f)
 
     label_key = 'label_1'
@@ -193,7 +196,7 @@ def main():
     report.content.add_confusion_matrix_results(
         confusion_matrix_tuple=[('', label_eval_result['CM'])])
 
-    with open('./sample_data/evaluation_result_summary.json', 'r') as f:
+    with open('./../sample_data/evaluation_result_summary.json', 'r') as f:
         evaluation_result_data = json.load(f)
     print(evaluation_result_data)
 
@@ -201,10 +204,10 @@ def main():
         evaluation_result=evaluation_result_data)
 
     ### Lastly generate report with the writer instance
-    report.generate(writer=PdfWriter(name='formatter-sample-report'))
+    report.generate(writer=PdfWriter(name='simple-pdf-report'))
     dir_path = os.getcwd()
     print("")
-    print("report generated : %s/formatter-sample-report.pdf" % dir_path)
+    print("report generated : %s/simple-pdf-report.pdf" % dir_path)
 
 if __name__ == "__main__":
     main()
