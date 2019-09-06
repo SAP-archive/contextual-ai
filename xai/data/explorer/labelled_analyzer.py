@@ -14,7 +14,7 @@ class LabelledDataAnalyzer(ABC):
 
     def feed(self, value: Union[str, int], label: Union[str, int]):
         """
-        update the analyzer with value and its corresponding label
+        Update the analyzer with value and its corresponding label
 
         Args:
             value: categorical value
@@ -27,7 +27,7 @@ class LabelledDataAnalyzer(ABC):
 
     def feed_all(self, values: List, labels: List):
         """
-        update the analyzer with a list of values and their corresponding labels
+        Update the analyzer with a list of values and their corresponding labels
 
         Args:
             values: categorical values
@@ -42,9 +42,10 @@ class LabelledDataAnalyzer(ABC):
 
     def get_statistics(self) -> Tuple[Dict[Union[str, int], AbstractStats], AbstractStats]:
         """
-        get stats based on labels
+        Get stats based on labels
+
         Returns:
-            a dictionary maps label to the aggregated stats json obj
+            A dictionary maps label to the aggregated stats json object
         """
         _stats = dict()
         for label, analyzer in self._label_analyzer.items():

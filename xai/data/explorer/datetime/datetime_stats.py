@@ -61,10 +61,10 @@ class DatetimeStats(AbstractStats):
 
     def to_json(self) -> Dict:
         """
-        map stats information into a json object
+        Map stats information into a json object
 
         Returns:
-            a json that represents frequency count and total count
+            A json that represents frequency count and total count
         """
 
         json_obj = dict()

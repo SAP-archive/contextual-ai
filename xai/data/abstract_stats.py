@@ -17,8 +17,9 @@ class AbstractStats(ABC):
     @abstractmethod
     def to_json(self) -> Dict:
         """
-        map the stats to json object
+        Map the stats to json object
+
         Returns:
-            a dictionary contains key statistical attribute
+            A dictionary contains key statistical attribute
         """
         raise NotImplementedError('The derived helper needs to implement it.')

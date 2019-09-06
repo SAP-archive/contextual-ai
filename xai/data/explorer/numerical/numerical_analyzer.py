@@ -9,7 +9,7 @@ from xai.data.explorer.numerical.numerical_stats import NumericalStats
 
 class NumericDataAnalyzer(AbstractDataAnalyzer):
     """
-    NumericalDataAnalyzer generates key stats for numerical values fed into the analyzer.
+    This analyzer class analyzes numerical data and generates key stats for numerical values fed into it
     """
     SUPPORTED_TYPES = [int, float]
 
@@ -20,7 +20,8 @@ class NumericDataAnalyzer(AbstractDataAnalyzer):
 
     def feed(self, value: int or str):
         """
-        fed the value into list
+        Feed the value into analyzer
+
         Args:
            value: value that fed for frequency count update
 
@@ -31,9 +32,10 @@ class NumericDataAnalyzer(AbstractDataAnalyzer):
 
     def get_statistics(self) -> NumericalStats:
         """
-        return stats for the analyzer
+        Return stats for the analyzer
+
         Returns:
-            a NumericalStats object that stores key stats for numerical data
+            A NumericalStats object that stores key stats for numerical data
         """
 
         if not self._values or len(self._values) == 0:

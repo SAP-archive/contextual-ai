@@ -12,7 +12,8 @@ class DataframeValidator:
     @classmethod
     def duplication_check(cls, df: pd.DataFrame, key_col: List[str] = None):
         """
-        return duplidated indices in group based on column names
+        Return duplicated indices in group based on column names
+
         Args:
             df: dataframe to check
             key_col: a list of column names to check the duplicates
@@ -32,7 +33,8 @@ class DataframeValidator:
     @classmethod
     def orphaned_relation_check(cls, df_a: pd.DataFrame, df_b: pd.DataFrame, col_a: str, col_b: str) -> List[bool]:
         """
-        return all the indices of dataframe A that column a not in column b of dataframe B
+        Return all the indices of dataframe A that column a not in column b of dataframe B
+
         Args:
             df_a: dataframe A
             df_b: dataframe B
@@ -40,7 +42,7 @@ class DataframeValidator:
             col_b: column name b
 
         Returns:
-            a list of indices
+            A list of indices
         """
         if col_a not in df_a.columns:
             raise ColumnNotFound(col_a, df_a.columns)
@@ -58,7 +60,7 @@ class DataframeValidator:
     @classmethod
     def unidirectional_matches(cls, df_a: pd.DataFrame, df_b: pd.DataFrame, col_a: str, col_b: str)->List[int]:
         """
-        return for each value in column a [of dataframe A] return the number of its occurrence in column b [of dataframe B]
+        Return for each value in column a [of dataframe A] return the number of its occurrence in column b [of dataframe B]
 
         Args:
             df_a: dataframe A
@@ -67,7 +69,7 @@ class DataframeValidator:
             col_b: column name b
 
         Returns:
-            a list of number indicates occurrences
+            A list of number indicates occurrences
         """
         if col_a not in df_a.columns:
             raise ColumnNotFound(col_a, df_a.columns)
@@ -86,14 +88,15 @@ class DataframeValidator:
     @classmethod
     def find_m_to_n_complete_matches(cls, df: pd.DataFrame, col_a: str, col_b: str)->List[Tuple[List[int],List[int]]]:
         """
-        find completed matches between two entities
+        Find completed matches between two entities
+
         Args:
             df: dataframe
             col_a: column name a
             col_b: column name b
 
         Returns:
-            a list of tuple: each item is the indices of nodes in the completed graph
+            A list of tuple, each item is the indices of nodes in the completed graph
         """
         processed_cols = [col_a, col_b]
         copy_df = df[processed_cols].copy(deep=True)
@@ -124,13 +127,14 @@ class DataframeValidator:
     @classmethod
     def relational_filter(cls, df:pd.DataFrame, relation_query:str):
         """
-        check whether the query is satisfied
+        Check whether the query is satisfied
+
         Args:
             df: dataframe
             relation_query: a relational query returns a bool
 
         Returns:
-            a list of true indices
+            A list of true indices
         """
 
         valid_df = df.query(relation_query)

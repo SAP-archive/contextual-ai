@@ -9,7 +9,7 @@ class AbstractDataAnalyzer(ABC):
     @abstractmethod
     def feed(self, value):
         """
-        The function feeds one value into analyzer and update the stats object.
+        The function feeds one value into analyzer and updates the stats object
 
         Args:
             value: the value fed into the analyzer for one sample
@@ -18,7 +18,8 @@ class AbstractDataAnalyzer(ABC):
 
     def feed_all(self, values: Iterator):
         """
-        The function takes one iterator of values into analyzer and update the stats object.
+        The function takes one iterator of values into analyzer and updates the stats object
+
         Args:
             values: values fed into the analyzer in sequence
         """
@@ -28,9 +29,10 @@ class AbstractDataAnalyzer(ABC):
     @abstractmethod
     def get_statistics(self) -> Dict:
         """
-        The function returns the up-to-date statistics that the analyzer keeps track
+        The function returns the up-to-date statistics that the analyzer keeps track of
+
         Returns:
-            A Stats jsonobject extends AbstractStats based on data type
+            A Stats json object that extends AbstractStats based on data type
 
         """
         raise NotImplementedError('The derived helper needs to implement it.')

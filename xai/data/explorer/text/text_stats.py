@@ -141,10 +141,10 @@ class TextStats(AbstractStats):
 
     def to_json(self) -> Dict:
         """
-        map stats information into a json object
+        Map stats information into a json object
 
         Returns:
-            a json that represent frequency count and total count
+            A json that represent frequency count and total count
         """
 
         json_obj = dict()

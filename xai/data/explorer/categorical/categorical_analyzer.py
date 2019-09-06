@@ -1,5 +1,4 @@
 from collections import defaultdict
-from typing import Iterator, List, Dict
 
 from xai.data.exceptions import ItemDataTypeNotSupported
 from xai.data.explorer.abstract_analyzer import AbstractDataAnalyzer
@@ -8,7 +7,7 @@ from xai.data.explorer.categorical.categorical_stats import CategoricalStats
 
 class CategoricalDataAnalyzer(AbstractDataAnalyzer):
     """
-    CategoricalDataAnalyzer accumulate frequency count for all values fed into the analyzer.
+    This analyzer class analyzes categorical data and accumulates frequency count for all values fed into it
     """
 
     SUPPORTED_TYPES = [str, int]
@@ -20,7 +19,8 @@ class CategoricalDataAnalyzer(AbstractDataAnalyzer):
 
     def feed(self, value: int or str):
         """
-        accumulate count for value
+        Accumulate count for value
+
         Args:
            value: value that fed for frequency count update
 
@@ -31,9 +31,10 @@ class CategoricalDataAnalyzer(AbstractDataAnalyzer):
 
     def get_statistics(self) -> CategoricalStats:
         """
-        return stats for the analyzer
+        Return stats for the analyzer
+
         Returns:
-            a CategoricalStats json object that keeps track of frequency count
+            A CategoricalStats object that keeps track of frequency count
         """
         self.stats = CategoricalStats(frequency_count=self._frequency_count)
         return self.stats

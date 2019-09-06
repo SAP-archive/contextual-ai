@@ -11,7 +11,7 @@ class DATATYPE:
 
 class STATSCONSTANTS:
     """
-    constants for stats generation
+    Constants for stats generation
     """
     DEFAULT_BIN_SIZE = 20
     KDE_BAND_WIDTH = 0.2
@@ -20,7 +20,7 @@ class STATSCONSTANTS:
 
 class STATSKEY:
     """
-    constants for key used in stats json object
+    Constants for key used in stats json object
     """
     TOTAL_COUNT = 'total_count'
     DATA_TYPE = 'data_type'
