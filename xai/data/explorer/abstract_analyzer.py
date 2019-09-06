@@ -25,7 +25,7 @@ class AbstractDataAnalyzer(ABC):
             self.feed(value)
 
     @abstractmethod
-    def get_statistics(self) -> AbstractStats:
+    def get_statistics(self, **kwargs) -> AbstractStats:
         """
         The function returns the up-to-date statistics that the analyzer keeps track
         Returns:

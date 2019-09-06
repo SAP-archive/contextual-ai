@@ -1,11 +1,11 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List, Dict, Union, Tuple
 
 from xai.data.abstract_stats import AbstractStats
 from xai.data.exceptions import InconsistentIteratorSize
 
 
-class LabelledDataAnalyzer(ABC):
+class AbstractLabelledDataAnalyzer(ABC):
 
     def __init__(self, data_analyzer_cls):
         self._label_analyzer = dict()
@@ -40,14 +40,6 @@ class LabelledDataAnalyzer(ABC):
         for value, label in value_label:
             self.feed(value, label)
 
+    @abstractmethod
     def get_statistics(self) -> Tuple[Dict[Union[str, int], AbstractStats], AbstractStats]:
-        """
-        get stats based on labels
-        Returns:
-            a dictionary maps label to the aggregated stats json obj
-        """
-        _stats = dict()
-        for label, analyzer in self._label_analyzer.items():
-            _stats[label] = analyzer.get_statistics()
-        _all_stats = self._all_analyzer.get_statistics()
-        return _stats, _all_stats
+       raise NotImplementedError('The derived class should implement this class')

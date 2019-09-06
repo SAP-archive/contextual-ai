@@ -1,7 +1,9 @@
 import numpy as np
+from typing import Optional, List, Tuple
 from sklearn.neighbors import KernelDensity
 
 from xai.data.constants import STATSCONSTANTS
+
 from xai.data.exceptions import ItemDataTypeNotSupported, NoItemsError
 from xai.data.explorer.abstract_analyzer import AbstractDataAnalyzer
 from xai.data.explorer.numerical.numerical_stats import NumericalStats
@@ -29,7 +31,9 @@ class NumericDataAnalyzer(AbstractDataAnalyzer):
             raise ItemDataTypeNotSupported(type(value), type(self), NumericDataAnalyzer.SUPPORTED_TYPES)
         self._values.append(value)
 
-    def get_statistics(self) -> NumericalStats:
+    def get_statistics(self, bin_edges: Optional[List[float]] = None,
+                       extreme_value_percentile: Optional[Tuple[float, float]] = [5, 95],
+                       num_of_bins: Optional[int] = STATSCONSTANTS.DEFAULT_BIN_SIZE) -> NumericalStats:
         """
         return stats for the analyzer
         Returns:
@@ -51,16 +55,17 @@ class NumericDataAnalyzer(AbstractDataAnalyzer):
         histogram = list()
 
         # update histogram
-        x_percentile_05 = np.percentile(np_values, 5)
-        x_percentile_95 = np.percentile(np_values, 95)
+        if bin_edges is not None:
+            left_x_percentile = np.percentile(np_values, extreme_value_percentile[0])
+            right_x_percentile = np.percentile(np_values, extreme_value_percentile[1])
 
-        bin_edges = list()
-        bin_edges.append(min)
-        bin_size = (x_percentile_95 - x_percentile_05) / STATSCONSTANTS.DEFAULT_BIN_SIZE
-        for bin_idx in range(STATSCONSTANTS.DEFAULT_BIN_SIZE):
-            bin_edges.append(x_percentile_05 + bin_size * bin_idx)
-        bin_edges.append(x_percentile_95)
-        bin_edges.append(max)
+            bin_edges = list()
+            bin_edges.append(min)
+            bin_size = (right_x_percentile - left_x_percentile) / num_of_bins
+            for bin_idx in range(num_of_bins):
+                bin_edges.append(left_x_percentile + bin_size * bin_idx)
+            bin_edges.append(right_x_percentile)
+            bin_edges.append(max)
 
         count, _ = np.histogram(np_values, bins=bin_edges)
         for bin_idx, bin_count in enumerate(count):
