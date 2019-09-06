@@ -57,7 +57,7 @@ class NumericDataAnalyzer(AbstractDataAnalyzer):
         histogram = list()
 
         # update histogram
-        if bin_edges is not None:
+        if bin_edges is None:
             left_x_percentile = np.percentile(np_values, extreme_value_percentile[0])
             right_x_percentile = np.percentile(np_values, extreme_value_percentile[1])
 
