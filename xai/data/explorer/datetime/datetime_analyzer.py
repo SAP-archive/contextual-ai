@@ -10,8 +10,9 @@ from xai.data.explorer.datetime.datetime_stats import DatetimeStats
 
 class DatetimeDataAnalyzer(AbstractDataAnalyzer):
     """
-    NumericalDataAnalyzer generates key stats for numerical values fed into the analyzer.
+    This analyzer class analyzes datetime data and generates key stats for values fed into it
     """
+
     SUPPORTED_TYPES = [str]
     YEAR = 0
     MONTH = 1
@@ -42,7 +43,8 @@ class DatetimeDataAnalyzer(AbstractDataAnalyzer):
 
     def feed(self, value: str):
         """
-        fed the datetime str into analyzer and aggregate count based on resolution
+        Feed the datetime str into analyzer and aggregate count based on resolution
+
         Args:
            value: datetime str
 

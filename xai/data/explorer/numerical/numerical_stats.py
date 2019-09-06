@@ -14,7 +14,7 @@ class NumericalStats(AbstractStats):
         - _mean: mean of the values
         - _median: median of the values
         - _sd: standard deviation of the values
-        - _histogram: a histogram of value distribution represented by a list of (x_left, x_right, count).
+        - _histogram: a histogram of value distribution represented by a list of (x_left, x_right, count)
         - _kde: a kernel density estimation curve represented by a list of points
     """
 
@@ -134,10 +134,10 @@ class NumericalStats(AbstractStats):
 
     def to_json(self) -> Dict:
         """
-        map stats information into a json object
+        Map stats information into a json object
 
         Returns:
-            a json that represent frequency count and total count
+            A json that represent frequency count and total count
         """
 
         json_obj = dict()

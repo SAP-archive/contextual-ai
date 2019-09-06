@@ -14,7 +14,8 @@ from xai.data.explorer.text.text_stats import TextStats
 
 class TextDataAnalyzer(AbstractDataAnalyzer):
     """
-    TextDataAnalyzer calculates the TF-IDF, TF for the input corpus, and percentage of pre-defined patterns
+    This analyzer class analyzes text data and calculates the TF-IDF, TF for the input corpus,
+    and percentage of pre-defined patterns
     """
 
     def __init__(self, preprocess_fn: Optional[Callable[[str], str]] = None,
@@ -23,7 +24,8 @@ class TextDataAnalyzer(AbstractDataAnalyzer):
                  stop_words: Optional[Set] = None,
                  stop_words_by_languages: Optional[List[str]] = None):
         """
-        initialize TextDataAnalyzer
+        Initialize TextDataAnalyzer
+
         Args:
             preprocess_fn: the function that pre-processes the text, returns the processed text
             predefined_pattern: the dictionary maps a pattern name to its regex string
@@ -63,7 +65,8 @@ class TextDataAnalyzer(AbstractDataAnalyzer):
 
     def feed(self, doc):
         """
-        feed document text string to analyzer for stats analysis
+        Feed document text string to analyzer for stats analysis
+
         Args:
             doc: one document text string that will be analysed in the analyzer
         """
@@ -92,10 +95,10 @@ class TextDataAnalyzer(AbstractDataAnalyzer):
 
     def get_statistics(self) -> TextStats:
         """
-        map stats information into a json object
+        Map stats information into a json object
 
         Returns:
-            a json that represent frequency count and total count
+            A json that represents frequency count and total count
         """
         tfidf = dict()
         for word in self._term_frequency.keys():
