@@ -24,7 +24,7 @@ clf.fit(X_train, y_train)
 clf.score(X_test, y_test)
 
 # Instantiate LimeTabularExplainer via the ExplainerFactory interface
-explainer = ExplainerFactory.create_explainer(domain=xai.DOMAIN.TABULAR, algorithm=xai.ALG.LIME)
+explainer = ExplainerFactory.get_explainer(domain=xai.DOMAIN.TABULAR, algorithm=xai.ALG.LIME)
 
 # Build the explainer
 explainer.build_explainer(
