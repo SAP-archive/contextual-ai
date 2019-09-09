@@ -15,14 +15,14 @@ class TestExplainer(unittest.TestCase):
         Test unsupported domain exception handling
         """
         with self.assertRaises(DomainNotSupported, msg='Domain should not be supported'):
-            _ = ExplainerFactory.create_explainer(domain='unsupported_domain')
+            _ = ExplainerFactory.get_explainer(domain='unsupported_domain')
 
     def test_create_explainer_alg_unsupported(self):
         """
         Test unsupported algorithm exception handling
         """
         with self.assertRaises(AlgorithmNotFoundInDomain, msg='Algorithm should not be supported'):
-            _ = ExplainerFactory.create_explainer(domain='text', algorithm='unsupported_algorithm')
+            _ = ExplainerFactory.get_explainer(domain='text', algorithm='unsupported_algorithm')
 
     def test_create_explainer(self):
         """
@@ -32,7 +32,7 @@ class TestExplainer(unittest.TestCase):
         alg = DICT_DOMAIN_TO_DEFAULT_ALG[domain]
         expected_explainer_class = DICT_DOMAIN_TO_CLASS[domain][alg]
         expected_explainer = expected_explainer_class()
-        actual_explainer = ExplainerFactory.create_explainer(domain, alg)
+        actual_explainer = ExplainerFactory.get_explainer(domain, alg)
 
         # Is the correct class returned?
         self.assertIsInstance(actual_explainer, expected_explainer_class)

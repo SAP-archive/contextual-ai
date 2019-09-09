@@ -13,7 +13,7 @@ from .explainer_exceptions import DomainNotSupported, AlgorithmNotFoundInDomain
 class ExplainerFactory:
 
     @staticmethod
-    def create_explainer(domain: str, algorithm: Optional[str] = None) -> AbstractExplainer:
+    def get_explainer(domain: str, algorithm: Optional[str] = None) -> AbstractExplainer:
         """
         Returns a AbstractExplainer that is supported by the XAI library
 
