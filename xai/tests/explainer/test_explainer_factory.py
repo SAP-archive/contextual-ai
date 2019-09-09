@@ -10,21 +10,21 @@ class TestExplainer(unittest.TestCase):
     def setUp(self) -> None:
         pass
 
-    def test_create_explainer_domain_unsupported(self):
+    def test_get_explainer_domain_unsupported(self):
         """
         Test unsupported domain exception handling
         """
         with self.assertRaises(DomainNotSupported, msg='Domain should not be supported'):
             _ = ExplainerFactory.get_explainer(domain='unsupported_domain')
 
-    def test_create_explainer_alg_unsupported(self):
+    def test_get_explainer_alg_unsupported(self):
         """
         Test unsupported algorithm exception handling
         """
         with self.assertRaises(AlgorithmNotFoundInDomain, msg='Algorithm should not be supported'):
             _ = ExplainerFactory.get_explainer(domain='text', algorithm='unsupported_algorithm')
 
-    def test_create_explainer(self):
+    def test_get_explainer(self):
         """
         Test the creation of the explainer via the factory
         """
