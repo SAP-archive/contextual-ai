@@ -1,4 +1,4 @@
-# XAI Explainer Module
+# XAI ExplainerFactory Module
 
 This module houses all algorithms which are used to generate explanations for model predictions.
 
@@ -11,7 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 # Main XAI imports
 import xai
-from xai.explainer import Explainer
+from xai.explainer import ExplainerFactory
 
 # Load the dataset and prepare training and test sets
 raw_data = datasets.load_breast_cancer()
@@ -23,8 +23,8 @@ clf = RandomForestClassifier()
 clf.fit(X_train, y_train)
 clf.score(X_test, y_test)
 
-# Instantiate LimeTabularExplainer via the Explainer interface
-explainer = Explainer(domain=xai.DOMAIN.TABULAR, algorithm=xai.ALG.LIME)
+# Instantiate LimeTabularExplainer via the ExplainerFactory interface
+explainer = ExplainerFactory.create_explainer(domain=xai.DOMAIN.TABULAR, algorithm=xai.ALG.LIME)
 
 # Build the explainer
 explainer.build_explainer(

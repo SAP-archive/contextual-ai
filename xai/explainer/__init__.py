@@ -1,1 +1,1 @@
-from .explainer_factory import Explainer
+from .explainer_factory import ExplainerFactory

@@ -11,9 +11,8 @@ class AbstractExplainer(ABC):
     @abstractmethod
     def build_explainer(self, **kwargs):
         """
-        The build method for the explainer. This is called by the Explainer class when the user
-        initializes the explainer. Any explainer implementing a custom Explainer should provide
-        clear documentation on the parameters required to initialize it.
+        The build method for the explainer. Any explainer implementing a custom AbstractExplainer
+        should provide clear documentation on the parameters required to initialize it.
 
         Args:
             **kwargs (dict): keyword arguments for initializing the explainer
@@ -26,8 +25,7 @@ class AbstractExplainer(ABC):
     @abstractmethod
     def explain_instance(self, **kwargs) -> Dict:
         """
-        The explain method for the explainer. This is also called by the Explainer class when the
-        user attempts to explain a particular prediction.
+        Explain an instance using the AbstractExplainer
 
         Args:
             **kwargs (dict): keyword arguments for calling the explanation method
