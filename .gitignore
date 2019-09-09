@@ -10,3 +10,6 @@ __pycache__/
 build/
 dist/
 sap_explainable_ai.egg-info/
+
+doc/source/*.rst
+doc/build
