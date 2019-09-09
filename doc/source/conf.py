@@ -19,8 +19,8 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'XAI'
-copyright = '2019, Wang Jin, Saito Sean, Chai Wei Tah, Ni Peng, Shu Zhen'
-author = 'Wang Jin, Saito Sean, Chai Wei Tah, Ni Peng, Shu Zhen'
+copyright = '2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen'
+author = 'Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'
