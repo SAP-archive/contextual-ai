@@ -26,6 +26,7 @@ class TrainingTiming(Content):
     def __init__(self, timing: List[Tuple[str, int]], notes=None) -> None:
         """
         Add information of timing to the report
+
         Args:
             timing（:obj:`list` of :obj:`tuple`): list of tuple (name, time in second)
             notes (str): explain the block
@@ -50,6 +51,7 @@ class TrainingTiming(Content):
     def draw(self, writer: Writer):
         """
         Draw Timing Table
+
         Args:
             writer (Writer): Report Writer
         """
@@ -67,6 +69,7 @@ class DataSetSummary(Content):
     def __init__(self, data_summary: List[Tuple[str, int]], notes=None) -> None:
         """
         Add information of dataset summary to the report
+
         Args:
             data_summary (:obj:`list` of :obj:`tuple`): list of tuple (dataset_name,
                                                         dataset_sample_number)
@@ -92,6 +95,7 @@ class DataSetSummary(Content):
     def draw(self, writer: Writer):
         """
         Draw Data set Summary
+
         Args:
             writer (Writer): Report Writer
         """
@@ -141,6 +145,7 @@ class EvaluationResultSummary(Content):
     def draw(self, writer: Writer):
         """
         Draw Evaluation Result Summary
+
         Args:
             writer (Writer): Report Writer
         """
@@ -158,6 +163,7 @@ class ModelInfoSummary(Content):
     def __init__(self, model_info: list, notes=None) -> None:
         """
         Add information of model info summary to the report
+
         Args:
             model_info (:obj:`list` of :obj:
                 `tuple`, Optional): list of tuple (model info attribute, model info value).
@@ -185,6 +191,7 @@ class ModelInfoSummary(Content):
     def draw(self, writer: Writer):
         """
         Draw Model Info Summary
+
         Args:
             writer (Writer): Report Writer
         """

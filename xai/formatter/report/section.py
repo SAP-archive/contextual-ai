@@ -23,6 +23,7 @@ class Section:
     def __init__(self, type: int, contents=None):
         """
         Report Section
+
         Args:
             type (int): Section Type (cover, detail)
             contents(list) Content List
@@ -47,7 +48,6 @@ class Section:
     def add_new_page(self):
         """
         add a new page
-        :return:
         """
         from xai.formatter.contents import NewPage
         self.contents.append(NewPage())
@@ -55,6 +55,7 @@ class Section:
     def add_header_level_1(self, text: str):
         """
         add a header level 1 into the section
+
         Args:
             text(str): header level 1 in the report
         """
@@ -64,6 +65,7 @@ class Section:
     def add_header_level_2(self, text: str):
         """
         add a header level 2 into the section
+
         Args:
             text(str): header level 2 in the report
         """
@@ -73,6 +75,7 @@ class Section:
     def add_header_level_3(self, text: str):
         """
         add a header level 3 into the section
+
         Args:
             text(str): header level 3 in the report
         """
@@ -91,6 +94,7 @@ class Section:
     def add_paragraph_title(self, text: str):
         """
         add a title into the paragraph
+
         Args:
             text(str): title in the report
         """
@@ -100,6 +104,7 @@ class Section:
     def add_paragraph(self, text: str):
         """
         add a paragraph into the section
+
         Args:
             text(str): html text to render in the report
         """
@@ -112,6 +117,7 @@ class Section:
     def add_training_timing(self, timing: List[Tuple[str, int]], notes=None):
         """
         add information of timing to the report
+
         Args:
             timing (:obj:`list` of :obj:`tuple`): list of tuple
                         (name, time in second)
@@ -124,6 +130,7 @@ class Section:
                              notes=None):
         """
         add information of dataset summary to the report
+
         Args:
             data_summary (:obj:`list` of :obj:`tuple`): list of tuple
                         (dataset_name, dataset_sample_number)
@@ -158,6 +165,7 @@ class Section:
     def add_model_info_summary(self, model_info: list, notes=None):
         """
         add information of model info to the report
+
         Args:
             model_info (:obj:`list` of :obj:
                 `tuple`, Optional): list of tuple (model info attribute, model info value).
@@ -176,6 +184,7 @@ class Section:
                                total_count: list, ratio=False, notes=None):
         """
         add information of missing value for data fields to the report
+
         Args:
             missing_count (dict):
                 - key: data field name
@@ -196,6 +205,7 @@ class Section:
                                   max_class_shown=20, notes=None):
         """
         add information of distribution on data set to the report
+
         Args:
             dataset_distribution (tuple: (str,dict)):
                 - tuple[0] str: label/split name
@@ -214,6 +224,7 @@ class Section:
     def add_data_attributes(self, data_attribute: Dict, notes=None):
         """
         add information of data attribute for data fields to the report
+
         Args:
             data_attribute (:dict of :dict):
                 -key: data field name
@@ -234,6 +245,7 @@ class Section:
         """
         add information of field value distribution for categorical type to the report.
         Details see analyzers inside `xai.data_explorer.categorical_analyzer`
+
         Args:
             field_name (str): data field name
             field_distribution (:dict of :dict):
@@ -259,6 +271,7 @@ class Section:
         """
         add information of field value distribution for numerical type to the report.
         Details see analyzers inside `xai.data_explorer.numerical_analyzer`
+
         Args:
             field_name (str): data field name
             field_distribution (:dict of :dict):
@@ -290,6 +303,7 @@ class Section:
         """
         add information of field value distribution for text type to the report.
         Details see analyzers inside `xai.data_explorer.text_analyzer`
+
         Args:
             field_name (str): data field name
             field_distribution (:dict of :dict):
@@ -312,6 +326,7 @@ class Section:
         """
         add information of field value distribution for datetime type to the report.
         Details see analyzers inside `xai.data_explorer.datetime_analyzer`
+
         Args:
             field_name (str): data field name
             field_distribution (:dict of :dict):
@@ -336,6 +351,7 @@ class Section:
                                maximum_number_feature=20, notes=None):
         """
         add information of feature importance to the report.
+
         Args:
             importance_ranking(:list of :list): a list of 2-item lists,
                                         item[0]: score, item[1] feature_name
@@ -359,6 +375,7 @@ class Section:
                                   non_hyperopt_score=None, notes=None):
         """
         add information of hyperparameter tuning to the report.
+
         Args:
             history(:dict of dict): a dict of training log dict.
                 key: iteration index
@@ -388,6 +405,7 @@ class Section:
                            training_params=None, notes=None):
         """
         add information of learning curve to report.
+
         Args:
             history(:dict of dict): a dict of training log dict.
                 key: epoch index
@@ -417,6 +435,7 @@ class Section:
                                                   notes=None):
         """
         add information about metric results for multi-class evaluation
+
         Args:
             *metric_tuple(tuple): (evaluation_header, evaluation_metric_dict)
                 - evaluation_header(str): a header for current evaluation,
@@ -438,6 +457,7 @@ class Section:
                                                    notes=None):
         """
         add information about metric results for binary-class evaluation
+
         Args:
             metric_tuple(tuple): (evaluation_header, evaluation_metric_dict)
                 - evaluation_header(str): a header for current evaluation,
@@ -457,6 +477,7 @@ class Section:
                                      notes=None):
         """
         Add information about confusion matrix to report
+
         Args:
             *confusion_matrix_tuple(tuple): (confusion_matrix_header, confusion_matrix_dict)
                 - confusion_matrix_header(str): a header for confusion_matrix,
@@ -477,6 +498,7 @@ class Section:
                                                 notes=None):
         """
         add information about multi class confidence distribution to report
+
         Args:
             *visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
                - visual_result_header(str): a header for confusion_matrix,
@@ -499,6 +521,7 @@ class Section:
                                                  notes=None):
         """
         add information about binary class confidence distribution to report
+
         Args:
             *visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
                - visual_result_header(str): a header for confusion_matrix,
@@ -518,6 +541,7 @@ class Section:
                                              notes=None):
         """
         add information about reliability to report
+
         Args:
             *visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
                - visual_result_header(str): a header for confusion_matrix,

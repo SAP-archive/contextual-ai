@@ -28,6 +28,7 @@ class FeatureImportance(Content):
                  maximum_number_feature=20, notes=None) -> None:
         """
         Add information of feature importance to the report.
+
         Args:
             importance_ranking(:list of :list): a list of 2-item lists,
                                     item[0]: score, item[1] feature_name
@@ -67,6 +68,7 @@ class FeatureImportance(Content):
     def draw(self, writer: Writer):
         """
         Draw Feature Importance
+
         Args:
             writer (Writer): Report Writer
         """

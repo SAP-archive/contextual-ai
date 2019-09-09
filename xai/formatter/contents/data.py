@@ -28,6 +28,7 @@ class DataMissingValue(Content):
                  ratio=False, notes=None) -> None:
         """
         add information of missing value for data fields to the report
+
         Args:
             missing_count (dict):
                 - key: data field name
@@ -71,6 +72,7 @@ class DataMissingValue(Content):
     def draw(self, writer: Writer):
         """
         Draw Missing Data Value
+
         Args:
             writer (Writer): Report Writer
         """
@@ -93,6 +95,7 @@ class DataSetDistribution(Content):
                  notes=None) -> None:
         """
         add information of distribution on data set to the report
+
         Args:
             dataset_distribution (tuple: (str,dict)):
                 - tuple[0] str: label/split name
@@ -130,6 +133,7 @@ class DataSetDistribution(Content):
     def draw(self, writer: Writer):
         """
         Draw Data Set Distribution
+
         Args:
             writer (Writer): Report Writer
         """
@@ -148,6 +152,7 @@ class DataAttributes(Content):
                  data_attribute: Dict, notes=None) -> None:
         """
         add information of data attribute for data fields to the report
+
         Args:
             data_attribute (:dict of :dict):
                 -key: data field name
@@ -178,6 +183,7 @@ class DataAttributes(Content):
     def draw(self, writer: Writer):
         """
         Draw Data Attributes
+
         Args:
             writer (Writer): Report Writer
         """
@@ -196,6 +202,7 @@ class CategoricalFieldDistribution(Content):
        """
        add information of field value distribution for categorical type to the report.
        Details see analyzers inside `xai.data_explorer.categorical_analyzer`
+
        Args:
            field_name (str): data field name
            field_distribution (:dict of :dict):
@@ -250,6 +257,7 @@ class CategoricalFieldDistribution(Content):
     def draw(self, writer: Writer):
         """
         Draw Categorical Field Distribution
+
         Args:
             writer (Writer): Report Writer
         """
@@ -272,6 +280,7 @@ class NumericFieldDistribution(Content):
         """
         add information of field value distribution for numerical type to the report.
         Details see analyzers inside `xai.data_explorer.numerical_analyzer`
+
         Args:
             field_name (str): data field name
             field_distribution (:dict of :dict):
@@ -342,6 +351,7 @@ class NumericFieldDistribution(Content):
     def draw(self, writer: Writer):
         """
         Draw Numeric Field Distribution
+
         Args:
             writer (Writer): Report Writer
         """
@@ -364,6 +374,7 @@ class TextFieldDistribution(Content):
         """
             add information of field value distribution for text type to the report.
             Details see analyzers inside `xai.data_explorer.text_analyzer`
+
             Args:
                 field_name (str): data field name
                 field_distribution (:dict of :dict):
@@ -404,6 +415,7 @@ class TextFieldDistribution(Content):
     def draw(self, writer: Writer):
         """
         Draw Text Field Distribution
+
         Args:
             writer (Writer): Report Writer
         """
@@ -423,6 +435,7 @@ class DateTimeFieldDistribution(Content):
         """
         add information of field value distribution for datetime type to the report.
         Details see analyzers inside `xai.data_explorer.datetime_analyzer`
+
         Args:
             field_name (str): data field name
             field_distribution (:dict of :dict):
@@ -463,6 +476,7 @@ class DateTimeFieldDistribution(Content):
     def draw(self, writer: Writer):
         """
         Draw Date Time Field Distribution
+
         Args:
             writer (Writer): Report Writer
         """

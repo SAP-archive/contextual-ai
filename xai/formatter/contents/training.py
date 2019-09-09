@@ -27,6 +27,7 @@ class HyperParameterTuning(Content):
                  non_hyperopt_score=None, notes=None) -> None:
         """
             Add information of hyperparameter tuning to the report.
+
             Args:
                 history(:dict of dict): a dict of training log dict.
                     key: iteration index
@@ -95,6 +96,7 @@ class HyperParameterTuning(Content):
     def draw(self, writer: Writer):
         """
         Draw Hyper-Parameter Tuning History
+
         Args:
             writer (Writer): Report Writer
         """
@@ -120,6 +122,7 @@ class LearningCurve(Content):
                  training_params=None, notes=None) -> None:
         """
             Add information of learning curve to report.
+
             Args:
                 history(:dict of dict): a dict of training log dict.
                     key: epoch index
@@ -181,6 +184,7 @@ class LearningCurve(Content):
     def draw(self, writer: Writer):
         """
         Draw Learning Curve
+
         Args:
             writer (Writer): Report Writer
         """

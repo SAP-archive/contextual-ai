@@ -24,6 +24,7 @@ class MultiClassEvaluationMetricResult(Content):
     def __init__(self, metric_tuple, notes=None) -> None:
         """
         Add information about metric results for multi-class evaluation
+
         Args:
             metric_tuple(tuple): (evaluation_header, evaluation_metric_dict)
                 - evaluation_header(str): a header for current evaluation,
@@ -57,6 +58,7 @@ class MultiClassEvaluationMetricResult(Content):
     def draw(self, writer: Writer):
         """
         Draw Multi Class Evaluation Metric Result
+
         Args:
             writer (Writer): Report Writer
         """
@@ -76,6 +78,7 @@ class BinaryClassEvaluationMetricResult(Content):
                  notes=None) -> None:
         """
         add information about metric results for binary-class evaluation
+
         Args:
             metric_tuple(tuple): (evaluation_header, evaluation_metric_dict)
                 - evaluation_header(str): a header for current evaluation, can be split or round number.
@@ -113,6 +116,7 @@ class BinaryClassEvaluationMetricResult(Content):
     def draw(self, writer: Writer):
         """
         Draw Binary Class Evaluation Metric Result
+
         Args:
             writer (Writer): Report Writer
         """
@@ -132,6 +136,7 @@ class ConfusionMatrixResult(Content):
     def __init__(self, confusion_matrix_tuple: tuple, notes=None) -> None:
         """
         add information about confusion matrix to report
+
         Args:
             confusion_matrix_tuple(tuple): (confusion_matrix_header,
             confusion_matrix_dict)
@@ -164,6 +169,7 @@ class ConfusionMatrixResult(Content):
     def draw(self, writer: Writer):
         """
         Draw Confusion Matrix Result
+
         Args:
             writer (Writer): Report Writer
         """
@@ -183,6 +189,7 @@ class MultiClassConfidenceDistribution(Content):
                  notes=None) -> None:
         """
         add information about multi class confidence distribution to report
+
         Args:
             *visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
                - visual_result_header(str): a header for confusion_matrix, can be split or round number.
@@ -225,6 +232,7 @@ class MultiClassConfidenceDistribution(Content):
     def draw(self, writer: Writer):
         """
         Draw Multi-Class Confidence Distribution Result
+
         Args:
             writer (Writer): Report Writer
         """
@@ -244,6 +252,7 @@ class BinaryClassConfidenceDistribution(Content):
     def __init__(self, visual_result_tuple: tuple, notes=None) -> None:
         """
         add information about binary class confidence distribution to report
+
         Args:
             *visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
                - visual_result_header(str): a header for confusion_matrix, can be split or round number.
@@ -276,6 +285,7 @@ class BinaryClassConfidenceDistribution(Content):
     def draw(self, writer: Writer):
         """
         Draw Binary-Class Confidence Distribution Result
+
         Args:
             writer (Writer): Report Writer
         """
@@ -294,6 +304,7 @@ class BinaryClassReliabilityDiagram(Content):
     def __init__(self, visual_result_tuple: tuple, notes=None) -> None:
         """
         add information about reliability to report
+
         Args:
             *visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
                - visual_result_header(str): a header for confusion_matrix, can be split or round number.
@@ -326,6 +337,7 @@ class BinaryClassReliabilityDiagram(Content):
     def draw(self, writer: Writer):
         """
         Draw Binary-Class Reliability Diagram Result
+
         Args:
             writer (Writer): Report Writer
         """

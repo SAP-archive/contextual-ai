@@ -32,6 +32,7 @@ class PdfWriter(Writer):
                  path='./', dest='F') -> None:
         """
         Generate PDF report
+
         Args:
             name (str, Optional): filename of report,
                         default is 'training_report'
@@ -87,6 +88,7 @@ class PdfWriter(Writer):
               detail: DetailSection, content_table=False):
         """
         Build Report
+
         Args:
             title(str): header title
             cover(CoverSection): Cover Section of report
@@ -152,6 +154,7 @@ class PdfWriter(Writer):
     def draw_header(self, text: str, level: int, link=None):
         """
         Draw Header
+
         Args:
             text(str): header text in the report
             level(int): header level
@@ -173,6 +176,7 @@ class PdfWriter(Writer):
     def draw_title(self, text: str, level: int, link=None):
         """
         Draw Title
+
         Args:
             text(str): title in the report
             level(int): title type (section or paragraph)
@@ -190,6 +194,7 @@ class PdfWriter(Writer):
     def draw_paragraph(self, text: str):
         """
         Draw Paragraph
+
         Args:
             text(str): html text to render in the report
         """
@@ -202,6 +207,7 @@ class PdfWriter(Writer):
     def draw_training_time(self, notes: str, timing: List[Tuple[str, int]]):
         """
         Draw information of timing to the report
+
         Args:
             notes(str): Explain the block
             timing (:obj:`list` of :obj:`tuple`): list of tuple
@@ -222,6 +228,7 @@ class PdfWriter(Writer):
                               data_summary: List[Tuple[str, int]]):
         """
         Draw information of dataset summary to the report
+
         Args:
             notes(str): Explain the block
             data_summary (:obj:`list` of :obj:`tuple`): list of tuple
@@ -325,6 +332,7 @@ class PdfWriter(Writer):
                                 total_count: dict, ratio=False):
         """
         Draw Missing Data Value Summary Table
+
         Args:
             notes(str): Summary Notes
             missing_count(dict): Missing Count
@@ -407,6 +415,7 @@ class PdfWriter(Writer):
                                    max_class_shown=20):
         """
         Draw information of distribution on data set
+
         Args:
             notes(str): Explain the block
             data_set_distribution (tuple: (str,dict)):
@@ -450,6 +459,7 @@ class PdfWriter(Writer):
     def draw_data_attributes(self, notes: str, data_attribute: Dict):
         """
         Draw information of data attribute for data fields to the report
+
         Args:
             notes(str): Explain the block
             data_attribute (:dict of :dict):
@@ -493,6 +503,7 @@ class PdfWriter(Writer):
         Draw information of field value distribution for categorical type to
         the report.
         Details see analyzers inside `xai.data_explorer.categorical_analyzer`
+
         Args:
             notes(str): Explain the block
             field_name (str): data field name
@@ -550,6 +561,7 @@ class PdfWriter(Writer):
         """
          Draw information of field value distribution for numerical type to
          the report.
+
          Args:
              notes(str): Explain the block
              field_name (str): data field name
@@ -613,6 +625,7 @@ class PdfWriter(Writer):
         """
         Draw information of field value distribution for text type to the
         report.
+
         Args:
             notes(str): Explain the block
             field_name (str): data field name
@@ -658,6 +671,7 @@ class PdfWriter(Writer):
         """
         Draw information of field value distribution for datetime type to the
         report.
+
         Args:
             notes(str): Explain the block
             field_name (str): data field name
@@ -701,6 +715,7 @@ class PdfWriter(Writer):
                                 maximum_number_feature=20):
         """
         Add information of feature importance to the report.
+
         Args:
             notes(str): Explain the block
             importance_ranking(:list of :list): a list of 2-item lists,
@@ -758,6 +773,7 @@ class PdfWriter(Writer):
                                    non_hyperopt_score=None):
         """
         Add information of hyperparameter tuning to the report.
+
         Args:
             notes(str): Explain the block
             history(:dict of dict): a dict of training log dict.
@@ -883,6 +899,7 @@ class PdfWriter(Writer):
                             training_params=None):
         """
         Add information of learning curve to report.
+
         Args:
             notes(str): Explain the block
             history(:dict of dict): a dict of training log dict.
@@ -957,6 +974,7 @@ class PdfWriter(Writer):
                                                    metric_tuple):
         """
         Add information about metric results for multi-class evaluation
+
         Args:
             notes(str): Explain the block
             *metric_tuple(tuple): (evaluation_header, evaluation_metric_dict)
@@ -987,6 +1005,7 @@ class PdfWriter(Writer):
                                                     aggregated=True):
         """
         Add information about metric results for binary-class evaluation
+
         Args:
             notes(str): Explain the block
             metric_tuple(tuple): (evaluation_header, evaluation_metric_dict)
@@ -1032,6 +1051,7 @@ class PdfWriter(Writer):
                                       confusion_matrix_tuple: tuple):
         """
         add information about confusion matrix to report
+
         Args:
             notes(str): Explain the block
             confusion_matrix_tuple(tuple): (confusion_matrix_header, confusion_matrix_dict)
@@ -1079,6 +1099,7 @@ class PdfWriter(Writer):
                                                  max_num_classes=9):
         """
         Add information about multi class confidence distribution to report
+
         Args:
             notes(str): Explain the block
             visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
@@ -1132,6 +1153,7 @@ class PdfWriter(Writer):
                                                   visual_result_tuple: tuple):
         """
         Add information about binary class confidence distribution to report
+
         Args:
             notes(str): Explain the block
             visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
@@ -1173,6 +1195,7 @@ class PdfWriter(Writer):
                                               notes=None):
         """
         Add information about reliability to report
+        
         Args:
             notes(str): Explain the block
             visual_result_tuple(tuple): (visual_result_header, visual_result_dict)

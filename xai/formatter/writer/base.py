@@ -51,6 +51,7 @@ class Writer(ABC):
               detail: DetailSection, content_table=False):
         """
         Build Report
+
         Args:
             title(str): header title
             cover(CoverSection): Cover Section of report
@@ -74,6 +75,7 @@ class Writer(ABC):
     def draw_header(self, text: str, level: int, link=None):
         """
         Draw Header
+
         Args:
             text(str): header text in the report
             level(int): header level
@@ -85,6 +87,7 @@ class Writer(ABC):
     def draw_title(self, text: str, level: int, link=None):
         """
         Draw Title
+
         Args:
             text(str): title in the report
             level(int): title type (section or paragraph)
@@ -96,6 +99,7 @@ class Writer(ABC):
     def draw_paragraph(self, text: str):
         """
         Draw Paragraph
+
         Args:
             text(str): html text to render in the report
         """
@@ -108,6 +112,7 @@ class Writer(ABC):
     def draw_training_time(self, notes: str, timing: List[Tuple[str, int]]):
         """
         Draw information of timing to the report
+
         Args:
             notes(str): Explain the block
             timing (:obj:`list` of :obj:`tuple`): list of tuple
@@ -119,6 +124,7 @@ class Writer(ABC):
     def draw_data_set_summary(self, notes: str, data_summary: List[Tuple[str, int]]):
         """
         Draw information of dataset summary to the report
+
         Args:
             notes(str): Explain the block
             data_summary (:obj:`list` of :obj:`tuple`): list of tuple
@@ -166,6 +172,7 @@ class Writer(ABC):
                                 total_count: dict, ratio=False):
         """
         Draw Missing Data Value Summary Table
+
         Args:
             notes(str): Explain the block
             missing_count(dict): Missing Count
@@ -180,6 +187,7 @@ class Writer(ABC):
                                    max_class_shown=20):
         """
         Draw information of distribution on data set
+
         Args:
             notes(str): Explain the block
             data_set_distribution (tuple: (str,dict)):
@@ -197,6 +205,7 @@ class Writer(ABC):
     def draw_data_attributes(self, notes: str, data_attribute: Dict):
         """
         Draw information of data attribute for data fields to the report
+
         Args:
             notes(str): Explain the block
             data_attribute (:dict of :dict):
@@ -216,6 +225,7 @@ class Writer(ABC):
         """
         Draw information of field value distribution for categorical type to
         the report.
+
         Args:
             notes(str): Explain the block
             field_name (str): data field name
@@ -239,6 +249,7 @@ class Writer(ABC):
         """
          Draw information of field value distribution for numerical type to
          the report.
+
          Args:
              notes(str): Explain the block
              field_name (str): data field name
@@ -269,6 +280,7 @@ class Writer(ABC):
         """
         Draw information of field value distribution for text type to the
         report.
+
         Args:
             notes(str): Explain the block
             field_name (str): data field name
@@ -290,6 +302,7 @@ class Writer(ABC):
         """
         Draw information of field value distribution for datetime type to the
         report.
+
         Args:
             notes(str): Explain the block
             field_name (str): data field name
@@ -313,6 +326,7 @@ class Writer(ABC):
                                 maximum_number_feature=20):
         """
         Add information of feature importance to the report.
+
         Args:
             notes(str): Explain the block
             importance_ranking(:list of :list): a list of 2-item lists,
@@ -334,6 +348,7 @@ class Writer(ABC):
                                    non_hyperopt_score=None):
         """
         Add information of hyperparameter tuning to the report.
+
         Args:
             notes(str): Explain the block
             history(:dict of dict): a dict of training log dict.
@@ -360,6 +375,7 @@ class Writer(ABC):
                             training_params=None):
         """
         Add information of learning curve to report.
+
         Args:
             notes(str): Explain the block
             history(:dict of dict): a dict of training log dict.
@@ -386,6 +402,7 @@ class Writer(ABC):
                                                    metric_tuple):
         """
         Add information about metric results for multi-class evaluation
+
         Args:
             notes(str): Explain the block
             *metric_tuple(tuple): (evaluation_header, evaluation_metric_dict)
@@ -406,6 +423,7 @@ class Writer(ABC):
                                                     aggregated=True):
         """
         Add information about metric results for binary-class evaluation
+
         Args:
             notes(str): Explain the block
             metric_tuple(tuple): (evaluation_header, evaluation_metric_dict)
@@ -423,6 +441,7 @@ class Writer(ABC):
                                       confusion_matrix_tuple: tuple):
         """
         Add information about confusion matrix to report
+
         Args:
             notes(str): Explain the block
             confusion_matrix_tuple(tuple): (confusion_matrix_header, confusion_matrix_dict)
@@ -441,6 +460,7 @@ class Writer(ABC):
                                                  max_num_classes=9):
         """
         Add information about multi class confidence distribution to report
+
         Args:
             notes(str): Explain the block
             visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
@@ -461,6 +481,7 @@ class Writer(ABC):
                                                   visual_result_tuple: tuple):
         """
         Add information about binary class confidence distribution to report
+
         Args:
             notes(str): Explain the block
             visual_result_tuple(tuple): (visual_result_header, visual_result_dict)
@@ -479,6 +500,7 @@ class Writer(ABC):
                                               notes=None):
         """
         Add information about reliability to report
+
         Args:
             notes(str): Explain the block
             visual_result_tuple(tuple): (visual_result_header, visual_result_dict)

@@ -149,6 +149,7 @@ class CustomPdf(FPDF):
     def add_ribbon(self, title):
         """
         add a blue color ribbon with title
+
         Args:
             title(str): text to display on the ribbon
         """
@@ -170,6 +171,7 @@ class CustomPdf(FPDF):
         """
         start a new indent block, each line inside the block
           start with the defined symbol
+
         Args:
             symbol (str): itemized item header (e.g. '-', '*', '#', '')
         """
@@ -187,6 +189,7 @@ class CustomPdf(FPDF):
     def write_html(self, html, link=None):
         """
         parse html and write to PDF report
+
         Args:
              html(str): html content
              link (int): link idx created earlier for internal anchor
@@ -263,6 +266,7 @@ class CustomPdf(FPDF):
         """
         add a table into the pdf report
            (not support auto-text-swapping for now)
+
         Args:
             header (list(str)): table header
             data (list(list)): table data
@@ -311,6 +315,7 @@ class CustomPdf(FPDF):
     def add_text(self, text, link=None, style=''):
         """
         add text string to pdf report
+
         Args:
             text (str): text string written to pdf, with current
                         global indent level
@@ -335,6 +340,7 @@ class CustomPdf(FPDF):
     def add_new_line(self, line='', link=None, style=''):
         """
         add a new line with text string to pdf report
+
         Args:
             line (str): text string written to pdf,
                         with current global indent level
@@ -356,6 +362,7 @@ class CustomPdf(FPDF):
         """
         add a key-value pair in the format of "KEY: VALUE" (with a new line)
            to pdf, with current global indent level
+
         Args:
             key (str): item key
             value (str): item value
@@ -372,6 +379,7 @@ class CustomPdf(FPDF):
         """
         add an default large image to pdf with a caption above
            (80% of the report width, w/h = 2.0)
+
         Args:
             image_path (str): path of the image
             caption (str): image caption above the image
@@ -402,6 +410,7 @@ class CustomPdf(FPDF):
                               table_content, grid_spec, caption=None, style=None):
         """
         add a block of image with table (table on the left, image on the right)
+
         Args:
             image_path (str): path of the image
             table_header (list(str)):  table header
@@ -507,6 +516,7 @@ class CustomPdf(FPDF):
                         style=None):
         """
         add an block of images formatted with grid specification
+
         Args:
             image_set (dict or list):
                 dict, indicate image paths
@@ -612,6 +622,7 @@ class CustomPdf(FPDF):
                                 caption=None, style=None):
         """
         add a list of image blocks with each block formatted by a grid specification
+
         Args
             image_set: list, the list of image_paths
 

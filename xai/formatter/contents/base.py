@@ -51,6 +51,7 @@ class Content(ABC):
     def draw(self, writer: Writer):
         """
         Draw Contents
+
         Args:
             writer (Writer): Report Writer
         """
@@ -70,6 +71,7 @@ class NewPage(Content):
     def draw(self, writer: Writer):
         """
         Draw Header
+
         Args:
             writer (Writer): Report Writer
         """
@@ -90,6 +92,7 @@ class Header(Content):
     def __init__(self, text: str, level: int) -> None:
         """
         add a header into the report
+
         Args:
             text(str): header text in the report
             level(int): header level
@@ -116,6 +119,7 @@ class Header(Content):
     def draw_content_table(self, writer):
         """
         Draw Content Table
+
         Args:
             writer (Writer): Report Writer
         """
@@ -124,6 +128,7 @@ class Header(Content):
     def draw(self, writer: Writer):
         """
         Draw Header
+
         Args:
             writer (Writer): Report Writer
         """
@@ -144,6 +149,7 @@ class Title(Content):
     def __init__(self, text: str, level: int) -> None:
         """
         add a title into the report
+
         Args:
             text(str): title text in the report
             level(int): title type (section or paragraph)
@@ -170,6 +176,7 @@ class Title(Content):
     def draw(self, writer: Writer):
         """
         Draw Title
+
         Args:
             writer (Writer): Report Writer
         """
@@ -183,6 +190,7 @@ class SectionTitle(Title):
     def __init__(self, text: str) -> None:
         """
         add a section level title into the report
+
         Args:
             text(str): title text in the report
         """
@@ -196,6 +204,7 @@ class ParagraphTitle(Title):
     def __init__(self, text: str) -> None:
         """
         add a paragraph level title into the report
+
         Args:
             text(str): title text in the report
         """
@@ -213,6 +222,7 @@ class Paragraph(Content):
     def __init__(self, text=None) -> None:
         """
         add a paragraph into the report
+
         Args:
             text(str): html text to render in the report
         """

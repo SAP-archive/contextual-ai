@@ -24,7 +24,8 @@ class Report:
     def __init__(self, name: str) -> None:
         """
         Report Template
-        Attributes:
+
+        Args:
             name(str): the report name
         """
         self._name = name
@@ -58,6 +59,7 @@ class Report:
     def has_content_table(self, indicator: bool):
         """
         Enable/disable content table
+
         Args:
             indicator (bool): set content table indicator to true/false
         """
@@ -66,6 +68,7 @@ class Report:
     def generate(self, writer: Writer) -> None:
         """
         Generate report
+
         Args:
             writer (Writer): report writer
         """
