@@ -6,7 +6,7 @@
 """ Sample Code to generate report """
 
 import sys
-sys.path.append('../')
+sys.path.append('../../')
 import json
 
 from xai.formatter import Report, PdfWriter
