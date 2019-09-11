@@ -13,4 +13,4 @@ sap_explainable_ai.egg-info/
 
 **/.ipynb*
 **/*.pdf
-**/*.pkl
+xai/formatter/portable_document/fonts/*.pkl
