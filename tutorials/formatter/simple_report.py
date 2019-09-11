@@ -5,6 +5,7 @@
 # ============================================================================
 """ Sample Code to generate report """
 
+import os
 import sys
 sys.path.append('../../')
 import json
@@ -201,6 +202,9 @@ def main():
 
     ### Lastly generate report with the writer instance
     report.generate(writer=PdfWriter(name='formatter-sample-report'))
+    dir_path = os.getcwd()
+    print("")
+    print("report generated : %s/formatter-sample-report" % dir_path)
 
 if __name__ == "__main__":
     main()
