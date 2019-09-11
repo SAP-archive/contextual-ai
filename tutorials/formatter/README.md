@@ -3,7 +3,7 @@
 The following notebooks demonstrate different functionality of XAI formatter:
 
 #### PDF Report
-* [PDF Report Generation.ipynb](PDF Report Generation.ipynb):
+* [PDF_Report_Generation.ipynb](portable_document/PDF_Report_Generation.ipynb):
     * demos for `xai.formatter` package, it shows how you can format your own 
     PDF report based on the information generated from the other packages. 
     * The report is persist to current directory (default)

@@ -7,7 +7,7 @@
 
 import os
 import sys
-sys.path.append('../../')
+sys.path.append('../../../')
 import json
 
 from xai.formatter import Report, PdfWriter
@@ -204,7 +204,7 @@ def main():
     report.generate(writer=PdfWriter(name='formatter-sample-report'))
     dir_path = os.getcwd()
     print("")
-    print("report generated : %s/formatter-sample-report" % dir_path)
+    print("report generated : %s/formatter-sample-report.pdf" % dir_path)
 
 if __name__ == "__main__":
     main()
