@@ -8,16 +8,7 @@
 
 .. toctree::
    :maxdepth: 2
-   :hidden:
-   :caption: Contents:
+   :caption: Features:
 
-   data_pillar
-   inference_pillar
-
-
-.. Do not show indexes
-.. Indices and tables
-.. ==================
-.. * :ref:`genindex`
-.. * :ref:`modindex`
-
+   pre-training
+   inference
