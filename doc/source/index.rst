@@ -8,8 +8,9 @@
 
 .. toctree::
    :maxdepth: 2
-   :caption: Features:
+   :caption: Contents
 
    pre-training
    inference
    report
+

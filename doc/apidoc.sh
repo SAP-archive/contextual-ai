@@ -8,3 +8,7 @@ sphinx-apidoc ../xai/formatter -o source/formatter/ -f -e -M -d 2
 
 make clean
 make html
+
+./copy_images.sh
+
+
