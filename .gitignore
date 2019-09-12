@@ -12,5 +12,9 @@ build/
 dist/
 sap_explainable_ai.egg-info/
 
+**/.ipynb*
+**/*.pdf
+xai/formatter/portable_document/fonts/*.pkl
+
 doc/source/*.rst
 doc/build
