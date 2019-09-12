@@ -12,3 +12,4 @@
 
    pre-training
    inference
+   report
