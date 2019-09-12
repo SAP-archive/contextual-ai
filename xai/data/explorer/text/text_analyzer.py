@@ -1,13 +1,15 @@
-import math
 import operator
-import re
 from collections import Counter
 from collections import defaultdict
-from typing import Callable, Optional, Dict, List, Set
 
+import math
+import re
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from typing import Callable, Optional, Dict, List, Set
 
+from xai.data.constants import TermFrequencyType
+from xai.data.exceptions import InvalidType
 from xai.data.explorer.abstract_analyzer import AbstractDataAnalyzer
 from xai.data.explorer.text.text_stats import TextStats
 
@@ -22,7 +24,8 @@ class TextDataAnalyzer(AbstractDataAnalyzer):
                  predefined_pattern: Optional[Dict[str, str]] = {},
                  tokenizer: Optional[Callable[[str], List[str]]] = word_tokenize,
                  stop_words: Optional[Set] = None,
-                 stop_words_by_languages: Optional[List[str]] = None):
+                 stop_words_by_languages: Optional[List[str]] = None,
+                 tf_type: Optional[int] = TermFrequencyType.TF_ABSOLUTE):
         """
         Initialize TextDataAnalyzer
 
@@ -34,6 +37,13 @@ class TextDataAnalyzer(AbstractDataAnalyzer):
             stop_words: the set of stop words that will be ignored in the final stats
             stop_words_by_languages: a list of language code (from nltk.corpus) to determine the stop words set by languages.
                                      Supported by `nltk.corpus.stopwords`. If `stop_words` is not None, it will be ignored.
+            tf_type: how the term frequency is calculated, default is
+                    - TF_ABSOLUTE: the occurrence of t in document d, i.e. f(t,d)
+                    - TF_BOOLEAN: 1 if term appeared in the document, otherwise 0
+                    - TF_NORMALIZE_BY_MAX: f(t,d) normalized by the maximum term frequency
+                    - TF_NORMALIZE_BY_DOC: f(t,d) normalized by the total number of terms in the document
+                    - TF_LOGARITHM: log (1+ f(t,d))
+                    - TF_AUGMENTED: 0.5 + 0.5 * (f(t,d) / max(f(t',d)) for t' in d)
         """
         super(TextDataAnalyzer, self).__init__()
 
@@ -46,12 +56,13 @@ class TextDataAnalyzer(AbstractDataAnalyzer):
             tokens = tokenizer(text)
             return tokens, pattern_count, text
 
-        self.processor = processing
+        self.preprocessor = processing
 
         if stop_words is None:
             stop_words = set()
-            for lang in stop_words_by_languages:
-                stop_words.update(stopwords.words(lang))
+            if stop_words_by_languages is not None:
+                for lang in stop_words_by_languages:
+                    stop_words.update(stopwords.words(lang))
         self.stop_words = frozenset(stop_words)
 
         self._total_count = 0
@@ -59,9 +70,15 @@ class TextDataAnalyzer(AbstractDataAnalyzer):
         self._pattern_document_counter = defaultdict(int)
         self._word_counter = defaultdict(int)
         self._character_counter = defaultdict(int)
+        self._absolute_term_frequency = Counter()
         self._term_frequency = Counter()
         self._document_frequency = Counter()
         self.stats = None
+        if tf_type not in [TermFrequencyType.TF_ABSOLUTE, TermFrequencyType.TF_BOOLEAN,
+                           TermFrequencyType.TF_NORMALIZED_BY_DOC, TermFrequencyType.TF_NORMALIZED_BY_MAX,
+                           TermFrequencyType.TF_LOGARITHM, TermFrequencyType.TF_AUGMENTED]:
+            raise InvalidType(tf_type, 'tf_type')
+        self.tf_type = tf_type
 
     def feed(self, doc):
         """
@@ -88,22 +105,54 @@ class TextDataAnalyzer(AbstractDataAnalyzer):
         for word in self.stop_words:
             del word_counter[word]
 
+        if self.tf_type == TermFrequencyType.TF_ABSOLUTE:
+            tf = word_counter
+        elif self.tf_type == TermFrequencyType.TF_BOOLEAN:
+            tf = Counter(word_counter.keys())
+        elif self.tf_type == TermFrequencyType.TF_NORMALIZED_BY_MAX:
+            max_tf = max(word_counter.values())
+            tf = {w: f / max_tf for w, f in word_counter.items()}
+        elif self.tf_type == TermFrequencyType.TF_NORMALIZED_BY_DOC:
+            num_tokens = len(tokens)
+            tf = {w: f / num_tokens for w, f in word_counter.items()}
+        elif self.tf_type == TermFrequencyType.TF_LOGARITHM:
+            tf = {w: math.log(1 + f) for w, f in word_counter.items()}
+        elif self.tf_type == TermFrequencyType.TF_AUGMENTEDA:
+            max_tf = max(word_counter.values())
+            tf = {w: (0.5 + 0.5 * (f / max_tf)) for w, f in word_counter.items()}
+
         # update tf and df
-        self._term_frequency.update(word_counter)
+        self._term_frequency.update(tf)
+        self._absolute_term_frequency.update(word_counter)
         self._document_frequency.update(word_counter.keys())
         self._total_count += 1
 
-    def get_statistics(self) -> TextStats:
+    def get_statistics(self, global_doc_frequency: Optional[Dict[str, int]] = None) -> TextStats:
         """
         Map stats information into a json object
+
+        Args:
+            global_doc_frequency: a dictionary maps term to the count of documents globally that contain the term.
+                    Default is None, the tfidf will be calculated with the accumulated document frequency.
 
         Returns:
             A json that represents frequency count and total count
         """
         tfidf = dict()
-        for word in self._term_frequency.keys():
-            self.tfidf[word] = self._term_frequency[word] * math.log(
-                self._total_count / self._document_frequency[word])
+        if global_doc_frequency is None:
+            for word in self._term_frequency.keys():
+                tfidf[word] = self._term_frequency[word] * math.log(
+                    self._total_count / self._document_frequency[word]) / self._total_count
+        else:
+            for word in global_doc_frequency.keys():
+                if word in self._term_frequency:
+                    tfidf[word] = self._term_frequency[word] * math.log(
+                        self._total_count / global_doc_frequency[word]) / self._total_count
+                else:
+                    tfidf[word] = 0
+            for word in global_doc_frequency.keys():
+                document_frequency = dict()
+                document_frequency[word] = self._document_frequency[word] if word in self._document_frequency else 0
 
         TFIDF = {word: tfidf for word, tfidf in sorted(tfidf.items(), key=operator.itemgetter(1), reverse=True)}
 
@@ -112,7 +161,8 @@ class TextDataAnalyzer(AbstractDataAnalyzer):
             pattern_stats[pattern_name] = (
                 self._pattern_occurrence_counter[pattern_name], self._pattern_document_counter[pattern_name])
         self.stats = TextStats(total_count=self._total_count, pattern_stats=pattern_stats,
-                               word_count=self._word_counter, char_count=self._character_counter,
-                               term_frequency=self._term_frequency, document_frequency=self._document_frequency,
+                               word_count=dict(self._word_counter), char_count=dict(self._character_counter),
+                               term_frequency=dict(self._absolute_term_frequency),
+                               document_frequency=dict(self._document_frequency),
                                tfidf=TFIDF)
         return self.stats

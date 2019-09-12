@@ -59,7 +59,19 @@ class ItemDataTypeNotSupported(Exception):
     """
 
     def __init__(self, data_type, analyzer_type, supported_types):
-        message = "Data type '{}' is not supported for {}. Please input one of the following supported data types:{}".\
+        message = "Data type '{}' is not supported for {}. Please input one of the following supported data types:{}". \
+            format(data_type, analyzer_type, supported_types)
+        Exception.__init__(self, message)
+        self.message = message
+
+
+class InvalidType(Exception):
+    """
+    Raised when an invalid type is provided
+    """
+
+    def __init__(self, data_type, analyzer_type, supported_types):
+        message = "Input '{}' for '{}' is invalid". \
             format(data_type, analyzer_type, supported_types)
         Exception.__init__(self, message)
         self.message = message

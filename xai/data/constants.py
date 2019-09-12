@@ -61,3 +61,16 @@ class STATSKEY:
         PATTERN_NAME = 'pattern_name'
         PATTERN_TF = 'occurrence'
         PATTERN_DF = 'doc_with_pattern'
+
+
+
+class TermFrequencyType:
+    """
+    Constant for term frequency type
+    """
+    TF_ABSOLUTE = 1
+    TF_BOOLEAN = 2
+    TF_NORMALIZED_BY_MAX = 3
+    TF_NORMALIZED_BY_DOC = 4
+    TF_LOGARITHM = 5
+    TF_AUGMENTED = 6

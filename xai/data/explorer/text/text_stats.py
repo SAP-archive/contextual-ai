@@ -18,6 +18,17 @@ class TextStats(AbstractStats):
                  term_frequency: Optional[Dict[str, int]] = None,
                  document_frequency: Optional[Dict[str, int]] = None,
                  tfidf: Optional[Dict[str, int]] = None):
+        """
+
+        Args:
+            total_count: total number of documents
+            pattern_stats: a dict maps pattern to its frequency
+            word_count: a dict maps term count per doc to its frequency
+            char_count: a dict maps character count per doc to its frequency
+            term_frequency: a dict maps the term to the total frequency count in the entire document set
+            document_frequency: a dict maps the term to the number of documents that contains the term
+            tfidf: a dict maps to the term to the average tf-idf
+        """
         self.total_count = total_count
         self.pattern_stats = pattern_stats
         self.word_count = word_count
@@ -135,8 +146,8 @@ class TextStats(AbstractStats):
         for key, count in value.items():
             if type(key) != str:
                 raise InvalidTypeError('tfidf: key', type(key), '<str>')
-            if type(count) != int:
-                raise InvalidTypeError('tfidf: count', type(count), '<int>')
+            if type(count) not in [float,int]:
+                raise InvalidTypeError('tfidf: score', type(count), '<float> or <int>')
         self._tfidf = value
 
     def to_json(self) -> Dict:
