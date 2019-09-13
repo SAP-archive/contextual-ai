@@ -63,9 +63,9 @@ class TextStats(AbstractStats):
                 raise InvalidTypeError('pattern_stats: count', type(count), '<tuple>')
             if len(count) != 2:
                 raise InvalidSizeError('pattern_stats: count', len(count), 2)
-            if type(count[0]) == int:
+            if type(count[0]) != int:
                 raise InvalidTypeError('pattern_stats: count: term_count', type(count[0]), '<int>')
-            if type(count[1]) == int:
+            if type(count[1]) != int:
                 raise InvalidTypeError('pattern_stats: count: document_count', type(count[1]), '<int>')
 
         self._pattern_stats = value

@@ -68,8 +68,8 @@ class LabelledTextDataAnalyzer(AbstractLabelledDataAnalyzer):
         _all_stats = self._all_analyzer.get_statistics()
 
         df = dict(_all_stats.document_frequency)
-
+        total_doc_count = _all_stats.total_count
         for label, analyzer in self._label_analyzer.items():
-            _stats[label] = analyzer.get_statistics(global_doc_frequency=df)
+            _stats[label] = analyzer.get_statistics(global_doc_frequency=df,total_doc_count=total_doc_count)
 
         return _stats, _all_stats

@@ -65,18 +65,6 @@ class ItemDataTypeNotSupported(Exception):
         self.message = message
 
 
-class InvalidType(Exception):
-    """
-    Raised when an invalid type is provided
-    """
-
-    def __init__(self, data_type, analyzer_type, supported_types):
-        message = "Input '{}' for '{}' is invalid". \
-            format(data_type, analyzer_type, supported_types)
-        Exception.__init__(self, message)
-        self.message = message
-
-
 class NoItemsError(Exception):
     """
     Raised when no items are passed in the stats
@@ -106,5 +94,16 @@ class InvalidSizeError(Exception):
 
     def __init__(self, att_name, obj_size, supported_sizes):
         message = "The '{}' has invalid size: {}, should be '{}'.".format(att_name, obj_size, supported_sizes)
+        Exception.__init__(self, message)
+        self.message = message
+
+
+class UndefinedRequiredParams(Exception):
+    """
+    Raised when a required params is not defined
+    """
+
+    def __init__(self, att_name):
+        message = "The '{}' is required but not defined.".format(att_name)
         Exception.__init__(self, message)
         self.message = message
