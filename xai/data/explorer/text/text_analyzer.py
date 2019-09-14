@@ -72,7 +72,6 @@ class TextDataAnalyzer(AbstractDataAnalyzer):
         self._absolute_term_frequency = Counter()
         self._term_frequency = Counter()
         self._document_frequency = Counter()
-        self.stats = None
         if tf_type not in [TermFrequencyType.TF_ABSOLUTE, TermFrequencyType.TF_BOOLEAN,
                            TermFrequencyType.TF_NORMALIZED_BY_DOC, TermFrequencyType.TF_NORMALIZED_BY_MAX,
                            TermFrequencyType.TF_LOGARITHM, TermFrequencyType.TF_AUGMENTED]:
@@ -161,9 +160,9 @@ class TextDataAnalyzer(AbstractDataAnalyzer):
         for pattern_name in self._pattern_occurrence_counter.keys():
             pattern_stats[pattern_name] = (
                 self._pattern_occurrence_counter[pattern_name], self._pattern_document_counter[pattern_name])
-        self.stats = TextStats(total_count=self._total_count, pattern_stats=pattern_stats,
+        stats = TextStats(total_count=self._total_count, pattern_stats=pattern_stats,
                                word_count=dict(self._word_counter), char_count=dict(self._character_counter),
                                term_frequency=dict(self._absolute_term_frequency),
                                document_frequency=dict(self._document_frequency),
                                tfidf=tfidf)
-        return self.stats
+        return stats

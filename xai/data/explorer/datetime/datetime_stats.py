@@ -8,8 +8,10 @@ from xai.data.abstract_stats import AbstractStats
 class DatetimeStats(AbstractStats):
 
     def __init__(self, frequency_count, resolution_list):
-        self.resolution_list = resolution_list
-        self.frequency_count = frequency_count
+        self._resolution_list = resolution_list
+        self._frequency_count = frequency_count
+        self._cur_resolution_level = 0
+
 
     @property
     def frequency_count(self):
@@ -29,7 +31,7 @@ class DatetimeStats(AbstractStats):
                 if type(key) not in [str, int]:
                     self._total_count = 0
                     raise InvalidTypeError('frequency_count:key', type(key), '<str> or <int>')
-                if type(value) != [dict or int]:
+                if type(value) not in [dict, int]:
                     self._total_count = 0
                     raise InvalidTypeError('frequency_count:value', type(value), '<int> or <dict>')
 
@@ -43,8 +45,8 @@ class DatetimeStats(AbstractStats):
             return max(height_list) + 1
 
         max_level = __check_dict(frequency)
-        if len(self.resolution_list) != max_level:
-            raise InconsistentSize('frequency_count depth', 'resolution_list', max_level, len(self.resolution_list))
+        if len(self._resolution_list) != max_level:
+            raise InconsistentSize('frequency_count depth', 'resolution_list', max_level, len(self._resolution_list))
         self._frequency_count = frequency
 
     @property
@@ -56,8 +58,8 @@ class DatetimeStats(AbstractStats):
         if type(resolution_list) != list:
             raise InvalidTypeError('resolution_list', type(resolution_list), '<list>')
         for value in resolution_list:
-            if type(value) != str:
-                raise InvalidTypeError('resolution_list: item', type(value), '<str>')
+            if type(value) != int:
+                raise InvalidTypeError('resolution_list: item', type(value), '<int>')
 
     def to_json(self) -> Dict:
         """

@@ -5,7 +5,7 @@ from xai.data.explorer.abstract_labelled_analyzer import AbstractLabelledDataAna
 from xai.data.explorer.categorical.categorical_analyzer import CategoricalDataAnalyzer
 
 
-class LabelledCategoricalDataAnalyzer(AbstractLabelledDataAnalyzer):
+class LabelledDataAnalyzer(AbstractLabelledDataAnalyzer):
     def __init__(self):
         super().__init__(data_analyzer_cls=CategoricalDataAnalyzer)
 
@@ -19,7 +19,6 @@ class LabelledCategoricalDataAnalyzer(AbstractLabelledDataAnalyzer):
         _stats = dict()
         _all_stats = self._all_analyzer.get_statistics()
         _all_stats_keys = list(_all_stats.frequency_count.keys())
-        print(_all_stats_keys)
         for label, analyzer in self._label_analyzer.items():
             class_frequency = analyzer.get_statistics().frequency_count
             _stats[label] = dict()

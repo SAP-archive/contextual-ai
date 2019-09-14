@@ -66,7 +66,7 @@ class STATSKEY:
 
 class TermFrequencyType:
     """
-    Constant for term frequency type
+    Constants for term frequency type
     """
     TF_ABSOLUTE = 1
     TF_BOOLEAN = 2
@@ -74,3 +74,16 @@ class TermFrequencyType:
     TF_NORMALIZED_BY_DOC = 4
     TF_LOGARITHM = 5
     TF_AUGMENTED = 6
+
+
+class DatetimeResolution:
+    """
+    Constants for datetime resolution
+    """
+    YEAR = 0
+    MONTH = 1
+    DAY = 2
+    WEEKDAY = 3
+    HOUR = 4
+    MINUTE = 5
+    SECOND = 6

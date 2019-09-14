@@ -15,7 +15,6 @@ class CategoricalDataAnalyzer(AbstractDataAnalyzer):
     def __init__(self):
         super(CategoricalDataAnalyzer, self).__init__()
         self._frequency_count = defaultdict(int)
-        self.stats = None
 
     def feed(self, value: int or str):
         """
@@ -36,5 +35,5 @@ class CategoricalDataAnalyzer(AbstractDataAnalyzer):
         Returns:
             A CategoricalStats object that keeps track of frequency count
         """
-        self.stats = CategoricalStats(frequency_count=self._frequency_count)
-        return self.stats
+        stats = CategoricalStats(frequency_count=self._frequency_count)
+        return stats

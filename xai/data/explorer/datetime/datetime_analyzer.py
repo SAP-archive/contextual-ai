@@ -7,39 +7,30 @@ from xai.data.exceptions import ItemDataTypeNotSupported, InconsistentSize
 from xai.data.explorer.abstract_analyzer import AbstractDataAnalyzer
 from xai.data.explorer.datetime.datetime_stats import DatetimeStats
 
+from xai.data.constants import DatetimeResolution
+
 
 class DatetimeDataAnalyzer(AbstractDataAnalyzer):
     """
     This analyzer class analyzes datetime data and generates key stats for values fed into it
     """
 
-    SUPPORTED_TYPES = [str]
-    YEAR = 0
-    MONTH = 1
-    DAY = 2
-    WEEKDAY = 3
-    HOUR = 4
-    MINUTE = 5
-    SECOND = 6
+    SUPPORTED_TYPES = [str, int]
 
     DICT_MAP_NUMBER_TO_RESOLUTION = {
-        YEAR: 'year',
-        MONTH: 'month',
-        DAY: 'day',
-        WEEKDAY: 'weekday',
-        HOUR: 'hour',
-        MINUTE: 'minute',
-        SECOND: 'second'
+        DatetimeResolution.YEAR: 'year',
+        DatetimeResolution.MONTH: 'month',
+        DatetimeResolution.DAY: 'day',
+        DatetimeResolution.WEEKDAY: 'weekday',
+        DatetimeResolution.HOUR: 'hour',
+        DatetimeResolution.MINUTE: 'minute',
+        DatetimeResolution.SECOND: 'second'
     }
 
     def __init__(self):
         super(DatetimeDataAnalyzer, self).__init__()
-        self._time_df = DataFrame(
-            columns=[DatetimeDataAnalyzer.YEAR, DatetimeDataAnalyzer.MONTH, DatetimeDataAnalyzer.DAY,
-                     DatetimeDataAnalyzer.WEEKDAY, DatetimeDataAnalyzer.HOUR, DatetimeDataAnalyzer.MINUTE,
-                     DatetimeDataAnalyzer.SECOND])
+        self._time_records = []
         self._frequency = dict()
-        self.stats = DatetimeStats()
 
     def feed(self, value: str):
         """
@@ -54,13 +45,13 @@ class DatetimeDataAnalyzer(AbstractDataAnalyzer):
             try:
                 dt = dateutil.parser.parse(str(date))
                 dt_obj = dict()
-                dt_obj[DatetimeDataAnalyzer.YEAR] = dt.year
-                dt_obj[DatetimeDataAnalyzer.MONTH] = dt.month
-                dt_obj[DatetimeDataAnalyzer.DAY] = dt.day
-                dt_obj[DatetimeDataAnalyzer.HOUR] = dt.hour
-                dt_obj[DatetimeDataAnalyzer.MINUTE] = dt.minute
-                dt_obj[DatetimeDataAnalyzer.SECOND] = dt.second
-                dt_obj[DatetimeDataAnalyzer.WEEKDAY] = dt.weekday
+                dt_obj[DatetimeResolution.YEAR] = dt.year
+                dt_obj[DatetimeResolution.MONTH] = dt.month
+                dt_obj[DatetimeResolution.DAY] = dt.day
+                dt_obj[DatetimeResolution.HOUR] = dt.hour
+                dt_obj[DatetimeResolution.MINUTE] = dt.minute
+                dt_obj[DatetimeResolution.SECOND] = dt.second
+                dt_obj[DatetimeResolution.WEEKDAY] = dt.weekday()
                 return dt_obj
             except ValueError:
                 self.invalid_count += 1
@@ -70,13 +61,23 @@ class DatetimeDataAnalyzer(AbstractDataAnalyzer):
             raise ItemDataTypeNotSupported(type(value), type(self), DatetimeDataAnalyzer.SUPPORTED_TYPES)
         date_obj = __parse_date(value)
         if date_obj is not None:
-            self._time_df.append(DataFrame().from_records(date_obj))
+            self._time_records.append(date_obj)
 
     def get_statistics(self, resolution_list: Optional[List[str]] = None) -> DatetimeStats:
+        """
+
+        Args:
+            resolution_list:
+
+        Returns:
+
+        """
         if resolution_list is None:
-            resolution_list = [DatetimeDataAnalyzer.YEAR, DatetimeDataAnalyzer.MONTH]
+            resolution_list = [DatetimeResolution.YEAR, DatetimeResolution.MONTH]
         resolution_list = sorted(resolution_list)
-        group_count_dict = self._time_df.groupby(by=resolution_list).groups
+        _time_df = DataFrame.from_records(self._time_records)
+
+        group_count_dict = _time_df.groupby(by=resolution_list).groups
 
         frequency_count = dict()
         group_dict = frequency_count
@@ -89,7 +90,25 @@ class DatetimeDataAnalyzer(AbstractDataAnalyzer):
                     group_dict[group] = dict()
                 group_dict = group_dict[group]
             group_dict[groups[-1]] = len(index)
+            group_dict = frequency_count
 
-        self.stats = DatetimeStats(frequency_count=frequency_count,
-                                   resolution_list=resolution_list)
-        return self.stats
+        stats = DatetimeStats(frequency_count=frequency_count,
+                              resolution_list=resolution_list)
+        return stats
+
+
+if __name__ == '__main__':
+    import pandas as pd
+
+    filename = '/Users/i309943/workspace/Explainable_AI/tutorial/data_explorer/sample_data/date.csv'
+    data = pd.read_csv(filename)
+    from xai.data.explorer.datetime.labelled_datetime_analyzer import LabelledDatetimeDataAnalyzer
+
+    datetimes = [int(x) for x in data['POSTINGDATE']]
+    labels = [int(x) for x in data['COMPANYCODE']]
+
+    labelled_analyzer = LabelledDatetimeDataAnalyzer()
+    labelled_analyzer.feed_all(datetimes, labels)
+    labelled_stats, all_stats = labelled_analyzer.get_statistics(resolution_list=[DatetimeResolution.YEAR,
+                                                                               DatetimeResolution.WEEKDAY])
+    print(labelled_stats[800].__dict__)

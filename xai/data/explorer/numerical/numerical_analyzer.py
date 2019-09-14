@@ -18,7 +18,6 @@ class NumericDataAnalyzer(AbstractDataAnalyzer):
     def __init__(self):
         super(NumericDataAnalyzer, self).__init__()
         self._values = []
-        self.stats = None
 
     def feed(self, value: int or str):
         """
@@ -80,7 +79,7 @@ class NumericDataAnalyzer(AbstractDataAnalyzer):
         log_pdf = kde_skl.score_samples(x_grid[:, np.newaxis])
         kde = list(zip(list(x_grid), list(np.exp(log_pdf))))
 
-        self.stats = NumericalStats(total_count=total_count,
+        stats = NumericalStats(total_count=total_count,
                                     min=min,
                                     max=max,
                                     mean=mean,
@@ -88,4 +87,4 @@ class NumericDataAnalyzer(AbstractDataAnalyzer):
                                     sd=sd,
                                     histogram=histogram,
                                     kde=kde)
-        return self.stats
+        return stats
