@@ -75,7 +75,7 @@ class HtmlWriter(Writer):
             shutil.rmtree(self.figure_path)
 
     def build(self, title: str, cover: CoverSection,
-              detail: DetailSection, content_table=False):
+              detail: DetailSection, *, content_table=False):
         """
         Build Report
 
@@ -127,7 +127,7 @@ class HtmlWriter(Writer):
         """
         self.html.article.append(Div())
 
-    def draw_header(self, text: str, level: int, link=None):
+    def draw_header(self, text: str, level: int, *, link=None):
         """
         Draw Header
 
@@ -146,7 +146,7 @@ class HtmlWriter(Writer):
             self.html.article[-1].items.append(
                 self.html.add_header(text=text, heading='h4', link=link))
 
-    def draw_title(self, text: str, level: int, link=None):
+    def draw_title(self, text: str, level: int, *, link=None):
         """
         Draw Title
 
@@ -175,7 +175,7 @@ class HtmlWriter(Writer):
     ###  Summary Section
     ################################################################################
 
-    def draw_training_time(self, notes: str, timing: List[Tuple[str, int]]):
+    def draw_training_time(self, notes: str, *, timing: List[Tuple[str, int]]):
         """
         Draw information of timing to the report
 
@@ -190,10 +190,10 @@ class HtmlWriter(Writer):
         # self.html.article[-1].items.append(
         #     self.html.create_unordered_kay_value_pair_list(items=timing))
         self.html.article[-1].items.append(
-            self.html.create_overview_table(data=timing))
+            self.html.add_overview_table(data=timing))
 
 
-    def draw_data_set_summary(self, notes: str,
+    def draw_data_set_summary(self, notes: str, *,
                               data_summary: List[Tuple[str, int]]):
         """
         Draw information of dataset summary to the report
@@ -209,9 +209,9 @@ class HtmlWriter(Writer):
         # self.html.article[-1].items.append(
         #     self.html.create_unordered_kay_value_pair_list(items=data_summary))
         self.html.article[-1].items.append(
-            self.html.create_overview_table(data=data_summary))
+            self.html.add_overview_table(data=data_summary))
 
-    def draw_evaluation_result_summary(self, notes: str,
+    def draw_evaluation_result_summary(self, notes: str, *,
                                        evaluation_result: dict):
         """
         Draw information of training performance to the result
@@ -277,15 +277,15 @@ class HtmlWriter(Writer):
         self.html.article[-1].items.append(
             self.html.add_overview_table_with_dict(data=items))
 
-    def draw_model_info_summary(self, notes: str, model_info: list):
+    def draw_model_info_summary(self, notes: str, *, model_info: list):
         """
         Draw information of model info to the result
 
         Args:
+            notes (str, Optional): explain the block
             model_info (:obj:`list` of :obj:
               `tuple`, Optional): list of tuple (model info attribute, model info value).
                Default information include `use case name`, `version`, `use case team`.
-            notes (str, Optional): explain the block
         """
         # -- Draw Content --
         self.html.article[-1].items.append(self.html.add_header(text=notes,
@@ -293,14 +293,14 @@ class HtmlWriter(Writer):
         # self.html.article[-1].items.append(
         #     self.html.create_unordered_kay_value_pair_list(items=model_info))
         self.html.article[-1].items.append(
-            self.html.create_overview_table(data=model_info))
+            self.html.add_overview_table(data=model_info))
 
 
     ################################################################################
     ###  Data Section
     ################################################################################
 
-    def draw_data_missing_value(self, notes: str, missing_count: dict,
+    def draw_data_missing_value(self, notes: str, *, missing_count: dict,
                                 total_count: dict, ratio=False):
         """
         Draw Missing Data Value Summary Table
@@ -380,7 +380,7 @@ class HtmlWriter(Writer):
             self.html.article[-1].items.append(
                 self.html.add_table(header=header, data=data))
 
-    def draw_data_set_distribution(self, notes: str,
+    def draw_data_set_distribution(self, notes: str, *,
                                    data_set_distribution: Tuple[str, dict],
                                    max_class_shown=20):
         """
@@ -433,7 +433,7 @@ class HtmlWriter(Writer):
             self.html.article[-1].items.append(
                 self.html.add_image(src=image_path, alt=title))
 
-    def draw_data_attributes(self, notes: str, data_attribute: Dict):
+    def draw_data_attributes(self, notes: str, *, data_attribute: Dict):
         """
         Draw information of data attribute for data fields to the report
 
@@ -471,7 +471,7 @@ class HtmlWriter(Writer):
         self.html.article[-1].items.append(
             self.html.add_table(header=header, data=data))
 
-    def draw_categorical_field_distribution(self, notes: str,
+    def draw_categorical_field_distribution(self, notes: str, *,
                                             field_name: str,
                                             field_distribution: dict,
                                             max_values_display=20,
@@ -529,7 +529,7 @@ class HtmlWriter(Writer):
             self.html.article[-1].items.append(
                 self.html.add_image(src=image_path, alt=title))
 
-    def draw_numeric_field_distribution(self, notes: str,
+    def draw_numeric_field_distribution(self, notes: str, *,
                                         field_name: str,
                                         field_distribution: dict,
                                         force_no_log=False,
@@ -560,9 +560,40 @@ class HtmlWriter(Writer):
                              key "x_limit" and value of [x_min, x_max].
              colors (list): the list of color code for rendering different class
         """
-        pass
+        from xai.graphs import graph_generator
+        if colors is None:
+            colors = ["#3498db", "#2ecc71", "#e74c3c"]
+        # -- Draw Content --
+        self.html.article[-1].items.append(
+            self.html.add_paragraph(text=notes))
+        for idx, (label_name, data_distribution) in enumerate(
+                field_distribution.items()):
+            title = 'Distribution for %s' % label_name
+            self.html.article[-1].items.append(
+                self.html.add_header(text=title, heading='h5'))
+            figure_path = '%s/%s_%s_field_distribution.png' % (
+                self.figure_path, field_name, label_name)
+            figure_path = graph_generator.KdeDistribution(
+                figure_path=figure_path,
+                data=data_distribution,
+                title=title,
+                x_label=field_name,
+                y_label="").draw(
+                color=colors[idx % len(colors)],
+                force_no_log=force_no_log,
+                x_limit=x_limit)
+            table_header = ['Statistical Field', 'Value']
+            table_values = []
+            for key, value in data_distribution.items():
+                if key in ['kde', 'histogram', 'x_limit']:
+                    continue
+                table_values.append([key, "%d" % int(value)])
 
-    def draw_text_field_distribution(self, notes: str,
+            self.html.article[-1].items.append(self.html.add_table_image_group(
+                header=table_header, data=table_values,
+                src=figure_path, alt=title))
+
+    def draw_text_field_distribution(self, notes: str, *,
                                      field_name: str,
                                      field_distribution: dict):
         """
@@ -581,9 +612,32 @@ class HtmlWriter(Writer):
                         - key: PATTERN
                         - value: percentage
         """
-        pass
+        from xai.graphs import graph_generator
+        # -- Draw Content --
+        self.html.article[-1].items.append(
+            self.html.add_paragraph(text=notes))
+        for idx, (label_name, data_distribution) in enumerate(
+                field_distribution.items()):
+            title = 'Distribution for %s' % label_name
+            self.html.article[-1].items.append(
+                self.html.add_header(text=title, heading='h5'))
+            figure_path = '%s/%s_%s_field_distribution.png' % (
+                self.figure_path, field_name, label_name)
+            figure_path = graph_generator.WordCloudGraph(
+                figure_path=figure_path,
+                data=data_distribution['tfidf'],
+                title=title).draw()
+            table_header = ['Placeholder', 'Percentage(%)']
+            table_values = []
+            for w, v in data_distribution['placeholder'].items():
+                table_values.append([w, '%.2f%%' % (v * 100)])
 
-    def draw_datetime_field_distribution(self, notes: str,
+            self.html.article[-1].items.append(self.html.add_table_image_group(
+                header=table_header, data=table_values,
+                src=figure_path, alt=title))
+
+
+    def draw_datetime_field_distribution(self, notes: str, *,
                                          field_name: str,
                                          field_distribution: dict):
         """
@@ -601,13 +655,33 @@ class HtmlWriter(Writer):
                         - 2nd level key: month_X(int)
                         - 2nd level value: count of sample in month_X of year_X
         """
-        pass
+        from xai.graphs import graph_generator
+        # -- Draw Content --
+        self.html.article[-1].items.append(
+            self.html.add_paragraph(text=notes))
+        for idx, (label_name, data_distribution) in enumerate(
+                field_distribution.items()):
+            title = 'Datetime distribution for %s (for %s samples) ' % (
+                                                             field_name,
+                                                             label_name)
+            self.html.article[-1].items.append(
+                self.html.add_header(text=title, heading='h5'))
+            figure_path = '%s/%s_%s_field_distribution.png' % (
+                self.figure_path, field_name, label_name)
+            figure_path = graph_generator.DatePlot(figure_path=figure_path,
+                                                   data=data_distribution,
+                                                   title=title,
+                                                   x_label="",
+                                                   y_label="").draw()
+            self.html.article[-1].items.append(
+                self.html.add_image(src=figure_path, alt=title))
+
 
     ################################################################################
     ###  Feature Section
     ################################################################################
 
-    def draw_feature_importance(self, notes: str,
+    def draw_feature_importance(self, notes: str, *,
                                 importance_ranking: List[List],
                                 importance_threshold: float,
                                 maximum_number_feature=20):
@@ -622,13 +696,48 @@ class HtmlWriter(Writer):
                                         name and score in tables
             maximum_number_feature(int): maximum number of features shown in bar-chart diagram
         """
-        pass
+        from xai.graphs import graph_generator
+
+        feature_ranking = [(score, name) for name, score in importance_ranking]
+        # -- Draw Content --
+        if not (notes is None):
+            modified_notes = notes
+        elif maximum_number_feature < len(feature_ranking):
+            modified_notes = (
+                "The figure below shows the top %s important features for the trained model."
+                % maximum_number_feature)
+        else:
+            modified_notes = "The figure below shows importance ranking for all features from the trained model."
+        self.html.article[-1].items.append(
+            self.html.add_paragraph(text=modified_notes))
+
+        image_path = '%s/feature_importance.png' % self.figure_path
+        image_path = graph_generator.FeatureImportance(figure_path=image_path,
+                                                       data=feature_ranking,
+                                                       title='feature_importance').draw(
+            limit_length=maximum_number_feature)
+
+        self.html.article[-1].items.append(
+            self.html.add_image(src=image_path, alt='feature_importance'))
+
+        self.html.article[-1].items.append(self.html.add_paragraph(
+            text="The features which have an importance score larger "
+                 "than %s are listed in the below table." % importance_threshold))
+
+        header = ['Feature', 'Importance']
+        data = []
+        for feature_name, importance in feature_ranking:
+            if float(importance) < importance_threshold:
+                break
+            data.append([feature_name, importance])
+        self.html.article[-1].items.append(
+            self.html.add_table(header=header, data=data))
 
     ################################################################################
     ###  Training Section
     ################################################################################
 
-    def draw_hyperparameter_tuning(self, notes: str,
+    def draw_hyperparameter_tuning(self, notes: str, *,
                                    history: dict, best_idx: str,
                                    search_space=None, benchmark_metric=None,
                                    benchmark_threshold=None,
@@ -653,9 +762,105 @@ class HtmlWriter(Writer):
             benchmark_threshold(:float, Optional): the benchmarking threshold to accept the training
             non_hyperopt_score(:float, Optional): the training metric without hyperparameter tuning
         """
-        pass
+        from xai.graphs import graph_generator
+        # -- Draw Content --
+        if not (notes is None):
+            self.html.article[-1].items.append(
+                self.html.add_paragraph(text=notes))
+        # tuning search space
+        self.html.article[-1].items.append(self.html.add_paragraph(
+            text='Hyperparameter Tuning Search Space', style='BI'))
+        self.html.article[-1].items.append(
+            self.html.add_table_with_dict(data=search_space))
+        # tuning history result
+        self.html.article[-1].items.append(self.html.add_paragraph(
+            text='Hyperparameter Tuning History Result', style='BI'))
+        self.html.article[-1].items.append(
+            self.html.add_paragraph(
+                text="The metric results from hyperparameter tuning are "
+                     "shown in the figure."))
+        benchmark_dict = dict()
+        benchmark_dict["Benchmark metric"] = benchmark_metric
+        benchmark_dict["Benchmark value"] = benchmark_threshold
+        self.html.article[-1].items.append(
+            self.html.add_table_with_dict(data=benchmark_dict))
+        image_path = "%s/hyperopt_history.png" % self.figure_path
+        image_path = graph_generator.EvaluationLinePlot(figure_path=image_path,
+                                                        data=history,
+                                                        title='hyper_history',
+                                                        x_label='Iterations',
+                                                        y_label='Metrics Score').draw(
+            benchmark_metric=benchmark_metric,
+            benchmark_value=benchmark_threshold)
+        self.html.article[-1].items.append(
+            self.html.add_image(src=image_path, alt='hyper_history'))
 
-    def draw_learning_curve(self, notes: str,
+        # best result for hyperopt
+        self.html.article[-1].items.append(self.html.add_paragraph(
+            text='Best Result from Hyperparameter Tuning', style='BI'))
+        self.html.article[-1].items.append(self.html.add_paragraph(
+            text='The best iteration is %s' % best_idx))
+        self.html.article[-1].items.append(self.html.add_paragraph(
+            text='Parameters:', style='B'))
+        self.html.article[-1].items.append(
+            self.html.add_table_with_dict(data=history[best_idx]['params']))
+
+        # validation result
+        self.html.article[-1].items.append(self.html.add_paragraph(
+            text='Validation Results:', style='B'))
+        final_metric_value = 0
+        validation_result = dict()
+        for param_name, param_value in history[best_idx]['val_scores'].items():
+            if param_name == benchmark_metric:
+                validation_result[param_name.capitalize()] = \
+                    '%s (benchmarking metric)' % param_value
+                final_metric_value = param_value
+            else:
+                validation_result[param_name.capitalize()] = param_value
+        self.html.article[-1].items.append(
+            self.html.add_table_with_dict(data=validation_result))
+
+        # Tuning final conclusion
+        self.html.article[-1].items.append(self.html.add_paragraph(
+            text='Hyperparameter Tuning Final Conclusion', style='BI'))
+        if non_hyperopt_score is None:
+            self.html.article[-1].items.append(self.html.add_paragraph(
+                text='There is no benchmarking conducted in this training. '
+                     'We will accept the best result from hyperparameter '
+                     'tuning as final parameter set.'))
+        else:
+            if final_metric_value > non_hyperopt_score:
+                if final_metric_value > benchmark_threshold:
+                    text = 'and it is better than acceptance benchmark ' \
+                          'scoring (%.4f). We accept it as the final ' \
+                          'parameter setting for the trained model.' % \
+                          benchmark_threshold
+                else:
+                    text = 'but it fails to meet the acceptance benchmark ' \
+                          'scoring (%.4f). ' \
+                          'We still accept it as the final parameter setting for the trained model, ' \
+                          'but will continue to improve it.' % benchmark_threshold
+                self.html.article[-1].items.append(self.html.add_paragraph(
+                    text='Hyperparameter tuning best result (%.4f) is better than benchmark score (%.4f), %s' % (
+                        final_metric_value, non_hyperopt_score, text)))
+            else:
+                if final_metric_value > benchmark_threshold:
+                    text = 'and benchmarking result is better than ' \
+                           'acceptance benchmark scoring (%.4f). We accept ' \
+                           'default parameters the final solution for the trained model.' % benchmark_threshold
+                else:
+                    text = 'but it fails to meet the acceptance benchmark ' \
+                           'scoring (%.4f). We still accept default ' \
+                           'parameters as the final solution ' \
+                           'for the trained model, but will continue to improve it.' % benchmark_threshold
+                self.html.article[-1].items.append(self.html.add_paragraph(
+                    text='Hyperparameter tuning best result (%.4f) is worse '
+                         'than benchmark score (%.4f), %s' % (
+                        final_metric_value, non_hyperopt_score, text)))
+
+
+
+    def draw_learning_curve(self, notes: str, *,
                             history: dict, best_idx: str,
                             benchmark_metric=None, benchmark_threshold=None,
                             training_params=None):
@@ -678,13 +883,63 @@ class HtmlWriter(Writer):
             training_params(:dict): a dict of which key is training parameter name and
                                     value is training parameter value
         """
-        pass
+        from xai.graphs import graph_generator
+        # -- Draw Content --
+        if not (notes is None):
+            self.html.article[-1].items.append(
+                self.html.add_paragraph(text=notes))
+        if training_params is not None:
+            self.html.article[-1].items.append(self.html.add_paragraph(
+                text='Training Parameters', style='BI'))
+            self.html.article[-1].items.append(
+                self.html.add_table_with_dict(data=training_params))
+
+        self.html.article[-1].items.append(self.html.add_paragraph(
+            text='Learning Curve', style='BI'))
+        self.html.article[-1].items.append(self.html.add_paragraph(
+            text='The metric results from several training epochs are shown '
+                 'in the figure.'))
+        benchmark_dict = dict()
+        benchmark_dict["Benchmark metric"] = benchmark_metric
+        benchmark_dict["Benchmark value"] = benchmark_threshold
+        self.html.article[-1].items.append(
+            self.html.add_table_with_dict(data=benchmark_dict))
+
+        image_path = "%s/deep_learning_curve.png" % self.figure_path
+        image_path = graph_generator.EvaluationLinePlot(figure_path=image_path,
+                                                        data=history,
+                                                        title='training_history',
+                                                        x_label='Steps',
+                                                        y_label='Metrics Score').draw(
+            benchmark_metric=benchmark_metric,
+            benchmark_value=benchmark_threshold)
+        self.html.article[-1].items.append(
+            self.html.add_image(src=image_path, alt='hyper_history'))
+
+        self.html.article[-1].items.append(self.html.add_paragraph(
+            text='Best Epoch from Training', style='BI'))
+        self.html.article[-1].items.append(self.html.add_paragraph(
+            text='The best iteration is %s' % str(best_idx)))
+
+        self.html.article[-1].items.append(self.html.add_paragraph(
+            text='Validation Results:', style='BI'))
+        if best_idx not in history:
+            best_idx = str(best_idx)
+        validation_result = dict()
+        for param_name, param_value in history[best_idx]['val_scores'].items():
+            if param_name == benchmark_metric:
+                validation_result[param_name.capitalize()] = \
+                    '%s (benchmarking metric)' % param_value
+            else:
+                validation_result[param_name.capitalize()] = param_value
+        self.html.article[-1].items.append(
+            self.html.add_table_with_dict(data=validation_result))
 
     ################################################################################
     ###  Evaluation Section
     ################################################################################
 
-    def draw_multi_class_evaluation_metric_results(self, notes: str,
+    def draw_multi_class_evaluation_metric_results(self, notes: str, *,
                                                    metric_tuple):
         """
         Add information about metric results for multi-class evaluation
@@ -701,9 +956,26 @@ class HtmlWriter(Writer):
                                             and corresponding values, or
                      (2) have a `average` keyword to show a macro-average metric.
         """
-        pass
+        from xai.evaluation.multi_classification_result import \
+            MultiClassificationResult
+        # -- Draw Content --
+        if not (notes is None):
+            self.html.article[-1].items.append(
+                self.html.add_paragraph(text=notes))
+        name = ''
+        header = list()
+        data = list()
+        for eval_name, eval_metric_dict in metric_tuple:
+            cr = MultiClassificationResult()
+            cr.load_results_from_meta(eval_metric_dict)
+            name, header, data, layout = cr.convert_metrics_to_table()
 
-    def draw_binary_class_evaluation_metric_results(self, notes: str,
+        self.html.article[-1].items.append(
+            self.html.add_paragraph(text=name, style='BI'))
+        self.html.article[-1].items.append(
+            self.html.add_table(header=header, data=data))
+
+    def draw_binary_class_evaluation_metric_results(self, notes: str, *,
                                                     metric_tuple: tuple,
                                                     aggregated=True):
         """
@@ -719,9 +991,44 @@ class HtmlWriter(Writer):
                     - value: metric value
             aggregated(bool): whether to aggregate multiple result tables into one
         """
-        pass
+        from collections import defaultdict
+        from xai.evaluation.binary_classification_result import \
+            BinaryClassificationResult
+        # -- Draw Content --
+        if not (notes is None):
+            self.html.article[-1].items.append(
+                self.html.add_paragraph(text=notes))
 
-    def draw_confusion_matrix_results(self, notes: str,
+        combined_table_dict = defaultdict(list)
+        combined_table_header = ["Split/Round"]
+        name = ''
+        for eval_name, eval_metric_dict in metric_tuple:
+            combined_table_header.append(eval_name)
+            cr = BinaryClassificationResult()
+            cr.load_results_from_meta(eval_metric_dict)
+            name, header, data, table_layout = cr.convert_metrics_to_table()
+            if aggregated:
+                table_data_dict = {row[0]: row[1] for row in data}
+                for metric_name, metric_value in table_data_dict.items():
+                    combined_table_dict[metric_name].append(metric_value)
+            else:
+                self.html.article[-1].items.append(self.html.add_paragraph(
+                    text='For split/round %s' % eval_name, style='B'))
+                self.html.article[-1].items.append(
+                    self.html.add_table(header=header, data=data))
+
+        if aggregated:
+            combined_table_values = []
+            for metric_name, metric_value_list in combined_table_dict.items():
+                combined_table_values.append([metric_name] + metric_value_list)
+
+            self.html.article[-1].items.append(
+                self.html.add_paragraph(text=name, style='BI'))
+            self.html.article[-1].items.append(
+                self.html.add_table(header=combined_table_header,
+                                    data=combined_table_values))
+
+    def draw_confusion_matrix_results(self, notes: str, *,
                                       confusion_matrix_tuple: tuple):
         """
         Add information about confusion matrix to report
@@ -736,9 +1043,31 @@ class HtmlWriter(Writer):
                     - `values`(:list of :list): 2D list for confusion matrix value,
                                             row for predicted, column for true.
         """
-        pass
+        from xai.graphs import graph_generator
+        # -- Draw Content --
+        if not (notes is None):
+            self.html.article[-1].items.append(
+                self.html.add_paragraph(text=notes))
 
-    def draw_multi_class_confidence_distribution(self, notes: str,
+        images = dict()
+        for idx, (eval_name, confusion_matrix_mat) in enumerate(
+                confusion_matrix_tuple):
+            figure_path = '%s/%s_%s_cm.png' % (
+                self.figure_path, idx, eval_name)
+            image_path = graph_generator.HeatMap(figure_path=figure_path,
+                                                 data=confusion_matrix_mat[
+                                                     'values'],
+                                                 title=eval_name,
+                                                 x_label='Predict',
+                                                 y_label='True').draw(
+                x_tick=confusion_matrix_mat['labels'],
+                y_tick=confusion_matrix_mat['labels'],
+                color_bar=True)
+            images[eval_name] = image_path
+        self.html.article[-1].items.append(
+            self.html.add_grid_image(srcs=images))
+
+    def draw_multi_class_confidence_distribution(self, notes: str, *,
                                                  visual_result_tuple: tuple,
                                                  max_num_classes=9):
         """
@@ -757,9 +1086,43 @@ class HtmlWriter(Writer):
             max_num_classes(int, Optional): maximum number of classes
                                     displayed for each graph, default 9
         """
-        pass
+        import operator
+        from xai.graphs import graph_generator
+        # -- Draw Content --
+        if not (notes is None):
+            self.html.article[-1].items.append(
+                self.html.add_paragraph(text=notes))
 
-    def draw_binary_class_confidence_distribution(self, notes: str,
+        top_classes = list()
+        for eval_name, eval_vis_result in visual_result_tuple:
+            predicted_class_count = dict()
+            label = ''
+            for label in eval_vis_result.keys():
+                data = eval_vis_result[label]
+                num_sample = len(data['gt'])
+                predicted_class_count[label] = num_sample
+
+                sorted_class_size = sorted(predicted_class_count.items(),
+                                           key=operator.itemgetter(1))[::-1]
+                top_classes = [a for (a, _) in sorted_class_size]
+
+            images = dict()
+            for class_label in top_classes:
+                data = eval_vis_result[class_label]
+                num_sample = len(data['gt'])
+                if num_sample > 0:
+                    image_path = '%s/%s_%s_conf_dist.png' % (
+                        self.figure_path, label, class_label)
+                    sw_image_path = graph_generator.ResultProbabilityForMultiClass(
+                        image_path, data,
+                        'Predicted as %s' % label).draw()
+                    images[class_label] = sw_image_path
+                if len(images) >= max_num_classes:
+                    break
+            self.html.article[-1].items.append(
+                self.html.add_grid_image(srcs=images))
+
+    def draw_binary_class_confidence_distribution(self, notes: str, *,
                                                   visual_result_tuple: tuple):
         """
         Add information about binary class confidence distribution to report
@@ -774,11 +1137,25 @@ class HtmlWriter(Writer):
                     - `probability` (:list of :list): 2D list (N sample * 2) to
                                     present probability distribution of each sample
         """
-        pass
+        from xai.graphs import graph_generator
+        # -- Draw Content --
+        if not (notes is None):
+            self.html.article[-1].items.append(
+                self.html.add_paragraph(text=notes))
 
-    def draw_binary_class_reliability_diagram(self,
-                                              visual_result_tuple: tuple,
-                                              notes=None):
+        images = dict()
+        for eval_name, eval_vis_result in visual_result_tuple:
+            image_path = "%s/%s_prob_dist.png" % (self.figure_path, eval_name)
+            image_path = graph_generator.ResultProbability(
+                figure_path=image_path,
+                data=eval_vis_result,
+                title='Probability Distribution').draw()
+            images[eval_name] = image_path
+        self.html.article[-1].items.append(
+            self.html.add_grid_image(srcs=images))
+
+    def draw_binary_class_reliability_diagram(self, notes: str, *,
+                                              visual_result_tuple: tuple):
         """
         Add information about reliability to report
 
@@ -792,4 +1169,21 @@ class HtmlWriter(Writer):
                     - `probability` (:list of :list): 2D list (N sample * 2) to
                             present probability distribution of each sample
         """
-        pass
+        from xai.graphs import graph_generator
+        # -- Draw Content --
+        if not (notes is None):
+            self.html.article[-1].items.append(
+                self.html.add_paragraph(text=notes))
+
+        images = dict()
+        for eval_name, eval_vis_result in visual_result_tuple:
+            image_path = "%s/%s_reliability_diagram.png" % (
+                self.figure_path, eval_name)
+            image_path = graph_generator.ReliabilityDiagram(
+                figure_path=image_path,
+                data=eval_vis_result,
+                title='Reliability Diagram').draw()
+            images[eval_name] = image_path
+
+        self.html.article[-1].items.append(
+            self.html.add_grid_image(srcs=images))

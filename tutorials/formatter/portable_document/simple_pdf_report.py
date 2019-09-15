@@ -147,6 +147,29 @@ def main():
                                                        field_distribution=field_distribution)
 
     ### Add Header Level 2
+    report.content.add_header_level_2(text='Hyperparameter Tuning')
+    ### Hyperparameter Tuning
+    with open('./../sample_data/hyperparameter_tuning.json', 'r') as f:
+        hyperparameter_tuning = json.load(f)
+
+    print('search_space:', hyperparameter_tuning['search_space'])
+    print('best_idx:', hyperparameter_tuning['best_idx'])
+    print('history [first 2 samples]:',
+          {k: hyperparameter_tuning['history'][k] for k in
+           list(hyperparameter_tuning['history'].keys())[:2]})
+    print('benchmark_metric:', hyperparameter_tuning['benchmark_metric'])
+    print('benchmark_threshold:', hyperparameter_tuning['benchmark_threshold'])
+    print('non_hyperopt_score:', hyperparameter_tuning['non_hyperopt_score'])
+
+    report.content.add_hyperparameter_tuning(
+        history=hyperparameter_tuning['history'],
+        best_idx=hyperparameter_tuning['best_idx'],
+        search_space=hyperparameter_tuning['search_space'],
+        benchmark_metric=hyperparameter_tuning['benchmark_metric'],
+        benchmark_threshold=hyperparameter_tuning['benchmark_threshold'],
+        non_hyperopt_score=hyperparameter_tuning['non_hyperopt_score'])
+
+    ### Add Header Level 2
     report.content.add_header_level_2(text='Confusion Matrix')
     ### Confusion Matrix
     with open('./../sample_data/binary_evaluation_results.json', 'r') as f:

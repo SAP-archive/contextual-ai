@@ -13,6 +13,9 @@ import datetime
 
 from yattag import Doc, indent
 
+from xai.formatter.writer import PublisherException as Exception
+
+
 ################################################################################
 ### Custom File for HTML
 ################################################################################
@@ -97,7 +100,7 @@ class CustomHtml:
         return doc.getvalue()
 
     @staticmethod
-    def create_overview_table(data: list):
+    def add_overview_table(data: list):
         """
         add overview table
 
@@ -155,6 +158,24 @@ class CustomHtml:
                     for item in range(len(data[0])):
                         with doc.tag('td'):
                             doc.text(row[item])
+        return doc.getvalue()
+
+    @staticmethod
+    def add_table_with_dict(data: dict):
+        """
+        add table
+
+        Args:
+            data (dict): list of key:value pairs to add to table row
+        Returns: HTML String
+        """
+        doc = Doc()
+        with doc.tag('table'):
+            doc.attr(klass='standard_table')
+            for key, items in data.items():
+                with doc.tag('tr'):
+                    doc.asis('<td>%s</td>' % key)
+                    doc.asis('<td><b>%s</b></td>' % str(items))
         return doc.getvalue()
 
     @staticmethod
@@ -250,7 +271,7 @@ class CustomHtml:
         return doc.getvalue()
 
     @staticmethod
-    def add_image(src: str, alt: str, width=None, height=None):
+    def add_image(src: str, alt: str, *, width=None, height=None):
         """
         add an image
 
@@ -273,6 +294,46 @@ class CustomHtml:
                 doc.attr(width=str(width))
             if not (height is None):
                 doc.attr(height=str(height))
+        return doc.getvalue()
+
+    @staticmethod
+    def add_table_image_group(header: list, data: list,
+                              src: str, alt: str, *, width=None, height=None):
+        """
+        add a block of image with table (table on the left, image on the right)
+
+        Args:
+            header (list(str)):  table header
+            data: list(list(string)), 2D nested list with table content
+            src (str): image path
+            alt (str): image attribute
+            width (int): width of image
+            height (int): height of image
+        Returns: HTML String
+        """
+        doc = Doc()
+        with doc.tag('div'):
+            doc.asis(CustomHtml.add_table(header=header, data=data))
+            doc.asis(CustomHtml.add_image(src=src, alt=alt,
+                                          width=width, height=height))
+        return doc.getvalue()
+
+    @staticmethod
+    def add_grid_image(srcs: dict, *, width=None, height=None):
+        """
+       add an block of images formatted with grid specification
+
+        Args:
+            srcs (dict): image paths with attribute as key
+            width (int): width of image
+            height (int): height of image
+        Returns: HTML String
+        """
+        doc = Doc()
+        with doc.tag('div'):
+            for key, value in srcs.items():
+                doc.asis(CustomHtml.add_image(src=value, alt=key,
+                                              width=width, height=height))
         return doc.getvalue()
 
     @staticmethod
@@ -326,13 +387,14 @@ class CustomHtml:
         return doc.getvalue()
 
     @staticmethod
-    def create_div(contents: list, link=None):
+    def create_div(contents: list, *, link=None, tab=False, ):
         """
         create div
 
         Args:
             contents (list): Division Content
             link (str): link idx created earlier for internal anchor
+            tab (bool): Content tab indicator
 
         Returns: HTML String
         """
@@ -340,7 +402,8 @@ class CustomHtml:
         with doc.tag('div'):
             if not link is None:
                 doc.attr(id="t%s" % link)
-            doc.attr(klass="tab_contents")
+            if tab:
+                doc.attr(klass="tab_contents")
             for content in contents:
                 doc.asis(content)
         return doc.getvalue()
@@ -361,13 +424,13 @@ class CustomHtml:
         for div in articles:
             if len(div.items) <= 0:
                 continue
+            if div.title is None:
+                div.title = 'Section %s' % str(idx)
             nav_items.append(CustomHtml.add_anchor(text=div.title,
-                                                   link=idx,
-                                                   on_click=True))
+                                                   link=idx, on_click=True))
             article_div.append(CustomHtml.create_div(contents=div.items,
-                                                     link=idx))
-            idx+=1
-
+                                                     link=idx, tab=True))
+            idx += 1
         _nav_list = CustomHtml.add_unordered_list(items=nav_items)
         doc = Doc()
         with doc.tag('section'):

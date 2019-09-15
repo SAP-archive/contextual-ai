@@ -65,7 +65,7 @@ class PdfWriter(Writer):
             shutil.rmtree(self.figure_path)
 
     def build(self, title: str, cover: CoverSection,
-              detail: DetailSection, content_table=False):
+              detail: DetailSection, *, content_table=False):
         """
         Build Report
 
@@ -138,7 +138,7 @@ class PdfWriter(Writer):
         """
         self.pdf.add_page()
 
-    def draw_header(self, text: str, level: int, link=None):
+    def draw_header(self, text: str, level: int, *, link=None):
         """
         Draw Header
 
@@ -160,7 +160,7 @@ class PdfWriter(Writer):
                 self.pdf.set_link(link)
             self.pdf.add_new_line(text, style='BI')
 
-    def draw_title(self, text: str, level: int, link=None):
+    def draw_title(self, text: str, level: int, *, link=None):
         """
         Draw Title
 
@@ -191,7 +191,7 @@ class PdfWriter(Writer):
     ################################################################################
     ###  Summary Section
     ################################################################################
-    def draw_training_time(self, notes: str, timing: List[Tuple[str, int]]):
+    def draw_training_time(self, notes: str, *, timing: List[Tuple[str, int]]):
         """
         Draw information of timing to the report
 
@@ -211,7 +211,7 @@ class PdfWriter(Writer):
         self.pdf.end_itemize()
         self.pdf.ln()
 
-    def draw_data_set_summary(self, notes: str,
+    def draw_data_set_summary(self, notes: str, *,
                               data_summary: List[Tuple[str, int]]):
         """
         Draw information of dataset summary to the report
@@ -230,7 +230,7 @@ class PdfWriter(Writer):
         self.pdf.end_itemize()
         self.pdf.ln()
 
-    def draw_evaluation_result_summary(self, notes: str,
+    def draw_evaluation_result_summary(self, notes: str, *,
                                        evaluation_result: dict):
         """
         Draw information of training performance to the result
@@ -293,7 +293,7 @@ class PdfWriter(Writer):
             self.pdf.end_itemize()
             self.pdf.ln()
 
-    def draw_model_info_summary(self, notes: str, model_info: list):
+    def draw_model_info_summary(self, notes: str, *, model_info: list):
         """
         Draw information of model info to the result
 
@@ -315,7 +315,7 @@ class PdfWriter(Writer):
     ################################################################################
     ###  Data Section
     ################################################################################
-    def draw_data_missing_value(self, notes: str, missing_count: dict,
+    def draw_data_missing_value(self, notes: str, *, missing_count: dict,
                                 total_count: dict, ratio=False):
         """
         Draw Missing Data Value Summary Table
@@ -397,7 +397,7 @@ class PdfWriter(Writer):
                                col_width=_col_width)
             self.pdf.add_new_line()
 
-    def draw_data_set_distribution(self, notes: str,
+    def draw_data_set_distribution(self, notes: str, *,
                                    data_set_distribution: Tuple[str, dict],
                                    max_class_shown=20):
         """
@@ -443,7 +443,7 @@ class PdfWriter(Writer):
                                          limit_length=max_class_shown)
             self.pdf.add_large_image(image_path)
 
-    def draw_data_attributes(self, notes: str, data_attribute: Dict):
+    def draw_data_attributes(self, notes: str, *, data_attribute: Dict):
         """
         Draw information of data attribute for data fields to the report
 
@@ -480,7 +480,7 @@ class PdfWriter(Writer):
         self.pdf.add_table(_table_header, _table_data)
         self.pdf.add_new_line()
 
-    def draw_categorical_field_distribution(self, notes: str,
+    def draw_categorical_field_distribution(self, notes: str, *,
                                             field_name: str,
                                             field_distribution: dict,
                                             max_values_display=20,
@@ -538,7 +538,7 @@ class PdfWriter(Writer):
                                      style='I')
         self.pdf.end_itemize()
 
-    def draw_numeric_field_distribution(self, notes: str,
+    def draw_numeric_field_distribution(self, notes: str, *,
                                         field_name: str,
                                         field_distribution: dict,
                                         force_no_log=False,
@@ -605,7 +605,7 @@ class PdfWriter(Writer):
                                            style='I')
         self.pdf.end_itemize()
 
-    def draw_text_field_distribution(self, notes: str,
+    def draw_text_field_distribution(self, notes: str, *,
                                      field_name: str,
                                      field_distribution: dict):
         """
@@ -651,7 +651,7 @@ class PdfWriter(Writer):
                                            style='I')
         self.pdf.end_itemize()
 
-    def draw_datetime_field_distribution(self, notes: str,
+    def draw_datetime_field_distribution(self, notes: str, *,
                                          field_name: str,
                                          field_distribution: dict):
         """
@@ -695,7 +695,7 @@ class PdfWriter(Writer):
     ################################################################################
     ###  Feature Section
     ################################################################################
-    def draw_feature_importance(self, notes: str,
+    def draw_feature_importance(self, notes: str, *,
                                 importance_ranking: List[List],
                                 importance_threshold: float,
                                 maximum_number_feature=20):
@@ -752,7 +752,7 @@ class PdfWriter(Writer):
     ################################################################################
     ###  Training Section
     ################################################################################
-    def draw_hyperparameter_tuning(self, notes: str,
+    def draw_hyperparameter_tuning(self, notes: str, *,
                                    history: dict, best_idx: str,
                                    search_space=None, benchmark_metric=None,
                                    benchmark_threshold=None,
@@ -812,7 +812,7 @@ class PdfWriter(Writer):
         # best result for hyperopt
         self.pdf.add_new_line("Best Result from Hyperparameter Tuning",
                               style="BI")
-        self.pdf.add_new_line("The best iteration is ", int(best_idx))
+        self.pdf.add_new_line("The best iteration is %s " % int(best_idx))
         self.pdf.add_new_line("Parameters:", style='B')
 
         self.pdf.start_itemize()
@@ -879,7 +879,7 @@ class PdfWriter(Writer):
                         'but will continue to improve it.')
         self.pdf.ln(5)
 
-    def draw_learning_curve(self, notes: str,
+    def draw_learning_curve(self, notes: str, *,
                             history: dict, best_idx: str,
                             benchmark_metric=None, benchmark_threshold=None,
                             training_params=None):
@@ -936,7 +936,7 @@ class PdfWriter(Writer):
         self.pdf.ln()
 
         self.pdf.add_new_line("Best Epoch from Training", style='BI')
-        self.pdf.add_key_value_pair("The best iteration is ", best_idx)
+        self.pdf.add_key_value_pair("The best iteration is %s" % best_idx)
         self.pdf.ln()
 
         self.pdf.add_new_line("Validation Results:", style='BI')
@@ -956,7 +956,7 @@ class PdfWriter(Writer):
     ################################################################################
     ###  Evaluation Section
     ################################################################################
-    def draw_multi_class_evaluation_metric_results(self, notes: str,
+    def draw_multi_class_evaluation_metric_results(self, notes: str, *,
                                                    metric_tuple):
         """
         Add information about metric results for multi-class evaluation
@@ -986,7 +986,7 @@ class PdfWriter(Writer):
             self.pdf.add_table(table_header, table_data, table_layout)
         self.pdf.ln(5)
 
-    def draw_binary_class_evaluation_metric_results(self, notes: str,
+    def draw_binary_class_evaluation_metric_results(self, notes: str, *,
                                                     metric_tuple: tuple,
                                                     aggregated=True):
         """
@@ -1033,7 +1033,7 @@ class PdfWriter(Writer):
             self.pdf.add_table(combined_table_header, combined_table_values)
         self.pdf.ln(5)
 
-    def draw_confusion_matrix_results(self, notes: str,
+    def draw_confusion_matrix_results(self, notes: str, *,
                                       confusion_matrix_tuple: tuple):
         """
         add information about confusion matrix to report
@@ -1080,7 +1080,7 @@ class PdfWriter(Writer):
             self.pdf.add_list_of_grid_images(image_list, spec_list)
         self.pdf.ln(5)
 
-    def draw_multi_class_confidence_distribution(self, notes: str,
+    def draw_multi_class_confidence_distribution(self, notes: str, *,
                                                  visual_result_tuple: tuple,
                                                  max_num_classes=9):
         """
@@ -1135,7 +1135,7 @@ class PdfWriter(Writer):
                                              grid_spec=ABSOLUTE_3_EQUAL_GRID_SPEC)
         self.pdf.ln(5)
 
-    def draw_binary_class_confidence_distribution(self, notes: str,
+    def draw_binary_class_confidence_distribution(self, notes: str, *,
                                                   visual_result_tuple: tuple):
         """
         Add information about binary class confidence distribution to report
@@ -1176,9 +1176,8 @@ class PdfWriter(Writer):
             self.pdf.add_list_of_grid_images(image_list, spec_list)
         self.pdf.ln(5)
 
-    def draw_binary_class_reliability_diagram(self,
-                                              visual_result_tuple: tuple,
-                                              notes=None):
+    def draw_binary_class_reliability_diagram(self, notes: str, *,
+                                              visual_result_tuple: tuple):
         """
         Add information about reliability to report
         
