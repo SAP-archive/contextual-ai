@@ -155,12 +155,14 @@ class HtmlWriter(Writer):
             level(int): title type (section or paragraph)
             link: title link
         """
-        # each section == new page
-        self.add_new_page()
-        self.html.article[-1].title = text
-        self.html.article[-1].items.append(
-            self.html.add_header(text=text, heading='h2',
-                                 link=link, style=True))
+        if level == Title.SECTION_TITLE:
+            self.html.article[-1].title = text
+            self.html.article[-1].items.append(
+                self.html.add_header(text=text, heading='h2',
+                                     link=link, style=True))
+        elif level == Title.PARAGRAPH_TITLE:
+            self.html.article[-1].items.append(
+                self.html.add_paragraph(text=text, style='BI'))
 
     def draw_paragraph(self, text: str):
         """
