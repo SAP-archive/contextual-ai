@@ -25,6 +25,7 @@ class STATSKEY:
     TOTAL_COUNT = 'total_count'
     DATA_TYPE = 'data_type'
     DATA_COLUMN_NAME = 'attribute_name'
+    STATS = 'stats'
 
     DISTRIBUTION = 'frequency'
     FIELDS = 'fields'

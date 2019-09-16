@@ -5,7 +5,7 @@ from xai.data.explorer.abstract_labelled_analyzer import AbstractLabelledDataAna
 from xai.data.explorer.categorical.categorical_analyzer import CategoricalDataAnalyzer
 
 
-class LabelledDataAnalyzer(AbstractLabelledDataAnalyzer):
+class LabelledCategoricalDataAnalyzer(AbstractLabelledDataAnalyzer):
     def __init__(self):
         super().__init__(data_analyzer_cls=CategoricalDataAnalyzer)
 
