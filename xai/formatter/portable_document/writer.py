@@ -17,7 +17,7 @@ import tempfile
 from typing import Tuple, Dict, List
 
 from xai.formatter.contents import Title, SectionTitle, Header
-from xai.formatter.report.section import CoverSection, DetailSection
+from xai.formatter.report.section import OverviewSection, DetailSection
 
 from xai.formatter.portable_document.publisher import CustomPdf
 
@@ -64,14 +64,14 @@ class PdfWriter(Writer):
         if os.path.exists(self.figure_path):
             shutil.rmtree(self.figure_path)
 
-    def build(self, title: str, cover: CoverSection,
+    def build(self, title: str, overview: OverviewSection,
               detail: DetailSection, *, content_table=False):
         """
         Build Report
 
         Args:
             title(str): header title
-            cover(CoverSection): Cover Section of report
+            overview(OverviewSection): Cover Section of report
             detail(DetailSection): Details Section of report
             content_table (bool): is content table enabled
                             default False
@@ -82,8 +82,8 @@ class PdfWriter(Writer):
 
         self.pdf.set_title(title)
         # -- Draw Cover Contents --
-        if len(cover.contents) > 1:
-            for content in cover.contents:
+        if len(overview.contents) > 1:
+            for content in overview.contents:
                 content.draw(writer=self)
         # -- Draw Content Table --
         dc_contents = copy.deepcopy(detail.contents)
@@ -812,7 +812,7 @@ class PdfWriter(Writer):
         # best result for hyperopt
         self.pdf.add_new_line("Best Result from Hyperparameter Tuning",
                               style="BI")
-        self.pdf.add_new_line("The best iteration is %s " % int(best_idx))
+        self.pdf.add_key_value_pair("The best iteration is ", best_idx)
         self.pdf.add_new_line("Parameters:", style='B')
 
         self.pdf.start_itemize()
@@ -936,7 +936,7 @@ class PdfWriter(Writer):
         self.pdf.ln()
 
         self.pdf.add_new_line("Best Epoch from Training", style='BI')
-        self.pdf.add_key_value_pair("The best iteration is %s" % best_idx)
+        self.pdf.add_key_value_pair("The best iteration is ", best_idx)
         self.pdf.ln()
 
         self.pdf.add_new_line("Validation Results:", style='BI')

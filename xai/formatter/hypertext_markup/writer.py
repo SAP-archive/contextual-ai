@@ -17,7 +17,7 @@ import tempfile
 from typing import Tuple, Dict, List
 
 from xai.formatter.contents import Header, SectionTitle, Title
-from xai.formatter.report.section import CoverSection, DetailSection
+from xai.formatter.report.section import OverviewSection, DetailSection
 
 from xai.formatter.hypertext_markup.publisher import CustomHtml, Div
 from xai.formatter.writer import Writer
@@ -74,14 +74,14 @@ class HtmlWriter(Writer):
         if os.path.exists(self.figure_path):
             shutil.rmtree(self.figure_path)
 
-    def build(self, title: str, cover: CoverSection,
+    def build(self, title: str, overview: OverviewSection,
               detail: DetailSection, *, content_table=False):
         """
         Build Report
 
         Args:
             title(str): header title
-            cover(CoverSection): Cover Section of report
+            overview(OverviewSection): Cover Section of report
             detail(DetailSection): Details Section of report
             content_table (bool): is content table enabled
                             default False
@@ -90,8 +90,8 @@ class HtmlWriter(Writer):
         self.html.header.append(self.html.add_header(text=title, heading='h1'))
 
         # -- Create HTML Body Section Article --
-        if len(cover.contents) > 1:
-            for content in cover.contents:
+        if len(overview.contents) > 1:
+            for content in overview.contents:
                 content.draw(writer=self)
 
         _h1_count = 0

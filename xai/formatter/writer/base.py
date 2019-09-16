@@ -13,7 +13,7 @@ from abc import ABC, abstractmethod
 
 from typing import Tuple, Dict, List
 
-from xai.formatter.report.section import CoverSection, DetailSection
+from xai.formatter.report.section import OverviewSection, DetailSection
 
 
 ################################################################################
@@ -47,14 +47,14 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def build(self, title: str, cover: CoverSection,
+    def build(self, title: str, overview: OverviewSection,
               detail: DetailSection, *, content_table=False):
         """
         Build Report
 
         Args:
             title(str): header title
-            cover(CoverSection): Cover Section of report
+            overview(OverviewSection): Cover Section of report
             detail(DetailSection): Details Section of report
             content_table (bool): is content table enabled
                             default False
