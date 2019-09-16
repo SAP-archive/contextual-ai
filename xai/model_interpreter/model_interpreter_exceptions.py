@@ -42,3 +42,13 @@ class InvalidArgumentError(Exception):
         message = 'The argument [{}] is not of valid type [{}]. '.format(arg_name, valid_type)
         Exception.__init__(self, message)
         self.message = message
+
+
+class InterpreterUninitializedError(Exception):
+    """
+    Raised when explanations are attempted to be produced by an unitilized explainer
+    """
+
+    def __init__(self, message):
+        Exception.__init__(self, message)
+        self.message = message
