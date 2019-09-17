@@ -7,6 +7,7 @@ from xai.data.explorer.numerical.labelled_numerical_analyzer import LabelledNume
 from xai.data.explorer.text.labelled_text_analyzer import LabelledTextDataAnalyzer
 from xai.data.explorer.datetime.labelled_datetime_analyzer import LabelledDatetimeDataAnalyzer
 from xai.data.abstract_stats import AbstractStats
+from xai.data.exceptions import InvalidTypeError
 
 
 class DataAnalyzerSuite:
@@ -16,15 +17,19 @@ class DataAnalyzerSuite:
 
     def __init__(self, data_type_list: List, column_names: List = None):
         """
-        Initialize DataAnalyzerSuite
+        Initialize data analyzer suite
 
         Args:
             data_type_list: list, a list of pre-defined data type
             column_names: list, a list of column names
         """
-        if column_names is not None and type(column_names) == list:
-            if len(column_names) != len(data_type_list):
-                raise InconsistentListSize('data_type_list', 'column_name')
+        if column_names is not None:
+            if type(column_names) == list:
+                if len(column_names) != len(data_type_list):
+                    raise InconsistentListSize('data_type_list', 'column_name')
+            else:
+                raise InvalidTypeError(data_type_list, type(data_type_list), '<list>')
+
         else:
             column_names = list(range(len(data_type_list)))
 
