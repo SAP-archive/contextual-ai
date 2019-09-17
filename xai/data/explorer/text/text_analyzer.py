@@ -161,8 +161,8 @@ class TextDataAnalyzer(AbstractDataAnalyzer):
             pattern_stats[pattern_name] = (
                 self._pattern_occurrence_counter[pattern_name], self._pattern_document_counter[pattern_name])
         stats = TextStats(total_count=self._total_count, pattern_stats=pattern_stats,
-                               word_count=dict(self._word_counter), char_count=dict(self._character_counter),
-                               term_frequency=dict(self._absolute_term_frequency),
-                               document_frequency=dict(self._document_frequency),
-                               tfidf=tfidf)
+                          word_count=dict(self._word_counter), char_count=dict(self._character_counter),
+                          term_frequency=dict(self._absolute_term_frequency),
+                          document_frequency=dict(self._document_frequency),
+                          tfidf=tfidf)
         return stats

@@ -1,13 +1,11 @@
-from typing import List, Optional
-
 import dateutil
 from pandas import DataFrame
+from typing import List, Optional
 
+from xai.data.constants import DatetimeResolution
 from xai.data.exceptions import ItemDataTypeNotSupported, InconsistentSize
 from xai.data.explorer.abstract_analyzer import AbstractDataAnalyzer
 from xai.data.explorer.datetime.datetime_stats import DatetimeStats
-
-from xai.data.constants import DatetimeResolution
 
 
 class DatetimeDataAnalyzer(AbstractDataAnalyzer):
@@ -110,5 +108,5 @@ if __name__ == '__main__':
     labelled_analyzer = LabelledDatetimeDataAnalyzer()
     labelled_analyzer.feed_all(datetimes, labels)
     labelled_stats, all_stats = labelled_analyzer.get_statistics(resolution_list=[DatetimeResolution.YEAR,
-                                                                               DatetimeResolution.WEEKDAY])
+                                                                                  DatetimeResolution.WEEKDAY])
     print(labelled_stats[800].__dict__)

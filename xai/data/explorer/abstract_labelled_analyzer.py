@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
+
 from typing import List, Dict, Union, Tuple
 
 from xai.data.abstract_stats import AbstractStats
-from xai.data.exceptions import InconsistentIteratorSize
+from xai.data.exceptions import InconsistentSize
 
 
 class AbstractLabelledDataAnalyzer(ABC):
@@ -34,7 +35,7 @@ class AbstractLabelledDataAnalyzer(ABC):
             labels: corresponding labels for each categorical value
         """
         if len(values) != len(labels):
-            raise InconsistentIteratorSize(len(values), len(labels))
+            raise InconsistentSize('values', 'labels', len(values), len(labels))
 
         value_label = zip(values, labels)
         for value, label in value_label:

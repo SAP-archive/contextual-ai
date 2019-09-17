@@ -64,7 +64,6 @@ class STATSKEY:
         PATTERN_DF = 'doc_with_pattern'
 
 
-
 class TermFrequencyType:
     """
     Constants for term frequency type

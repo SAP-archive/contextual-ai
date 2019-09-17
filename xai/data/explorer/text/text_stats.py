@@ -1,8 +1,8 @@
-from typing import Dict
-from xai.data.constants import STATSKEY
+from typing import Dict, Optional, Tuple
+
 from xai.data.abstract_stats import AbstractStats
+from xai.data.constants import STATSKEY
 from xai.data.exceptions import InvalidTypeError, InvalidSizeError
-from typing import Optional, Tuple
 
 
 class TextStats(AbstractStats):
@@ -146,7 +146,7 @@ class TextStats(AbstractStats):
         for key, count in value.items():
             if type(key) != str:
                 raise InvalidTypeError('tfidf: key', type(key), '<str>')
-            if type(count) not in [float,int]:
+            if type(count) not in [float, int]:
                 raise InvalidTypeError('tfidf: score', type(count), '<float> or <int>')
         self._tfidf = value
 

@@ -1,8 +1,8 @@
 from typing import Tuple, Dict, Union, Optional, List
 
-from xai.data.explorer.datetime.datetime_stats import DatetimeStats
 from xai.data.explorer.abstract_labelled_analyzer import AbstractLabelledDataAnalyzer
 from xai.data.explorer.datetime.datetime_analyzer import DatetimeDataAnalyzer
+from xai.data.explorer.datetime.datetime_stats import DatetimeStats
 
 
 class LabelledDatetimeDataAnalyzer(AbstractLabelledDataAnalyzer):

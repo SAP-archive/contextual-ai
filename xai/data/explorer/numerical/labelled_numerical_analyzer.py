@@ -1,8 +1,8 @@
 from typing import Tuple, Dict, Union, Optional
 
-from xai.data.explorer.numerical.numerical_stats import NumericalStats
 from xai.data.explorer.abstract_labelled_analyzer import AbstractLabelledDataAnalyzer
 from xai.data.explorer.numerical.numerical_analyzer import NumericDataAnalyzer
+from xai.data.explorer.numerical.numerical_stats import NumericalStats
 
 
 class LabelledNumericalDataAnalyzer(AbstractLabelledDataAnalyzer):

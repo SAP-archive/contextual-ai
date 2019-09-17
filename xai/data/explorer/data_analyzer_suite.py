@@ -1,13 +1,13 @@
 from typing import Optional, Dict, Union, List
 
+from xai.data.abstract_stats import AbstractStats
 from xai.data.constants import DATATYPE
-from xai.data.exceptions import AttributeNotFound, InconsistentListSize, AnalyzerDataTypeNotSupported
+from xai.data.exceptions import AttributeNotFound, InconsistentSize, AnalyzerDataTypeNotSupported
+from xai.data.exceptions import InvalidTypeError
 from xai.data.explorer.categorical.labelled_categorical_analyzer import LabelledCategoricalDataAnalyzer
+from xai.data.explorer.datetime.labelled_datetime_analyzer import LabelledDatetimeDataAnalyzer
 from xai.data.explorer.numerical.labelled_numerical_analyzer import LabelledNumericalDataAnalyzer
 from xai.data.explorer.text.labelled_text_analyzer import LabelledTextDataAnalyzer
-from xai.data.explorer.datetime.labelled_datetime_analyzer import LabelledDatetimeDataAnalyzer
-from xai.data.abstract_stats import AbstractStats
-from xai.data.exceptions import InvalidTypeError
 
 
 class DataAnalyzerSuite:
@@ -26,7 +26,7 @@ class DataAnalyzerSuite:
         if column_names is not None:
             if type(column_names) == list:
                 if len(column_names) != len(data_type_list):
-                    raise InconsistentListSize('data_type_list', 'column_name')
+                    raise InconsistentSize('data_type_list', 'column_name', len(column_names), len(data_type_list))
             else:
                 raise InvalidTypeError(data_type_list, type(data_type_list), '<list>')
 
@@ -58,7 +58,7 @@ class DataAnalyzerSuite:
             label: class label associated to the sample, default is None when no label provided
         """
         if type(sample) == list and len(sample) != len(self.analyzers):
-            raise InconsistentListSize('sample', 'label')
+            raise InconsistentSize('sample', 'label', len(sample), len(self.analyzers))
         for attribute_name, analyzer in self.analyzers.items():
             if attribute_name not in sample:
                 raise AttributeNotFound(attribute_name, sample)
@@ -78,7 +78,7 @@ class DataAnalyzerSuite:
             labels = [None] * len(column_data)
 
         if type(column_data) == list and len(column_data) != len(labels):
-            raise InconsistentListSize(len(column_data), len(labels))
+            raise InconsistentSize('column_data', 'labels', len(column_data), len(labels))
 
         if column_name not in self.analyzers.keys():
             raise AttributeNotFound(column_name, list(self.analyzers.keys()))
@@ -92,7 +92,7 @@ class DataAnalyzerSuite:
         Returns:
             A dictionary maps attribute name to stats json object representation
         """
-        overall_stats = []
+        overall_stats = dict()
         for attribute_name, analyzer in self.analyzers.items():
             overall_stats[attribute_name] = analyzer.get_statistics()
         return overall_stats

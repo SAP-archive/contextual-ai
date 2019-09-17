@@ -1,8 +1,8 @@
 from typing import Tuple, Dict, Union
 
-from xai.data.explorer.categorical.categorical_stats import CategoricalStats
 from xai.data.explorer.abstract_labelled_analyzer import AbstractLabelledDataAnalyzer
 from xai.data.explorer.categorical.categorical_analyzer import CategoricalDataAnalyzer
+from xai.data.explorer.categorical.categorical_stats import CategoricalStats
 
 
 class LabelledCategoricalDataAnalyzer(AbstractLabelledDataAnalyzer):
@@ -27,4 +27,3 @@ class LabelledCategoricalDataAnalyzer(AbstractLabelledDataAnalyzer):
 
             _stats[label] = CategoricalStats(_stats[label])
         return _stats, _all_stats
-

@@ -93,7 +93,7 @@ class NumericalStats(AbstractStats):
 
     @histogram.setter
     def histogram(self, value: List[Tuple[Union[float, int, None], Union[float, int, None], int]]):
-        if not isinstance(value,list):
+        if not isinstance(value, list):
             raise InvalidTypeError('histogram', type(value), '<list>')
 
         for item in value:

@@ -1,8 +1,9 @@
+from copy import deepcopy
+
 from nltk.tokenize import word_tokenize
 from typing import Callable, Optional, Dict, List, Set
 from typing import Tuple, Union
 
-from copy import deepcopy
 from xai.data.constants import TermFrequencyType
 from xai.data.explorer.abstract_labelled_analyzer import AbstractLabelledDataAnalyzer
 from xai.data.explorer.text.text_analyzer import TextDataAnalyzer
@@ -70,6 +71,6 @@ class LabelledTextDataAnalyzer(AbstractLabelledDataAnalyzer):
         df = dict(_all_stats.document_frequency)
         total_doc_count = _all_stats.total_count
         for label, analyzer in self._label_analyzer.items():
-            _stats[label] = analyzer.get_statistics(global_doc_frequency=df,total_doc_count=total_doc_count)
+            _stats[label] = analyzer.get_statistics(global_doc_frequency=df, total_doc_count=total_doc_count)
 
         return _stats, _all_stats

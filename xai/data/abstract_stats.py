@@ -1,4 +1,5 @@
 from abc import abstractmethod, ABC
+
 from typing import Dict
 
 from xai.data.exceptions import InvalidTypeError

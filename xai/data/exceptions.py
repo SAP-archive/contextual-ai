@@ -20,17 +20,6 @@ class ColumnNotFound(Exception):
         self.message = message
 
 
-class InconsistentListSize(Exception):
-    """
-    Raised when two iterators have different lengths
-    """
-
-    def __init__(self, length_A, length_B):
-        message = 'Two list have different lengths: {}, {}.'.format(length_A, length_B)
-        Exception.__init__(self, message)
-        self.message = message
-
-
 class InconsistentSize(Exception):
     """
     Raised when two lists have different lengths

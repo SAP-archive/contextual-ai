@@ -1,8 +1,8 @@
 from typing import Dict, List
 
+from xai.data.abstract_stats import AbstractStats
 from xai.data.constants import STATSKEY
 from xai.data.exceptions import InvalidTypeError, InconsistentSize
-from xai.data.abstract_stats import AbstractStats
 
 
 class DatetimeStats(AbstractStats):
@@ -11,7 +11,6 @@ class DatetimeStats(AbstractStats):
         self._resolution_list = resolution_list
         self._frequency_count = frequency_count
         self._cur_resolution_level = 0
-
 
     @property
     def frequency_count(self):

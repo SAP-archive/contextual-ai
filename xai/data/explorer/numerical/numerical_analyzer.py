@@ -1,9 +1,8 @@
 import numpy as np
-from typing import Optional, List, Tuple
 from sklearn.neighbors import KernelDensity
+from typing import Optional, List, Tuple
 
 from xai.data.constants import STATSCONSTANTS
-
 from xai.data.exceptions import ItemDataTypeNotSupported, NoItemsError
 from xai.data.explorer.abstract_analyzer import AbstractDataAnalyzer
 from xai.data.explorer.numerical.numerical_stats import NumericalStats
@@ -80,11 +79,11 @@ class NumericDataAnalyzer(AbstractDataAnalyzer):
         kde = list(zip(list(x_grid), list(np.exp(log_pdf))))
 
         stats = NumericalStats(total_count=total_count,
-                                    min=min,
-                                    max=max,
-                                    mean=mean,
-                                    median=median,
-                                    sd=sd,
-                                    histogram=histogram,
-                                    kde=kde)
+                               min=min,
+                               max=max,
+                               mean=mean,
+                               median=median,
+                               sd=sd,
+                               histogram=histogram,
+                               kde=kde)
         return stats

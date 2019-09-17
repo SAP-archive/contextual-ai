@@ -1,8 +1,11 @@
 from abc import abstractmethod, ABC
-from typing import Iterator
-from xai.data.abstract_stats import AbstractStats
-class AbstractDataAnalyzer(ABC):
 
+from typing import Iterator
+
+from xai.data.abstract_stats import AbstractStats
+
+
+class AbstractDataAnalyzer(ABC):
     SUPPORTED_TYPES = []
 
     @abstractmethod
