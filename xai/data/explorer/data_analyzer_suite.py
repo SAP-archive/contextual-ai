@@ -1,9 +1,13 @@
-from typing import Optional, Dict, Iterator
+from typing import Optional, Dict, Union, List
 
-from xai.data.config import DICT_DATATYPE_TO_ANALYZER, DICT_ANALYZER_TO_DATATYPE
-from xai.data.constants import STATSKEY
-from xai.data.exceptions import AttributeNotFound, InconsistentIteratorSize, AnalyzerDataTypeNotSupported
-from xai.data.explorer.labelled_analyzer import LabelledDataAnalyzer
+from xai.data.constants import DATATYPE
+from xai.data.exceptions import AttributeNotFound, InconsistentListSize, AnalyzerDataTypeNotSupported
+from xai.data.explorer.categorical.labelled_categorical_analyzer import LabelledCategoricalDataAnalyzer
+from xai.data.explorer.numerical.labelled_numerical_analyzer import LabelledNumericalDataAnalyzer
+from xai.data.explorer.text.labelled_text_analyzer import LabelledTextDataAnalyzer
+from xai.data.explorer.datetime.labelled_datetime_analyzer import LabelledDatetimeDataAnalyzer
+from xai.data.abstract_stats import AbstractStats
+from xai.data.exceptions import InvalidTypeError
 
 
 class DataAnalyzerSuite:
@@ -11,32 +15,41 @@ class DataAnalyzerSuite:
     A data analyzer suite that allows users to add multiple data analyzers and analyze specified according to data type
     """
 
-    def __init__(self):
+    def __init__(self, data_type_list: List, column_names: List = None):
+        """
+        Initialize data analyzer suite
+
+        Args:
+            data_type_list: list, a list of pre-defined data type
+            column_names: list, a list of column names
+        """
+        if column_names is not None:
+            if type(column_names) == list:
+                if len(column_names) != len(data_type_list):
+                    raise InconsistentListSize('data_type_list', 'column_name')
+            else:
+                raise InvalidTypeError(data_type_list, type(data_type_list), '<list>')
+
+        else:
+            column_names = list(range(len(data_type_list)))
+
+        self.schema = dict(zip(column_names, data_type_list))
+
         self.analyzers = dict()
 
-    def add_analyzer(self, attribute_name: str or int, analyzer_cls):
-        """
-        Add data analyzer by initializing the analyzer object
+        for key, data_type in self.schema.items():
+            if data_type == DATATYPE.CATEGORY:
+                self.analyzers[key] = LabelledCategoricalDataAnalyzer()
+            elif data_type == DATATYPE.NUMBER:
+                self.analyzers[key] = LabelledNumericalDataAnalyzer()
+            elif data_type == DATATYPE.FREETEXT:
+                self.analyzers[key] = LabelledTextDataAnalyzer()
+            elif data_type == DATATYPE.DATETIME:
+                self.analyzers[key] = LabelledDatetimeDataAnalyzer()
+            else:
+                raise AnalyzerDataTypeNotSupported(data_type)
 
-        Args:
-            attribute_name: name to identify a column/attribute in sample
-            analyzer_cls: analyzer implements AbstractLabelledDataAnalyzer
-        """
-        self.analyzers[attribute_name] = LabelledDataAnalyzer(data_analyzer_cls=analyzer_cls)
-
-    def add_analyzer_by_data_type(self, attribute_name: str or int, data_type: str):
-        """
-        Add data analyzer by data type
-
-        Args:
-            attribute_name: name to identify a column/attribute in sample
-            data_type: pre-defined data type, see `xai.data.constants.DATATYPE`
-        """
-        if data_type not in DICT_DATATYPE_TO_ANALYZER.keys():
-            raise AnalyzerDataTypeNotSupported(data_type)
-        self.analyzers[attribute_name] = DICT_DATATYPE_TO_ANALYZER[data_type]
-
-    def feed(self, sample: Dict, label: Optional = None):
+    def feed_row(self, sample: Union[Dict, List], label: Optional = None):
         """
         Feed one sample into the analyzer suite to aggregate stats according to data type attribute
 
@@ -44,34 +57,35 @@ class DataAnalyzerSuite:
             sample: json object
             label: class label associated to the sample, default is None when no label provided
         """
+        if type(sample) == list and len(sample) != len(self.analyzers):
+            raise InconsistentListSize('sample', 'label')
         for attribute_name, analyzer in self.analyzers.items():
             if attribute_name not in sample:
                 raise AttributeNotFound(attribute_name, sample)
             analyzer.feed(value=sample[attribute_name], label=label)
 
-    def feed_all(self, samples: Iterator[Dict], labels: Optional[Iterator] = None):
+    def feed_column(self, column_name: Union[int, str], column_data: List, labels: List = None):
         """
         Feed a series of samples into the analyzer suite to aggregate stats according to data type attribute
 
         Args:
-            samples: a sequence of json objects
-            labels: class labels associated to the samples, default is None when no label provided
+            column_name: str or int, column name/column index
+            column_data: list, a sequence of values
+            labels: list, class labels associated to the samples, default is None when no label provided
 
         """
         if labels is None:
-            labels = [None] * len(samples)
+            labels = [None] * len(column_data)
 
-        if len(samples) != len(labels):
-            raise InconsistentIteratorSize(len(samples), len(labels))
+        if type(column_data) == list and len(column_data) != len(labels):
+            raise InconsistentListSize(len(column_data), len(labels))
 
-        sample_label = zip(samples, labels)
-        for sample, label in sample_label:
-            for attribute_name, analyzer in self.analyzers.items():
-                if attribute_name not in sample:
-                    raise AttributeNotFound(attribute_name, sample)
-                analyzer.feed(value=sample[attribute_name], label=label)
+        if column_name not in self.analyzers.keys():
+            raise AttributeNotFound(column_name, list(self.analyzers.keys()))
 
-    def get_statistics(self) -> Dict[str, Dict]:
+        self.analyzers[column_name].feed_all(values=column_data, labels=labels)
+
+    def get_statistics(self) -> Dict[str, AbstractStats]:
         """
         Get overall stats for the entire data analyzer suite
 
@@ -80,9 +94,5 @@ class DataAnalyzerSuite:
         """
         overall_stats = []
         for attribute_name, analyzer in self.analyzers.items():
-            attribute_stats = dict()
-            attribute_stats[STATSKEY.DATA_COLUMN_NAME] = attribute_name
-            attribute_stats[STATSKEY.DATA_TYPE] = DICT_ANALYZER_TO_DATATYPE[type(analyzer)]
-            attribute_stats.update(analyzer.get_statistics().to_json)
-            overall_stats.append(attribute_stats)
+            overall_stats[attribute_name] = analyzer.get_statistics()
         return overall_stats
