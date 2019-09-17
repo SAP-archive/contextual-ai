@@ -22,13 +22,13 @@ class MutipleScoresFoundForSameFeature(Exception):
         self.message = message
 
 
-class UnsupportedStatsType(Exception):
+class UnsupportedMethodType(Exception):
     """
-    Raised when stats type is not supported.
+    Raised when method type is not supported.
     """
 
     def __init__(self, stats_type):
-        message = 'The stats type [{}] is currently not supported. '.format(stats_type)
+        message = 'The method type [{}] is currently not supported. '.format(stats_type)
         Exception.__init__(self, message)
         self.message = message
 
@@ -50,5 +50,27 @@ class InterpreterUninitializedError(Exception):
     """
 
     def __init__(self, message):
+        Exception.__init__(self, message)
+        self.message = message
+
+
+class InconsistentSize(Exception):
+    """
+    Raised when two lists have different lengths
+    """
+
+    def __init__(self, column_a, column_b, length_a, length_b):
+        message = "'{}' and '{}' have different lengths: {}, {}.".format(column_a, column_b, length_a, length_b)
+        Exception.__init__(self, message)
+        self.message = message
+
+
+class TrainingDataNotProvided(Exception):
+    """
+    Raised when training data is not provided
+    """
+
+    def __init__(self):
+        message = "Training data is not provided."
         Exception.__init__(self, message)
         self.message = message

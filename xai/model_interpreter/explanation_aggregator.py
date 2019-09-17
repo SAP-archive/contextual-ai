@@ -3,8 +3,8 @@ from collections import defaultdict, Counter
 
 from typing import Dict, Tuple
 
-from xai.model_interpreter.model_interpreter_exceptions import InvalidExplanationFormat, \
-    MutipleScoresFoundForSameFeature, UnsupportedStatsType, InvalidArgumentError
+from xai.model_interpreter.exceptions import InvalidExplanationFormat, \
+    MutipleScoresFoundForSameFeature, UnsupportedMethodType, InvalidArgumentError
 
 
 class ExplanationAggregator:
@@ -72,7 +72,7 @@ class ExplanationAggregator:
 
         """
         if stats_type not in ['top_k', 'average_score', 'average_ranking']:
-            raise UnsupportedStatsType(stats_type)
+            raise UnsupportedMethodType(stats_type)
         if type(k) != int:
             raise InvalidArgumentError('k', '<int>')
 

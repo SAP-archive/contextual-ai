@@ -4,7 +4,7 @@ from typing import List, Dict
 from xai.explainer.abstract_explainer import AbstractExplainer
 from xai.explainer.explainer_exceptions import ExplainerUninitializedError
 from xai.model_interpreter.explanation_aggregator import ExplanationAggregator
-from xai.model_interpreter.model_interpreter_exceptions import InvalidArgumentError
+from xai.model_interpreter.exceptions import InvalidArgumentError
 
 
 class ModelExplainer:
