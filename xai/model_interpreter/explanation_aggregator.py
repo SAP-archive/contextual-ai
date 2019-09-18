@@ -12,9 +12,11 @@ class ExplanationAggregator:
     Class for explanation aggregator. It aggregates the explanations based on classes, feature and scores.
     """
 
-    def __init__(self, ):
+    def __init__(self, confidence_threshold=0.8):
         self._explanation_list = defaultdict(list)
         self._total_count = 0
+        self._class_counter = defaultdict(int)
+        self._confidence_threshold = confidence_threshold
 
     def feed(self, explanation: Dict[int, Dict]):
         """
@@ -26,12 +28,12 @@ class ExplanationAggregator:
         for _label, _exp in explanation.items():
             if type(_exp) != dict:
                 raise InvalidExplanationFormat(_exp)
-            if 'explanation' not in dict.keys():
+            if 'explanation' not in _exp.keys():
                 raise InvalidExplanationFormat(_exp)
-            if type(_exp['explantion']) != list:
+            if type(_exp['explanation']) != list:
                 raise InvalidExplanationFormat(_exp)
             feature_names = set()
-            for item in _exp['explantion']:
+            for item in _exp['explanation']:
                 if type(item) != dict:
                     raise InvalidExplanationFormat(item)
                 if 'feature' not in item.keys():
@@ -41,14 +43,16 @@ class ExplanationAggregator:
                 if item['feature'] in feature_names:
                     raise MutipleScoresFoundForSameFeature(item['feature'], _exp)
                 else:
-                    feature_names.add(item[feature_names])
+                    feature_names.add(item['feature'])
                 if 'score' not in item.keys():
                     raise InvalidExplanationFormat(item)
-                if type(item['feature']) != float:
+                if type(item['score']) != float:
                     raise InvalidExplanationFormat(item)
 
         for _label, _exp in explanation.items():
-            self._explanation_list[_label].append({item['feature']: item['score'] for item in _exp})
+            if _exp['confidence'] > self._confidence_threshold:
+                self._explanation_list[_label].append({item['feature']: item['score'] for item in _exp['explanation']})
+                self._class_counter[_label] += 1
         self._total_count += 1
 
     def get_statistics(self, stats_type: str = 'top_k', k: int = 5) -> Tuple[Dict[int, Dict], int]:
@@ -96,8 +100,7 @@ class ExplanationAggregator:
 
         stats = dict()
         for _label, _counter in label_counter.items():
-            stats[_label] = dict()
-            for feature, score in _counter.items():
-                stats[feature] = score / self._total_count
+            stats[_label] = {name: (score / self._class_counter[_label]) for name, score in
+                             list(sorted(_counter.items(), key=operator.itemgetter(1), reverse=True))}
 
-        return label_counter, self._total_count
+        return stats, self._total_count
