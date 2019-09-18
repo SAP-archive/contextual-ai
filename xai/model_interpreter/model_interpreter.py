@@ -10,6 +10,12 @@ from xai.model_interpreter.exceptions import InterpreterUninitializedError
 
 
 class ModelInterpreter:
+    """
+    Class for model interpreter
+
+    This class is to help to interpret the model with a model-agnostic explainer.
+
+    """
     def __init__(self, domain: str, algorithm: str = None):
         """
         Define the domain and algorithm for interpreter
