@@ -10,7 +10,7 @@ class NotebookPlots:
 
     @classmethod
     def plot_categorical_stats(cls, stats, feature_column):
-        plt.hbar(height=stats.frequency_count.values(), x=stats.frequency_count.keys())
+        plt.barh(width=list(stats.frequency_count.values()), y=list(stats.frequency_count.keys()))
         plt.ylabel(feature_column)
         plt.show()
 
@@ -25,7 +25,7 @@ class NotebookPlots:
             frequency = _stats.frequency_count
             left = [dict(counter)[key] for key in y]
             height = [frequency[key] for key in y]
-            p = plt.hbar(width=height, y=y, left=left)
+            p = plt.barh(width=height, y=y, left=left)
             counter.update(Counter(frequency))
             legends.append(_class)
             plots.append(p)
@@ -34,7 +34,7 @@ class NotebookPlots:
         plt.ylabel(feature_column)
         plt.show()
 
-        plt.hbar(width=all_stats.frequency_count.values(), y=all_stats.frequency_count.keys())
+        plt.barh(width=list(all_stats.frequency_count.values()), y=list(all_stats.frequency_count.keys()))
         plt.title('All Distribution - %s' % feature_column)
         plt.ylabel(feature_column)
         plt.show()
@@ -148,3 +148,56 @@ class NotebookPlots:
         ax = sns.barplot(x=scores, y=features, palette=sns.color_palette("Blues_d"), orient='h')
         plt.autoscale(enable=True, axis='both', tight=True)
         plt.show()
+
+    @classmethod
+    def plot_labelled_text_stats(cls, labelled_stats, all_stats):
+        import operator
+        labelled_stats_table = []
+
+        for _class in list(labelled_stats.keys())[:5]:
+            record = {'class': _class}
+            _stats = labelled_stats[_class]
+            record['total count'] = _stats.total_count
+            plt.figure(figsize=(16, 4))
+            plt.subplot(121)
+            tfidf = sorted(_stats.tfidf.items(), key=operator.itemgetter(1), reverse=True)[:20]
+            words = [item[0] for item in tfidf][::-1]
+            scores = [item[1] for item in tfidf][::-1]
+            plt.barh(width=scores, y=words)
+            plt.title('Average TFIDF\nclass:%s' % _class)
+            plt.subplot(122)
+            tf = sorted(_stats.term_frequency.items(), key=operator.itemgetter(1), reverse=True)[:20]
+            words = [item[0] for item in tf][::-1]
+            count = [item[1] for item in tf][::-1]
+            plt.barh(width=count, y=words)
+            plt.title('Overall Term Frequency\nclass: %s' % _class)
+            for pattern, count in _stats.pattern_stats.items():
+                record['%s (term count)' % pattern] = count[0]
+                record['%s (doc count)' % pattern] = count[1]
+            record['longest doc'] = max(list(_stats.word_count.keys()))
+            labelled_stats_table.append(record)
+
+        plt.figure(figsize=(16, 4))
+        plt.subplot(121)
+        tfidf = sorted(all_stats.tfidf.items(), key=operator.itemgetter(1), reverse=True)[:20]
+        words = [item[0] for item in tfidf][::-1]
+        scores = [item[1] for item in tfidf][::-1]
+        plt.barh(width=scores, y=words)
+        plt.title('Average TFIDF\nall class')
+        plt.subplot(122)
+        tf = sorted(all_stats.term_frequency.items(), key=operator.itemgetter(1), reverse=True)[:20]
+        words = [item[0] for item in tf][::-1]
+        count = [item[1] for item in tf][::-1]
+        plt.barh(width=count, y=words)
+        plt.title('Overall Term Frequency\nall class')
+        plt.show()
+        record = {'class': 'all'}
+        record['total count'] = all_stats.total_count
+        for pattern, count in all_stats.pattern_stats.items():
+            record['%s (term count)' % pattern] = count[0]
+            record['%s (doc count)' % pattern] = count[1]
+        record['longest doc'] = max(list(all_stats.word_count.keys()))
+        labelled_stats_table.append(record)
+
+        _stats_df = pd.DataFrame.from_records(labelled_stats_table)
+        display(_stats_df)
