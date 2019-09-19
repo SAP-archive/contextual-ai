@@ -10,7 +10,7 @@ class NotebookPlots:
 
     @classmethod
     def plot_categorical_stats(cls, stats, feature_column):
-        plt.barh(width=stats.frequency_count.values(), y=stats.frequency_count.keys())
+        plt.barh(width=list(stats.frequency_count.values()), y=list(stats.frequency_count.keys()))
         plt.ylabel(feature_column)
         plt.show()
 
