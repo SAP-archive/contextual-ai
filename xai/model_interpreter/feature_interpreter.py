@@ -3,11 +3,11 @@ import operator
 import numpy
 import pandas as pd
 from scipy import stats
-from typing import List
-
-import shap
+from typing import List, Dict, Tuple
 from xai.data.constants import DATATYPE
 from xai.data.explorer.data_analyzer_suite import DataAnalyzerSuite
+
+import shap
 from xai.model_interpreter.exceptions import InconsistentSize, TrainingDataNotProvided
 from xai.model_interpreter.exceptions import UnsupportedMethodType
 
@@ -33,7 +33,7 @@ class FeatureInterpreter:
         """
         self._feature_names = feature_names
 
-    def get_feature_distribution(self, feature_types: List[str], train_x: numpy.ndarray, labels: List = None):
+    def get_feature_distribution(self, feature_types: List[str], train_x: numpy.ndarray, labels: List = None) -> Dict:
         """
         Get feature distribution analysis based on feature types
 
@@ -68,7 +68,7 @@ class FeatureInterpreter:
                                 categorical_corr_type='lambda',
                                 numerical_corr_type='pearson',
                                 text_corr_type='tf',
-                                categorical_vs_numerical_corr_type='anova'):
+                                categorical_vs_numerical_corr_type='anova') -> (pd.DataFrame, pd.DataFrame):
         """
         Get feature correlation
 
@@ -128,7 +128,7 @@ class FeatureInterpreter:
 
         return correlation_types, correlation_values
 
-    def _get_categorical_correlation(self, df, categorical_cols, correlation_type):
+    def _get_categorical_correlation(self, df, categorical_cols, correlation_type)->Dict[Tuple[str,str],Tuple[str,float]]:
         """
         Internal function to calculate correlation among categorical features
 
@@ -144,7 +144,7 @@ class FeatureInterpreter:
         corr = dict()
         return corr
 
-    def _get_numerical_correlation(self, df, numerical_cols, correlation_type):
+    def _get_numerical_correlation(self, df, numerical_cols, correlation_type)->Dict[Tuple[str,str],Tuple[str,float]]:
         """
         Internal function to calculate correlation among numerical features
 
@@ -166,7 +166,7 @@ class FeatureInterpreter:
                 correlations[(col_a, col_b)] = (correlation_type, corr[col_a][col_b])
         return correlations
 
-    def _get_text_correlation(self, df, text_cols, correlation_type):
+    def _get_text_correlation(self, df, text_cols, correlation_type)->Dict[Tuple[str,str],Tuple[str,float]]:
         """
         Internal function to calculate correlation among text features
 
@@ -182,7 +182,7 @@ class FeatureInterpreter:
         corr = dict()
         return corr
 
-    def _get_categorical_vs_numerical_correlation(self, df, categorical_cols, numerical_cols, correlation_type):
+    def _get_categorical_vs_numerical_correlation(self, df, categorical_cols, numerical_cols, correlation_type)->Dict[Tuple[str,str],Tuple[str,float]]:
         """
         Internal function to calculate correlation between categorical feature and numerical feature
 
@@ -216,7 +216,7 @@ class FeatureInterpreter:
                 correlations[(numerical_col, categorical_col)] = correlations[(categorical_col, numerical_col)]
         return correlations
 
-    def get_feature_importance_ranking(self, trained_model, train_x: numpy.ndarray = None, method='default'):
+    def get_feature_importance_ranking(self, trained_model, train_x: numpy.ndarray = None, method='default')->List[Tuple[str,float]]:
         """
         Get feature importance ranking
 
@@ -248,7 +248,7 @@ class FeatureInterpreter:
             if method == 'shap':
                 return self._get_ranking_by_shap(trained_model, train_x)
 
-    def _get_ranking_by_shap(self, trained_model, train_x):
+    def _get_ranking_by_shap(self, trained_model, train_x)->List[Tuple[str,float]]:
         """
         Internal function to generate feature ranking using shap value
 
