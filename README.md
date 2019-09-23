@@ -12,7 +12,7 @@ Overview
 
 ### Installation ###
 
-XAI works with Python 3.7+. You can install it using pip (TODO):
+XAI works with Python 3.6+. You can install it using pip (TODO):
 
 ````
 pip install xai.whl
