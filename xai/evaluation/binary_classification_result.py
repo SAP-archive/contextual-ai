@@ -15,10 +15,11 @@ class BinaryClassificationResult(ClassificationResult):
     def load_results_from_meta(self, evaluation_result: dict):
         """
         save metrics into the object result class
+
         Args:
             evaluation_result(dict): key-value pair for metric
                 - key: metric name
-                - value: metric value
+                - value: metric dict
         """
         for metric, value in evaluation_result.items():
             if metric == constants.TRAIN_TEST_CM:
@@ -29,7 +30,9 @@ class BinaryClassificationResult(ClassificationResult):
     def convert_metrics_to_table(self):
         """
         converts the metrics saved in the object to a table that is ready to render in the report.
-        Returns: a set of tables (title, header, values)
+
+        Returns:
+            a set of tables (title, header, values)
         """
 
         table_header = ['Metric', 'Value']
@@ -43,7 +46,9 @@ class BinaryClassificationResult(ClassificationResult):
     def get_confusion_matrix(self):
         """
         returns the ConfusionMatrix object associated with the result
-        Returns: ConfusionMatrix object
+
+        Returns:
+            ConfusionMatrix object
         """
 
         return self.confusion_matrix
