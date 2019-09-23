@@ -11,6 +11,7 @@
    :caption: Contents
 
    pre-training
+   models
    inference
    report
 
