@@ -19,6 +19,7 @@ class DataframeValidator:
             key_col: a list of column names to check the duplicates
 
         Returns:
+            A list of list with all duplicated row index
 
         """
         if key_col is None:
