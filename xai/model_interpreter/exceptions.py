@@ -4,7 +4,8 @@ class InvalidExplanationFormat(Exception):
     """
 
     def __init__(self, exp):
-        message = 'The following explanation has invalid format! The entire explanation will be ignored. {}'.format(exp)
+        message = 'The following explanation has invalid format! ' \
+                  'The entire explanation will be ignored. {}'.format(exp)
         Exception.__init__(self, message)
         self.message = message
 
@@ -60,7 +61,8 @@ class InconsistentSize(Exception):
     """
 
     def __init__(self, column_a, column_b, length_a, length_b):
-        message = "'{}' and '{}' have different lengths: {}, {}.".format(column_a, column_b, length_a, length_b)
+        message = "'{}' and '{}' have different lengths: {}, " \
+                  "{}.".format(column_a, column_b, length_a, length_b)
         Exception.__init__(self, message)
         self.message = message
 
