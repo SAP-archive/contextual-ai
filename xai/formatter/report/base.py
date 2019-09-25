@@ -10,7 +10,7 @@ from __future__ import division
 from __future__ import print_function
 
 from xai.formatter.report.section import (
-    CoverSection,
+    OverviewSection,
     DetailSection
 )
 from xai.formatter.writer.base import Writer
@@ -31,7 +31,7 @@ class Report:
         self._name = name
 
         self._writer = None
-        self._cover_section = CoverSection()
+        self._overview_section = OverviewSection()
         self._detail_section = DetailSection()
         self._has_content_table = True # default having content table
 
@@ -41,12 +41,12 @@ class Report:
         return self._name
 
     @property
-    def cover(self):
-        """Returns cover section."""
-        return self._cover_section
+    def overview(self):
+        """Returns overview section."""
+        return self._overview_section
 
     @property
-    def content(self):
+    def detail(self):
         """Returns detail section."""
         return self._detail_section
 
@@ -72,7 +72,7 @@ class Report:
         Args:
             writer (Writer): report writer
         """
-        writer.build(title=self.name, cover=self.cover,
-                     detail=self.content,
+        writer.build(title=self.name, overview=self.overview,
+                     detail=self.detail,
                      content_table=self.has_content_table)
         writer.out()

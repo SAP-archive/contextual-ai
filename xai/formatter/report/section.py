@@ -558,22 +558,22 @@ class Section:
 
 
 ################################################################################
-###  Cover Section
+###  Overview Section
 ################################################################################
-class CoverSection(Section):
+class OverviewSection(Section):
     """
-    Cover Section
+    Overview Section
     """
 
     def __init__(self) -> None:
         """
-        Cover Section
+        Overview Section
         """
         from xai.formatter.contents.base import NewPage
         contents = list()
         contents.append(NewPage())
-        super(CoverSection, self).__init__(type=Section.COVER,
-                                           contents=contents)
+        super(OverviewSection, self).__init__(type=Section.COVER,
+                                              contents=contents)
 
 
 ################################################################################

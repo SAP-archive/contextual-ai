@@ -3,7 +3,7 @@
 
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
-"""PDF Report Formatter - Base"""
+"""PDF Report Formatter - Publisher"""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -45,10 +45,23 @@ class CustomPdf(FPDF):
     FOOTER_FONTSIZE = 10
     CONTEXT_FONTSIZE = 12
 
-    def __init__(self) -> None:
+    COPY_RIGHT = 'Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved'
+
+    def __init__(self, name='pdf_report', path='./', dest='F') -> None:
         """
         Custom PDF
+
+        Args:
+            name (str, Optional): file name,
+                       (default is 'report_file')
+            path (str, Optional): output path
+            dest (str, Optional): PDF destination (default 'F' == file)
         """
+        self._name = name
+        self._path = path
+        self._dest = dest
+        self._extension = 'pdf'
+
         super(CustomPdf, self).__init__()
         # initialize for report information
         self._create_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -91,6 +104,26 @@ class CustomPdf(FPDF):
         self.itemize_level = 0  # current itemize level
         self.itemize_symbol = ''  # current itemize symbol
         self.foot_size = 15
+
+    @property
+    def path(self):
+        """Returns file output path"""
+        return self._path
+
+    @property
+    def name(self):
+        """Returns file name."""
+        return self._name
+
+    @property
+    def extension(self):
+        """Returns file extension."""
+        return self._extension
+
+    @property
+    def dest(self):
+        """Returns PDF report output destination ."""
+        return self._dest
 
     ################################################################################
     ### PDF Customization
@@ -143,8 +176,10 @@ class CustomPdf(FPDF):
         # Text color in gray
         self.set_text_color(**CustomPdf.DEFAULT_FOOTER_FONT_COLOR)
         # Page number
-        self.cell(0, CustomPdf.FOOTER_FONTSIZE, 'Page ' +
-                  str(self.page_no()), 0, 0, 'C')
+        self.cell(0, CustomPdf.FOOTER_FONTSIZE,
+                  'Page %s                         %s' % (str(self.page_no()),
+                                                          self.COPY_RIGHT),
+                  0, 0, 'R')
 
     def add_ribbon(self, title):
         """
@@ -664,3 +699,11 @@ class CustomPdf(FPDF):
                 return False
             title_drawed = True
         return True
+
+    def to_file(self):
+        """
+        Output to some destination
+        """
+        report_name = '%s/%s.%s' % (self.path, self.name, self.extension)
+        print(report_name + " " + self.dest)
+        self.output(name=report_name, dest=self.dest)

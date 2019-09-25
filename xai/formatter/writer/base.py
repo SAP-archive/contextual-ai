@@ -13,11 +13,11 @@ from abc import ABC, abstractmethod
 
 from typing import Tuple, Dict, List
 
-from xai.formatter.report.section import CoverSection, DetailSection
+from xai.formatter.report.section import OverviewSection, DetailSection
 
 
 ################################################################################
-### Writer Strategy
+### Writer Visitor
 ################################################################################
 class Writer(ABC):
     """
@@ -47,14 +47,14 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def build(self, title: str, cover: CoverSection,
-              detail: DetailSection, content_table=False):
+    def build(self, title: str, overview: OverviewSection,
+              detail: DetailSection, *, content_table=False):
         """
         Build Report
 
         Args:
             title(str): header title
-            cover(CoverSection): Cover Section of report
+            overview(OverviewSection): Cover Section of report
             detail(DetailSection): Details Section of report
             content_table (bool): is content table enabled
                             default False
@@ -72,7 +72,7 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_header(self, text: str, level: int, link=None):
+    def draw_header(self, text: str, level: int, *, link=None):
         """
         Draw Header
 
@@ -84,7 +84,7 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_title(self, text: str, level: int, link=None):
+    def draw_title(self, text: str, level: int, *, link=None):
         """
         Draw Title
 
@@ -109,7 +109,7 @@ class Writer(ABC):
     ###  Summary Section
     ################################################################################
     @abstractmethod
-    def draw_training_time(self, notes: str, timing: List[Tuple[str, int]]):
+    def draw_training_time(self, notes: str, *, timing: List[Tuple[str, int]]):
         """
         Draw information of timing to the report
 
@@ -121,7 +121,8 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_data_set_summary(self, notes: str, data_summary: List[Tuple[str, int]]):
+    def draw_data_set_summary(self, notes: str, *, data_summary: List[Tuple[
+        str, int]]):
         """
         Draw information of dataset summary to the report
 
@@ -133,7 +134,8 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_evaluation_result_summary(self, notes: str, evaluation_result: dict):
+    def draw_evaluation_result_summary(self, notes: str, *, evaluation_result:
+    dict):
         """
         Draw information of training performance to the result
 
@@ -152,7 +154,7 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_model_info_summary(self, notes: str, model_info: list):
+    def draw_model_info_summary(self, notes: str, *, model_info: list):
         """
         Draw information of model info to the result
 
@@ -168,7 +170,7 @@ class Writer(ABC):
     ###  Data Section
     ################################################################################
     @abstractmethod
-    def draw_data_missing_value(self, notes: str, missing_count: dict,
+    def draw_data_missing_value(self, notes: str, *, missing_count: dict,
                                 total_count: dict, ratio=False):
         """
         Draw Missing Data Value Summary Table
@@ -182,7 +184,7 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_data_set_distribution(self, notes: str,
+    def draw_data_set_distribution(self, notes: str, *,
                                    data_set_distribution: Tuple[str, dict],
                                    max_class_shown=20):
         """
@@ -202,7 +204,7 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_data_attributes(self, notes: str, data_attribute: Dict):
+    def draw_data_attributes(self, notes: str, *, data_attribute: Dict):
         """
         Draw information of data attribute for data fields to the report
 
@@ -217,7 +219,7 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_categorical_field_distribution(self, notes: str,
+    def draw_categorical_field_distribution(self, notes: str, *,
                                             field_name: str,
                                             field_distribution: dict,
                                             max_values_display=20,
@@ -240,7 +242,7 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_numeric_field_distribution(self, notes: str,
+    def draw_numeric_field_distribution(self, notes: str, *,
                                         field_name: str,
                                         field_distribution: dict,
                                         force_no_log=False,
@@ -274,7 +276,7 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_text_field_distribution(self, notes: str,
+    def draw_text_field_distribution(self, notes: str, *,
                                      field_name: str,
                                      field_distribution: dict):
         """
@@ -296,7 +298,7 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_datetime_field_distribution(self, notes: str,
+    def draw_datetime_field_distribution(self, notes: str, *,
                                          field_name: str,
                                          field_distribution: dict):
         """
@@ -320,7 +322,7 @@ class Writer(ABC):
     ###  Feature Section
     ################################################################################
     @abstractmethod
-    def draw_feature_importance(self, notes: str,
+    def draw_feature_importance(self, notes: str, *,
                                 importance_ranking: List[List],
                                 importance_threshold: float,
                                 maximum_number_feature=20):
@@ -341,7 +343,7 @@ class Writer(ABC):
     ###  Training Section
     ################################################################################
     @abstractmethod
-    def draw_hyperparameter_tuning(self, notes: str,
+    def draw_hyperparameter_tuning(self, notes: str, *,
                                    history: dict, best_idx: str,
                                    search_space=None, benchmark_metric=None,
                                    benchmark_threshold=None,
@@ -369,7 +371,7 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_learning_curve(self, notes: str,
+    def draw_learning_curve(self, notes: str, *,
                             history: dict, best_idx: str,
                             benchmark_metric=None, benchmark_threshold=None,
                             training_params=None):
@@ -398,7 +400,7 @@ class Writer(ABC):
     ###  Evaluation Section
     ################################################################################
     @abstractmethod
-    def draw_multi_class_evaluation_metric_results(self, notes: str,
+    def draw_multi_class_evaluation_metric_results(self, notes: str, *,
                                                    metric_tuple):
         """
         Add information about metric results for multi-class evaluation
@@ -418,7 +420,7 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_binary_class_evaluation_metric_results(self, notes: str,
+    def draw_binary_class_evaluation_metric_results(self, notes: str, *,
                                                     metric_tuple: tuple,
                                                     aggregated=True):
         """
@@ -437,7 +439,7 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_confusion_matrix_results(self, notes: str,
+    def draw_confusion_matrix_results(self, notes: str, *,
                                       confusion_matrix_tuple: tuple):
         """
         Add information about confusion matrix to report
@@ -455,7 +457,7 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_multi_class_confidence_distribution(self, notes: str,
+    def draw_multi_class_confidence_distribution(self, notes: str, *,
                                                  visual_result_tuple: tuple,
                                                  max_num_classes=9):
         """
@@ -477,7 +479,7 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_binary_class_confidence_distribution(self, notes: str,
+    def draw_binary_class_confidence_distribution(self, notes: str, *,
                                                   visual_result_tuple: tuple):
         """
         Add information about binary class confidence distribution to report
@@ -495,9 +497,8 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_binary_class_reliability_diagram(self,
-                                              visual_result_tuple: tuple,
-                                              notes=None):
+    def draw_binary_class_reliability_diagram(self, notes: str, *,
+                                              visual_result_tuple: tuple):
         """
         Add information about reliability to report
 

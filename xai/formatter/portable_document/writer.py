@@ -11,66 +11,44 @@ from __future__ import print_function
 
 import os
 import copy
+import shutil
 import tempfile
 
 from typing import Tuple, Dict, List
 
-from xai.formatter.contents.base import Title, SectionTitle, Header
-from xai.formatter.report.section import CoverSection, DetailSection
+from xai.formatter.contents import Title, SectionTitle, Header
+from xai.formatter.report.section import OverviewSection, DetailSection
 
 from xai.formatter.portable_document.publisher import CustomPdf
 
-from xai.formatter.writer.base import Writer
+from xai.formatter.writer import Writer
 
 
 ################################################################################
-### Pdf Writer Strategy
+### Pdf Writer Visitor
 ################################################################################
 class PdfWriter(Writer):
 
-    def __init__(self, name='training_report',
+    def __init__(self, name='pdf_report',
                  path='./', dest='F') -> None:
         """
         Generate PDF report
 
         Args:
             name (str, Optional): filename of report,
-                        default is 'training_report'
+                        default is 'pdf_report'
             path (str, Optional): output path (default current dict './')
-
             dest (str, Optional): PDF destination (default 'F' == file)
         """
         super(PdfWriter, self).__init__()
-        self._path = path
-        self._name = name
-        self._dest = dest
-        self._pdf = CustomPdf()
+        self._pdf = CustomPdf(name=name, path=path, dest=dest)
         # default report header title is the report name
         self._pdf.set_title(title=name)
-
-        self._header_1_count = 0
-        self._header_2_count = 0
-        self._header_3_count = 0
 
         # set up temporary image folder
         self.figure_path = tempfile.TemporaryDirectory().name
 
         os.mkdir(self.figure_path)
-
-    @property
-    def path(self):
-        """Returns PDF output path"""
-        return self._path
-
-    @property
-    def name(self):
-        """Returns PDF report name."""
-        return self._name
-
-    @property
-    def dest(self):
-        """Returns PDF report output destination ."""
-        return self._dest
 
     @property
     def pdf(self):
@@ -81,67 +59,76 @@ class PdfWriter(Writer):
         """
         Output PDF to some destination
         """
-        report_path = '%s/%s.pdf' % (self.path, self.name)
-        self.pdf.output(name=report_path, dest=self.dest)
+        self.pdf.to_file()
+        # clean up temp folder
+        if os.path.exists(self.figure_path):
+            shutil.rmtree(self.figure_path)
 
-    def build(self, title: str, cover: CoverSection,
-              detail: DetailSection, content_table=False):
+    def build(self, title: str, overview: OverviewSection,
+              detail: DetailSection, *, content_table=False):
         """
         Build Report
 
         Args:
             title(str): header title
-            cover(CoverSection): Cover Section of report
+            overview(OverviewSection): Cover Section of report
             detail(DetailSection): Details Section of report
             content_table (bool): is content table enabled
                             default False
         """
+        _h1_count = 0
+        _h2_count = 0
+        _h3_count = 0
+
         self.pdf.set_title(title)
         # -- Draw Cover Contents --
-        if len(cover.contents) > 1:
-            for content in cover.contents:
+        if len(overview.contents) > 1:
+            for content in overview.contents:
                 content.draw(writer=self)
         # -- Draw Content Table --
         dc_contents = copy.deepcopy(detail.contents)
         if content_table:
             self.pdf.add_page()
             self.pdf.add_ribbon('Content Table')
-            for content in dc_contents:
-                if isinstance(content, SectionTitle) and \
-                        content.level == Title.SECTION_TITLE:
+
+        for content in dc_contents:
+            if isinstance(content, SectionTitle) and \
+                    content.level == Title.SECTION_TITLE:
+                if content_table:
                     content.link = self.pdf.add_link()
                     self.pdf.add_new_line(line='<B>%s</B>' % content.text,
                                           link=content.link)
-                elif isinstance(content, Header):
-                    if content.level == Header.LEVEL_1:
-                        self._header_1_count += 1
-                        self._header_2_count = 0
-                        self._header_3_count = 0
+            elif isinstance(content, Header):
+                if content.level == Header.LEVEL_1:
+                    _h1_count += 1
+                    _h2_count = 0
+                    _h3_count = 0
+                    content.text = '%s   %s' % (_h1_count, content.text)
+                    if content_table:
                         content.link = self.pdf.add_link()
-                        content.text = '%s   %s' % (self._header_1_count,
-                                                    content.text)
                         self.pdf.add_new_line(line='<B>%s</B>' % content.text,
                                               link=content.link)
-                    elif content.level == Header.LEVEL_2:
-                        self._header_2_count += 1
-                        self._header_3_count = 0
+                elif content.level == Header.LEVEL_2:
+                    _h2_count += 1
+                    _h3_count = 0
+                    content.text = '%s.%s   %s' % (_h1_count, _h2_count,
+                                                   content.text)
+                    if content_table:
                         content.link = self.pdf.add_link()
-                        content.text = '%s.%s   %s' % (self._header_1_count,
-                                                       self._header_2_count,
-                                                       content.text)
                         self.pdf.add_new_line(line='.. %s' % content.text,
                                               link=content.link)
-                    elif content.level == Header.LEVEL_3:
-                        self._header_3_count += 1
-                        content.text = '%s.%s.%s   %s' % (self._header_1_count,
-                                                          self._header_2_count,
-                                                          self._header_3_count,
-                                                          content.text)
+                elif content.level == Header.LEVEL_3:
+                    _h3_count += 1
+                    content.text = '%s.%s.%s   %s' % (_h1_count, _h2_count,
+                                                      _h3_count,
+                                                      content.text)
+                    if content_table:
+                        content.link = self.pdf.add_link()
                         self.pdf.add_new_line(line='.... <I>%s</I>' %
                                                    content.text,
                                               link=content.link)
         # -- Draw Details Contents --
-        if len(dc_contents) > 0:
+        if len(dc_contents) > 1:
             for content in dc_contents:
                 content.draw(writer=self)
 
@@ -151,7 +138,7 @@ class PdfWriter(Writer):
         """
         self.pdf.add_page()
 
-    def draw_header(self, text: str, level: int, link=None):
+    def draw_header(self, text: str, level: int, *, link=None):
         """
         Draw Header
 
@@ -173,7 +160,7 @@ class PdfWriter(Writer):
                 self.pdf.set_link(link)
             self.pdf.add_new_line(text, style='BI')
 
-    def draw_title(self, text: str, level: int, link=None):
+    def draw_title(self, text: str, level: int, *, link=None):
         """
         Draw Title
 
@@ -204,7 +191,7 @@ class PdfWriter(Writer):
     ################################################################################
     ###  Summary Section
     ################################################################################
-    def draw_training_time(self, notes: str, timing: List[Tuple[str, int]]):
+    def draw_training_time(self, notes: str, *, timing: List[Tuple[str, int]]):
         """
         Draw information of timing to the report
 
@@ -224,7 +211,7 @@ class PdfWriter(Writer):
         self.pdf.end_itemize()
         self.pdf.ln()
 
-    def draw_data_set_summary(self, notes: str,
+    def draw_data_set_summary(self, notes: str, *,
                               data_summary: List[Tuple[str, int]]):
         """
         Draw information of dataset summary to the report
@@ -243,7 +230,7 @@ class PdfWriter(Writer):
         self.pdf.end_itemize()
         self.pdf.ln()
 
-    def draw_evaluation_result_summary(self, notes: str,
+    def draw_evaluation_result_summary(self, notes: str, *,
                                        evaluation_result: dict):
         """
         Draw information of training performance to the result
@@ -306,7 +293,7 @@ class PdfWriter(Writer):
             self.pdf.end_itemize()
             self.pdf.ln()
 
-    def draw_model_info_summary(self, notes: str, model_info: list):
+    def draw_model_info_summary(self, notes: str, *, model_info: list):
         """
         Draw information of model info to the result
 
@@ -328,7 +315,7 @@ class PdfWriter(Writer):
     ################################################################################
     ###  Data Section
     ################################################################################
-    def draw_data_missing_value(self, notes: str, missing_count: dict,
+    def draw_data_missing_value(self, notes: str, *, missing_count: dict,
                                 total_count: dict, ratio=False):
         """
         Draw Missing Data Value Summary Table
@@ -410,7 +397,7 @@ class PdfWriter(Writer):
                                col_width=_col_width)
             self.pdf.add_new_line()
 
-    def draw_data_set_distribution(self, notes: str,
+    def draw_data_set_distribution(self, notes: str, *,
                                    data_set_distribution: Tuple[str, dict],
                                    max_class_shown=20):
         """
@@ -456,7 +443,7 @@ class PdfWriter(Writer):
                                          limit_length=max_class_shown)
             self.pdf.add_large_image(image_path)
 
-    def draw_data_attributes(self, notes: str, data_attribute: Dict):
+    def draw_data_attributes(self, notes: str, *, data_attribute: Dict):
         """
         Draw information of data attribute for data fields to the report
 
@@ -468,7 +455,6 @@ class PdfWriter(Writer):
                     - key: attribute name
                     - value: attribute value
         """
-
         def get_data_attributes():
             attribute_list = list(
                 set().union(*[set(attribute_dict.keys())
@@ -494,7 +480,7 @@ class PdfWriter(Writer):
         self.pdf.add_table(_table_header, _table_data)
         self.pdf.add_new_line()
 
-    def draw_categorical_field_distribution(self, notes: str,
+    def draw_categorical_field_distribution(self, notes: str, *,
                                             field_name: str,
                                             field_distribution: dict,
                                             max_values_display=20,
@@ -552,7 +538,7 @@ class PdfWriter(Writer):
                                      style='I')
         self.pdf.end_itemize()
 
-    def draw_numeric_field_distribution(self, notes: str,
+    def draw_numeric_field_distribution(self, notes: str, *,
                                         field_name: str,
                                         field_distribution: dict,
                                         force_no_log=False,
@@ -619,7 +605,7 @@ class PdfWriter(Writer):
                                            style='I')
         self.pdf.end_itemize()
 
-    def draw_text_field_distribution(self, notes: str,
+    def draw_text_field_distribution(self, notes: str, *,
                                      field_name: str,
                                      field_distribution: dict):
         """
@@ -665,7 +651,7 @@ class PdfWriter(Writer):
                                            style='I')
         self.pdf.end_itemize()
 
-    def draw_datetime_field_distribution(self, notes: str,
+    def draw_datetime_field_distribution(self, notes: str, *,
                                          field_name: str,
                                          field_distribution: dict):
         """
@@ -709,7 +695,7 @@ class PdfWriter(Writer):
     ################################################################################
     ###  Feature Section
     ################################################################################
-    def draw_feature_importance(self, notes: str,
+    def draw_feature_importance(self, notes: str, *,
                                 importance_ranking: List[List],
                                 importance_threshold: float,
                                 maximum_number_feature=20):
@@ -766,7 +752,7 @@ class PdfWriter(Writer):
     ################################################################################
     ###  Training Section
     ################################################################################
-    def draw_hyperparameter_tuning(self, notes: str,
+    def draw_hyperparameter_tuning(self, notes: str, *,
                                    history: dict, best_idx: str,
                                    search_space=None, benchmark_metric=None,
                                    benchmark_threshold=None,
@@ -826,7 +812,7 @@ class PdfWriter(Writer):
         # best result for hyperopt
         self.pdf.add_new_line("Best Result from Hyperparameter Tuning",
                               style="BI")
-        self.pdf.add_new_line("The best iteration is ", int(best_idx))
+        self.pdf.add_key_value_pair("The best iteration is ", best_idx)
         self.pdf.add_new_line("Parameters:", style='B')
 
         self.pdf.start_itemize()
@@ -893,7 +879,7 @@ class PdfWriter(Writer):
                         'but will continue to improve it.')
         self.pdf.ln(5)
 
-    def draw_learning_curve(self, notes: str,
+    def draw_learning_curve(self, notes: str, *,
                             history: dict, best_idx: str,
                             benchmark_metric=None, benchmark_threshold=None,
                             training_params=None):
@@ -970,7 +956,7 @@ class PdfWriter(Writer):
     ################################################################################
     ###  Evaluation Section
     ################################################################################
-    def draw_multi_class_evaluation_metric_results(self, notes: str,
+    def draw_multi_class_evaluation_metric_results(self, notes: str, *,
                                                    metric_tuple):
         """
         Add information about metric results for multi-class evaluation
@@ -1000,7 +986,7 @@ class PdfWriter(Writer):
             self.pdf.add_table(table_header, table_data, table_layout)
         self.pdf.ln(5)
 
-    def draw_binary_class_evaluation_metric_results(self, notes: str,
+    def draw_binary_class_evaluation_metric_results(self, notes: str, *,
                                                     metric_tuple: tuple,
                                                     aggregated=True):
         """
@@ -1047,7 +1033,7 @@ class PdfWriter(Writer):
             self.pdf.add_table(combined_table_header, combined_table_values)
         self.pdf.ln(5)
 
-    def draw_confusion_matrix_results(self, notes: str,
+    def draw_confusion_matrix_results(self, notes: str, *,
                                       confusion_matrix_tuple: tuple):
         """
         add information about confusion matrix to report
@@ -1094,7 +1080,7 @@ class PdfWriter(Writer):
             self.pdf.add_list_of_grid_images(image_list, spec_list)
         self.pdf.ln(5)
 
-    def draw_multi_class_confidence_distribution(self, notes: str,
+    def draw_multi_class_confidence_distribution(self, notes: str, *,
                                                  visual_result_tuple: tuple,
                                                  max_num_classes=9):
         """
@@ -1149,7 +1135,7 @@ class PdfWriter(Writer):
                                              grid_spec=ABSOLUTE_3_EQUAL_GRID_SPEC)
         self.pdf.ln(5)
 
-    def draw_binary_class_confidence_distribution(self, notes: str,
+    def draw_binary_class_confidence_distribution(self, notes: str, *,
                                                   visual_result_tuple: tuple):
         """
         Add information about binary class confidence distribution to report
@@ -1190,9 +1176,8 @@ class PdfWriter(Writer):
             self.pdf.add_list_of_grid_images(image_list, spec_list)
         self.pdf.ln(5)
 
-    def draw_binary_class_reliability_diagram(self,
-                                              visual_result_tuple: tuple,
-                                              notes=None):
+    def draw_binary_class_reliability_diagram(self, notes: str, *,
+                                              visual_result_tuple: tuple):
         """
         Add information about reliability to report
         

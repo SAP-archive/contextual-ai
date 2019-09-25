@@ -7,6 +7,6 @@
 from xai.formatter.report.base import Report
 
 from xai.formatter.report.section import (
-    CoverSection,
+    OverviewSection,
     DetailSection
 )

@@ -36,7 +36,7 @@ class TrainingTiming(Content):
         if not (notes is None):
             self._notes = notes
         else:
-            self._notes = "Training Time Summary."
+            self._notes = "Training Time Summary"
 
     @property
     def timing(self):
@@ -80,7 +80,7 @@ class DataSetSummary(Content):
         if not (notes is None):
             self._notes = notes
         else:
-            self._notes = "Dataset Summary."
+            self._notes = "Dataset Summary"
 
     @property
     def data_summary(self):
@@ -130,7 +130,7 @@ class EvaluationResultSummary(Content):
         if not (notes is None):
             self._notes = notes
         else:
-            self._notes = "Evaluation Result Summary."
+            self._notes = "Evaluation Result Summary"
 
     @property
     def evaluation_result(self):
@@ -176,7 +176,7 @@ class ModelInfoSummary(Content):
         if not (notes is None):
             self._notes = notes
         else:
-            self._notes = "Model Info Summary."
+            self._notes = "Model Info Summary"
 
     @property
     def model_info(self):
