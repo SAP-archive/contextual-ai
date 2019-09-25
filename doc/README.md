@@ -22,7 +22,7 @@ which aim to address similar types of problems encountered in the same stage of 
 - Each module should come with a README.md file in the root of its source package (e.g. xai/explain/README.md),
 describing its main features and capabilities. 
 - Optionally the module can include its own requirements.txt file stating the dependencies to run the module alone.
-- Each module should provide some tutorials demonstrating is typical use case scenarios.
+- Each module should provide some tutorials demonstrating its typical use case scenarios.
 The tutorials are recommended to be presented in the format of Jupyter notebooks. 
 A README.md file should be included to briefly introduce how to run the notebooks and what each notebook does.
 - All tutorials related files (including README.md and *.ipynb) should be put under the same folder in tutorials 
@@ -41,5 +41,5 @@ A README.md file should be included to briefly introduce how to run the notebook
 (e.g. `![Report Header](images/sample-report-header.png)`), html `<img>` tag is not supported.
 - Due to current library limitations, Juypter notebooks from different tutorials will be extracted to 
 the same root folder during intermediate steps. If a notebook has any folder containing referenced images, the folder
-must have unique names globally across all tutorials. 
+must have a unique name globally across all tutorials. 
 Thus it is recommended to prefix your image folder with the module name.
