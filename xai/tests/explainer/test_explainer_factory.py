@@ -1,3 +1,8 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
 import unittest
 
 from xai.explainer.config import DICT_DOMAIN_TO_DEFAULT_ALG, DICT_DOMAIN_TO_CLASS
