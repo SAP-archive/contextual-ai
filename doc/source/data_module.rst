@@ -5,7 +5,6 @@ Data
 .. toctree::
    :maxdepth: 2
 
-   Overview <pre-training_readme>
-   Tutorial <pre-training_tutorial>
+   Overview <data_module_readme>
+   Tutorial <data_module_tutorial>
    API Documentation <data/data>
-

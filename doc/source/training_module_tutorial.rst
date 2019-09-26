@@ -9,5 +9,5 @@ Tutorial
 .. toctree::
    :maxdepth: 2
 
-   tutorials/model_interpreter/model_interpreter_tutorial.nblink
+   tutorials/model_interpreter/tutorial_model_interpreter.nblink
 

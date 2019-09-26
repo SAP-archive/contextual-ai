@@ -9,5 +9,5 @@ Tutorial
 .. toctree::
    :maxdepth: 2
 
-   tutorials/data/data_explorer.nblink
+   tutorials/data/tutorial_data_explorer.nblink
 

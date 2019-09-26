@@ -10,8 +10,9 @@
    :maxdepth: 2
    :caption: Contents
 
-   pre-training
-   models
-   inference
-   report
+   data_module
+   training_module
+   inference_module
+   formatter_module
+
 

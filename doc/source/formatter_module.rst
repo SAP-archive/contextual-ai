@@ -6,7 +6,7 @@ Formatter
 .. toctree::
    :maxdepth: 2
 
-   Overview <report_readme>
-   Tutorial <report_tutorial>
+   Overview <formatter_module_readme>
+   Tutorial <formatter_module_tutorial>
    API Documentation <formatter/formatter>
 
