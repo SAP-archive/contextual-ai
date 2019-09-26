@@ -1,5 +1,5 @@
-from xai.evaluation.basic_result import ClassificationResult
-from xai.evaluation.confusion_matrix import ConfusionMatrix
+from xai.model.evaluation.basic_result import ClassificationResult
+from xai.model.evaluation.confusion_matrix import ConfusionMatrix
 from xai.util import get_table_layout
 from xai import constants
 from collections import defaultdict

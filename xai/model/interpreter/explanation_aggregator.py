@@ -3,7 +3,7 @@ from collections import defaultdict, Counter
 
 from typing import Dict, Tuple
 
-from xai.model_interpreter.exceptions import InvalidExplanationFormat, \
+from xai.model.interpreter.exceptions import InvalidExplanationFormat, \
     MutipleScoresFoundForSameFeature, UnsupportedMethodType, InvalidArgumentError
 
 

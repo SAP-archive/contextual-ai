@@ -5,8 +5,8 @@ import numpy
 from typing import List, Union, Dict, Tuple
 
 from xai.explainer.explainer_factory import ExplainerFactory
-from xai.model_interpreter.explanation_aggregator import ExplanationAggregator
-from xai.model_interpreter.exceptions import InterpreterUninitializedError
+from xai.model.interpreter.explanation_aggregator import ExplanationAggregator
+from xai.model.interpreter.exceptions import InterpreterUninitializedError
 
 
 class ModelInterpreter:

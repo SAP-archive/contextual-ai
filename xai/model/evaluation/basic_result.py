@@ -3,7 +3,7 @@ from typing import Tuple, List
 from collections import defaultdict
 from ordered_set import OrderedSet
 
-from xai.evaluation.confusion_matrix import ConfusionMatrix
+from xai.model.evaluation.confusion_matrix import ConfusionMatrix
 
 
 class ClassificationResult(ABC):

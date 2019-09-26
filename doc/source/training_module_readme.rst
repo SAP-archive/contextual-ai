@@ -1,2 +1,2 @@
 
-.. mdinclude:: ../../xai/model_interpreter/README.md
+.. mdinclude:: ../../xai/model/README.md

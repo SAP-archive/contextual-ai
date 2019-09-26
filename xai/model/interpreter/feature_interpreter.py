@@ -8,8 +8,8 @@ from xai.data.constants import DATATYPE
 from xai.data.explorer.data_analyzer_suite import DataAnalyzerSuite
 
 import shap
-from xai.model_interpreter.exceptions import InconsistentSize, TrainingDataNotProvided
-from xai.model_interpreter.exceptions import UnsupportedMethodType
+from xai.model.interpreter.exceptions import InconsistentSize, TrainingDataNotProvided
+from xai.model.interpreter.exceptions import UnsupportedMethodType
 
 
 class FeatureInterpreter:
