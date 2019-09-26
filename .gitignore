@@ -17,5 +17,10 @@ sap_explainable_ai.egg-info/
 **/*.html
 xai/formatter/portable_document/fonts/*.pkl
 
-doc/source/*.rst
 doc/build
+doc/source/data
+doc/source/explainer
+doc/source/formatter
+doc/source/model
+
+
