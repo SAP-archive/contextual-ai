@@ -2,6 +2,10 @@
 This module houses the main ExplainerFactory class that users interact with, and can be imported with
 from xai.explainer import ExplainerFactory
 """
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
 
 from typing import Optional
 
