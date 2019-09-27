@@ -55,8 +55,7 @@ class Report:
         """Check if content table enabled."""
         return self._has_content_table
 
-    @has_content_table.setter
-    def has_content_table(self, indicator: bool):
+    def set_content_table(self, indicator):
         """
         Enable/disable content table
 

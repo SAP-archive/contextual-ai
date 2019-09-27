@@ -31,7 +31,7 @@ from xai.data.constants import DatetimeResolution
 ################################################################################
 class PdfWriter(Writer):
 
-    def __init__(self, name='pdf_report',
+    def __init__(self, name='pdf_report', *,
                  path='./', dest='F') -> None:
         """
         Generate PDF report

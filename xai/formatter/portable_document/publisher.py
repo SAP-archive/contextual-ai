@@ -704,6 +704,5 @@ class CustomPdf(FPDF):
         """
         Output to some destination
         """
-        report_name = '%s/%s.%s' % (self.path, self.name, self.extension)
-        print(report_name + " " + self.dest)
-        self.output(name=report_name, dest=self.dest)
+        out = os.path.join(self.path, '.'.join((self.name, self.extension)))
+        self.output(name=out, dest=self.dest)

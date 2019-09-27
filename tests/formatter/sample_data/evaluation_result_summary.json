@@ -1,0 +1,58 @@
+[
+  {
+    "field": "Category I",
+    "labels": "OTHER, OFFENSE",
+    "f1_score": {
+      "class": {
+        "OTHER": 0.7871690427698573,
+        "OFFENSE": 0.504739336492891
+      },
+      "average": 0.6916176820280062
+    },
+    "recall": {
+      "class": {
+        "OTHER": 0.8320775026910656,
+        "OFFENSE": 0.44842105263157894
+      },
+      "average": 0.7022792022792023
+    },
+    "precision": {
+      "class": {
+        "OTHER": 0.7468599033816425,
+        "OFFENSE": 0.5772357723577236
+      },
+      "average": 0.6894728220167127
+    }
+  },
+  {
+    "field": "Category II",
+    "labels": "OTHER, PROFANITY, ABUSE, INSULT",
+    "f1_score": {
+      "class": {
+        "OTHER": 0.8106060606060606,
+        "PROFANITY": 0.0,
+        "ABUSE": 0.43083003952569177,
+        "INSULT": 0.03529411764705882
+      },
+      "average": 0.6306263638637892
+    },
+    "recall": {
+      "class": {
+        "OTHER": 0.9214208826695371,
+        "PROFANITY": 0.0,
+        "ABUSE": 0.3707482993197279,
+        "INSULT": 0.018633540372670808
+      },
+      "average": 0.6894586894586895
+    },
+    "precision": {
+      "class": {
+        "OTHER": 0.7235841081994928,
+        "PROFANITY": 0.0,
+        "ABUSE": 0.5141509433962265,
+        "INSULT": 0.3333333333333333
+      },
+      "average": 0.6246700003863861
+    }
+  }
+]
