@@ -16,7 +16,7 @@ import tempfile
 
 from typing import Tuple, Dict, List
 
-from xai.formatter.contents import Header, SectionTitle, Title
+from xai.formatter.contents import Header, Title
 from xai.formatter.report.section import OverviewSection, DetailSection
 
 from xai.formatter.hypertext_markup.publisher import CustomHtml, Div
@@ -958,7 +958,7 @@ class HtmlWriter(Writer):
                                             and corresponding values, or
                      (2) have a `average` keyword to show a macro-average metric.
         """
-        from xai.evaluation.multi_classification_result import \
+        from xai.model.evaluation.multi_classification_result import \
             MultiClassificationResult
         # -- Draw Content --
         if not (notes is None):
@@ -994,7 +994,7 @@ class HtmlWriter(Writer):
             aggregated(bool): whether to aggregate multiple result tables into one
         """
         from collections import defaultdict
-        from xai.evaluation.binary_classification_result import \
+        from xai.model.evaluation.binary_classification_result import \
             BinaryClassificationResult
         # -- Draw Content --
         if not (notes is None):

@@ -9,11 +9,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
 import datetime
 
 from yattag import Doc, indent
-
-from xai.formatter.writer import PublisherException as Exception
 
 
 ################################################################################
@@ -458,14 +457,14 @@ class CustomHtml:
         return doc.getvalue()
 
     @staticmethod
-    def _get_css(css='./simple.css'):
-        with open(css, "rb") as css_file:
+    def _get_css(path: str, *, css='simple.css'):
+        with open(os.path.join(path, css), "rb") as css_file:
             css_str = css_file.read()
         return css_str.decode('utf-8').replace('/n', '')
 
     @staticmethod
-    def _get_js(js='./simple.js'):
-        with open(js, "rb") as js_file:
+    def _get_js(path: str, *, js='simple.js'):
+        with open(os.path.join(path, js), "rb") as js_file:
             js_str = js_file.read()
         return js_str.decode('utf-8').replace('/n', '')
 
@@ -474,21 +473,22 @@ class CustomHtml:
         doc = Doc()
         doc.asis('<!DOCTYPE html>')
         with doc.tag('html'):
-            doc.asis(self.create_head(style=self._get_css()))
+            doc.asis(self.create_head(style=self._get_css(path=self.path)))
             with doc.tag('body'):
                 doc.asis(self.create_body_header(header=self.header))
                 doc.asis(self.create_body_section(articles=self.article,
                                                   create_date=self._create_date))
                 doc.asis(self.create_body_footer(text=self.COPY_RIGHT))
                 with doc.tag('script'):
-                    doc.asis(self._get_js())
+                    doc.asis(self._get_js(path=self.path))
         return indent(doc.getvalue())
 
     def to_file(self):
         """
         Output HTML to some destination
         """
-        file = open("%s%s.%s" % (self.path, self.name, self.extension), 'w')
+        out = os.path.join(self.path, '.'.join((self.name, self.extension)))
+        file = open(out, 'w')
         file.write(self.generate())
         file.close()
 

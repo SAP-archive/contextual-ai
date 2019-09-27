@@ -588,8 +588,6 @@ class DetailSection(Section):
         """
         Details Section
         """
-        from xai.formatter.contents.base import NewPage
         contents = list()
-        contents.append(NewPage())
         super(DetailSection, self).__init__(type=Section.DETAIL,
                                             contents=contents)

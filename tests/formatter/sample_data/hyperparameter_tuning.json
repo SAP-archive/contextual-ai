@@ -1,0 +1,180 @@
+{
+  "search_space": {
+    "NumTrees": "(20, 500)",
+    "RandomState": "(200, 1000)",
+    "MaxFeature": "auto",
+    "MinSplit": 2,
+    "MaxDepth": [
+      "None",
+      4,
+      5,
+      6
+    ]
+  },
+  "history": {
+    "0": {
+      "params": {
+        "MaxDepth": 6,
+        "MaxFeature": "auto",
+        "MinSampleSplit": 2,
+        "NumTrees": 448.0,
+        "RandomState": 685.0
+      },
+      "val_scores": {
+        "accuracy": 0.075,
+        "f1": 0.07493575942773803,
+        "precision": 0.4217391304347826,
+        "recall": 0.4342105263157895,
+        "auc": 0.4009502923976608
+      }
+    },
+    "1": {
+      "params": {
+        "MaxDepth": 6,
+        "MaxFeature": "auto",
+        "MinSampleSplit": 2,
+        "NumTrees": 351.0,
+        "RandomState": 351.0
+      },
+      "val_scores": {
+        "accuracy": 0.0875,
+        "f1": 0.08748415771107138,
+        "precision": 0.44510335479498475,
+        "recall": 0.44078947368421056,
+        "auc": 0.40570175438596495
+      }
+    },
+    "2": {
+      "params": {
+        "MaxDepth": 6,
+        "MaxFeature": "auto",
+        "MinSampleSplit": 2,
+        "NumTrees": 392.0,
+        "RandomState": 976.0
+      },
+      "val_scores": {
+        "accuracy": 0.07083333333333333,
+        "f1": 0.0708172016875293,
+        "precision": 0.3832870186581977,
+        "recall": 0.3925438596491228,
+        "auc": 0.4111842105263158
+      }
+    },
+    "3": {
+      "params": {
+        "MaxDepth": null,
+        "MaxFeature": "auto",
+        "MinSampleSplit": 2,
+        "NumTrees": 385.0,
+        "RandomState": 240.0
+      },
+      "val_scores": {
+        "accuracy": 0.8416666666666667,
+        "f1": 0.4570135746606334,
+        "precision": 0.4719626168224299,
+        "recall": 0.44298245614035087,
+        "auc": 0.5826023391812866
+      }
+    },
+    "4": {
+      "params": {
+        "MaxDepth": 5,
+        "MaxFeature": "auto",
+        "MinSampleSplit": 2,
+        "NumTrees": 102.0,
+        "RandomState": 726.0
+      },
+      "val_scores": {
+        "accuracy": 0.05416666666666667,
+        "f1": 0.052834715485317894,
+        "precision": 0.35654008438818563,
+        "recall": 0.46271929824561403,
+        "auc": 0.43969298245614036
+      }
+    },
+    "5": {
+      "params": {
+        "MaxDepth": null,
+        "MaxFeature": "auto",
+        "MinSampleSplit": 2,
+        "NumTrees": 451.0,
+        "RandomState": 381.0
+      },
+      "val_scores": {
+        "accuracy": 0.8375,
+        "f1": 0.4557823129251701,
+        "precision": 0.47183098591549294,
+        "recall": 0.4407894736842105,
+        "auc": 0.6081871345029239
+      }
+    },
+    "6": {
+      "params": {
+        "MaxDepth": 4,
+        "MaxFeature": "auto",
+        "MinSampleSplit": 2,
+        "NumTrees": 475.0,
+        "RandomState": 662.0
+      },
+      "val_scores": {
+        "accuracy": 0.05,
+        "f1": 0.047619047619047616,
+        "precision": 0.025,
+        "recall": 0.5,
+        "auc": 0.4429824561403509
+      }
+    },
+    "7": {
+      "params": {
+        "MaxDepth": 6,
+        "MaxFeature": "auto",
+        "MinSampleSplit": 2,
+        "NumTrees": 220.0,
+        "RandomState": 949.0
+      },
+      "val_scores": {
+        "accuracy": 0.08333333333333333,
+        "f1": 0.08333333333333333,
+        "precision": 0.4385964912280702,
+        "recall": 0.4385964912280702,
+        "auc": 0.40021929824561403
+      }
+    },
+    "8": {
+      "params": {
+        "MaxDepth": 6,
+        "MaxFeature": "auto",
+        "MinSampleSplit": 2,
+        "NumTrees": 209.0,
+        "RandomState": 586.0
+      },
+      "val_scores": {
+        "accuracy": 0.09166666666666666,
+        "f1": 0.09166666666666666,
+        "precision": 0.4824561403508772,
+        "recall": 0.4824561403508772,
+        "auc": 0.4100877192982456
+      }
+    },
+    "9": {
+      "params": {
+        "MaxDepth": 5,
+        "MaxFeature": "auto",
+        "MinSampleSplit": 2,
+        "NumTrees": 492.0,
+        "RandomState": 213.0
+      },
+      "val_scores": {
+        "accuracy": 0.05,
+        "f1": 0.047619047619047616,
+        "precision": 0.025,
+        "recall": 0.5,
+        "auc": 0.42616959064327486
+      }
+    }
+  },
+  "best_idx": "3",
+  "non_hyperopt_score": 0.8166666666666667,
+  "benchmark_threshold": 0.80,
+  "benchmark_metric": "accuracy"
+}
