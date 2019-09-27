@@ -14,7 +14,8 @@ from abc import ABC, abstractmethod
 from typing import Tuple, Dict, List
 
 from xai.formatter.report.section import OverviewSection, DetailSection
-
+from xai.data import explorer
+from xai.data import validator
 
 ################################################################################
 ### Writer Visitor
@@ -121,15 +122,13 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_data_set_summary(self, notes: str, *, data_summary: List[Tuple[
-        str, int]]):
+    def draw_data_set_summary(self, notes: str, *, data_summary: explorer.CategoricalStats):
         """
         Draw information of dataset summary to the report
 
         Args:
             notes(str): Explain the block
-            data_summary (:obj:`list` of :obj:`tuple`): list of tuple
-                        (dataset_name, dataset_sample_number)
+            data_summary: CategoricalStats object, frequency count represents the dataset name and corresponding count.
         """
         pass
 
@@ -185,7 +184,7 @@ class Writer(ABC):
 
     @abstractmethod
     def draw_data_set_distribution(self, notes: str, *,
-                                   data_set_distribution: Tuple[str, dict],
+                                   data_set_distribution: Tuple[str, explorer.CategoricalStats],
                                    max_class_shown=20):
         """
         Draw information of distribution on data set
@@ -194,7 +193,8 @@ class Writer(ABC):
             notes(str): Explain the block
             data_set_distribution (tuple: (str,dict)):
                 - tuple[0] str: label/split name
-                - tuple[1] dict: key - class_name/split_name,
+                - tuple[1] CategoricalStats object: `frequency_count` attribute
+                                 key - class_name/split_name,
                                  value - class_count/split_count
             max_class_shown (int, Optional): maximum number of classes shown
                           in the figure, default is 20
@@ -221,7 +221,7 @@ class Writer(ABC):
     @abstractmethod
     def draw_categorical_field_distribution(self, notes: str, *,
                                             field_name: str,
-                                            field_distribution: dict,
+                                            field_distribution: Dict[str,explorer.CategoricalStats],
                                             max_values_display=20,
                                             colors=None):
         """
@@ -231,11 +231,9 @@ class Writer(ABC):
         Args:
             notes(str): Explain the block
             field_name (str): data field name
-            field_distribution (:dict of :dict):
+            field_distribution (:dict of :CategoricalStats):
                 -key: label_name
-                -value: frequency distribution under the `label_name`(dict)
-                    - key: field value
-                    - value: field value frequency
+                -value: CategoricalStats object
             max_values_display (int): maximum number of values displayed
             colors (list): the list of color code for rendering different class
         """
@@ -244,7 +242,7 @@ class Writer(ABC):
     @abstractmethod
     def draw_numeric_field_distribution(self, notes: str, *,
                                         field_name: str,
-                                        field_distribution: dict,
+                                        field_distribution: Dict[str,explorer.NumericalStats],
                                         force_no_log=False,
                                         x_limit=False,
                                         colors=None):
@@ -255,16 +253,9 @@ class Writer(ABC):
          Args:
              notes(str): Explain the block
              field_name (str): data field name
-             field_distribution (:dict of :dict):
+             field_distribution (:dict of :NumericalStats):
                  -key: label_name
-                 -value: numeric statistics
-                     - key: statistics name
-                     - value: statistics value
-                 each field_distribution should must have 2 following predefined keys:
-                 - histogram (:list of :list): a list of bar specification
-                                                (x, y, width, height)
-                 - kde (:list of :list, Optional): a list of points which
-                                    draw`kernel density estimation` curve.
+                 -value: NumericalStats object
 
              force_no_log (bool): whether to change y-scale to logrithmic
                                               scale for a more balanced view
@@ -278,7 +269,7 @@ class Writer(ABC):
     @abstractmethod
     def draw_text_field_distribution(self, notes: str, *,
                                      field_name: str,
-                                     field_distribution: dict):
+                                     field_distribution: Dict[str,explorer.TextStats]):
         """
         Draw information of field value distribution for text type to the
         report.
@@ -286,21 +277,16 @@ class Writer(ABC):
         Args:
             notes(str): Explain the block
             field_name (str): data field name
-            field_distribution (:dict of :dict):
+            field_distribution (:dict of :TextStats):
                 -key: label_name
-                -value: tfidf and placeholder distribution under the `label_name`(dict):
-                    {'tfidf': tfidf, 'placeholder': placeholder}
-                    - tfidf (:list of :list): each sublist has 2 items: word and tfidf
-                    - placeholder (:dict):
-                        - key: PATTERN
-                        - value: percentage
+                -value: TextStats object
         """
         pass
 
     @abstractmethod
     def draw_datetime_field_distribution(self, notes: str, *,
                                          field_name: str,
-                                         field_distribution: dict):
+                                         field_distribution: Dict[str,explorer.DatetimeStats]):
         """
         Draw information of field value distribution for datetime type to the
         report.
@@ -310,7 +296,8 @@ class Writer(ABC):
             field_name (str): data field name
             field_distribution (:dict of :dict):
                 -key: label_name
-                -value (:dict of :dict):
+                -value (:dict of :DatetimeStats):
+                    Note that in order to render it in 2D diagram, the resolution has to be ['YEAR','MONTH'].
                     - 1st level key: year_X(int)
                     - 1st level value:
                         - 2nd level key: month_X(int)
