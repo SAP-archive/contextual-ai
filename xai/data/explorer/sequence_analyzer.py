@@ -1,0 +1,49 @@
+from xai.data.explorer.abstract_labelled_analyzer import AbstractLabelledDataAnalyzer
+from xai.data.exceptions import InvalidTypeError, InconsistentSize
+
+
+class SequenceAnalyzer:
+    """
+    Class to analyze sequence data
+    """
+    def __init__(self, analyzer: AbstractLabelledDataAnalyzer):
+        """
+        Initialize sequence analyzer
+
+        Args:
+            analyzer: labelled data analyzer
+        """
+        self.analyzer = analyzer
+
+    def feed(self, value, label):
+        """
+        Feed sequence values into analyzer and aggregate the stats
+
+        Args:
+            value: a list of items
+            label: label associated with the value
+
+        """
+        if type(value) != list:
+            raise InvalidTypeError('value', type(value), '<list>')
+
+        for item in value:
+            self.analyzer.feed(value=item, label=label)
+
+    def feed_all(self, values, labels):
+        if len(values) != len(labels):
+            raise InconsistentSize('values', 'labels', len(values), len(labels))
+
+        value_label = zip(values, labels)
+        for value, label in value_label:
+            self.feed(value, label)
+
+    def get_statistics(self):
+        """
+        Get stats object for analyzer
+
+        Returns:
+            Stats object for all and class-based stats
+
+        """
+        return self.analyzer.get_statistics()

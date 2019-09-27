@@ -7,6 +7,7 @@ from xai.data.exceptions import InvalidTypeError
 from xai.data.explorer.categorical.labelled_categorical_analyzer import LabelledCategoricalDataAnalyzer
 from xai.data.explorer.datetime.labelled_datetime_analyzer import LabelledDatetimeDataAnalyzer
 from xai.data.explorer.numerical.labelled_numerical_analyzer import LabelledNumericalDataAnalyzer
+from xai.data.explorer.sequence_analyzer import SequenceAnalyzer
 from xai.data.explorer.text.labelled_text_analyzer import LabelledTextDataAnalyzer
 
 
@@ -15,13 +16,15 @@ class DataAnalyzerSuite:
     A data analyzer suite that allows users to add multiple data analyzers and analyze specified according to data type
     """
 
-    def __init__(self, data_type_list: List, column_names: List = None):
+    def __init__(self, data_type_list: List, column_names: List = None, sequence_names: List = None):
         """
         Initialize data analyzer suite
 
         Args:
-            data_type_list: list, a list of pre-defined data type
-            column_names: list, a list of column names
+            data_type_list: list, a list of pre-defined data type.
+                            If column_names is not provided, data_type_list should for all the columns.
+            column_names: list, a list of column names.
+            sequence_names: list, a list of feature names that is considered sequence data.
         """
         if column_names is not None:
             if type(column_names) == list:
@@ -37,15 +40,34 @@ class DataAnalyzerSuite:
 
         self.analyzers = dict()
 
+        if sequence_names is None:
+            sequence_names = []
+
         for key, data_type in self.schema.items():
             if data_type == DATATYPE.CATEGORY:
-                self.analyzers[key] = LabelledCategoricalDataAnalyzer()
+                analyzer = LabelledCategoricalDataAnalyzer()
+                if key in sequence_names:
+                    self.analyzers[key] = SequenceAnalyzer(analyzer=analyzer)
+                else:
+                    self.analyzers[key] = analyzer
             elif data_type == DATATYPE.NUMBER:
-                self.analyzers[key] = LabelledNumericalDataAnalyzer()
+                analyzer = LabelledNumericalDataAnalyzer()
+                if key in sequence_names:
+                    self.analyzers[key] = SequenceAnalyzer(analyzer=analyzer)
+                else:
+                    self.analyzers[key] = analyzer
             elif data_type == DATATYPE.FREETEXT:
-                self.analyzers[key] = LabelledTextDataAnalyzer()
+                analyzer = LabelledTextDataAnalyzer()
+                if key in sequence_names:
+                    self.analyzers[key] = SequenceAnalyzer(analyzer=analyzer)
+                else:
+                    self.analyzers[key] = analyzer
             elif data_type == DATATYPE.DATETIME:
-                self.analyzers[key] = LabelledDatetimeDataAnalyzer()
+                analyzer = LabelledDatetimeDataAnalyzer()
+                if key in sequence_names:
+                    self.analyzers[key] = SequenceAnalyzer(analyzer=analyzer)
+                else:
+                    self.analyzers[key] = analyzer
             else:
                 raise AnalyzerDataTypeNotSupported(data_type)
 

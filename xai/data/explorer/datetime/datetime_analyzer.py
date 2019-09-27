@@ -93,20 +93,3 @@ class DatetimeDataAnalyzer(AbstractDataAnalyzer):
         stats = DatetimeStats(frequency_count=frequency_count,
                               resolution_list=resolution_list)
         return stats
-
-
-if __name__ == '__main__':
-    import pandas as pd
-
-    filename = '/Users/i309943/workspace/Explainable_AI/tutorial/data_explorer/sample_data/date.csv'
-    data = pd.read_csv(filename)
-    from xai.data.explorer.datetime.labelled_datetime_analyzer import LabelledDatetimeDataAnalyzer
-
-    datetimes = [int(x) for x in data['POSTINGDATE']]
-    labels = [int(x) for x in data['COMPANYCODE']]
-
-    labelled_analyzer = LabelledDatetimeDataAnalyzer()
-    labelled_analyzer.feed_all(datetimes, labels)
-    labelled_stats, all_stats = labelled_analyzer.get_statistics(resolution_list=[DatetimeResolution.YEAR,
-                                                                                  DatetimeResolution.WEEKDAY])
-    print(labelled_stats[800].__dict__)
