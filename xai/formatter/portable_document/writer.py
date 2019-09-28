@@ -708,17 +708,17 @@ class PdfWriter(Writer):
         """
         from xai.graphs import graph_generator
 
-        feature_ranking = [(score, name) for name, score in importance_ranking]
+        # feature_ranking = [(score, name) for name, score in importance_ranking]
         image_path = '%s/feature_importance.png' % self.figure_path
         image_path = graph_generator.FeatureImportance(figure_path=image_path,
-                                                       data=feature_ranking,
+                                                       data=importance_ranking,
                                                        title='feature_importance').draw(
             limit_length=maximum_number_feature)
 
         # -- Draw Content --
         if not (notes is None):
             self.pdf.add_new_line(notes)
-        elif maximum_number_feature < len(feature_ranking):
+        elif maximum_number_feature < len(importance_ranking):
             self.pdf.add_new_line(
                 "The figure below shows the top %s important features for the trained model."
                 % maximum_number_feature)
@@ -737,10 +737,10 @@ class PdfWriter(Writer):
         table_header = ['Feature', 'Importance']
         table_data = []
 
-        for feature_name, importance in feature_ranking:
+        for feature_name, importance in importance_ranking:
             if float(importance) < importance_threshold:
                 break
-            table_data.append([feature_name, importance])
+            table_data.append([feature_name, round(importance, 10)])
 
         self.pdf.add_table(header=table_header, data=table_data,
                            col_width=[140, 30])
