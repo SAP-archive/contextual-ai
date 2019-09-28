@@ -18,6 +18,16 @@
             {
               "title": "Example of Header 2 (S1)",
               "desc": "This is header 2 info",
+              "component": {
+                "package": "xai.compiler",
+                "module": "components",
+                "class": "Test",
+                "attr": {
+                  "color": "blue",
+                  "size": "8 inches",
+                  "material": "rubber"
+                }
+              },
               "sections": [
                 {
                   "title": "Example of Header 3 (S1)",
@@ -28,7 +38,8 @@
           ]
         }
       ]
-    }, {
+    },
+    {
       "title": "Example of Section Two",
       "desc": "This is section two info",
       "sections": [
@@ -51,11 +62,20 @@
       ]
     }
   ],
-  "output": {
-    "name": "basic-report",
-    "path": "./",
-    "writers": [
-      "pdf", "html"
-    ]
-  }
+  "writers": [
+    {
+      "class": "Pdf",
+      "attr": {
+        "name": "first-json-report",
+        "path": "./sample_output"
+      }
+    },
+    {
+      "class": "Html",
+      "attr": {
+        "name": "first-json-report",
+        "path": "./sample_output"
+      }
+    }
+  ]
 }

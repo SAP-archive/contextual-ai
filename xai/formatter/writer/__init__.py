@@ -9,4 +9,3 @@ from __future__ import division
 from __future__ import print_function
 
 from xai.formatter.writer.base import Writer
-from xai.formatter.writer.utils import PublisherException

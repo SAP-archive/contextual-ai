@@ -3,17 +3,20 @@
 
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
-""" Proxy - Base """
+""" Compiler - Base """
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+
+from importlib import import_module
 import json
 import yaml
 from enum import Enum
 
-from xai.formatter import Report, PdfWriter, HtmlWriter
+from xai.exception import GeneralException
+from xai.formatter import Report
 
 
 ################################################################################
@@ -25,25 +28,23 @@ class Constant(Enum):
     ENABLE_OVERVIEW = 'overview'
     ENABLE_CONTENT_TABLE = 'content_table'
 
-    CONTENTS = 'contents'
+    CONTENT_LIST = 'contents'
     SECTION_TITLE = 'title'
     SECTION_DESC = 'desc'
-    SECTION_FUNCTION = 'function'
-    SECTIONS = 'sections'
+    COMPONENT = 'component'
+    COMPONENT_CLASS = 'class'
+    COMPONENT_PACKAGE = 'package'
+    COMPONENT_MODULE = 'module'
+    COMPONENT_ATTR = 'attr'
+    SECTION_LIST = 'sections'
 
     S1 = 0
     H1 = 1
     H2 = 2
     H3 = 3
 
-    OUTPUT = 'output'
     PATH = 'path'
     WRITERS = 'writers'
-
-    PDF = 'pdf'
-    HTML = 'html'
-
-
 
 
 ################################################################################
@@ -141,27 +142,100 @@ class Controller:
                 desc = content[Constant.SECTION_DESC.value]
                 if not (desc is None):
                     report.detail.add_paragraph(text=desc)
-            if Constant.SECTIONS.value in content:
+            if Constant.COMPONENT.value in content:
+                component = content[Constant.COMPONENT.value]
+                Controller.render_component(report=report, component=component)
+            if Constant.SECTION_LIST.value in content:
                 Controller.render_contents(report=report,
-                                           contents=content[Constant.SECTIONS.value],
+                                           contents=content[Constant.SECTION_LIST.value],
                                            level=current_level+1)
 
     @staticmethod
-    def output(report: Report, output: dict):
+    def value_extractor(items, key, default):
+        """
+        Extract value with key, return default if not found
+
+        Args:
+            items: items
+            key (str): key
+            default: default return
+        Returns: default
+        """
+        if key in items:
+            return items[key]
+        return default
+
+    @staticmethod
+    def factory(package: str, module: str, name: str, attr: dict):
+        """
+        Dynamically import and load class
+
+        Args:
+            package (str): component package
+            module (str): component module name
+            name (str): component class name
+            attr (dict): component class attributes in dict
+        Returns: class object
+        """
+        imported_module = import_module('.' + module, package=package)
+        cls = getattr(imported_module, name)
+        return cls(attr)
+
+    @staticmethod
+    def render_component(report: Report, component: dict):
+        """
+        Rendering Report component
+
+        Args:
+            report (Report): report object
+            component (dict): component info in dict
+        """
+        if Constant.COMPONENT_CLASS.value in component:
+            name = component[Constant.COMPONENT_CLASS.value]
+            package = Controller.value_extractor(items=component,
+                                                 key=Constant.COMPONENT_PACKAGE.value,
+                                                 default='xai.compiler')
+            module = Controller.value_extractor(items=component,
+                                                key=Constant.COMPONENT_MODULE.value,
+                                                default='components')
+            attr = Controller.value_extractor(items=component,
+                                              key=Constant.COMPONENT_ATTR.value,
+                                              default=dict())
+            obj = Controller.factory(package=package, module=module,
+                                     name=name, attr=attr)
+            print(obj)
+            print("color %s" % obj.color)
+            obj.exec()
+        else:
+            raise GeneralException("class is not defined")
+
+
+    @staticmethod
+    def output(report: Report, writers: dict):
         """
         Rendering Report to writer
 
         Args:
             report (Report): report object
-            output (dict): output dict object
+            writers (dict): output writer dict object
         """
-        name = output[Constant.NAME.value]
-        path = output[Constant.PATH.value]
-        for writer in output[Constant.WRITERS.value]:
-            if writer.lower() == Constant.PDF.value:
-                report.generate(writer=PdfWriter(name=name, path=path))
-            if writer.lower() == Constant.HTML.value:
-                report.generate(writer=HtmlWriter(name=name, path=path))
+        for writer in writers:
+            if Constant.COMPONENT_CLASS.value in writer:
+                name = writer[Constant.COMPONENT_CLASS.value]
+                package = Controller.value_extractor(items=writer,
+                                                     key=Constant.COMPONENT_PACKAGE.value,
+                                                     default='xai.compiler')
+                module = Controller.value_extractor(items=writer,
+                                                    key=Constant.COMPONENT_MODULE.value,
+                                                    default='writer')
+                attr = Controller.value_extractor(items=writer,
+                                                  key=Constant.COMPONENT_ATTR.value,
+                                                  default=dict())
+                obj = Controller.factory(package=package, module=module,
+                                         name=name, attr=attr)
+                report.generate(writer=obj.exec())
+            else:
+                raise GeneralException("class is not defined")
 
     def render(self):
         """Render Report"""
@@ -170,6 +244,20 @@ class Controller:
             Constant.ENABLE_CONTENT_TABLE.value])
 
         self.render_contents(report=report,
-                             contents=self.config[Constant.CONTENTS.value],
+                             contents=self.config[Constant.CONTENT_LIST.value],
                              level=Constant.S1.value)
-        self.output(report=report, output=self.config[Constant.OUTPUT.value])
+        self.output(report=report, writers=self.config[Constant.WRITERS.value])
+
+################################################################################
+### Dict to Object
+################################################################################
+class Dict2Obj:
+
+    def __init__(self, dictionary):
+        """Constructor"""
+        for key in dictionary:
+            setattr(self, key, dictionary[key])
+
+    def __repr__(self):
+        """"""
+        return "<Dict2Obj: %s>" % self.__dict__
