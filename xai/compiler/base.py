@@ -203,9 +203,7 @@ class Controller:
                                               default=dict())
             obj = Controller.factory(package=package, module=module,
                                      name=name, attr=attr)
-            print(obj)
-            print("color %s" % obj.color)
-            obj.exec()
+            obj.exec(report=report)
         else:
             raise GeneralException("class is not defined")
 

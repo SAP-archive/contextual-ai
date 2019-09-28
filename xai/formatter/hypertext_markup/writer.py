@@ -700,11 +700,11 @@ class HtmlWriter(Writer):
         """
         from xai.graphs import graph_generator
 
-        feature_ranking = [(score, name) for name, score in importance_ranking]
+        # feature_ranking = [(score, name) for name, score in importance_ranking]
         # -- Draw Content --
         if not (notes is None):
             modified_notes = notes
-        elif maximum_number_feature < len(feature_ranking):
+        elif maximum_number_feature < len(importance_ranking):
             modified_notes = (
                 "The figure below shows the top %s important features for the trained model."
                 % maximum_number_feature)
@@ -715,7 +715,7 @@ class HtmlWriter(Writer):
 
         image_path = '%s/feature_importance.png' % self.figure_path
         image_path = graph_generator.FeatureImportance(figure_path=image_path,
-                                                       data=feature_ranking,
+                                                       data=importance_ranking,
                                                        title='feature_importance').draw(
             limit_length=maximum_number_feature)
 
@@ -728,10 +728,10 @@ class HtmlWriter(Writer):
 
         header = ['Feature', 'Importance']
         data = []
-        for feature_name, importance in feature_ranking:
+        for feature_name, importance in importance_ranking:
             if float(importance) < importance_threshold:
                 break
-            data.append([feature_name, importance])
+            data.append([feature_name, round(importance, 10)])
         self.html.article[-1].items.append(
             self.html.add_table(header=header, data=data))
 

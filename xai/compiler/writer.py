@@ -19,6 +19,7 @@ from xai.formatter import PdfWriter, HtmlWriter
 class Pdf(Dict2Obj):
 
     def exec(self):
+        """Execution"""
         return PdfWriter(name=self.name, path=self.path)
 
 ################################################################################
@@ -27,4 +28,5 @@ class Pdf(Dict2Obj):
 class Html(Dict2Obj):
 
     def exec(self):
+        """Execution"""
         return HtmlWriter(name=self.name, path=self.path)

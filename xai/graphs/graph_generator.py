@@ -258,7 +258,7 @@ class FeatureImportance(Graph):
             data = data[:limit_length]
 
         features = np.array([a for a, _ in data])
-        scores = np.array([b for _, b in data])
+        scores = np.array([round(b, 10) for _, b in data])
 
         ax = sns.barplot(x=scores, y=features, palette=sns.color_palette(color_palette), orient='h')
         for index, score_value in enumerate(scores.tolist()):

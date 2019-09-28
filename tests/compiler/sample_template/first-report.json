@@ -21,11 +21,13 @@
               "component": {
                 "package": "xai.compiler",
                 "module": "components",
-                "class": "Test",
+                "class": "FeatureImportanceRanking",
                 "attr": {
-                  "color": "blue",
-                  "size": "8 inches",
-                  "material": "rubber"
+                  "trained_model": "./sample_input/model.pkl",
+                  "train_data": "./sample_input/train_data.txt",
+                  "feature_names": "./sample_input/feature_names.txt",
+                  "method": "shap",
+                  "threshold": 0.005
                 }
               },
               "sections": [
