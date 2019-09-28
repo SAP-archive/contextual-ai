@@ -28,9 +28,12 @@ contents:
             sections:
               - title: Example of Header 3 (S2)
                 desc: This is header 3 info
-output:
-  name: basic-yaml-report
-  path: ./sample_output
-  writers:
-    - pdf
-    - html
+writers:
+  - class: Pdf
+    attr:
+      name: basic-yaml-report
+      path: ./sample_output
+  - class: Html
+    attr:
+      name: basic-yaml-report
+      path: ./sample_output

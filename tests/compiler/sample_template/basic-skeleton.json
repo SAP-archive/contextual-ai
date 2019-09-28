@@ -51,11 +51,20 @@
       ]
     }
   ],
-  "output": {
-    "name": "basic-json-report",
-    "path": "./sample_output",
-    "writers": [
-      "pdf", "html"
-    ]
-  }
+  "writers": [
+    {
+      "class": "Pdf",
+      "attr": {
+        "name": "basic-json-report",
+        "path": "./sample_output"
+      }
+    },
+    {
+      "class": "Html",
+      "attr": {
+        "name": "basic-json-report",
+        "path": "./sample_output"
+      }
+    }
+  ]
 }
