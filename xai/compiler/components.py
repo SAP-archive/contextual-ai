@@ -28,6 +28,7 @@ class FeatureImportanceRanking(Dict2Obj):
         package (str, Optional): component package name
         module (str, Optional): component module name
         class (str): component class name
+
     Attr:
         trained_model: path to trained model pickle
         train_data: path to training sample data
@@ -49,29 +50,51 @@ class FeatureImportanceRanking(Dict2Obj):
             }
         }
     """
+    schema = {
+        "type": "object",
+        "properties": {
+            "trained_model": {"type": "string"},
+            "train_data": {" type": "string"},
+            "feature_names": {"type": "string"},
+            "method": {
+                "enum": ["default", "shap"]
+            },
+            "threshold": {"type": "number"}
+        },
+        "required": ["trained_model", "train_data", "feature_names"]
+    }
 
-    def exec(self, report: Report):
+    def __init__(self, dictionary):
+        """
+        Init
+
+        Args:
+            dictionary (dict): attribute to set
+        """
+        super(FeatureImportanceRanking, self).__init__(dictionary,
+                                                       schema=self.schema)
+
+    def __call__(self, report: Report):
         """
         Execution
 
         Args:
             report (Report): report object
         """
-        with open(self.feature_names, 'rb') as file:
+        path = self.assert_attr(key='feature_names')
+        with open(path, 'rb') as file:
             feature_names = np.load(file)
-        feature_names = feature_names.tolist()
 
-        with open(self.train_data, 'rb') as file:
+        path = self.assert_attr(key='train_data')
+        with open(path, 'rb') as file:
             train_data = np.load(file)
 
-        with open(self.trained_model, 'rb') as file:
+        path = self.assert_attr(key='trained_model')
+        with open(path, 'rb') as file:
             model = pickle.load(file)
-        method = 'default'
-        if hasattr(self, 'method'):
-            method = self.method
-        threshold = 0.005
-        if hasattr(self, 'threshold'):
-            threshold = self.threshold
+
+        method = self.assert_attr(key='method', default='default')
+        threshold = self.assert_attr(key='threshold', default=0.005)
 
         fi = FeatureInterpreter(feature_names=feature_names)
         rank = fi.get_feature_importance_ranking(trained_model=model,
