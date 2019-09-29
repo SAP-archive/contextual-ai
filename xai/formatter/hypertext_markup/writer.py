@@ -699,8 +699,6 @@ class HtmlWriter(Writer):
             maximum_number_feature(int): maximum number of features shown in bar-chart diagram
         """
         from xai.graphs import graph_generator
-
-        # feature_ranking = [(score, name) for name, score in importance_ranking]
         # -- Draw Content --
         if not (notes is None):
             modified_notes = notes

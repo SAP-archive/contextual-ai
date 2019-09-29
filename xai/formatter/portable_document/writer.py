@@ -707,8 +707,6 @@ class PdfWriter(Writer):
             maximum_number_feature(int): maximum number of features shown in bar-chart diagram
         """
         from xai.graphs import graph_generator
-
-        # feature_ranking = [(score, name) for name, score in importance_ranking]
         image_path = '%s/feature_importance.png' % self.figure_path
         image_path = graph_generator.FeatureImportance(figure_path=image_path,
                                                        data=importance_ranking,
