@@ -12,10 +12,11 @@ from __future__ import print_function
 
 from importlib import import_module
 import json
+from jsonschema import validate
 import yaml
 from enum import Enum
 
-from xai.exception import GeneralException
+from xai.exception import CompilerException
 from xai.formatter import Report
 
 
@@ -52,6 +53,57 @@ class Constant(Enum):
 ################################################################################
 class Configuration:
 
+    SCHEMA = {
+        "definitions": {
+            "section": {
+                "type": "object",
+                "properties": {
+                    "title": { "type": "string" },
+                    "desc": { "type": "string" },
+                    "sections":
+                        {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/section" },
+                            "default": []
+                        },
+                    "component": { "$ref": "#/definitions/component" }
+                },
+                "required": ["title"]
+            },
+            "component": {
+                "type": "object",
+                "properties": {
+                    "package": { "type": "string" },
+                    "module": { "type": "string" },
+                    "class": { "type": "string" },
+                    "attr": {
+                        "type": "object"
+                    }
+                },
+                "required": ["class"]
+            }
+        },
+
+        "type": "object",
+        "properties": {
+            "name": { "type" : "string" },
+            "overview": {" type": "boolean" },
+            "content_table": { "type": "boolean" },
+            "contents":
+                {
+                    "type": "array",
+                    "items": {"$ref": "#/definitions/section"},
+                    "default": []
+                },
+            "writers":
+                {
+                    "type": "array",
+                    "items": {"$ref": "#/definitions/component"}
+                }
+        },
+        "required": ["name", "content_table", "contents", "writers"]
+    }
+
     @staticmethod
     def _load(config: str) -> dict:
         """
@@ -62,14 +114,15 @@ class Configuration:
         Returns:
             configuration dict object
         """
+        data = dict()
         if config.lower().endswith('.json'):
             with open(config) as file:
                 data = json.load(file)
-            return data
         elif config.lower().endswith('.yml'):
             with open(config) as file:
                 data = yaml.load(file, Loader=yaml.SafeLoader)
-            return data
+        validate(instance=data, schema=Configuration.SCHEMA)
+        return data
 
     def __init__(self, config=None) -> None:
         """
@@ -166,11 +219,13 @@ class Controller:
         return default
 
     @staticmethod
-    def factory(package: str, module: str, name: str, attr: dict):
+    def factory(report: Report, package: str, module: str, name: str,
+                attr: dict):
         """
         Dynamically import and load class
 
         Args:
+            report (Report): report object
             package (str): component package
             module (str): component module name
             name (str): component class name
@@ -179,7 +234,8 @@ class Controller:
         """
         imported_module = import_module('.' + module, package=package)
         cls = getattr(imported_module, name)
-        return cls(attr)
+        obj = cls(attr)
+        obj(report=report)
 
     @staticmethod
     def render_component(report: Report, component: dict):
@@ -192,20 +248,19 @@ class Controller:
         """
         if Constant.COMPONENT_CLASS.value in component:
             name = component[Constant.COMPONENT_CLASS.value]
-            package = Controller.value_extractor(items=component,
-                                                 key=Constant.COMPONENT_PACKAGE.value,
-                                                 default='xai.compiler')
-            module = Controller.value_extractor(items=component,
-                                                key=Constant.COMPONENT_MODULE.value,
-                                                default='components')
-            attr = Controller.value_extractor(items=component,
-                                              key=Constant.COMPONENT_ATTR.value,
-                                              default=dict())
-            obj = Controller.factory(package=package, module=module,
-                                     name=name, attr=attr)
-            obj.exec(report=report)
+            package = Controller.value_extractor(
+                items=component, key=Constant.COMPONENT_PACKAGE.value,
+                default='xai.compiler')
+            module = Controller.value_extractor(
+                items=component, key=Constant.COMPONENT_MODULE.value,
+                default='components')
+            attr = Controller.value_extractor(
+                items=component, key=Constant.COMPONENT_ATTR.value,
+                default=dict())
+            Controller.factory(report=report, package=package,
+                               module=module, name=name, attr=attr)
         else:
-            raise GeneralException("class is not defined")
+            raise CompilerException("class is not defined")
 
 
     @staticmethod
@@ -220,20 +275,19 @@ class Controller:
         for writer in writers:
             if Constant.COMPONENT_CLASS.value in writer:
                 name = writer[Constant.COMPONENT_CLASS.value]
-                package = Controller.value_extractor(items=writer,
-                                                     key=Constant.COMPONENT_PACKAGE.value,
-                                                     default='xai.compiler')
-                module = Controller.value_extractor(items=writer,
-                                                    key=Constant.COMPONENT_MODULE.value,
-                                                    default='writer')
-                attr = Controller.value_extractor(items=writer,
-                                                  key=Constant.COMPONENT_ATTR.value,
-                                                  default=dict())
-                obj = Controller.factory(package=package, module=module,
-                                         name=name, attr=attr)
-                report.generate(writer=obj.exec())
+                package = Controller.value_extractor(
+                    items=writer,key=Constant.COMPONENT_PACKAGE.value,
+                    default='xai.compiler')
+                module = Controller.value_extractor(
+                    items=writer, key=Constant.COMPONENT_MODULE.value,
+                    default='writer')
+                attr = Controller.value_extractor(
+                    items=writer, key=Constant.COMPONENT_ATTR.value,
+                    default=dict())
+                Controller.factory(report=report, package=package,
+                                   module=module, name=name, attr=attr)
             else:
-                raise GeneralException("class is not defined")
+                raise CompilerException("class is not defined")
 
     def render(self):
         """Render Report"""
@@ -251,11 +305,47 @@ class Controller:
 ################################################################################
 class Dict2Obj:
 
-    def __init__(self, dictionary):
-        """Constructor"""
-        for key in dictionary:
-            setattr(self, key, dictionary[key])
+    def __init__(self, dictionary, *, schema):
+        """
+        Init
+
+        Args:
+            dictionary (dict): attribute to set
+            schema (dict): schema to validate
+        """
+        self._dict = dictionary
+        self._schema = schema
+
+        validate(instance= self._dict, schema=self._schema)
+        for key in  self._dict:
+            setattr(self, key,  self._dict[key])
+
+    def __call__(self, report: Report):
+        """
+        Call
+
+        Args:
+            report (Report): report object
+        """
+        pass
+
 
     def __repr__(self):
-        """"""
-        return "<Dict2Obj: %s>" % self.__dict__
+        """Return class name and attributes"""
+        return "%s: schema[%s] data[%s]" % (self.__class__.__name__,
+                                            self._schema,
+                                            self.__dict__)
+
+    def assert_attr(self, key:str, *, default=None):
+        """
+        Assert and Get Attribute, raise Compiler exception if not found
+
+        Args:
+            key (str): Attribute Name
+            default (Optional): default value if not found
+        """
+        if hasattr(self, key):
+            return getattr(self, key)
+        if not (default is None):
+            return default
+        raise CompilerException("attribute '%s' is not defined" % key)

@@ -32,3 +32,9 @@ class GeneralException(Exception):
 
     def __str__(self):
         return 'Error {}[{}]'.format(self._message, self._code)
+
+################################################################################
+### Compiler Exception
+################################################################################
+class CompilerException(GeneralException):
+    """Compiler exception"""
