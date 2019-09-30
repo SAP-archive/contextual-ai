@@ -283,16 +283,9 @@ class NumericFieldDistribution(Content):
 
         Args:
             field_name (str): data field name
-            field_distribution (:dict of :dict):
+            field_distribution (:dict of :NumericalStats):
                 -key: label_name
-                -value: numeric statistics
-                    - key: statistics name
-                    - value: statistics value
-                each field_distribution should must have 2 following predefined keys:
-                - histogram (:list of :list): a list of bar
-                                            specification (x, y, width, height)
-                - kde (:list of :list, Optional): a list of points which
-                                         draw`kernel density estimation` curve.
+                -value: NumericalStats
 
             force_no_log (bool): whether to change y-scale to logrithmic
                                                scale for a more balanced view
@@ -303,7 +296,7 @@ class NumericFieldDistribution(Content):
             notes (str, Optional): explain the block
         """
         super(NumericFieldDistribution, self).__init__(field_name,
-                                                       field_distribution,
+                                                       numerical_stats,
                                                        force_no_log,
                                                        x_limit,
                                                        colors,
