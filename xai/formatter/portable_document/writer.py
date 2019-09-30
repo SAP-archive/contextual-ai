@@ -23,6 +23,8 @@ from xai.formatter.portable_document.publisher import CustomPdf
 
 from xai.formatter.writer import Writer
 
+from xai.data.explorer import CategoricalStats, NumericalStats, TextStats, DatetimeStats
+from xai.data.constants import DatetimeResolution
 
 ################################################################################
 ### Pdf Writer Visitor
@@ -287,7 +289,7 @@ class PdfWriter(Writer):
                 else:
                     print(
                         'Unsupported metric value type for metric (%s): %s' % (
-                        metric_name, type(metric_value)))
+                            metric_name, type(metric_value)))
                     continue
                 self.pdf.add_key_value_pair(key, value)
             self.pdf.end_itemize()
@@ -398,7 +400,7 @@ class PdfWriter(Writer):
             self.pdf.add_new_line()
 
     def draw_data_set_distribution(self, notes: str, *,
-                                   data_set_distribution: Tuple[str, dict],
+                                   data_set_distribution: Tuple[str, CategoricalStats],
                                    max_class_shown=20):
         """
         Draw information of distribution on data set
@@ -427,8 +429,9 @@ class PdfWriter(Writer):
         _table_header, _table_data, _col_width = get_data_set_distribution()
         self.pdf.add_table(_table_header, _table_data, col_width=_col_width)
 
-        for _dataset_name, _dataset_dist in data_set_distribution:
+        for _dataset_name, _dataset_dist_stats in data_set_distribution:
             self.pdf.add_new_line('Distribution for <B>%s</B>' % _dataset_name)
+            _dataset_dist = _dataset_dist_stats.frequency_count
             if len(_dataset_dist) > max_class_shown:
                 self.pdf.add_new_line('(Only %s shown amount %s classes)' % (
                     max_class_shown, len(_dataset_dist)))
@@ -455,6 +458,7 @@ class PdfWriter(Writer):
                     - key: attribute name
                     - value: attribute value
         """
+
         def get_data_attributes():
             attribute_list = list(
                 set().union(*[set(attribute_dict.keys())
@@ -482,7 +486,7 @@ class PdfWriter(Writer):
 
     def draw_categorical_field_distribution(self, notes: str, *,
                                             field_name: str,
-                                            field_distribution: dict,
+                                            field_distribution: Dict[str, CategoricalStats],
                                             max_values_display=20,
                                             colors=None):
         """
@@ -490,14 +494,12 @@ class PdfWriter(Writer):
         the report.
         Details see analyzers inside `xai.data_explorer.categorical_analyzer`
 
-        Args:
+       Args:
             notes(str): Explain the block
             field_name (str): data field name
-            field_distribution (:dict of :dict):
+            field_distribution (:dict of :CategoricalStats):
                 -key: label_name
-                -value: frequency distribution under the `label_name`(dict)
-                    - key: field value
-                    - value: field value frequency
+                -value: CategoricalStats object
             max_values_display (int): maximum number of values displayed
             colors (list): the list of color code for rendering different class
         """
@@ -508,8 +510,9 @@ class PdfWriter(Writer):
         # -- Draw Content --
         self.pdf.add_new_line(notes)
         self.pdf.start_itemize(' - ')
-        for idx, (label_name, frequency_distribution) in enumerate(
+        for idx, (label_name, cat_stats) in enumerate(
                 field_distribution.items()):
+            frequency_distribution = cat_stats.frequency_count
             if len(frequency_distribution) / sum(
                     frequency_distribution.values()) > 0.5:
                 self.pdf.start_itemize('-')
@@ -540,7 +543,7 @@ class PdfWriter(Writer):
 
     def draw_numeric_field_distribution(self, notes: str, *,
                                         field_name: str,
-                                        field_distribution: dict,
+                                        field_distribution: Dict[str, NumericalStats],
                                         force_no_log=False,
                                         x_limit=False,
                                         colors=None):
@@ -553,14 +556,7 @@ class PdfWriter(Writer):
              field_name (str): data field name
              field_distribution (:dict of :dict):
                  -key: label_name
-                 -value: numeric statistics
-                     - key: statistics name
-                     - value: statistics value
-                 each field_distribution should must have 2 following predefined keys:
-                 - histogram (:list of :list): a list of bar specification
-                                                (x, y, width, height)
-                 - kde (:list of :list, Optional): a list of points which
-                                    draw`kernel density estimation` curve.
+                 -value: numeric statistics object
 
              force_no_log (bool): whether to change y-scale to logrithmic
                                               scale for a more balanced view
@@ -576,14 +572,13 @@ class PdfWriter(Writer):
         # -- Draw Content --
         self.pdf.add_new_line(notes)
         self.pdf.start_itemize(' - ')
-        for idx, (label_name, data_distribution) in enumerate(
+        for idx, (label_name, num_stats) in enumerate(
                 field_distribution.items()):
-
             figure_path = '%s/%s_%s_field_distribution.png' % (
                 self.figure_path, field_name, label_name)
             figure_path = graph_generator.KdeDistribution(
                 figure_path=figure_path,
-                data=data_distribution,
+                data=num_stats,
                 title="",
                 x_label=field_name,
                 y_label="").draw(
@@ -592,10 +587,13 @@ class PdfWriter(Writer):
                 x_limit=x_limit)
             table_header = ['Statistical Field', 'Value']
             table_values = []
-            for key, value in data_distribution.items():
-                if key in ['kde', 'histogram', 'x_limit']:
-                    continue
-                table_values.append([key, "%d" % int(value)])
+
+            table_values.append(['Total count', "%d" % int(num_stats.total_count)])
+            table_values.append(['Min', "%d" % int(num_stats.min)])
+            table_values.append(['Max', "%d" % int(num_stats.max)])
+            table_values.append(['Mean', "%d" % int(num_stats.mean)])
+            table_values.append(['Median', "%d" % int(num_stats.median)])
+            table_values.append(['Standard deviation', "%d" % int(num_stats.sd)])
 
             self.pdf.add_table_image_group(image_path=figure_path,
                                            table_header=table_header,
@@ -607,7 +605,7 @@ class PdfWriter(Writer):
 
     def draw_text_field_distribution(self, notes: str, *,
                                      field_name: str,
-                                     field_distribution: dict):
+                                     field_distribution: Dict[str,TextStats]):
         """
         Draw information of field value distribution for text type to the
         report.
@@ -617,30 +615,26 @@ class PdfWriter(Writer):
             field_name (str): data field name
             field_distribution (:dict of :dict):
                 -key: label_name
-                -value: tfidf and placeholder distribution under the `label_name`(dict):
-                    {'tfidf': tfidf, 'placeholder': placeholder}
-                    - tfidf (:list of :list): each sublist has 2 items: word and tfidf
-                    - placeholder (:dict):
-                        - key: PATTERN
-                        - value: percentage
+                -value: TextStats
         """
         from xai.graphs import graph_generator
         from xai.graphs.format_contants import IMAGE_TABLE_GRID_SPEC_NEW
         # -- Draw Content --
         self.pdf.add_new_line(notes)
         self.pdf.start_itemize(' - ')
-        for idx, (label_name, data_distribution) in enumerate(
+        for idx, (label_name, text_stats) in enumerate(
                 field_distribution.items()):
-
+            tfidf = text_stats.tfidf
+            pattern_stats = text_stats.pattern_stats
             figure_path = '%s/%s_%s_field_distribution.png' % (
                 self.figure_path, field_name, label_name)
             figure_path = graph_generator.WordCloudGraph(
                 figure_path=figure_path,
-                data=data_distribution['tfidf'],
+                data=tfidf,
                 title='').draw()
             table_header = ['Placeholder', 'Doc Percentage ']
             table_values = []
-            for w, v in data_distribution['placeholder'].items():
+            for w, v in pattern_stats.items():
                 table_values.append([w, '%.2f%%' % (v * 100)])
 
             self.pdf.add_table_image_group(image_path=figure_path,
@@ -653,7 +647,7 @@ class PdfWriter(Writer):
 
     def draw_datetime_field_distribution(self, notes: str, *,
                                          field_name: str,
-                                         field_distribution: dict):
+                                         field_distribution: Dict[str,DatetimeStats]):
         """
         Draw information of field value distribution for datetime type to the
         report.
@@ -663,7 +657,7 @@ class PdfWriter(Writer):
             field_name (str): data field name
             field_distribution (:dict of :dict):
                 -key: label_name
-                -value (:dict of :dict):
+                -value (:dict of :DatetimeStats): only support resolution_list size of 2
                     - 1st level key: year_X(int)
                     - 1st level value:
                         - 2nd level key: month_X(int)
@@ -673,12 +667,14 @@ class PdfWriter(Writer):
         # -- Draw Content --
         self.pdf.add_new_line(notes)
         self.pdf.start_itemize(' - ')
-        for idx, (label_name, data_distribution) in enumerate(
+        for idx, (label_name, datetime_stats) in enumerate(
                 field_distribution.items()):
+            if datetime_stats.resolution_list != [DatetimeResolution.YEAR, DatetimeResolution.MONTH]:
+                raise Exception('Resolution list should be [year, month].')
             figure_path = '%s/%s_%s_field_distribution.png' % (
                 self.figure_path, field_name, label_name)
             figure_path = graph_generator.DatePlot(figure_path=figure_path,
-                                                   data=data_distribution,
+                                                   data=datetime_stats.frequency_count,
                                                    title='Datetime '
                                                          'distribution for %s (for %s samples) ' % (
                                                              field_name,
@@ -973,7 +969,7 @@ class PdfWriter(Writer):
                                             and corresponding values, or
                      (2) have a `average` keyword to show a macro-average metric.
         """
-        from xai.evaluation.multi_classification_result import \
+        from xai.model.evaluation.multi_classification_result import \
             MultiClassificationResult
         # -- Draw Content --
         self.pdf.add_new_line(notes)
@@ -1003,7 +999,7 @@ class PdfWriter(Writer):
             aggregated(bool): whether to aggregate multiple result tables into one
         """
         from collections import defaultdict
-        from xai.evaluation.binary_classification_result import \
+        from xai.model.evaluation.binary_classification_result import \
             BinaryClassificationResult
         # -- Draw Content --
         self.pdf.add_new_line(notes)
