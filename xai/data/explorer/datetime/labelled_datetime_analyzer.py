@@ -1,3 +1,9 @@
+#!/usr/bin/python
+#
+# -- coding: utf-8 --
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
 from typing import Tuple, Dict, Union, Optional, List
 
 from xai.data.explorer.abstract_labelled_analyzer import AbstractLabelledDataAnalyzer

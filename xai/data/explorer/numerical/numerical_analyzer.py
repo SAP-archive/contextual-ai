@@ -1,3 +1,9 @@
+#!/usr/bin/python
+#
+# -- coding: utf-8 --
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
 import numpy as np
 from sklearn.neighbors import KernelDensity
 from typing import Optional, List, Tuple
