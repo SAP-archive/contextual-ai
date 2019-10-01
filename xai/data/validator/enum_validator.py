@@ -1,3 +1,9 @@
+#!/usr/bin/python
+#
+# -- coding: utf-8 --
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
 from xai.data.validator.abstract_validator import AbstractValidator
 from xai.data.validator.enum_validation_stats import EnumValidationStats
 
