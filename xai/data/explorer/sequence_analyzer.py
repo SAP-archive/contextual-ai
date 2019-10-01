@@ -37,6 +37,12 @@ class SequenceAnalyzer:
             self.analyzer.feed(value=item, label=label)
 
     def feed_all(self, values, labels):
+        """
+        Feed all sequence values into analyzer and aggregate the stats
+        Args:
+            values: lists of items
+            labels: labels associated with the value
+        """
         if len(values) != len(labels):
             raise InconsistentSize('values', 'labels', len(values), len(labels))
 
@@ -49,7 +55,8 @@ class SequenceAnalyzer:
         Get stats object for analyzer
 
         Returns:
-            Stats object for all and class-based stats
+            Object that extends the AbstractStats for all class stats
+            and a dictionary maps label to the aggregated stats json object
 
         """
         return self.analyzer.get_statistics()

@@ -52,30 +52,19 @@ class DataAnalyzerSuite:
         for key, data_type in self.schema.items():
             if data_type == DATATYPE.CATEGORY:
                 analyzer = LabelledCategoricalDataAnalyzer()
-                if key in sequence_names:
-                    self.analyzers[key] = SequenceAnalyzer(analyzer=analyzer)
-                else:
-                    self.analyzers[key] = analyzer
             elif data_type == DATATYPE.NUMBER:
                 analyzer = LabelledNumericalDataAnalyzer()
-                if key in sequence_names:
-                    self.analyzers[key] = SequenceAnalyzer(analyzer=analyzer)
-                else:
-                    self.analyzers[key] = analyzer
             elif data_type == DATATYPE.FREETEXT:
                 analyzer = LabelledTextDataAnalyzer()
-                if key in sequence_names:
-                    self.analyzers[key] = SequenceAnalyzer(analyzer=analyzer)
-                else:
-                    self.analyzers[key] = analyzer
             elif data_type == DATATYPE.DATETIME:
                 analyzer = LabelledDatetimeDataAnalyzer()
-                if key in sequence_names:
-                    self.analyzers[key] = SequenceAnalyzer(analyzer=analyzer)
-                else:
-                    self.analyzers[key] = analyzer
             else:
                 raise AnalyzerDataTypeNotSupported(data_type)
+
+            if key in sequence_names:
+                self.analyzers[key] = SequenceAnalyzer(analyzer=analyzer)
+            else:
+                self.analyzers[key] = analyzer
 
     def feed_row(self, sample: Union[Dict, List], label: Optional = None):
         """
