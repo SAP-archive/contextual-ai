@@ -9,22 +9,29 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
 import copy
-import shutil
+import os
 import tempfile
 
+import shutil
 from typing import Tuple, Dict, List
 
-from xai.formatter.contents import Title, SectionTitle, Header
-from xai.formatter.report.section import OverviewSection, DetailSection
-
+from xai.data.constants import DatetimeResolution
+from xai.data.explorer import (
+    CategoricalStats,
+    NumericalStats,
+    TextStats,
+    DatetimeStats
+)
+from xai.formatter.contents import (
+    Title,
+    SectionTitle,
+    Header
+)
 from xai.formatter.portable_document.publisher import CustomPdf
-
+from xai.formatter.report.section import OverviewSection, DetailSection
 from xai.formatter.writer import Writer
 
-from xai.data.explorer import CategoricalStats, NumericalStats, TextStats, DatetimeStats
-from xai.data.constants import DatetimeResolution
 
 ################################################################################
 ### Pdf Writer Visitor
@@ -409,8 +416,7 @@ class PdfWriter(Writer):
             notes(str): Explain the block
             data_set_distribution (tuple: (str,dict)):
                 - tuple[0] str: label/split name
-                - tuple[1] dict: key - class_name/split_name,
-                                 value - class_count/split_count
+                - tuple[1] CategoricalStats: Categorical stat
             max_class_shown (int, Optional): maximum number of classes shown
                           in the figure, default is 20
         """
@@ -586,8 +592,7 @@ class PdfWriter(Writer):
                 force_no_log=force_no_log,
                 x_limit=x_limit)
             table_header = ['Statistical Field', 'Value']
-            table_values = []
-
+            table_values = list()
             table_values.append(['Total count', "%d" % int(num_stats.total_count)])
             table_values.append(['Min', "%d" % int(num_stats.min)])
             table_values.append(['Max', "%d" % int(num_stats.max)])

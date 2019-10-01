@@ -11,6 +11,7 @@ from __future__ import print_function
 
 from typing import Tuple, Dict
 
+from xai.data import explorer
 from xai.formatter.contents.base import Content
 from xai.formatter.writer.base import Writer
 
@@ -90,7 +91,7 @@ class DataSetDistribution(Content):
     """
 
     def __init__(self,
-                 dataset_distribution: Tuple[str, dict],
+                 dataset_distribution: Tuple[str, explorer.CategoricalStats],
                  max_class_shown=20,
                  notes=None) -> None:
         """
@@ -99,7 +100,8 @@ class DataSetDistribution(Content):
         Args:
             dataset_distribution (tuple: (str,dict)):
                 - tuple[0] str: label/split name
-                - tuple[1] dict: key - class_name/split_name,
+                - tuple[1] CategoricalStats object: `frequency_count` attribute
+                                 key - class_name/split_name,
                                  value - class_count/split_count
             max_class_shown (int, Optional): maximum number of classes shown
             in the figure, default is 20
@@ -197,7 +199,8 @@ class CategoricalFieldDistribution(Content):
     """
     Categorical Field Distribution
     """
-    def __init__(self, field_name: str, field_distribution: dict,
+    def __init__(self, field_name: str,
+                 field_distribution: Dict[str, explorer.CategoricalStats],
                 max_values_display=20, colors=None, notes=None) -> None:
        """
        add information of field value distribution for categorical type to the report.
@@ -208,8 +211,8 @@ class CategoricalFieldDistribution(Content):
            field_distribution (:dict of :dict):
                -key: label_name
                -value: frequency distribution under the `label_name`(dict)
-                   - key: field value
-                   - value: field value frequency
+                   - key: label_name
+                   - value: CategoricalStats object
            max_values_display (int): maximum number of values displayed
            colors (list): the list of color code for rendering different class
            notes (str, Optional):
@@ -274,7 +277,8 @@ class NumericFieldDistribution(Content):
     """
     Numeric Field Distribution
     """
-    def __init__(self, field_name: str, field_distribution: dict,
+    def __init__(self, field_name: str,
+                 field_distribution: Dict[str, explorer.NumericalStats],
                  force_no_log=False, x_limit=False, colors=None,
                  notes=None) -> None:
         """
@@ -296,7 +300,7 @@ class NumericFieldDistribution(Content):
             notes (str, Optional): explain the block
         """
         super(NumericFieldDistribution, self).__init__(field_name,
-                                                       numerical_stats,
+                                                       field_distribution,
                                                        force_no_log,
                                                        x_limit,
                                                        colors,
@@ -362,7 +366,8 @@ class TextFieldDistribution(Content):
     """
     Text Field Distribution
     """
-    def __init__(self, field_name: str, field_distribution: dict,
+    def __init__(self, field_name: str,
+                 field_distribution: Dict[str,explorer.TextStats],
                  notes=None) -> None:
         """
             add information of field value distribution for text type to the report.
@@ -372,12 +377,7 @@ class TextFieldDistribution(Content):
                 field_name (str): data field name
                 field_distribution (:dict of :dict):
                     -key: label_name
-                    -value: tfidf and placeholder distribution under the `label_name`(dict):
-                        {'tfidf': tfidf, 'placeholder': placeholder}
-                        - tfidf (:list of :list): each sublist has 2 items: word and tfidf
-                        - placeholder (:dict):
-                            - key: PATTERN
-                            - value: percentage
+                    -value: TextStats object
                 notes (str, Optional):  explain the block
         """
         super(TextFieldDistribution, self).__init__(field_name,
@@ -423,7 +423,8 @@ class DateTimeFieldDistribution(Content):
     """
     Date Time Field Distribution
     """
-    def __init__(self, field_name: str, field_distribution: dict,
+    def __init__(self, field_name: str,
+                 field_distribution: Dict[str, explorer.DatetimeStats],
                  notes=None) -> None:
         """
         add information of field value distribution for datetime type to the report.
@@ -433,7 +434,8 @@ class DateTimeFieldDistribution(Content):
             field_name (str): data field name
             field_distribution (:dict of :dict):
                 -key: label_name
-                -value (:dict of :dict):
+                -value (:dict of :DatetimeStats):
+                    Note that in order to render it in 2D diagram, the resolution has to be ['YEAR','MONTH'].
                     - 1st level key: year_X(int)
                     - 1st level value:
                         - 2nd level key: month_X(int)

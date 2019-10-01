@@ -11,6 +11,7 @@ from __future__ import print_function
 
 from typing import Tuple, Dict, List
 
+from xai.data import explorer
 
 ################################################################################
 ### Section Strategy
@@ -201,7 +202,8 @@ class Section:
                                               total_count=total_count,
                                               ratio=ratio, notes=notes))
 
-    def add_data_set_distribution(self, dataset_distribution: Tuple[str, dict],
+    def add_data_set_distribution(self,
+                                  dataset_distribution: Tuple[str, explorer.CategoricalStats],
                                   max_class_shown=20, notes=None):
         """
         add information of distribution on data set to the report
@@ -210,6 +212,8 @@ class Section:
             dataset_distribution (tuple: (str,dict)):
                 - tuple[0] str: label/split name
                 - tuple[1] dict: key - class_name/split_name,
+                - tuple[1] CategoricalStats object: `frequency_count` attribute
+                                 key - class_name/split_name,
                                  value - class_count/split_count
             max_class_shown (int, Optional): maximum number of classes shown
             in the figure, default is 20
