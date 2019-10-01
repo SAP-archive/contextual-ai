@@ -9,12 +9,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
-from importlib import import_module
+import warnings
 import json
-from jsonschema import validate
-import yaml
 from enum import Enum
+from importlib import import_module
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import yaml
+from jsonschema import validate
 
 from xai.exception import CompilerException
 from xai.formatter import Report
@@ -24,7 +28,6 @@ from xai.formatter import Report
 ### Report Enum Constant
 ################################################################################
 class Constant(Enum):
-
     NAME = 'name'
     ENABLE_OVERVIEW = 'overview'
     ENABLE_CONTENT_TABLE = 'content_table'
@@ -52,30 +55,29 @@ class Constant(Enum):
 ### Configuration
 ################################################################################
 class Configuration:
-
     SCHEMA = {
         "definitions": {
             "section": {
                 "type": "object",
                 "properties": {
-                    "title": { "type": "string" },
-                    "desc": { "type": "string" },
+                    "title": {"type": "string"},
+                    "desc": {"type": "string"},
                     "sections":
                         {
                             "type": "array",
-                            "items": { "$ref": "#/definitions/section" },
+                            "items": {"$ref": "#/definitions/section"},
                             "default": []
                         },
-                    "component": { "$ref": "#/definitions/component" }
+                    "component": {"$ref": "#/definitions/component"}
                 },
                 "required": ["title"]
             },
             "component": {
                 "type": "object",
                 "properties": {
-                    "package": { "type": "string" },
-                    "module": { "type": "string" },
-                    "class": { "type": "string" },
+                    "package": {"type": "string"},
+                    "module": {"type": "string"},
+                    "class": {"type": "string"},
                     "attr": {
                         "type": "object"
                     }
@@ -86,9 +88,9 @@ class Configuration:
 
         "type": "object",
         "properties": {
-            "name": { "type" : "string" },
-            "overview": {" type": "boolean" },
-            "content_table": { "type": "boolean" },
+            "name": {"type": "string"},
+            "overview": {" type": "boolean"},
+            "content_table": {"type": "boolean"},
             "contents":
                 {
                     "type": "array",
@@ -105,22 +107,25 @@ class Configuration:
     }
 
     @staticmethod
-    def _load(config: str) -> dict:
+    def _load(config: Path) -> dict:
         """
         Load Config File
 
         Args:
-            config (str): config json/yaml file
+            config (Path): config json/yaml file Path object
         Returns:
             configuration dict object
         """
-        data = dict()
-        if config.lower().endswith('.json'):
+        extension = config.suffix.lower()
+        if extension == '.json':
             with open(config) as file:
                 data = json.load(file)
-        elif config.lower().endswith('.yml'):
+        elif extension == '.yml':
             with open(config) as file:
                 data = yaml.load(file, Loader=yaml.SafeLoader)
+        else:
+            raise CompilerException('Unsupported config file, %s' % config)
+
         validate(instance=data, schema=Configuration.SCHEMA)
         return data
 
@@ -133,7 +138,7 @@ class Configuration:
         """
         self._config = dict()
         if not (config is None):
-            self._config = self._load(config)
+            self._config = self._load(Path(config))
 
     def __call__(self, config=None):
         """
@@ -145,8 +150,9 @@ class Configuration:
             configuration dict object
         """
         if not (config is None):
-            self._config = self._load(config)
+            self._config = self._load(Path(config))
         return self._config
+
 
 ################################################################################
 ### Controller
@@ -200,8 +206,9 @@ class Controller:
                 Controller.render_component(report=report, component=component)
             if Constant.SECTION_LIST.value in content:
                 Controller.render_contents(report=report,
-                                           contents=content[Constant.SECTION_LIST.value],
-                                           level=current_level+1)
+                                           contents=content[
+                                               Constant.SECTION_LIST.value],
+                                           level=current_level + 1)
 
     @staticmethod
     def value_extractor(items, key, default):
@@ -262,7 +269,6 @@ class Controller:
         else:
             raise CompilerException("class is not defined")
 
-
     @staticmethod
     def output(report: Report, writers: dict):
         """
@@ -276,7 +282,7 @@ class Controller:
             if Constant.COMPONENT_CLASS.value in writer:
                 name = writer[Constant.COMPONENT_CLASS.value]
                 package = Controller.value_extractor(
-                    items=writer,key=Constant.COMPONENT_PACKAGE.value,
+                    items=writer, key=Constant.COMPONENT_PACKAGE.value,
                     default='xai.compiler')
                 module = Controller.value_extractor(
                     items=writer, key=Constant.COMPONENT_MODULE.value,
@@ -300,6 +306,7 @@ class Controller:
                              level=Constant.S1.value)
         self.output(report=report, writers=self.config[Constant.WRITERS.value])
 
+
 ################################################################################
 ### Dict to Object
 ################################################################################
@@ -316,9 +323,9 @@ class Dict2Obj:
         self._dict = dictionary
         self._schema = schema
 
-        validate(instance= self._dict, schema=self._schema)
-        for key in  self._dict:
-            setattr(self, key,  self._dict[key])
+        validate(instance=self._dict, schema=self._schema)
+        for key in self._dict:
+            setattr(self, key, self._dict[key])
 
     def __call__(self, report: Report):
         """
@@ -329,23 +336,98 @@ class Dict2Obj:
         """
         pass
 
-
     def __repr__(self):
         """Return class name and attributes"""
         return "%s: schema[%s] data[%s]" % (self.__class__.__name__,
                                             self._schema,
                                             self.__dict__)
 
-    def assert_attr(self, key:str, *, default=None):
+    def assert_attr(self, key: str, *, default=None):
         """
         Assert and Get Attribute, raise Compiler exception if not found
 
         Args:
             key (str): Attribute Name
             default (Optional): default value if not found
+
+        Returns:
+            attribute value
         """
         if hasattr(self, key):
             return getattr(self, key)
         if not (default is None):
             return default
         raise CompilerException("attribute '%s' is not defined" % key)
+
+    @staticmethod
+    def load_data(path: Path) -> pd.DataFrame:
+        """
+        Load Data from file based on the file extension.
+        This function is used when the file is in a standard format.
+        Various file types are supported (.csv, .json, .jsonl, .data, .tsv,
+        .xls, .xlsx, .xpt, .sas7bdat, .parquet)
+
+        Args:
+            path (str): path to the data file
+
+        Returns:
+            DataFrame
+
+        Notes:
+            This function is based on pandas IO tools:
+            https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html
+            https://pandas.pydata.org/pandas-docs/stable/reference/io.html
+            This function is not intended to be flexible or complete. The main use case is to be able to read files without
+            user input, which is currently used in the editor integration. For more advanced use cases, the user should load
+            the DataFrame in code.
+        """
+        extension = path.suffix.lower()
+        if extension == ".json":
+            data = pd.read_json(str(path))
+        elif extension == ".jsonl":
+            data = pd.read_json(str(path), lines=True)
+        elif extension == ".dta":
+            data = pd.read_stata(str(path))
+        elif extension == ".tsv":
+            data = pd.read_csv(str(path), sep="\t")
+        elif extension in [".xls", ".xlsx"]:
+            data = pd.read_excel(str(path))
+        elif extension in [".hdf", ".h5"]:
+            data = pd.read_hdf(str(path))
+        elif extension in [".sas7bdat", ".xpt"]:
+            data = pd.read_sas(str(path))
+        elif extension == ".parquet":
+            data = pd.read_parquet(str(path))
+        elif extension in [".pkl", ".pickle"]:
+            data = pd.read_pickle(str(path))
+        else:
+            if extension != ".csv":
+                warnings.warn(message="Warning! unsupported extension %s, "
+                                      "we default it to be in CSV format." %
+                              extension)
+
+            data = pd.read_csv(str(path), header=None)
+        return data
+
+    @staticmethod
+    def load_data2(path: str, *, delimiter=',', dtype='str'):
+        """
+        Load Data from file
+
+        Args:
+            path (str): path to the data file
+            delimiter (optional): separator between array items
+                                default ','
+            dtype (optional): data type, default 'str'
+
+        Returns:
+            data object
+        """
+        lower_path = path.lower()
+        if lower_path.endswith('.np'):
+            data = np.load(path)
+        elif lower_path.endswith('.csv'):
+            data = np.loadtxt(path, delimiter=delimiter, dtype=dtype)
+        else:
+            raise CompilerException('Unsupported data file, %s' % path)
+        return data

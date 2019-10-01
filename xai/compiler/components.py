@@ -9,8 +9,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from pathlib import Path
 import numpy as np
-import dill as pickle
 
 from xai.compiler.base import Dict2Obj
 from xai.model.interpreter.feature_interpreter import FeatureInterpreter
@@ -82,16 +82,16 @@ class FeatureImportanceRanking(Dict2Obj):
             report (Report): report object
         """
         path = self.assert_attr(key='feature_names')
-        with open(path, 'rb') as file:
-            feature_names = np.load(file)
+        df = self.load_data(Path(path))
+        feature_names = df.columns
+        # with open(path, 'rb') as file:
+        #     feature_names = np.load(file)
 
         path = self.assert_attr(key='train_data')
-        with open(path, 'rb') as file:
-            train_data = np.load(file)
+        train_data = self.load_data(Path(path))
 
         path = self.assert_attr(key='trained_model')
-        with open(path, 'rb') as file:
-            model = pickle.load(file)
+        model = self.load_data(Path(path))
 
         method = self.assert_attr(key='method', default='default')
         threshold = self.assert_attr(key='threshold', default=0.005)

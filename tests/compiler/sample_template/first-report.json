@@ -24,8 +24,8 @@
                 "class": "FeatureImportanceRanking",
                 "attr": {
                   "trained_model": "./sample_input/model.pkl",
-                  "train_data": "./sample_input/train_data.txt",
-                  "feature_names": "./sample_input/feature_names.txt",
+                  "train_data": "./sample_input/train_data.csv",
+                  "feature_names": "./sample_input/feature_names.csv",
                   "method": "shap",
                   "threshold": 0.005
                 }
