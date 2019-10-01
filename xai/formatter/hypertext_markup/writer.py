@@ -9,17 +9,22 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
 import copy
-import shutil
+import os
 import tempfile
 
+import shutil
 from typing import Tuple, Dict, List
 
+from xai.data.explorer import (
+    CategoricalStats,
+    NumericalStats,
+    TextStats,
+    DatetimeStats
+)
 from xai.formatter.contents import Header, Title
-from xai.formatter.report.section import OverviewSection, DetailSection
-
 from xai.formatter.hypertext_markup.publisher import CustomHtml, Div
+from xai.formatter.report.section import OverviewSection, DetailSection
 from xai.formatter.writer import Writer
 
 
@@ -383,7 +388,7 @@ class HtmlWriter(Writer):
                 self.html.add_table(header=header, data=data))
 
     def draw_data_set_distribution(self, notes: str, *,
-                                   data_set_distribution: Tuple[str, dict],
+                                   data_set_distribution: Tuple[str, CategoricalStats],
                                    max_class_shown=20):
         """
         Draw information of distribution on data set
@@ -392,8 +397,7 @@ class HtmlWriter(Writer):
             notes(str): Explain the block
             data_set_distribution (tuple: (str,dict)):
                 - tuple[0] str: label/split name
-                - tuple[1] dict: key - class_name/split_name,
-                                 value - class_count/split_count
+                - tuple[1] CategoricalStats: Categorical stat
             max_class_shown (int, Optional): maximum number of classes shown
                           in the figure, default is 20
             notes (str, Optional):
@@ -418,6 +422,7 @@ class HtmlWriter(Writer):
             self.html.article[-1].items.append(
                 self.html.add_paragraph(text='Count: %s' %
                                              dist_count.get(name), style='B'))
+            dist = dist.frequency_count
             if len(dist) > max_class_shown:
                 self.html.article[-1].items.append(
                     self.html.add_paragraph(
@@ -475,7 +480,7 @@ class HtmlWriter(Writer):
 
     def draw_categorical_field_distribution(self, notes: str, *,
                                             field_name: str,
-                                            field_distribution: dict,
+                                            field_distribution: Dict[str, CategoricalStats],
                                             max_values_display=20,
                                             colors=None):
         """
@@ -485,11 +490,11 @@ class HtmlWriter(Writer):
         Args:
             notes(str): Explain the block
             field_name (str): data field name
-            field_distribution (:dict of :dict):
+            field_distribution (:dict of :CategoricalStats):
                 -key: label_name
                 -value: frequency distribution under the `label_name`(dict)
                     - key: field value
-                    - value: field value frequency
+                    - value: CategoricalStats object
             max_values_display (int): maximum number of values displayed
             colors (list): the list of color code for rendering different class
         """
@@ -500,8 +505,9 @@ class HtmlWriter(Writer):
         # -- Draw Content --
         self.html.article[-1].items.append(
             self.html.add_paragraph(text=notes))
-        for idx, (label_name, frequency_distribution) in enumerate(
+        for idx, (label_name, cat_stats) in enumerate(
                 field_distribution.items()):
+            frequency_distribution = cat_stats.frequency_count
             title = 'For %s samples' % label_name
             self.html.article[-1].items.append(
                 self.html.add_header(text=title, heading='h5'))
@@ -533,7 +539,7 @@ class HtmlWriter(Writer):
 
     def draw_numeric_field_distribution(self, notes: str, *,
                                         field_name: str,
-                                        field_distribution: dict,
+                                        field_distribution: Dict[str, NumericalStats],
                                         force_no_log=False,
                                         x_limit=False,
                                         colors=None):
@@ -546,14 +552,7 @@ class HtmlWriter(Writer):
              field_name (str): data field name
              field_distribution (:dict of :dict):
                  -key: label_name
-                 -value: numeric statistics
-                     - key: statistics name
-                     - value: statistics value
-                 each field_distribution should must have 2 following predefined keys:
-                 - histogram (:list of :list): a list of bar specification
-                                                (x, y, width, height)
-                 - kde (:list of :list, Optional): a list of points which
-                                    draw`kernel density estimation` curve.
+                 -value: numeric statistics object
 
              force_no_log (bool): whether to change y-scale to logrithmic
                                               scale for a more balanced view
@@ -568,7 +567,7 @@ class HtmlWriter(Writer):
         # -- Draw Content --
         self.html.article[-1].items.append(
             self.html.add_paragraph(text=notes))
-        for idx, (label_name, data_distribution) in enumerate(
+        for idx, (label_name, num_stats) in enumerate(
                 field_distribution.items()):
             title = 'Distribution for %s' % label_name
             self.html.article[-1].items.append(
@@ -577,7 +576,7 @@ class HtmlWriter(Writer):
                 self.figure_path, field_name, label_name)
             figure_path = graph_generator.KdeDistribution(
                 figure_path=figure_path,
-                data=data_distribution,
+                data=num_stats,
                 title=title,
                 x_label=field_name,
                 y_label="").draw(
@@ -585,11 +584,13 @@ class HtmlWriter(Writer):
                 force_no_log=force_no_log,
                 x_limit=x_limit)
             table_header = ['Statistical Field', 'Value']
-            table_values = []
-            for key, value in data_distribution.items():
-                if key in ['kde', 'histogram', 'x_limit']:
-                    continue
-                table_values.append([key, "%d" % int(value)])
+            table_values = list()
+            table_values.append(['Total count', "%d" % int(num_stats.total_count)])
+            table_values.append(['Min', "%d" % int(num_stats.min)])
+            table_values.append(['Max', "%d" % int(num_stats.max)])
+            table_values.append(['Mean', "%d" % int(num_stats.mean)])
+            table_values.append(['Median', "%d" % int(num_stats.median)])
+            table_values.append(['Standard deviation', "%d" % int(num_stats.sd)])
 
             self.html.article[-1].items.append(self.html.add_table_image_group(
                 header=table_header, data=table_values,
@@ -597,7 +598,7 @@ class HtmlWriter(Writer):
 
     def draw_text_field_distribution(self, notes: str, *,
                                      field_name: str,
-                                     field_distribution: dict):
+                                     field_distribution: Dict[str,TextStats]):
         """
         Draw information of field value distribution for text type to the
         report.
@@ -607,19 +608,17 @@ class HtmlWriter(Writer):
             field_name (str): data field name
             field_distribution (:dict of :dict):
                 -key: label_name
-                -value: tfidf and placeholder distribution under the `label_name`(dict):
-                    {'tfidf': tfidf, 'placeholder': placeholder}
-                    - tfidf (:list of :list): each sublist has 2 items: word and tfidf
-                    - placeholder (:dict):
-                        - key: PATTERN
-                        - value: percentage
+                -value: TextStats
         """
         from xai.graphs import graph_generator
         # -- Draw Content --
         self.html.article[-1].items.append(
             self.html.add_paragraph(text=notes))
-        for idx, (label_name, data_distribution) in enumerate(
+        for idx, (label_name, text_stats) in enumerate(
                 field_distribution.items()):
+            tfidf = text_stats.tfidf
+            pattern_stats = text_stats.pattern_stats
+
             title = 'Distribution for %s' % label_name
             self.html.article[-1].items.append(
                 self.html.add_header(text=title, heading='h5'))
@@ -627,11 +626,11 @@ class HtmlWriter(Writer):
                 self.figure_path, field_name, label_name)
             figure_path = graph_generator.WordCloudGraph(
                 figure_path=figure_path,
-                data=data_distribution['tfidf'],
+                data=tfidf,
                 title=title).draw()
             table_header = ['Placeholder', 'Percentage(%)']
             table_values = []
-            for w, v in data_distribution['placeholder'].items():
+            for w, v in pattern_stats['placeholder'].items():
                 table_values.append([w, '%.2f%%' % (v * 100)])
 
             self.html.article[-1].items.append(self.html.add_table_image_group(
@@ -641,7 +640,7 @@ class HtmlWriter(Writer):
 
     def draw_datetime_field_distribution(self, notes: str, *,
                                          field_name: str,
-                                         field_distribution: dict):
+                                         field_distribution: Dict[str,DatetimeStats]):
         """
         Draw information of field value distribution for datetime type to the
         report.
@@ -651,7 +650,7 @@ class HtmlWriter(Writer):
             field_name (str): data field name
             field_distribution (:dict of :dict):
                 -key: label_name
-                -value (:dict of :dict):
+                -value (:dict of :DatetimeStats): only support resolution_list size of 2
                     - 1st level key: year_X(int)
                     - 1st level value:
                         - 2nd level key: month_X(int)
@@ -661,7 +660,7 @@ class HtmlWriter(Writer):
         # -- Draw Content --
         self.html.article[-1].items.append(
             self.html.add_paragraph(text=notes))
-        for idx, (label_name, data_distribution) in enumerate(
+        for idx, (label_name, datetime_stats) in enumerate(
                 field_distribution.items()):
             title = 'Datetime distribution for %s (for %s samples) ' % (
                                                              field_name,
@@ -671,7 +670,7 @@ class HtmlWriter(Writer):
             figure_path = '%s/%s_%s_field_distribution.png' % (
                 self.figure_path, field_name, label_name)
             figure_path = graph_generator.DatePlot(figure_path=figure_path,
-                                                   data=data_distribution,
+                                                   data=datetime_stats.frequency_count,
                                                    title=title,
                                                    x_label="",
                                                    y_label="").draw()

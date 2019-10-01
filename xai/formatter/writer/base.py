@@ -13,9 +13,9 @@ from abc import ABC, abstractmethod
 
 from typing import Tuple, Dict, List
 
-from xai.formatter.report.section import OverviewSection, DetailSection
 from xai.data import explorer
-from xai.data import validator
+from xai.formatter.report.section import OverviewSection, DetailSection
+
 
 ################################################################################
 ### Writer Visitor
@@ -122,19 +122,21 @@ class Writer(ABC):
         pass
 
     @abstractmethod
-    def draw_data_set_summary(self, notes: str, *, data_summary: explorer.CategoricalStats):
+    def draw_data_set_summary(self, notes: str, *,
+                              data_summary: List[Tuple[str, int]]):
         """
         Draw information of dataset summary to the report
 
         Args:
             notes(str): Explain the block
-            data_summary: CategoricalStats object, frequency count represents the dataset name and corresponding count.
+            data_summary (:obj:`list` of :obj:`tuple`): list of tuple
+                        (dataset_name, dataset_sample_number)
         """
         pass
 
     @abstractmethod
-    def draw_evaluation_result_summary(self, notes: str, *, evaluation_result:
-    dict):
+    def draw_evaluation_result_summary(self, notes: str, *,
+                                       evaluation_result: dict):
         """
         Draw information of training performance to the result
 
@@ -221,7 +223,8 @@ class Writer(ABC):
     @abstractmethod
     def draw_categorical_field_distribution(self, notes: str, *,
                                             field_name: str,
-                                            field_distribution: Dict[str,explorer.CategoricalStats],
+                                            field_distribution: Dict[str,
+                                                                     explorer.CategoricalStats],
                                             max_values_display=20,
                                             colors=None):
         """
@@ -242,7 +245,8 @@ class Writer(ABC):
     @abstractmethod
     def draw_numeric_field_distribution(self, notes: str, *,
                                         field_name: str,
-                                        field_distribution: Dict[str,explorer.NumericalStats],
+                                        field_distribution: Dict[str,
+                                                                 explorer.NumericalStats],
                                         force_no_log=False,
                                         x_limit=False,
                                         colors=None):
@@ -286,7 +290,8 @@ class Writer(ABC):
     @abstractmethod
     def draw_datetime_field_distribution(self, notes: str, *,
                                          field_name: str,
-                                         field_distribution: Dict[str,explorer.DatetimeStats]):
+                                         field_distribution: Dict[str,
+                                                                  explorer.DatetimeStats]):
         """
         Draw information of field value distribution for datetime type to the
         report.
