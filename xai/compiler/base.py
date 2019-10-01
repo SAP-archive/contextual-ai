@@ -342,12 +342,14 @@ class Dict2Obj:
                                             self._schema,
                                             self.__dict__)
 
-    def assert_attr(self, key: str, *, default=None):
+    def assert_attr(self, key: str, *, optional=False, default=None):
         """
         Assert and Get Attribute, raise Compiler exception if not found
 
         Args:
             key (str): Attribute Name
+            optional (Optional): default is False, if set to true,
+                        simple return None when attribute not found
             default (Optional): default value if not found
 
         Returns:
@@ -355,23 +357,26 @@ class Dict2Obj:
         """
         if hasattr(self, key):
             return getattr(self, key)
+        if optional:
+            return None
         if not (default is None):
             return default
         raise CompilerException("attribute '%s' is not defined" % key)
 
     @staticmethod
-    def load_data(path: Path) -> pd.DataFrame:
+    def load_data(path: Path, *, header='infer'):
         """
         Load Data from file based on the file extension.
-        This function is used when the file is in a standard format.
-        Various file types are supported (.csv, .json, .jsonl, .data, .tsv,
-        .xls, .xlsx, .xpt, .sas7bdat, .parquet)
+        This function is based on pandas IO tools, when the file is in a
+        standard format. Various file types are supported (.csv, .json,
+        .jsonl, .data, .tsv, .xls, .xlsx, .xpt, .sas7bdat, .parquet)
 
         Args:
             path (str): path to the data file
+            header: load data with header
 
         Returns:
-            DataFrame
+            DataFrame / Numpy
 
         Notes:
             This function is based on pandas IO tools:
@@ -382,7 +387,9 @@ class Dict2Obj:
             the DataFrame in code.
         """
         extension = path.suffix.lower()
-        if extension == ".json":
+        if extension == '.npy':
+            data = np.load(path)
+        elif extension == ".json":
             data = pd.read_json(str(path))
         elif extension == ".jsonl":
             data = pd.read_json(str(path), lines=True)
@@ -405,29 +412,8 @@ class Dict2Obj:
                 warnings.warn(message="Warning! unsupported extension %s, "
                                       "we default it to be in CSV format." %
                               extension)
-
-            data = pd.read_csv(str(path), header=None)
-        return data
-
-    @staticmethod
-    def load_data2(path: str, *, delimiter=',', dtype='str'):
-        """
-        Load Data from file
-
-        Args:
-            path (str): path to the data file
-            delimiter (optional): separator between array items
-                                default ','
-            dtype (optional): data type, default 'str'
-
-        Returns:
-            data object
-        """
-        lower_path = path.lower()
-        if lower_path.endswith('.np'):
-            data = np.load(path)
-        elif lower_path.endswith('.csv'):
-            data = np.loadtxt(path, delimiter=delimiter, dtype=dtype)
-        else:
-            raise CompilerException('Unsupported data file, %s' % path)
+            if header == 'infer':
+                data = pd.read_csv(str(path))
+            else:
+                data = pd.read_csv(str(path), header=header)
         return data

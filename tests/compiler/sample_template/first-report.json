@@ -1,63 +1,37 @@
 {
-  "name": "Sample Report",
+  "name": "First Sample Report",
   "overview": true,
   "content_table": true,
   "contents": [
     {
-      "title": "Example of Section One",
-      "desc": "This is section one info",
+      "title": "Global Explainability",
+      "desc": "This section provides the analysis on feature, model and data",
       "sections": [
         {
-          "title": "Example of Header 1 (S1)",
-          "desc": "This is header 1 info",
+          "title": "Feature Importance",
           "sections": [
             {
-              "title": "Example of Paragraph Title (S1H1)",
-              "desc": "This is paragraph content, place holder"
-            },
-            {
-              "title": "Example of Header 2 (S1)",
-              "desc": "This is header 2 info",
+              "title": "Feature Importance Analysis with SHAP",
               "component": {
-                "package": "xai.compiler",
-                "module": "components",
+                "_comment": "refer to document section xxxx",
                 "class": "FeatureImportanceRanking",
                 "attr": {
                   "trained_model": "./sample_input/model.pkl",
-                  "train_data": "./sample_input/train_data.csv",
-                  "feature_names": "./sample_input/feature_names.csv",
-                  "method": "shap",
-                  "threshold": 0.005
+                  "train_data": "./sample_input/train_data.npy",
+                  "feature_names": "./sample_input/feature_names.npy",
+                  "method": "shap"
                 }
-              },
-              "sections": [
-                {
-                  "title": "Example of Header 3 (S1)",
-                  "desc": "This is header 3 info"
+              }
+            }, {
+              "title": "Feature Importance Analysis with 'default' + header",
+              "component": {
+                "_comment": "refer to document section xxxx",
+                "class": "FeatureImportanceRanking",
+                "attr": {
+                  "trained_model": "./sample_input/model.pkl",
+                  "train_data": "./sample_input/train_data.csv"
                 }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Example of Section Two",
-      "desc": "This is section two info",
-      "sections": [
-        {
-          "title": "Example of Header 1 (S2)",
-          "desc": "This is header 1 info",
-          "sections": [
-            {
-              "title": "Example of Header 2 (S2)",
-              "desc": "This is header 2 info",
-              "sections": [
-                {
-                  "title": "Example of Header 3 (S2)",
-                  "desc": "This is header 3 info"
-                }
-              ]
+              }
             }
           ]
         }
