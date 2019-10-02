@@ -3,14 +3,13 @@
 
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
-""" Compiler - Components """
+""" Compiler - Features """
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
 from pathlib import Path
-import numpy as np
 
 from xai.compiler.base import Dict2Obj
 from xai.model.interpreter.feature_interpreter import FeatureInterpreter
@@ -30,16 +29,16 @@ class FeatureImportanceRanking(Dict2Obj):
         class (str): component class name
 
     Attr:
-        trained_model: path to trained model pickle
-        train_data: path to training sample data
-        feature_names: path to feature names list (csv)
-        method: interpreter method (default/shap)
-        threshold: importance threshold
+        trained_model (str): path to trained model pickle
+        train_data (str): path to training sample data
+        feature_names (str, Optional): array-list of feature names
+        method: (str, Optional) interpreter method, default = 'default'
+        threshold (number, Optional): importance threshold, default 0.005
 
     Example:
         "component": {
-            "package": "xai.compiler",
-            "module": "components",
+            "package": "xai",
+            "module": "compiler",
             "class": "FeatureImportanceRanking",
             "attr": {
                 "trained_model": "./sample_input/model.pkl",
@@ -65,15 +64,7 @@ class FeatureImportanceRanking(Dict2Obj):
                 "default": 0.005
             }
         },
-        "anyOf": [
-            {
-                "properties": {
-                    "method": {"const": "shap"}
-                },
-                "required": ["train_data"]
-            }
-        ],
-        "required": ["trained_model"]
+        "required": ["trained_model", "train_data"]
     }
 
     def __init__(self, dictionary):
@@ -95,10 +86,10 @@ class FeatureImportanceRanking(Dict2Obj):
         """
         threshold = self.assert_attr(key='threshold', default=0.005)
         method = self.assert_attr(key='method', default='default')
-
+        # -- Load Model --
         model_path = self.assert_attr(key='trained_model')
         model = self.load_data(Path(model_path))
-
+        # -- Check if feature names is set --
         header = True
         fn_path = self.assert_attr(key='feature_names', optional=True)
         feature_names = None

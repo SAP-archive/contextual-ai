@@ -257,10 +257,10 @@ class Controller:
             name = component[Constant.COMPONENT_CLASS.value]
             package = Controller.value_extractor(
                 items=component, key=Constant.COMPONENT_PACKAGE.value,
-                default='xai.compiler')
+                default='xai')
             module = Controller.value_extractor(
                 items=component, key=Constant.COMPONENT_MODULE.value,
-                default='components')
+                default='compiler')
             attr = Controller.value_extractor(
                 items=component, key=Constant.COMPONENT_ATTR.value,
                 default=dict())
@@ -283,10 +283,10 @@ class Controller:
                 name = writer[Constant.COMPONENT_CLASS.value]
                 package = Controller.value_extractor(
                     items=writer, key=Constant.COMPONENT_PACKAGE.value,
-                    default='xai.compiler')
+                    default='xai')
                 module = Controller.value_extractor(
                     items=writer, key=Constant.COMPONENT_MODULE.value,
-                    default='writer')
+                    default='compiler')
                 attr = Controller.value_extractor(
                     items=writer, key=Constant.COMPONENT_ATTR.value,
                     default=dict())
