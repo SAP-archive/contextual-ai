@@ -364,27 +364,19 @@ class Dict2Obj:
         raise CompilerException("attribute '%s' is not defined" % key)
 
     @staticmethod
-    def load_data(path: Path, *, header='infer'):
+    def load_data(path: Path, *, header=True):
         """
         Load Data from file based on the file extension.
-        This function is based on pandas IO tools, when the file is in a
-        standard format. Various file types are supported (.csv, .json,
-        .jsonl, .data, .tsv, .xls, .xlsx, .xpt, .sas7bdat, .parquet)
+        This function is based on pandas and numpy tools, when the file is in a
+        standard format. Various file types are supported (.npy, .csv, .json,
+        .jsonl, .xls, .xlsx, .tsv, .pickle, .pick)
 
         Args:
             path (str): path to the data file
-            header: load data with header
+            header (bool): load data with header, default is True
 
         Returns:
             DataFrame / Numpy
-
-        Notes:
-            This function is based on pandas IO tools:
-            https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html
-            https://pandas.pydata.org/pandas-docs/stable/reference/io.html
-            This function is not intended to be flexible or complete. The main use case is to be able to read files without
-            user input, which is currently used in the editor integration. For more advanced use cases, the user should load
-            the DataFrame in code.
         """
         extension = path.suffix.lower()
         if extension == '.npy':
@@ -393,18 +385,10 @@ class Dict2Obj:
             data = pd.read_json(str(path))
         elif extension == ".jsonl":
             data = pd.read_json(str(path), lines=True)
-        elif extension == ".dta":
-            data = pd.read_stata(str(path))
         elif extension == ".tsv":
             data = pd.read_csv(str(path), sep="\t")
         elif extension in [".xls", ".xlsx"]:
             data = pd.read_excel(str(path))
-        elif extension in [".hdf", ".h5"]:
-            data = pd.read_hdf(str(path))
-        elif extension in [".sas7bdat", ".xpt"]:
-            data = pd.read_sas(str(path))
-        elif extension == ".parquet":
-            data = pd.read_parquet(str(path))
         elif extension in [".pkl", ".pickle"]:
             data = pd.read_pickle(str(path))
         else:
@@ -412,7 +396,7 @@ class Dict2Obj:
                 warnings.warn(message="Warning! unsupported extension %s, "
                                       "we default it to be in CSV format." %
                               extension)
-            if header == 'infer':
+            if header:
                 data = pd.read_csv(str(path))
             else:
                 data = pd.read_csv(str(path), header=header)

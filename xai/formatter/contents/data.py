@@ -58,7 +58,7 @@ class DataMissingValue(Content):
     @property
     def total_count(self):
         """Returns total data count number."""
-        return self._missing_count
+        return self._total_count
 
     @property
     def ratio(self):

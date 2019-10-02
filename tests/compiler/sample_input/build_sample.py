@@ -38,3 +38,4 @@ from sklearn.ensemble import RandomForestClassifier
 with open('titanic.csv') as file:
     data = file.read()
 print(data)
+

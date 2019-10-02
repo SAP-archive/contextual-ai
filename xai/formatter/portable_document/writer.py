@@ -353,7 +353,6 @@ class PdfWriter(Writer):
                 else:
                     data_dict[feature_name]['total_count'] = \
                         total_count[feature_name]
-
                 if feature_name not in missing_count:
                     data_dict[feature_name]['missing_value_count'] = 0
                     data_dict[feature_name]['percentage'] = 0
