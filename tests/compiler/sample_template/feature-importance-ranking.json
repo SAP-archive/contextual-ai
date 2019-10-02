@@ -73,14 +73,14 @@
     {
       "class": "Pdf",
       "attr": {
-        "name": "feature-importance-report",
+        "name": "feature-importance-json-report",
         "path": "./sample_output"
       }
     },
     {
       "class": "Html",
       "attr": {
-        "name": "feature-importance-report",
+        "name": "feature-importance-json-report",
         "path": "./sample_output"
       }
     }

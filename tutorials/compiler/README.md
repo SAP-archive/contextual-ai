@@ -11,6 +11,8 @@ The supported `external configuration` format are:
 * Yaml - Rhymes with Camel (converted to Json when loaded)
 
 ## Validation
+
+### Validate with Json Schema
 The `external configuration` MUST follow the defined schema bvelow:
 ```json
       { "definitions": {
@@ -62,4 +64,129 @@ The `external configuration` MUST follow the defined schema bvelow:
         },
         "required": ["name", "content_table", "contents", "writers"]
     }
+```
+
+### Example in Json
+```json
+{
+  "name": "Report for Feature Importance Ranking",
+  "overview": true,
+  "content_table": true,
+  "contents": [
+    {
+      "title": "Feature Importance Ranking",
+      "desc": "This section provides the analysis on feature",
+      "sections": [
+        {
+          "title": "Feature Importance Analysis with Breast Cancer data-set",
+          "desc": "Model and train data from Breast Cancer",
+          "sections": [
+            {
+              "title": "SHAP analysis with csv (with header)",
+              "component": {
+                "_comment": "refer to document section xxxx",
+                "class": "FeatureImportanceRanking",
+                "attr": {
+                  "trained_model": "./sample_input/breast_cancer/model.pkl",
+                  "train_data": "./sample_input/breast_cancer/train_data.csv",
+                  "method": "shap"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "title": "Feature Importance Analysis with Titanic data-set",
+          "desc": "Model and train data from Titanic",
+          "sections": [
+            {
+              "title": "Default analysis with csv (with header)",
+              "component": {
+                "_comment": "refer to document section xxxx",
+                "class": "FeatureImportanceRanking",
+                "attr": {
+                  "trained_model": "./sample_input/titanic/model.pkl",
+                  "train_data": "./sample_input/titanic/train_data.csv"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "writers": [
+    {
+      "class": "Pdf",
+      "attr": {
+        "name": "feature-importance-report",
+        "path": "./sample_output"
+      }
+    },
+    {
+      "class": "Html",
+      "attr": {
+        "name": "feature-importance-report",
+        "path": "./sample_output"
+      }
+    }
+  ]
+}
+```
+
+### Example in Yaml
+```yaml
+name: Report for Feature Importance Ranking
+overview: true
+content_table: true
+contents: 
+  - title: Feature Importance Ranking
+    desc: This section provides the analysis on feature
+    sections: 
+      - title: Feature Importance Analysis with Breast Cancer data-set
+        desc: Model and train data from Breast Cancer
+        sections: 
+          - title: SHAP analysis with csv (with header)
+            component:
+              _comment: refer to document section xxxx1
+              class: FeatureImportanceRanking
+              attr:
+                trained_model: ./sample_input/breast_cancer/model.pkl
+                train_data: ./sample_input/breast_cancer/train_data.csv
+                method: shap
+          - title: Default analysis with csv (with header)
+            component:
+              _comment: refer to document section xxxx
+              class: FeatureImportanceRanking
+              attr:
+                trained_model: ./sample_input/breast_cancer/model.pkl
+                train_data: ./sample_input/breast_cancer/train_data.csv
+          - title: SHAP analysis with numpy input file
+            component:
+              _comment: refer to document section xxxx2
+              class: FeatureImportanceRanking
+              attr:
+                trained_model: ./sample_input/breast_cancer/model.pkl
+                train_data: ./sample_input/breast_cancer/train_data.npy
+                feature_names: ./sample_input/breast_cancer/feature_names.npy
+                method: shap
+      - title: Feature Importance Analysis with Titanic data-set
+        desc: Model and train data from Titanic
+        sections:
+          - title: Default analysis with csv (with header)
+            component:
+              _comment: refer to document section xxxx
+              class: FeatureImportanceRanking
+              attr:
+                trained_model: ./sample_input/titanic/model.pkl
+                train_data: ./sample_input/titanic/train_data.csv
+writers:
+  - class: Pdf
+    attr:
+      name: feature-importance-yml-report
+      path: ./sample_output
+  - class: Html
+    attr:
+      name: feature-importance-yml-report
+      path: ./sample_output
 ```
