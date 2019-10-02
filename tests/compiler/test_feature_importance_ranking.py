@@ -18,8 +18,7 @@ class TestReportBasicSkeleton(unittest.TestCase):
         self.json = 'sample_template/feature-importance-ranking.json'
 
     def test_json_generate_report(self):
-        conf = Configuration()
-        controller = Controller(config=conf(config=self.json))
+        controller = Controller(config=Configuration(self.json))
         controller.render()
 
 if __name__ == '__main__':

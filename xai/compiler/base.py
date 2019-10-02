@@ -134,7 +134,7 @@ class Configuration:
         Configuration setup
 
         Args:
-            config (str): config json/yaml file
+            config (str): path to config json/yaml file
         """
         self._config = dict()
         if not (config is None):
@@ -166,7 +166,7 @@ class Controller:
         Args:
             config (Configuration): configuration dict object
         """
-        self._config = config
+        self._config = config()
 
     @property
     def config(self):

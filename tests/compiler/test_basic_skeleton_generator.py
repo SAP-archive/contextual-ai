@@ -83,13 +83,11 @@ class TestReportBasicSkeleton(unittest.TestCase):
         self.assertTrue(len(contents), 2)
 
     def test_json_generate_report(self):
-        conf = Configuration()
-        controller = Controller(config=conf(config=self.basic_json))
+        controller = Controller(config=Configuration(self.basic_json))
         controller.render()
 
     def test_yml_generate_report(self):
-        conf = Configuration()
-        controller = Controller(config=conf(config=self.basic_yaml))
+        controller = Controller(config=Configuration(self.basic_yaml))
         controller.render()
 
 if __name__ == '__main__':
