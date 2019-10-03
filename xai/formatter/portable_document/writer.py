@@ -406,7 +406,7 @@ class PdfWriter(Writer):
             self.pdf.add_new_line()
 
     def draw_data_set_distribution(self, notes: str, *,
-                                   data_set_distribution: Tuple[str, CategoricalStats],
+                                   data_set_distribution: Tuple[str, Dict],
                                    max_class_shown=20):
         """
         Draw information of distribution on data set
@@ -415,7 +415,7 @@ class PdfWriter(Writer):
             notes(str): Explain the block
             data_set_distribution (tuple: (str,dict)):
                 - tuple[0] str: label/split name
-                - tuple[1] CategoricalStats: Categorical stat
+                - tuple[1] dict: key: class name, value: class count
             max_class_shown (int, Optional): maximum number of classes shown
                           in the figure, default is 20
         """
@@ -434,9 +434,8 @@ class PdfWriter(Writer):
         _table_header, _table_data, _col_width = get_data_set_distribution()
         self.pdf.add_table(_table_header, _table_data, col_width=_col_width)
 
-        for _dataset_name, _dataset_dist_stats in data_set_distribution:
+        for _dataset_name, _dataset_dist in data_set_distribution:
             self.pdf.add_new_line('Distribution for <B>%s</B>' % _dataset_name)
-            _dataset_dist = _dataset_dist_stats.frequency_count
             if len(_dataset_dist) > max_class_shown:
                 self.pdf.add_new_line('(Only %s shown amount %s classes)' % (
                     max_class_shown, len(_dataset_dist)))

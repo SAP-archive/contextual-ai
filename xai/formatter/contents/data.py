@@ -25,7 +25,7 @@ class DataMissingValue(Content):
     """
 
     def __init__(self,
-                 missing_count: dict, total_count: list,
+                 missing_count: dict, total_count: dict,
                  ratio=False, notes=None) -> None:
         """
         add information of missing value for data fields to the report

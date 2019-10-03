@@ -179,7 +179,7 @@ class Writer(ABC):
         Args:
             notes(str): Explain the block
             missing_count(dict): Missing Count
-            total_count(dict): Total Count
+            total_count(list): Total Count
             ratio(bool): True if `missing_value` is the percentage
         """
         pass

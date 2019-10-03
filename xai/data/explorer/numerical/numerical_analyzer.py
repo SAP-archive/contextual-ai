@@ -33,7 +33,8 @@ class NumericDataAnalyzer(AbstractDataAnalyzer):
 
         """
         if type(value) not in NumericDataAnalyzer.SUPPORTED_TYPES:
-            raise ItemDataTypeNotSupported(type(value), type(self), NumericDataAnalyzer.SUPPORTED_TYPES)
+            raise ItemDataTypeNotSupported(type(value), type(self),
+                                           NumericDataAnalyzer.SUPPORTED_TYPES)
         if np.isnan(value):
             return
         self._values.append(value)

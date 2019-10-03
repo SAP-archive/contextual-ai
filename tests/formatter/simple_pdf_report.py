@@ -5,12 +5,21 @@
 # ============================================================================
 """ Sample Code to generate report """
 
+import json
 import os
 import sys
-sys.path.append('../../')
-import json
 
+import numpy as np
+import pandas as pd
+
+sys.path.append('../../')
+
+from xai.data.constants import DATATYPE
+from xai.data.explorer.data_analyzer_suite import DataAnalyzerSuite
+
+from xai.data.explorer import CategoricalDataAnalyzer
 from xai.formatter import Report, PdfWriter
+
 
 ################################################################################
 ### Sample Report
@@ -43,23 +52,91 @@ def main():
     report.detail.add_header_level_1(text='Data Analysis')
 
     ### Add Header Level 2
-    report.detail.add_header_level_2(text='Data Class Distribution')
-    ### Add Dataset distribution
-    with open('./sample_data/data_distribution.json', 'r') as f:
-        data_dist = json.load(f)
-    data_distributions = []
-    for k, v in data_dist.items():
-        data_distributions.append((k, v))
+    report.detail.add_header_level_2(text='Data Class (Label) Distribution')
+    ### Add Label distribution
+    training_file_name = './sample_data/titanic.csv'
+    data = pd.read_csv(training_file_name)
+
+    label_analyzer = CategoricalDataAnalyzer()
+    label_column = 'Survived'
+
+    label_analyzer.feed_all(data[label_column].tolist())
+    label_stats = label_analyzer.get_statistics()
+
+    data_distributions = list()
+    data_distributions.append((label_column, label_stats.frequency_count))
     print(data_distributions)
     report.detail.add_data_set_distribution(data_distributions)
+
+    ## TODO: where to park the code?
+    # get the data type
+    def get_column_types(data, threshold, label_column):
+        valid_feature_names = []
+        valid_feature_types = []
+        feature = {}
+        feature['categorical'] = []
+        feature['numerical'] = []
+        meta = {}
+        for column in data.columns:
+            if column == label_column:
+                meta[column] = {'type': 'label', 'used': True,
+                                'structured': 'attribute'}
+                continue
+            col_data = data[column]
+            unique_values = col_data.unique()
+
+            if col_data.dtypes == np.float64:
+                feature['numerical'].append(column)
+                valid_feature_names.append(column)
+                valid_feature_types.append(DATATYPE.NUMBER)
+                meta[column] = {'type': 'numerical', 'used': True,
+                                'structured': 'attribute'}
+            elif col_data.dtypes == np.int64:
+                if len(unique_values) < threshold * len(col_data):
+                    feature['categorical'].append(column)
+                    valid_feature_names.append(column)
+                    valid_feature_types.append(DATATYPE.CATEGORY)
+                    meta[column] = {'type': 'categorical', 'used': True,
+                                    'structured': 'attribute'}
+
+                else:
+                    print(
+                        'Error: %s is suspected to be identifierable features. %s distinct values given %s rows. Will be ignored in data report.' %
+                        (column, len(unique_values), len(col_data)))
+                    if len(unique_values) == len(col_data):
+                        meta[column] = {'type': 'KEY', 'used': False,
+                                        'structured': 'attribute'}
+            else:
+                if len(unique_values) < threshold * len(col_data):
+                    feature['categorical'].append(column)
+                    valid_feature_names.append(column)
+                    valid_feature_types.append(DATATYPE.CATEGORY)
+                    meta[column] = {'type': 'categorical', 'used': True,
+                                    'structured': 'attribute'}
+
+                else:
+                    print(
+                        'Warning: %s is suspected to be identifierable features. %s distinct values given %s rows. Set it to text feature.' %
+                        (column, len(unique_values), len(col_data)))
+                    valid_feature_names.append(column)
+                    valid_feature_types.append(DATATYPE.FREETEXT)
+                    meta[column] = {'type': 'Text', 'used': False,
+                                    'structured': 'attribute'}
+
+        return feature, valid_feature_names, valid_feature_types, meta
+
+    feature, valid_feature_names, valid_feature_types, meta = get_column_types(
+        data=data, threshold=0.6, label_column=label_column)
+
+    # pprint(feature)
+    print(valid_feature_names)
+    print(valid_feature_types)
+    print(meta)
 
     ### Add Header Level 2
     report.detail.add_header_level_2(text='Data Field Attribute')
     ### Data Field Attribute
-    with open('./sample_data/data_attribute.json', 'r') as f:
-        data_attribute = json.load(f)
-    print(data_attribute)
-    report.detail.add_data_attributes(data_attribute)
+    report.detail.add_data_attributes(meta)
 
     ### Add Header Level 2
     report.detail.add_header_level_2(text='Data Missing Value Check')
@@ -80,71 +157,67 @@ def main():
     report.detail.add_paragraph(
         text='This section displays distribution for categorical fields, numerical fields and text fields.')
 
+    ## TODO:
+    data_analyzer_suite = DataAnalyzerSuite(data_type_list=valid_feature_types,
+                                            column_names=valid_feature_names)
+    print(data_analyzer_suite.schema)
+
+    for column, column_type in zip(valid_feature_names, valid_feature_types):
+        if column_type == 'categorical':
+            data[column][data[column].isnull()] = 'NAN'
+        data_analyzer_suite.feed_column(column_name=column,
+                                        column_data=data[column].tolist(),
+                                        labels=data[label_column])
+    stats = data_analyzer_suite.get_statistics()
+
     ### Add Header Level 3
     report.detail.add_header_level_3(text='Categorical Field Distribution')
     ### Categorical field distribution
-    with open('./sample_data/categorical_data.json', 'r') as f:
-        categorical_data = json.load(f)
-    print(categorical_data)
-
-    for field_name, field_distribution in categorical_data.items():
-        report.detail.add_categorical_field_distribution(
-            field_name=field_name, field_distribution=field_distribution)
+    for field_name in feature['categorical']:
+        labelled_stats, all_stats = stats[field_name]
+        report.detail.add_categorical_field_distribution(field_name=field_name,
+                                                         field_distribution=labelled_stats)
 
     ### Add Header Level 3
     report.detail.add_header_level_3(text='Numerical Field Distribution')
     ### Numerical field distribution
-    with open('./sample_data/numerical_data.json', 'r') as f:
-        numerical_data = json.load(f)
-
-    print('SAMPLE DATA FORMAT')
-    print('==================')
-    for key, value in numerical_data.items():
-        print('Field name:', key)
-        for class_key, class_stats in value.items():
-            print(' - Class name:', class_key)
-            for stats_key, stats_value in class_stats.items():
-                print('   * %s:' % stats_key, type(stats_value),
-                      stats_value[:min(3, len(stats_value))] if type(
-                          stats_value) == list else stats_value)
-            break
-
-    for field_name, field_distribution in numerical_data.items():
+    for field_name in feature['numerical']:
+        labelled_stats, all_stats = stats[field_name]
         report.detail.add_numeric_field_distribution(field_name=field_name,
-                                                     field_distribution=field_distribution)
+                                                     field_distribution=labelled_stats)
 
     ### Add Header Level 3
     report.detail.add_header_level_3(text='Text Field Distribution')
     ### Text field distribution
-    with open('./sample_data/text_data.json', 'r') as f:
-        text_data = json.load(f)
-
-    print('SAMPLE DATA FORMAT')
-    print('==================')
-    for key, value in text_data.items():
-        print('Field name:', key)
-        for class_key, class_stats in value.items():
-            print(' - Class name:', class_key)
-            for stats_key, stats_value in class_stats.items():
-                print('   * %s:' % stats_key, type(stats_value),
-                      stats_value[:min(3, len(stats_value))] if type(
-                          stats_value) == list else stats_value)
-            break
-
+    # with open('./sample_data/text_data.json', 'r') as f:
+    #     text_data = json.load(f)
+    #
+    # print('SAMPLE DATA FORMAT')
+    # print('==================')
+    # for key, value in text_data.items():
+    #     print('Field name:', key)
+    #     for class_key, class_stats in value.items():
+    #         print(' - Class name:', class_key)
+    #         for stats_key, stats_value in class_stats.items():
+    #             print('   * %s:' % stats_key, type(stats_value),
+    #                   stats_value[:min(3, len(stats_value))] if type(
+    #                       stats_value) == list else stats_value)
+    #         break
+    #
     for field_name, field_distribution in text_data.items():
         report.detail.add_text_field_distribution(field_name=field_name,
                                                   field_distribution=field_distribution)
 
     ### Add Header Level 3
-    report.detail.add_header_level_3(text='Datetime Field Distribution')
-    ### Datetime field distribution
-    with open('./sample_data/datetime_data.json', 'r') as f:
-        datetime_data = json.load(f)
-    print(datetime_data)
-
-    for field_name, field_distribution in datetime_data.items():
-        report.detail.add_datetime_field_distribution(field_name=field_name,
-                                                      field_distribution=field_distribution)
+    # report.detail.add_header_level_3(text='Datetime Field Distribution')
+    # ### Datetime field distribution
+    # with open('./sample_data/datetime_data.json', 'r') as f:
+    #     datetime_data = json.load(f)
+    # print(datetime_data)
+    #
+    # for field_name, field_distribution in datetime_data.items():
+    #     report.detail.add_datetime_field_distribution(field_name=field_name,
+    #                                                   field_distribution=field_distribution)
 
     ### Add Header Level 2
     report.detail.add_header_level_2(text='Hyperparameter Tuning')
@@ -227,7 +300,8 @@ def main():
         evaluation_result=evaluation_result_data)
 
     ### Lastly generate report with the writer instance
-    report.generate(writer=PdfWriter(name='simple-pdf-report'))
+    report.generate(writer=PdfWriter(name='simple-pdf-report',
+                                     path='./sample_output'))
     dir_path = os.getcwd()
     print("")
     print("report generated : %s/simple-pdf-report.pdf" % dir_path)
