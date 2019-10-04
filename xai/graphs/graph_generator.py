@@ -279,6 +279,8 @@ class WordCloudGraph(Graph):
         # generate word cloud
         if type(self.data) == list:
             data = {word: freq for (word, freq) in self.data if freq > 0}
+        else:
+            data = self.data
         wc.generate_from_frequencies(data)
         plt.imshow(wc, interpolation="bilinear")
         plt.axis("off")

@@ -199,7 +199,6 @@ class HtmlWriter(Writer):
         self.html.article[-1].items.append(
             self.html.add_overview_table(data=timing))
 
-
     def draw_data_set_summary(self, notes: str, *,
                               data_summary: List[Tuple[str, int]]):
         """
@@ -275,7 +274,7 @@ class HtmlWriter(Writer):
                 else:
                     print(
                         'Unsupported metric value type for metric (%s): %s' % (
-                        metric_name, type(metric_value)))
+                            metric_name, type(metric_value)))
                     continue
                 if key not in items:
                     items[key] = list()
@@ -301,7 +300,6 @@ class HtmlWriter(Writer):
         #     self.html.create_unordered_kay_value_pair_list(items=model_info))
         self.html.article[-1].items.append(
             self.html.add_overview_table(data=model_info))
-
 
     ################################################################################
     ###  Data Section
@@ -379,7 +377,7 @@ class HtmlWriter(Writer):
 
             return table_header, table_data
 
-         # -- Draw Content --
+        # -- Draw Content --
         self.html.article[-1].items.append(
             self.html.add_paragraph(text=notes))
         header, data = get_missing_data_info()
@@ -451,6 +449,7 @@ class HtmlWriter(Writer):
                     - key: attribute name
                     - value: attribute value
         """
+
         def get_data_attributes():
             attribute_list = list(
                 set().union(*[set(attribute_dict.keys())
@@ -514,15 +513,15 @@ class HtmlWriter(Writer):
                     frequency_distribution.values()) > 0.5:
                 self.html.article[-1].items.append(
                     self.html.add_paragraph(text=
-                    'Warning: %s unique values found in %s samples.' % (
-                        len(frequency_distribution),
-                        sum(frequency_distribution.values()))), style='BI')
+                                            'Warning: %s unique values found in %s samples.' % (
+                                                len(frequency_distribution),
+                                                sum(frequency_distribution.values()))), style='BI')
                 break
 
             if len(field_distribution) > max_values_display:
                 self.html.article[-1].items.append(
                     self.html.add_paragraph(text='%s of %s are displayed)' % (
-                    max_values_display, len(field_distribution))))
+                        max_values_display, len(field_distribution))))
 
             figure_path = '%s/%s_%s_field_distribution.png' % (
                 self.figure_path, field_name, label_name)
@@ -597,7 +596,7 @@ class HtmlWriter(Writer):
 
     def draw_text_field_distribution(self, notes: str, *,
                                      field_name: str,
-                                     field_distribution: Dict[str,TextStats]):
+                                     field_distribution: Dict[str, TextStats]):
         """
         Draw information of field value distribution for text type to the
         report.
@@ -632,14 +631,17 @@ class HtmlWriter(Writer):
             for w, v in pattern_stats['placeholder'].items():
                 table_values.append([w, '%.2f%%' % (v * 100)])
 
-            self.html.article[-1].items.append(self.html.add_table_image_group(
-                header=table_header, data=table_values,
-                src=figure_path, alt=title))
-
+            if len(table_values) == 0:
+                self.html.article[-1].items.append(self.html.add_image(
+                    src=figure_path, alt=title))
+            else:
+                self.html.article[-1].items.append(self.html.add_table_image_group(
+                    header=table_header, data=table_values,
+                    src=figure_path, alt=title))
 
     def draw_datetime_field_distribution(self, notes: str, *,
                                          field_name: str,
-                                         field_distribution: Dict[str,DatetimeStats]):
+                                         field_distribution: Dict[str, DatetimeStats]):
         """
         Draw information of field value distribution for datetime type to the
         report.
@@ -662,8 +664,8 @@ class HtmlWriter(Writer):
         for idx, (label_name, datetime_stats) in enumerate(
                 field_distribution.items()):
             title = 'Datetime distribution for %s (for %s samples) ' % (
-                                                             field_name,
-                                                             label_name)
+                field_name,
+                label_name)
             self.html.article[-1].items.append(
                 self.html.add_header(text=title, heading='h5'))
             figure_path = '%s/%s_%s_field_distribution.png' % (
@@ -675,7 +677,6 @@ class HtmlWriter(Writer):
                                                    y_label="").draw()
             self.html.article[-1].items.append(
                 self.html.add_image(src=figure_path, alt=title))
-
 
     ################################################################################
     ###  Feature Section
@@ -702,8 +703,8 @@ class HtmlWriter(Writer):
             modified_notes = notes
         elif maximum_number_feature < len(importance_ranking):
             modified_notes = (
-                "The figure below shows the top %s important features for the trained model."
-                % maximum_number_feature)
+                    "The figure below shows the top %s important features for the trained model."
+                    % maximum_number_feature)
         else:
             modified_notes = "The figure below shows importance ranking for all features from the trained model."
         self.html.article[-1].items.append(
@@ -830,14 +831,14 @@ class HtmlWriter(Writer):
             if final_metric_value > non_hyperopt_score:
                 if final_metric_value > benchmark_threshold:
                     text = 'and it is better than acceptance benchmark ' \
-                          'scoring (%.4f). We accept it as the final ' \
-                          'parameter setting for the trained model.' % \
-                          benchmark_threshold
+                           'scoring (%.4f). We accept it as the final ' \
+                           'parameter setting for the trained model.' % \
+                           benchmark_threshold
                 else:
                     text = 'but it fails to meet the acceptance benchmark ' \
-                          'scoring (%.4f). ' \
-                          'We still accept it as the final parameter setting for the trained model, ' \
-                          'but will continue to improve it.' % benchmark_threshold
+                           'scoring (%.4f). ' \
+                           'We still accept it as the final parameter setting for the trained model, ' \
+                           'but will continue to improve it.' % benchmark_threshold
                 self.html.article[-1].items.append(self.html.add_paragraph(
                     text='Hyperparameter tuning best result (%.4f) is better than benchmark score (%.4f), %s' % (
                         final_metric_value, non_hyperopt_score, text)))
@@ -854,9 +855,7 @@ class HtmlWriter(Writer):
                 self.html.article[-1].items.append(self.html.add_paragraph(
                     text='Hyperparameter tuning best result (%.4f) is worse '
                          'than benchmark score (%.4f), %s' % (
-                        final_metric_value, non_hyperopt_score, text)))
-
-
+                             final_metric_value, non_hyperopt_score, text)))
 
     def draw_learning_curve(self, notes: str, *,
                             history: dict, best_idx: str,

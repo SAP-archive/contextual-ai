@@ -608,7 +608,7 @@ class PdfWriter(Writer):
 
     def draw_text_field_distribution(self, notes: str, *,
                                      field_name: str,
-                                     field_distribution: Dict[str,TextStats]):
+                                     field_distribution: Dict[str, TextStats]):
         """
         Draw information of field value distribution for text type to the
         report.
@@ -628,6 +628,7 @@ class PdfWriter(Writer):
         for idx, (label_name, text_stats) in enumerate(
                 field_distribution.items()):
             tfidf = text_stats.tfidf
+            tfidf = {key: value for key, value in tfidf.items() if value > 0}
             pattern_stats = text_stats.pattern_stats
             figure_path = '%s/%s_%s_field_distribution.png' % (
                 self.figure_path, field_name, label_name)
@@ -639,18 +640,20 @@ class PdfWriter(Writer):
             table_values = []
             for w, v in pattern_stats.items():
                 table_values.append([w, '%.2f%%' % (v * 100)])
-
-            self.pdf.add_table_image_group(image_path=figure_path,
-                                           table_header=table_header,
-                                           table_content=table_values,
-                                           grid_spec=IMAGE_TABLE_GRID_SPEC_NEW,
-                                           caption='Distribution for %s' % label_name,
-                                           style='I')
+            if len(table_values) == 0:
+                self.pdf.add_large_image(image_path=figure_path)
+            else:
+                self.pdf.add_table_image_group(image_path=figure_path,
+                                               table_header=table_header,
+                                               table_content=table_values,
+                                               grid_spec=IMAGE_TABLE_GRID_SPEC_NEW,
+                                               caption='Distribution for %s' % label_name,
+                                               style='I')
         self.pdf.end_itemize()
 
     def draw_datetime_field_distribution(self, notes: str, *,
                                          field_name: str,
-                                         field_distribution: Dict[str,DatetimeStats]):
+                                         field_distribution: Dict[str, DatetimeStats]):
         """
         Draw information of field value distribution for datetime type to the
         report.
