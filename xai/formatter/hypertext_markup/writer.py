@@ -628,7 +628,7 @@ class HtmlWriter(Writer):
                 title=title).draw()
             table_header = ['Placeholder', 'Percentage(%)']
             table_values = []
-            for w, v in pattern_stats['placeholder'].items():
+            for w, v in pattern_stats.items():
                 table_values.append([w, '%.2f%%' % (v * 100)])
 
             if len(table_values) == 0:

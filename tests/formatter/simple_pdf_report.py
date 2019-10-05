@@ -3,21 +3,28 @@
 
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
-""" Sample Code to generate report """
+""" Sample Code to generate pdf report """
 
 import json
 import os
 import sys
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 sys.path.append('../../')
 
+import dateutil
+from statistics import median
+from collections import Counter
+
 from xai.data.constants import DATATYPE
 from xai.data.explorer.data_analyzer_suite import DataAnalyzerSuite
 
 from xai.data.explorer import CategoricalDataAnalyzer
+from xai.data.validator import EnumValidator
+from xai.model.interpreter.feature_interpreter import FeatureInterpreter
 from xai.formatter import Report, PdfWriter
 
 
@@ -35,6 +42,7 @@ def main():
     report.overview.add_paragraph(text="This is summary Info")
 
     ### Create Contents Section - Header
+    report.detail.add_new_page()
     report.detail.add_section_title(text="Example for Header")
     #### Header Level 1 and it paragraph
     report.detail.add_header_level_1(text='Section Header 1')
@@ -56,6 +64,14 @@ def main():
     ### Add Label distribution
     training_file_name = './sample_data/titanic.csv'
     data = pd.read_csv(training_file_name)
+    ### Add dummy birthday to demonstrate datetime presentation
+    bday = []
+    for i in range(len(data)):
+        year = np.random.randint(low=1960, high=1979)
+        month = np.random.randint(low=1, high=12)
+        day = np.random.randint(low=1, high=28)
+        bday.append("%s" % (10000 * year + 100 * month + day))
+    data['Birthday'] = bday
 
     label_analyzer = CategoricalDataAnalyzer()
     label_column = 'Survived'
@@ -71,11 +87,65 @@ def main():
     ## TODO: where to park the code?
     # get the data type
     def get_column_types(data, threshold, label_column):
+
+        def check_numercial(col_data):
+            if col_data.dtypes == np.float64:
+                return True
+            else:
+                return False
+
+        def check_datetime(col_data):
+            if col_data.dtypes == np.int64:
+                return False
+
+            def parse_date(date):
+                try:
+                    dt = dateutil.parser.parse(str(date))
+                    return 0
+                except ValueError:
+                    return 1
+
+            counter = Counter(col_data.tolist())
+            if len(counter) >= threshold * len(col_data):
+                invalid_count = 0
+                for date in col_data.tolist():
+                    invalid_count += parse_date(date)
+                if invalid_count < threshold * len(col_data):
+                    return True
+                else:
+                    return False
+            else:
+                return False
+
+        def check_categorical(col_data):
+            counter = Counter(col_data.tolist())
+            if len(counter) < threshold * len(col_data):
+                _median = median(counter.values())
+                if _median == 1:
+                    return False
+                else:
+                    return True
+            else:
+                return False
+
+        def check_text(col_dat):
+            def _get_token_number(x):
+                return len(x.split(' '))
+
+            if col_data.dtypes == object:
+                if len(col_data.unique()) > len(col_data) * threshold:
+                    if median(col_data.apply(_get_token_number)) > 3:
+                        return True
+                    else:
+                        return False
+
         valid_feature_names = []
         valid_feature_types = []
         feature = {}
         feature['categorical'] = []
         feature['numerical'] = []
+        feature['text'] = []
+        feature['datetime'] = []
         meta = {}
         for column in data.columns:
             if column == label_column:
@@ -83,50 +153,52 @@ def main():
                                 'structured': 'attribute'}
                 continue
             col_data = data[column]
-            unique_values = col_data.unique()
 
-            if col_data.dtypes == np.float64:
+            if check_datetime(col_data):
+                # datetime data
+                feature['datetime'].append(column)
+                valid_feature_names.append(column)
+                valid_feature_types.append(DATATYPE.DATETIME)
+                meta[column] = {'type': 'datetime', 'used': True,
+                                'structured': 'attribute'}
+
+            elif check_numercial(col_data):
+                # numerical data
                 feature['numerical'].append(column)
                 valid_feature_names.append(column)
                 valid_feature_types.append(DATATYPE.NUMBER)
                 meta[column] = {'type': 'numerical', 'used': True,
                                 'structured': 'attribute'}
-            elif col_data.dtypes == np.int64:
-                if len(unique_values) < threshold * len(col_data):
-                    feature['categorical'].append(column)
-                    valid_feature_names.append(column)
-                    valid_feature_types.append(DATATYPE.CATEGORY)
-                    meta[column] = {'type': 'categorical', 'used': True,
-                                    'structured': 'attribute'}
 
-                else:
-                    print(
-                        'Error: %s is suspected to be identifierable features. %s distinct values given %s rows. Will be ignored in data report.' %
-                        (column, len(unique_values), len(col_data)))
-                    if len(unique_values) == len(col_data):
-                        meta[column] = {'type': 'KEY', 'used': False,
-                                        'structured': 'attribute'}
+            elif check_categorical(col_data):
+                # categorical data
+                feature['categorical'].append(column)
+                valid_feature_names.append(column)
+                valid_feature_types.append(DATATYPE.CATEGORY)
+                meta[column] = {'type': 'categorical', 'used': True,
+                                'structured': 'attribute'}
+
+            elif check_text(col_data):
+                # text data
+                feature['text'].append(column)
+                valid_feature_names.append(column)
+                valid_feature_types.append(DATATYPE.FREETEXT)
+                meta[column] = {'type': 'Text', 'used': True,
+                                'structured': 'attribute'}
+
             else:
-                if len(unique_values) < threshold * len(col_data):
-                    feature['categorical'].append(column)
-                    valid_feature_names.append(column)
-                    valid_feature_types.append(DATATYPE.CATEGORY)
-                    meta[column] = {'type': 'categorical', 'used': True,
-                                    'structured': 'attribute'}
-
-                else:
-                    print(
-                        'Warning: %s is suspected to be identifierable features. %s distinct values given %s rows. Set it to text feature.' %
-                        (column, len(unique_values), len(col_data)))
-                    valid_feature_names.append(column)
-                    valid_feature_types.append(DATATYPE.FREETEXT)
-                    meta[column] = {'type': 'Text', 'used': False,
-                                    'structured': 'attribute'}
+                print(
+                    'Warning: the feature [%s] is suspected to be identifierable feature. \n[Examples]: %s\n' % (
+                    column, col_data.tolist()[:5]))
+                meta[column] = {'type': 'Key', 'used': True,
+                                'structured': 'attribute'}
 
         return feature, valid_feature_names, valid_feature_types, meta
 
     feature, valid_feature_names, valid_feature_types, meta = get_column_types(
-        data=data, threshold=0.6, label_column=label_column)
+        data=data,
+        threshold=0.3,
+        label_column=label_column)
 
     # pprint(feature)
     print(valid_feature_names)
@@ -141,14 +213,30 @@ def main():
     ### Add Header Level 2
     report.detail.add_header_level_2(text='Data Missing Value Check')
     ### Missing value
-    with open('./sample_data/missing_value.json', 'r') as f:
-        missing_value = json.load(f)
+    ## TODO: where to park the code?
+    def generate_missing_value_schema(valid_feature_names,
+                                      valid_feature_types):
+        missing_value_schema = dict()
+        for name, column_type in zip(valid_feature_names, valid_feature_types):
+            if column_type == 'categorical':
+                missing_value_schema[name] = ['NAN']
+            if column_type == 'numerical':
+                missing_value_schema[name] = ['NaN']
+        return missing_value_schema
 
-    missing_count = missing_value["missing_count"]
-    total_count = missing_value["total_count"]
+    schema = generate_missing_value_schema(valid_feature_names,
+                                           valid_feature_types)
+    print(schema)
+    json_line = json.loads(data.to_json(orient='records'))
+    enum_validator = EnumValidator(schema=schema)
+    enum_validator.validate_all(sample_list=json_line)
+    stats = enum_validator.get_statistics()
+    missing_count = dict(stats.column_stats)
+    total_count = {feature_name: stats.total_count for feature_name in
+                   schema.keys()}
     print('missing_count', missing_count)
     print('total_count', total_count)
-    report.detail.add_data_missing_value(missing_count=missing_count,
+    report.detail.add_data_missing_value(missing_count=dict(missing_count),
                                          total_count=total_count)
 
     ### Add Header Level 2
@@ -157,7 +245,7 @@ def main():
     report.detail.add_paragraph(
         text='This section displays distribution for categorical fields, numerical fields and text fields.')
 
-    ## TODO:
+    ## TODO: where to park the code?
     data_analyzer_suite = DataAnalyzerSuite(data_type_list=valid_feature_types,
                                             column_names=valid_feature_names)
     print(data_analyzer_suite.schema)
@@ -189,36 +277,50 @@ def main():
     ### Add Header Level 3
     report.detail.add_header_level_3(text='Text Field Distribution')
     ### Text field distribution
-    # with open('./sample_data/text_data.json', 'r') as f:
-    #     text_data = json.load(f)
-    #
-    # print('SAMPLE DATA FORMAT')
-    # print('==================')
-    # for key, value in text_data.items():
-    #     print('Field name:', key)
-    #     for class_key, class_stats in value.items():
-    #         print(' - Class name:', class_key)
-    #         for stats_key, stats_value in class_stats.items():
-    #             print('   * %s:' % stats_key, type(stats_value),
-    #                   stats_value[:min(3, len(stats_value))] if type(
-    #                       stats_value) == list else stats_value)
-    #         break
-    #
-    for field_name, field_distribution in text_data.items():
+    for field_name in feature['text']:
+        labelled_stats, all_stats = stats[field_name]
         report.detail.add_text_field_distribution(field_name=field_name,
-                                                  field_distribution=field_distribution)
+                                                  field_distribution=labelled_stats)
 
     ### Add Header Level 3
-    # report.detail.add_header_level_3(text='Datetime Field Distribution')
-    # ### Datetime field distribution
-    # with open('./sample_data/datetime_data.json', 'r') as f:
-    #     datetime_data = json.load(f)
-    # print(datetime_data)
-    #
-    # for field_name, field_distribution in datetime_data.items():
-    #     report.detail.add_datetime_field_distribution(field_name=field_name,
-    #                                                   field_distribution=field_distribution)
+    report.detail.add_header_level_3(text='Datetime Field Distribution')
+    ### Datetime field distribution
+    for field_name in feature['datetime']:
+        labelled_stats, all_stats = stats[field_name]
+        report.detail.add_datetime_field_distribution(field_name=field_name,
+                                                      field_distribution=labelled_stats)
 
+
+    ### Create Feature Analysis Section as new page
+    report.detail.add_new_page()
+    report.detail.add_section_title("Example for Feature Analysis ")
+    ### Add Header Level 1
+    report.detail.add_header_level_1(text='Feature Analysis')
+
+    ### Add Header Level 2
+    report.detail.add_header_level_2(text='Feature Importance')
+    ### Feature Importance
+    path =  Path('./sample_data/model.pkl')
+    model = pd.read_pickle(str(path))
+    path = Path('./sample_data/train_data.csv')
+    data = pd.read_csv(str(path))
+    # -- csv including header --
+    feature_names = data.columns
+
+    fi = FeatureInterpreter(feature_names=feature_names)
+    rank = fi.get_feature_importance_ranking(trained_model=model,
+                                             train_x=data,
+                                             method='default')
+    report.detail.add_feature_importance(
+        importance_ranking=rank, importance_threshold=0.005)
+
+    ### Create Performance Analysis Section as new page
+    report.detail.add_new_page()
+    report.detail.add_section_title("Example for Performance Analysis ")
+    report.detail.add_paragraph(text='this is dummy model, no trained with '
+                                     'titanic dataset')
+    ### Add Header Level 1
+    report.detail.add_header_level_1(text='Performance Analysis')
     ### Add Header Level 2
     report.detail.add_header_level_2(text='Hyperparameter Tuning')
     ### Hyperparameter Tuning
@@ -304,7 +406,7 @@ def main():
                                      path='./sample_output'))
     dir_path = os.getcwd()
     print("")
-    print("report generated : %s/simple-pdf-report.pdf" % dir_path)
+    print("report generated : %s/simple-report.pdf" % dir_path)
 
 if __name__ == "__main__":
     main()
