@@ -33,6 +33,38 @@
               }
             }
           ]
+        },
+        {
+          "title": "Data Statistics Analysis with census data-set",
+          "desc": "census data in csv",
+          "sections": [
+            {
+              "title": "Default analysis with csv (without label and metadata)",
+              "component": {
+                "_comment": "refer to document section xxxx",
+                "class": "DataStatisticsAnalysis",
+                "attr": {
+                  "data": "./sample_input/census/census.csv"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "title": "Data Statistics Analysis with website data-set",
+          "desc": "Website Inaccessibility data in csv",
+          "sections": [
+            {
+              "title": "Default analysis with csv (without label and metadata)",
+              "component": {
+                "_comment": "refer to document section xxxx",
+                "class": "DataStatisticsAnalysis",
+                "attr": {
+                  "data": "./sample_input/website/data.csv"
+                }
+              }
+            }
+          ]
         }
       ]
     }

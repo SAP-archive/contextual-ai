@@ -125,3 +125,39 @@ class DataStatisticsAnalysis(Dict2Obj):
                                              feature_types=valid_feature_types)
         report.detail.add_data_missing_value(missing_count=dict(missing_count),
                                              total_count=total_count)
+
+        # -- Add Categorical Field Distribution --
+        if len(feature[DATATYPE.CATEGORY]) > 0:
+            self.add_header(text='Categorical Field Distribution')
+            for field_name in feature[DATATYPE.CATEGORY]:
+                labelled_stats, all_stats = stats[field_name]
+                report.detail.add_categorical_field_distribution(
+                    field_name=field_name,
+                    field_distribution=labelled_stats)
+
+        # -- Add Numerical Field Distribution --
+        if len(feature[DATATYPE.NUMBER]) > 0:
+            self.add_header(text='Numerical Field Distribution')
+            for field_name in feature[DATATYPE.NUMBER]:
+                labelled_stats, all_stats = stats[field_name]
+                report.detail.add_numeric_field_distribution(
+                    field_name=field_name,
+                    field_distribution=labelled_stats)
+
+        # -- Add Text Field Distribution --
+        if len(feature[DATATYPE.FREETEXT]) > 0:
+            self.add_header(text='Text Field Distribution')
+            for field_name in feature[DATATYPE.FREETEXT]:
+                labelled_stats, all_stats = stats[field_name]
+                report.detail.add_text_field_distribution(
+                    field_name=field_name,
+                    field_distribution=labelled_stats)
+
+        # -- Add Datetime Field Distribution --
+        if len(feature[DATATYPE.DATETIME]) > 0:
+            self.add_header(text='Datetime Field Distribution')
+            for field_name in feature[DATATYPE.DATETIME]:
+                labelled_stats, all_stats = stats[field_name]
+                report.detail.add_datetime_field_distribution(
+                    field_name=field_name,
+                    field_distribution=labelled_stats)

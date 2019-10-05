@@ -35,6 +35,7 @@ class DatetimeDataAnalyzer(AbstractDataAnalyzer):
         super(DatetimeDataAnalyzer, self).__init__()
         self._time_records = []
         self._frequency = dict()
+        self.invalid_count =  0
 
     def feed(self, value: str):
         """

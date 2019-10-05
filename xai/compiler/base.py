@@ -413,6 +413,8 @@ class Dict2Obj:
             data = pd.read_json(str(path))
         elif extension == ".jsonl":
             data = pd.read_json(str(path), lines=True)
+        elif extension == ".dta":
+            data = pd.read_stata(str(path))
         elif extension == ".tsv":
             data = pd.read_csv(str(path), sep="\t")
         elif extension in [".xls", ".xlsx"]:
@@ -427,5 +429,5 @@ class Dict2Obj:
             if header:
                 data = pd.read_csv(str(path))
             else:
-                data = pd.read_csv(str(path), header=header)
+                data = pd.read_csv(str(path), header=None)
         return data

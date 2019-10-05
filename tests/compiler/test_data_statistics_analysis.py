@@ -12,7 +12,7 @@ import unittest
 from xai.compiler.base import Configuration, Controller
 
 
-class TestReportBasicSkeleton(unittest.TestCase):
+class TestDataStatisticsAnalysis(unittest.TestCase):
 
     def setUp(self) -> None:
         self.json = 'sample_template/data-statistics-analysis.json'
