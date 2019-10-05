@@ -18,7 +18,7 @@ sys.path.append('../../')
 from xai.data import DataUtil
 from xai.data.constants import DATATYPE
 
-from xai.model.interpreter.feature_interpreter import FeatureInterpreter
+from xai.model.interpreter import FeatureInterpreter
 from xai.formatter import Report, HtmlWriter
 
 ################################################################################

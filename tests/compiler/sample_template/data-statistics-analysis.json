@@ -1,0 +1,57 @@
+{
+  "name": "Report for Data Statistics Analysis",
+  "overview": true,
+  "content_table": true,
+  "contents": [
+    {
+      "title": "Data Statistics Analysis",
+      "desc": "This section provides the analysis on data",
+      "sections": [
+        {
+          "title": "Data Statistics Analysis with Titanic data-set",
+          "desc": "Titanic Dataset",
+          "sections": [
+            {
+              "title": "Default analysis with csv (without label and metadata)",
+              "component": {
+                "_comment": "refer to document section xxxx",
+                "class": "DataStatisticsAnalysis",
+                "attr": {
+                  "data": "./sample_input/titanic/titanic.csv"
+                }
+              }
+            },
+            {
+              "title": "Default analysis with csv and label (without metadata)",
+              "component": {
+                "_comment": "refer to document section xxxx",
+                "class": "DataStatisticsAnalysis",
+                "attr": {
+                  "data": "./sample_input/titanic/titanic.csv",
+                  "label": "Survived"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "writers": [
+    {
+      "class": "Pdf",
+      "attr": {
+        "name": "data-stats-analysis-json-report",
+        "path": "./sample_output"
+      }
+    },
+    {
+      "class": "Html",
+      "attr": {
+        "name": "data-stats-analysis-json-report",
+        "path": "./sample_output"
+      }
+    }
+  ]
+}
+

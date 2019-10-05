@@ -203,7 +203,9 @@ class Controller:
                     report.detail.add_paragraph(text=desc)
             if Constant.COMPONENT.value in content:
                 component = content[Constant.COMPONENT.value]
-                Controller.render_component(report=report, component=component)
+                Controller.render_component(report=report,
+                                            component=component,
+                                            level=current_level)
             if Constant.SECTION_LIST.value in content:
                 Controller.render_contents(report=report,
                                            contents=content[
@@ -227,7 +229,7 @@ class Controller:
 
     @staticmethod
     def factory(report: Report, package: str, module: str, name: str,
-                attr: dict):
+                attr: dict, level=None):
         """
         Dynamically import and load class
 
@@ -237,21 +239,23 @@ class Controller:
             module (str): component module name
             name (str): component class name
             attr (dict): component class attributes in dict
+            level (int): content level
         Returns: class object
         """
         imported_module = import_module('.' + module, package=package)
         cls = getattr(imported_module, name)
         obj = cls(attr)
-        obj(report=report)
+        obj(report=report, level=level)
 
     @staticmethod
-    def render_component(report: Report, component: dict):
+    def render_component(report: Report, component: dict, level: int):
         """
         Rendering Report component
 
         Args:
             report (Report): report object
             component (dict): component info in dict
+            level (int): content level
         """
         if Constant.COMPONENT_CLASS.value in component:
             name = component[Constant.COMPONENT_CLASS.value]
@@ -265,7 +269,8 @@ class Controller:
                 items=component, key=Constant.COMPONENT_ATTR.value,
                 default=dict())
             Controller.factory(report=report, package=package,
-                               module=module, name=name, attr=attr)
+                               module=module, name=name, attr=attr,
+                               level=level)
         else:
             raise CompilerException("class is not defined")
 
@@ -327,14 +332,26 @@ class Dict2Obj:
         for key in self._dict:
             setattr(self, key, self._dict[key])
 
-    def __call__(self, report: Report):
+    def __call__(self, report: Report, level: int):
         """
         Call
 
         Args:
             report (Report): report object
+            level (int): content level
         """
-        pass
+        self._report = report
+        self._level = level
+
+    @property
+    def report(self):
+        """Returns Report object."""
+        return self._report
+
+    @property
+    def level(self):
+        """Returns Report section level."""
+        return self._level
 
     def __repr__(self):
         """Return class name and attributes"""
@@ -362,6 +379,17 @@ class Dict2Obj:
         if not (default is None):
             return default
         raise CompilerException("attribute '%s' is not defined" % key)
+
+    def add_header(self, text: str):
+        if not (text is None):
+            if self.level == Constant.S1.value:
+                self.report.detail.add_header_level_1(text=text)
+            elif self.level == Constant.H1.value:
+                self.report.detail.add_header_level_2(text=text)
+            elif self.level == Constant.H2.value:
+                self.report.detail.add_header_level_3(text=text)
+            else:
+                self.report.detail.add_paragraph(text=text)
 
     @staticmethod
     def load_data(path: Path, *, header=True):

@@ -12,19 +12,19 @@ import unittest
 from xai.compiler.base import Configuration, Controller
 
 
-class TestFeatureImportanceRanking(unittest.TestCase):
+class TestReportBasicSkeleton(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.json = 'sample_template/feature-importance-ranking.json'
-        self.yaml = 'sample_template/feature-importance-ranking.yml'
+        self.json = 'sample_template/data-statistics-analysis.json'
+        # self.yaml = 'sample_template/feature-importance-ranking.yml'
 
     def test_json_generate_report(self):
         controller = Controller(config=Configuration(self.json))
         controller.render()
 
-    def test_yaml_generate_report(self):
-        controller = Controller(config=Configuration(self.yaml))
-        controller.render()
+    # def test_yaml_generate_report(self):
+    #     controller = Controller(config=Configuration(self.yaml))
+    #     controller.render()
 
 if __name__ == '__main__':
     unittest.main()

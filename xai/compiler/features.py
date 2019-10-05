@@ -12,7 +12,7 @@ from __future__ import print_function
 from pathlib import Path
 
 from xai.compiler.base import Dict2Obj
-from xai.model.interpreter.feature_interpreter import FeatureInterpreter
+from xai.model.interpreter import FeatureInterpreter
 from xai.formatter import Report
 
 
@@ -77,13 +77,16 @@ class FeatureImportanceRanking(Dict2Obj):
         super(FeatureImportanceRanking, self).__init__(dictionary,
                                                        schema=self.schema)
 
-    def __call__(self, report: Report):
+    def __call__(self, report: Report, level: int):
         """
         Execution
 
         Args:
             report (Report): report object
+            level (int): content level
         """
+        super(FeatureImportanceRanking, self).__call__(report=report,
+                                                       level=level)
         threshold = self.assert_attr(key='threshold', default=0.005)
         method = self.assert_attr(key='method', default='default')
         # -- Load Model --
@@ -105,9 +108,11 @@ class FeatureImportanceRanking(Dict2Obj):
             if  header:
                 feature_names = train_data.columns
 
+        # -- Get Feature Importance --
         fi = FeatureInterpreter(feature_names=feature_names)
         rank = fi.get_feature_importance_ranking(trained_model=model,
                                                  train_x=train_data,
                                                  method=method)
+        # -- Add Feature Importance --
         report.detail.add_feature_importance(
             importance_ranking=rank, importance_threshold=threshold)

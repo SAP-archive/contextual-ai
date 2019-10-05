@@ -58,12 +58,13 @@ class Pdf(Dict2Obj):
         """
         super(Pdf, self).__init__(dictionary, schema=self.schema)
 
-    def __call__(self, report: Report):
+    def __call__(self, report: Report, level=None):
         """
         PDF Report Generation
 
         Args:
             report (Report): report object
+            level (int): content level
         """
         name = self.assert_attr(key='name')
         path = self.assert_attr(key='path')
@@ -114,12 +115,13 @@ class Html(Dict2Obj):
         """
         super(Html, self).__init__(dictionary, schema=self.schema)
 
-    def __call__(self, report: Report):
+    def __call__(self, report: Report, level=None):
         """
         HTML Report Generation
 
         Args:
             report (Report): report object
+            level (int): content level
         """
         name = self.assert_attr(key='name')
         path = self.assert_attr(key='path')

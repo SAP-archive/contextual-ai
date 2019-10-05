@@ -26,14 +26,14 @@ from xai.data.validator import EnumValidator
 ### Data Helper
 ################################################################################
 
-def get_column_types(*, data, threshold, label):
+def get_column_types(*, data, threshold, label=None):
     """
     Retrieve data with default data type, when metadata is not provided
 
     Args:
         data (pandas): sample data
         threshold (float): data threshold
-        label (str): label column name
+        label (str, Optional): label column name
 
     Returns:
         feature, valid_feature_names, valid_feature_types, meta
@@ -144,7 +144,7 @@ def get_column_types(*, data, threshold, label):
 
         else:
             warnings.warn(
-                message='Warning: the feature [%s] is suspected to be identifierable feature. \n'
+                message='Warning: the feature [%s] is suspected to be identifiable feature. \n'
                         '[Examples]: %s\n' % (column, col_data.tolist()[:5]))
             meta[column] = {'type': DATATYPE.KEY,
                             'used': True,
@@ -203,7 +203,7 @@ def get_missing_value_count(*, data, feature_names, feature_types):
                    schema.keys()}
     return missing_count, total_count
 
-def get_data_statistics(*, data, feature_names, feature_types, label):
+def get_data_statistics(*, data, feature_names, feature_types, label=None):
     """
     Retrieve missing value count
 
@@ -211,18 +211,23 @@ def get_data_statistics(*, data, feature_names, feature_types, label):
         data (pandas): sample data
         feature_names (list): valid feature names
         feature_types (list): valid feature types
-        label (str): label column name
+        label (str, Optional): label column name
 
     Returns:
         data_stats
     """
     data_analyzer_suite = DataAnalyzerSuite(data_type_list=feature_types,
                                             column_names=feature_names)
+    labels = None
+    if not (label is None):
+        labels = data[label]
+
     for column, column_type in zip(feature_names, feature_types):
         if column_type == DATATYPE.CATEGORY:
             data[column][data[column].isnull()] = 'NAN'
         data_analyzer_suite.feed_column(column_name=column,
                                         column_data=data[column].tolist(),
-                                        labels=data[label])
+                                        labels=labels)
+
     stats = data_analyzer_suite.get_statistics()
     return stats
