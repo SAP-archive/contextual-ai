@@ -1,14 +1,22 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
 import operator
-from collections import defaultdict
 
 import numpy
 from typing import List, Union, Dict, Tuple
 
 from xai.explainer.explainer_factory import ExplainerFactory
-from xai.model.interpreter.explanation_aggregator import ExplanationAggregator
 from xai.model.interpreter.exceptions import InterpreterUninitializedError
+from xai.model.interpreter.explanation_aggregator import ExplanationAggregator
 
 
+################################################################################
+### Model Interpreter
+################################################################################
 class ModelInterpreter:
     """
     Class for model interpreter

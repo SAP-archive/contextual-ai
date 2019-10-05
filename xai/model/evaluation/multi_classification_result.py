@@ -1,3 +1,9 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
 from xai.model.evaluation.basic_result import ClassificationResult
 from xai.model.evaluation.confusion_matrix import ConfusionMatrix
 from xai.util import get_table_layout
@@ -5,6 +11,9 @@ from xai import constants
 from collections import defaultdict
 
 
+################################################################################
+### Multi Classification Result
+################################################################################
 class MultiClassificationResult(ClassificationResult):
     def __init__(self):
         super(MultiClassificationResult, self).__init__()

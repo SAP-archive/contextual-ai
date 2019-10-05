@@ -1,9 +1,18 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
 from xai.model.evaluation.basic_result import ClassificationResult
 from xai.model.evaluation.confusion_matrix import ConfusionMatrix
 from xai.util import get_table_layout
 from xai import constants
 
 
+################################################################################
+### Binary Classification Result
+################################################################################
 class BinaryClassificationResult(ClassificationResult):
     """
     evaluation result class for binary classification problem

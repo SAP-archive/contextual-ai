@@ -1,17 +1,27 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
 import operator
 
 import numpy
 import pandas as pd
+import shap
 from scipy import stats
 from typing import List, Dict, Tuple
+
 from xai.data.constants import DATATYPE
 from xai.data.explorer.data_analyzer_suite import DataAnalyzerSuite
-
-import shap
-from xai.model.interpreter.exceptions import InconsistentSize, TrainingDataNotProvided
+from xai.model.interpreter.exceptions import InconsistentSize, \
+    TrainingDataNotProvided
 from xai.model.interpreter.exceptions import UnsupportedMethodType
 
 
+################################################################################
+### Feature Interpreter
+################################################################################
 class FeatureInterpreter:
     """
     Class Feature Interpreter.

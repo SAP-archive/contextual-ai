@@ -1,11 +1,18 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
 from abc import ABC, abstractmethod
-from typing import Tuple, List
-from collections import defaultdict
+
 from ordered_set import OrderedSet
+from typing import Tuple, List
 
-from xai.model.evaluation.confusion_matrix import ConfusionMatrix
 
-
+################################################################################
+### Classification Result
+################################################################################
 class ClassificationResult(ABC):
     """
     The base class for classification problem result.

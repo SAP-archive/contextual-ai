@@ -1,3 +1,11 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
+#TODO: consolidate exception
+
 class InvalidExplanationFormat(Exception):
     """
     Raised when an explanation is not of a valid format
