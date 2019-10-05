@@ -15,16 +15,10 @@ import pandas as pd
 
 sys.path.append('../../')
 
-import dateutil
-from statistics import median
-from collections import Counter
-
+from xai.data import DataUtil
 from xai.data.constants import DATATYPE
-from xai.data.explorer.data_analyzer_suite import DataAnalyzerSuite
 
-from xai.data.explorer import CategoricalDataAnalyzer
-from xai.data.validator import EnumValidator
-from xai.model.interpreter.feature_interpreter import FeatureInterpreter
+from xai.model.interpreter import FeatureInterpreter
 from xai.formatter import Report, PdfWriter
 
 
@@ -59,9 +53,7 @@ def main():
     ### Add Header Level 1
     report.detail.add_header_level_1(text='Data Analysis')
 
-    ### Add Header Level 2
-    report.detail.add_header_level_2(text='Data Class (Label) Distribution')
-    ### Add Label distribution
+    ### Load Data
     training_file_name = './sample_data/titanic.csv'
     data = pd.read_csv(training_file_name)
     ### Add dummy birthday to demonstrate datetime presentation
@@ -73,137 +65,23 @@ def main():
         bday.append("%s" % (10000 * year + 100 * month + day))
     data['Birthday'] = bday
 
-    label_analyzer = CategoricalDataAnalyzer()
     label_column = 'Survived'
 
-    label_analyzer.feed_all(data[label_column].tolist())
-    label_stats = label_analyzer.get_statistics()
+    ### Add Header Level 2
+    report.detail.add_header_level_2(text='Data Class (Label) Distribution')
+    ### Add Label distribution
+    label_distributions = DataUtil.get_label_distribution(data=data,
+                                                          label=label_column)
+    report.detail.add_data_set_distribution(label_distributions)
 
-    data_distributions = list()
-    data_distributions.append((label_column, label_stats.frequency_count))
-    print(data_distributions)
-    report.detail.add_data_set_distribution(data_distributions)
-
-    ## TODO: where to park the code?
-    # get the data type
-    def get_column_types(data, threshold, label_column):
-
-        def check_numercial(col_data):
-            if col_data.dtypes == np.float64:
-                return True
-            else:
-                return False
-
-        def check_datetime(col_data):
-            if col_data.dtypes == np.int64:
-                return False
-
-            def parse_date(date):
-                try:
-                    dt = dateutil.parser.parse(str(date))
-                    return 0
-                except ValueError:
-                    return 1
-
-            counter = Counter(col_data.tolist())
-            if len(counter) >= threshold * len(col_data):
-                invalid_count = 0
-                for date in col_data.tolist():
-                    invalid_count += parse_date(date)
-                if invalid_count < threshold * len(col_data):
-                    return True
-                else:
-                    return False
-            else:
-                return False
-
-        def check_categorical(col_data):
-            counter = Counter(col_data.tolist())
-            if len(counter) < threshold * len(col_data):
-                _median = median(counter.values())
-                if _median == 1:
-                    return False
-                else:
-                    return True
-            else:
-                return False
-
-        def check_text(col_dat):
-            def _get_token_number(x):
-                return len(x.split(' '))
-
-            if col_data.dtypes == object:
-                if len(col_data.unique()) > len(col_data) * threshold:
-                    if median(col_data.apply(_get_token_number)) > 3:
-                        return True
-                    else:
-                        return False
-
-        valid_feature_names = []
-        valid_feature_types = []
-        feature = {}
-        feature['categorical'] = []
-        feature['numerical'] = []
-        feature['text'] = []
-        feature['datetime'] = []
-        meta = {}
-        for column in data.columns:
-            if column == label_column:
-                meta[column] = {'type': 'label', 'used': True,
-                                'structured': 'attribute'}
-                continue
-            col_data = data[column]
-
-            if check_datetime(col_data):
-                # datetime data
-                feature['datetime'].append(column)
-                valid_feature_names.append(column)
-                valid_feature_types.append(DATATYPE.DATETIME)
-                meta[column] = {'type': 'datetime', 'used': True,
-                                'structured': 'attribute'}
-
-            elif check_numercial(col_data):
-                # numerical data
-                feature['numerical'].append(column)
-                valid_feature_names.append(column)
-                valid_feature_types.append(DATATYPE.NUMBER)
-                meta[column] = {'type': 'numerical', 'used': True,
-                                'structured': 'attribute'}
-
-            elif check_categorical(col_data):
-                # categorical data
-                feature['categorical'].append(column)
-                valid_feature_names.append(column)
-                valid_feature_types.append(DATATYPE.CATEGORY)
-                meta[column] = {'type': 'categorical', 'used': True,
-                                'structured': 'attribute'}
-
-            elif check_text(col_data):
-                # text data
-                feature['text'].append(column)
-                valid_feature_names.append(column)
-                valid_feature_types.append(DATATYPE.FREETEXT)
-                meta[column] = {'type': 'Text', 'used': True,
-                                'structured': 'attribute'}
-
-            else:
-                print(
-                    'Warning: the feature [%s] is suspected to be identifierable feature. \n[Examples]: %s\n' % (
-                    column, col_data.tolist()[:5]))
-                meta[column] = {'type': 'Key', 'used': True,
-                                'structured': 'attribute'}
-
-        return feature, valid_feature_names, valid_feature_types, meta
-
-    feature, valid_feature_names, valid_feature_types, meta = get_column_types(
-        data=data,
-        threshold=0.3,
-        label_column=label_column)
-
-    # pprint(feature)
-    print(valid_feature_names)
-    print(valid_feature_types)
-    print(meta)
+    ### Get data types
+    feature, valid_feature_names, valid_feature_types, meta = \
+        DataUtil.get_column_types(data=data, threshold=0.3, label=label_column)
+    ### Get Data Stats
+    stats = DataUtil.get_data_statistics(data=data,
+                                         feature_names=valid_feature_names,
+                                         feature_types=valid_feature_types,
+                                         label=label_column)
 
     ### Add Header Level 2
     report.detail.add_header_level_2(text='Data Field Attribute')
@@ -212,30 +90,11 @@ def main():
 
     ### Add Header Level 2
     report.detail.add_header_level_2(text='Data Missing Value Check')
-    ### Missing value
-    ## TODO: where to park the code?
-    def generate_missing_value_schema(valid_feature_names,
-                                      valid_feature_types):
-        missing_value_schema = dict()
-        for name, column_type in zip(valid_feature_names, valid_feature_types):
-            if column_type == 'categorical':
-                missing_value_schema[name] = ['NAN']
-            if column_type == 'numerical':
-                missing_value_schema[name] = ['NaN']
-        return missing_value_schema
-
-    schema = generate_missing_value_schema(valid_feature_names,
-                                           valid_feature_types)
-    print(schema)
-    json_line = json.loads(data.to_json(orient='records'))
-    enum_validator = EnumValidator(schema=schema)
-    enum_validator.validate_all(sample_list=json_line)
-    stats = enum_validator.get_statistics()
-    missing_count = dict(stats.column_stats)
-    total_count = {feature_name: stats.total_count for feature_name in
-                   schema.keys()}
-    print('missing_count', missing_count)
-    print('total_count', total_count)
+    ### Missing value count
+    missing_count, total_count = \
+        DataUtil.get_missing_value_count(data=data,
+                                         feature_names=valid_feature_names,
+                                         feature_types=valid_feature_types)
     report.detail.add_data_missing_value(missing_count=dict(missing_count),
                                          total_count=total_count)
 
@@ -245,23 +104,10 @@ def main():
     report.detail.add_paragraph(
         text='This section displays distribution for categorical fields, numerical fields and text fields.')
 
-    ## TODO: where to park the code?
-    data_analyzer_suite = DataAnalyzerSuite(data_type_list=valid_feature_types,
-                                            column_names=valid_feature_names)
-    print(data_analyzer_suite.schema)
-
-    for column, column_type in zip(valid_feature_names, valid_feature_types):
-        if column_type == 'categorical':
-            data[column][data[column].isnull()] = 'NAN'
-        data_analyzer_suite.feed_column(column_name=column,
-                                        column_data=data[column].tolist(),
-                                        labels=data[label_column])
-    stats = data_analyzer_suite.get_statistics()
-
     ### Add Header Level 3
     report.detail.add_header_level_3(text='Categorical Field Distribution')
     ### Categorical field distribution
-    for field_name in feature['categorical']:
+    for field_name in feature[DATATYPE.CATEGORY]:
         labelled_stats, all_stats = stats[field_name]
         report.detail.add_categorical_field_distribution(field_name=field_name,
                                                          field_distribution=labelled_stats)
@@ -269,7 +115,7 @@ def main():
     ### Add Header Level 3
     report.detail.add_header_level_3(text='Numerical Field Distribution')
     ### Numerical field distribution
-    for field_name in feature['numerical']:
+    for field_name in feature[DATATYPE.NUMBER]:
         labelled_stats, all_stats = stats[field_name]
         report.detail.add_numeric_field_distribution(field_name=field_name,
                                                      field_distribution=labelled_stats)
@@ -277,7 +123,7 @@ def main():
     ### Add Header Level 3
     report.detail.add_header_level_3(text='Text Field Distribution')
     ### Text field distribution
-    for field_name in feature['text']:
+    for field_name in feature[DATATYPE.FREETEXT]:
         labelled_stats, all_stats = stats[field_name]
         report.detail.add_text_field_distribution(field_name=field_name,
                                                   field_distribution=labelled_stats)
@@ -285,7 +131,7 @@ def main():
     ### Add Header Level 3
     report.detail.add_header_level_3(text='Datetime Field Distribution')
     ### Datetime field distribution
-    for field_name in feature['datetime']:
+    for field_name in feature[DATATYPE.DATETIME]:
         labelled_stats, all_stats = stats[field_name]
         report.detail.add_datetime_field_distribution(field_name=field_name,
                                                       field_distribution=labelled_stats)

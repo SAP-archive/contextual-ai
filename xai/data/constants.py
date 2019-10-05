@@ -13,6 +13,8 @@ class DATATYPE:
     NUMBER = 'numerical'
     FREETEXT = 'text'
     DATETIME = 'datetime'
+    LABEL = 'label'
+    KEY = 'key'
 
 
 class STATSCONSTANTS:

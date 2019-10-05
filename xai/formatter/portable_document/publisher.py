@@ -47,7 +47,7 @@ class CustomPdf(FPDF):
 
     COPY_RIGHT = 'Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved'
 
-    def __init__(self, name='pdf_report', path='./', dest='F') -> None:
+    def __init__(self, name='pdf_report', *, path='./', dest='F') -> None:
         """
         Custom PDF
 
