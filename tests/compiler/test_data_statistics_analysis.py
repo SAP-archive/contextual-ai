@@ -16,15 +16,15 @@ class TestDataStatisticsAnalysis(unittest.TestCase):
 
     def setUp(self) -> None:
         self.json = 'sample_template/data-statistics-analysis.json'
-        # self.yaml = 'sample_template/feature-importance-ranking.yml'
+        self.yaml = 'sample_template/data-statistics-analysis.yml'
 
     def test_json_generate_report(self):
         controller = Controller(config=Configuration(self.json))
         controller.render()
 
-    # def test_yaml_generate_report(self):
-    #     controller = Controller(config=Configuration(self.yaml))
-    #     controller.render()
+    def test_yaml_generate_report(self):
+        controller = Controller(config=Configuration(self.yaml))
+        controller.render()
 
 if __name__ == '__main__':
     unittest.main()
