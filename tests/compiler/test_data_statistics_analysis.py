@@ -9,7 +9,7 @@ import sys
 sys.path.append('../')
 
 import unittest
-from xai.compiler.base import Configuration, Controller
+from xai.compiler import Configuration, Controller
 
 
 class TestDataStatisticsAnalysis(unittest.TestCase):

@@ -110,6 +110,7 @@ class FeatureImportanceRanking(Dict2Obj):
 
         # -- Get Feature Importance --
         fi = FeatureInterpreter(feature_names=feature_names)
+        print(method)
         rank = fi.get_feature_importance_ranking(trained_model=model,
                                                  train_x=train_data,
                                                  method=method)
