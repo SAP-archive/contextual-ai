@@ -4,11 +4,12 @@
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
 
+from collections import defaultdict
+
+from xai import constants
 from xai.model.evaluation.basic_result import ClassificationResult
 from xai.model.evaluation.confusion_matrix import ConfusionMatrix
 from xai.util import get_table_layout
-from xai import constants
-from collections import defaultdict
 
 
 ################################################################################
@@ -31,7 +32,7 @@ class MultiClassificationResult(ClassificationResult):
                 (2) have a `average` keyword to show a macro-average metric.
         """
         for metric, values in evaluation_result.items():
-            if metric == constants.TRAIN_TEST_CM:
+            if metric == constants.METRIC_CM:
                 self.confusion_matrices = ConfusionMatrix(label=values['labels'],
                                                           confusion_matrix=values['values'])
             else:

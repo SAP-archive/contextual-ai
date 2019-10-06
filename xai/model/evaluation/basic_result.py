@@ -5,9 +5,9 @@
 # ============================================================================
 
 from abc import ABC, abstractmethod
+from typing import Tuple, List
 
 from ordered_set import OrderedSet
-from typing import Tuple, List
 
 
 ################################################################################
@@ -17,6 +17,7 @@ class ClassificationResult(ABC):
     """
     The base class for classification problem result.
     """
+
     def __init__(self):
         self.resultdict = dict()
         self.metric_set = OrderedSet()
@@ -51,7 +52,6 @@ class ClassificationResult(ABC):
         Returns: a set of tables (title, header, values)
         """
         raise NotImplementedError('The derived class should implement it.')
-
 
     def get_metric_list(self):
         """
