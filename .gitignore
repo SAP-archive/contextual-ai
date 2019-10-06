@@ -17,6 +17,18 @@ sap_explainable_ai.egg-info/
 **/*.html
 xai/formatter/portable_document/fonts/*.pkl
 
+tutorials/compiler/titanic/gender_submission.csv
+tutorials/compiler/titanic/model.pkl
+tutorials/compiler/titanic/result.csv
+tutorials/compiler/titanic/titanic.csv
+tutorials/compiler/titanic/train_data.csv
+
+tutorials/compiler/titanic2/gender_submission.csv
+tutorials/compiler/titanic2/model.pkl
+tutorials/compiler/titanic2/result.csv
+tutorials/compiler/titanic2/titanic.csv
+tutorials/compiler/titanic2/train_data.csv
+
 doc/build
 doc/source/data
 doc/source/explainer
