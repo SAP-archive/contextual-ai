@@ -6,7 +6,6 @@ import warnings
 import numpy as np
 import pandas as pd
 import re as re
-from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 
 warnings.filterwarnings("ignore")
@@ -15,17 +14,12 @@ warnings.filterwarnings("ignore")
 ### Data Ingestion & Splitting
 ################################################################################
 #Load data
-data = pd.read_csv('titanic.csv', index_col=False )
+train_data = pd.read_csv('train.csv')
+test_data = pd.read_csv('test.csv')
+all_data = [train_data, test_data]
 
-print(data.head())
-
-#Split data
-y = data.Survived
-X = data.drop('Survived', axis=1)
-
-
-X_train, X_test, y_train, y_test = train_test_split(X, y,test_size=0.2)
-all_data = [X_train, X_test]
+data = pd.concat([train_data, test_data], sort=False)
+data.to_csv('titanic.csv', index=False)
 
 ################################################################################
 ### Data & Feature Processing
@@ -47,7 +41,7 @@ for data in all_data:
 #Feature 5
 for data in all_data:
     data['Fare'] = data['Fare'].fillna(data['Fare'].median())
-X_train['category_fare'] = pd.qcut(X_train['Fare'], 4)
+train_data['category_fare'] = pd.qcut(train_data['Fare'], 4)
 
 #Feature 6
 for data in all_data:
@@ -59,7 +53,7 @@ for data in all_data:
     data['Age'][np.isnan(data['Age'])] = random_list
     data['Age'] = data['Age'].astype(int)
 
-X_train['category_age'] = pd.cut(X_train['Age'], 5)
+train_data['category_age'] = pd.cut(train_data['Age'], 5)
 
 #Feature 7
 def get_title(name):
@@ -113,24 +107,27 @@ for data in all_data:
 drop_elements = ["Name", "Ticket", "Cabin", "SibSp", "Parch", "family_size"]
 
 #5.3 Drop columns from both data sets
-X_train = X_train.drop(drop_elements, axis = 1)
-X_train = X_train.drop(['PassengerId','category_fare', 'category_age'], axis = 1)
-X_test  = X_test.drop(drop_elements, axis = 1)
+train_data = train_data.drop(drop_elements, axis = 1)
+train_data = train_data.drop(['PassengerId','category_fare', 'category_age'], axis = 1)
+test_data  = test_data.drop(drop_elements, axis = 1)
 
 
 #5.4 Double check
 print("Training data")
-print(X_train.head)
+print(train_data.head)
 print("Test data")
-print(X_test.head)
+print(test_data.head)
 
 
 ################################################################################
 ### Model Training & Persist as pickle
 ################################################################################
 #6 Do training with decision tree
+X_train = train_data.drop("Survived", axis=1)
+Y_train = train_data["Survived"]
+
 decision_tree = DecisionTreeClassifier()
-decision_tree.fit(X_train, y_train)
+decision_tree.fit(X_train, Y_train)
 pkl = open('model.pkl', 'wb')
 pickle.dump(decision_tree, pkl)
 decision_tree = None
@@ -142,18 +139,19 @@ X_train.to_csv("train_data.csv", index=False)
 #7.1 Prepare prediction data & Model
 model_pkl = open('model.pkl', 'rb')
 model = pickle.load(model_pkl)
-X_test_predict  = X_test.drop("PassengerId", axis=1).copy()
+
+X_test  = test_data.drop("PassengerId", axis=1).copy()
 
 #7.2 Do predict
-accuracy = round(model.score(X_train, y_train) * 100, 2)
+accuracy = round(model.score(X_train, Y_train) * 100, 2)
 print('=========================')
 print("Model Accuracy: ",accuracy)
 print('=========================')
 
 #7.3 Run prediction on entire test data
-Y_pred = model.predict(X_test_predict)
+Y_pred = model.predict(X_test)
 result = pd.DataFrame({
-    "PassengerId":X_test["PassengerId"],
+    "PassengerId":test_data["PassengerId"],
     "Survived": Y_pred
 })
 result.to_csv('result.csv', index = False)

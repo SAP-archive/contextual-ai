@@ -46,7 +46,7 @@ class Pdf(Dict2Obj):
             "name": {"type": "string"},
             "path": {" type": "string"}
         },
-        "required": ["name", "path"]
+        "required": ["name"]
     }
 
     def __init__(self, dictionary):
@@ -67,7 +67,7 @@ class Pdf(Dict2Obj):
             level (int): content level
         """
         name = self.assert_attr(key='name')
-        path = self.assert_attr(key='path')
+        path = self.assert_attr(key='path', default='./')
         report.generate(writer=PdfWriter(name=name, path=path))
 
 ################################################################################

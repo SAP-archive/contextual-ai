@@ -57,7 +57,7 @@ class Constant(Enum):
 class Configuration:
     SCHEMA = {
         "definitions": {
-            "section": {
+            "sections": {
                 "type": "object",
                 "properties": {
                     "title": {"type": "string"},
@@ -65,7 +65,7 @@ class Configuration:
                     "sections":
                         {
                             "type": "array",
-                            "items": {"$ref": "#/definitions/section"},
+                            "items": {"$ref": "#/definitions/sections"},
                             "default": []
                         },
                     "component": {"$ref": "#/definitions/component"}
@@ -94,7 +94,7 @@ class Configuration:
             "contents":
                 {
                     "type": "array",
-                    "items": {"$ref": "#/definitions/section"},
+                    "items": {"$ref": "#/definitions/sections"},
                     "default": []
                 },
             "writers":

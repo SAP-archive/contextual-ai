@@ -4,17 +4,37 @@
   "content_table": true,
   "contents": [
     {
-      "title": "Feature Importance Ranking",
+      "title": "Feature Importance Analysis",
       "desc": "This section provides the analysis on feature",
-      "component": {
-        "_comment": "refer to document section xxxx",
-        "class": "FeatureImportanceRanking",
-        "attr": {
-          "trained_model": "model.pkl",
-          "train_data": "train_data.csv",
-          "method": "shap"
+      "sections": [
+        {
+          "title": "Feature Importance Ranking",
+          "component": {
+            "_comment": "refer to document section xxxx",
+            "class": "FeatureImportanceRanking",
+            "attr": {
+              "trained_model": "model.pkl",
+              "train_data": "train_data.csv"
+            }
+          }
         }
-      }
+      ]
+    },
+    {
+      "title": "Data Statistics Analysis",
+      "desc": "This section provides the analysis on data",
+      "sections": [
+        {
+          "title": "Simple Data Statistic",
+          "component": {
+            "_comment": "refer to document section xxxx",
+            "class": "DataStatisticsAnalysis",
+            "attr": {
+              "data": "titanic.csv"
+            }
+          }
+        }
+      ]
     }
   ],
   "writers": [

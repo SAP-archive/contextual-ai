@@ -20,17 +20,6 @@
                   "data": "./sample_input/titanic/titanic.csv"
                 }
               }
-            },
-            {
-              "title": "Default analysis with csv and label (without metadata)",
-              "component": {
-                "_comment": "refer to document section xxxx",
-                "class": "DataStatisticsAnalysis",
-                "attr": {
-                  "data": "./sample_input/titanic/titanic.csv",
-                  "label": "Survived"
-                }
-              }
             }
           ]
         },
