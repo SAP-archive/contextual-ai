@@ -14,7 +14,6 @@ from statistics import median
 
 import dateutil
 import numpy as np
-import pandas as pd
 import math
 
 from xai.data.constants import DATATYPE
@@ -43,6 +42,7 @@ def get_column_types(*, data, threshold, label=None):
     """
 
     copy_data = deepcopy(data)
+    print(copy_data.dtypes)
 
     def check_key(_data):
         if _data.dtypes in [np.int32, np.int64, np.int16]:
@@ -85,7 +85,9 @@ def get_column_types(*, data, threshold, label=None):
     def check_categorical(_data):
         counter = Counter([str(x) if type(x) == float and math.isnan(x) else x for x in _data.tolist()])
         if _data.dtypes in [np.float64, np.float32]:
-            _threshold = 10  ## for float type, strict the threshold
+            _threshold = min(10.0, threshold * len(_data))  ## for float type, strict the threshold
+        elif _data.dtypes in [np.int16, np.int32, np.int64]:
+            _threshold = min(15.0, threshold * len(_data))  ## for int type, strict the threshold
         else:
             _threshold = threshold * len(_data)
         if len(counter) < _threshold:
