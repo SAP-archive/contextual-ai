@@ -6,12 +6,19 @@ allowing user to customize and create use-case-specific explainability report.
 This is to increase the modularity of XAI lib and make it easy for extensible.
 
 ## Example
+The following examples can give you an impression of what the package can do:
 
 ### Titanic Dataset
 * [Kaggle Overview](https://www.kaggle.com/c/titanic/overview)  
-* [Titanic dataset](https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv)  
-* [XAI Sample Notebook](titanic/sample.ipynb)
+* [Titanic dataset](https://www.kaggle.com/c/titanic/data)  
+* [Sample Notebook 1](titanic/sample.ipynb)
+* [Sample Notebook 2](titanic2/sample.ipynb)
 
+## Automobile Dataset
+* [Kaggle Overview](https://www.kaggle.com/toramky/automobile-dataset)
+* [Automobile dataset](https://www.kaggle.com/toramky/automobile-dataset)  
+* [Sample Notebook 1](automobile/sample.ipynb)
+ 
 
 ## Supported Format
 The supported `external configuration` format are:

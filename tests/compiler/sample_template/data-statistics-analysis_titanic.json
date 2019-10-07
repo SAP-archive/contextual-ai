@@ -1,0 +1,34 @@
+{
+  "name": "Report for Data Statistics Analysis",
+  "overview": true,
+  "content_table": true,
+  "contents": [
+    {
+      "title": "Data Statistics Analysis - Titanic",
+      "desc": "This section provides the analysis Titanic NZa dataset",
+      "sections": [
+        {
+          "title": "Default analysis with csv (without label and metadata)",
+          "component": {
+            "_comment": "refer to document section xxxx",
+            "class": "DataStatisticsAnalysis",
+            "attr": {
+              "data": "./sample_input/titanic/titanic.csv",
+              "label": "Survived"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "writers": [
+    {
+      "class": "Pdf",
+      "attr": {
+        "name": "data-stats-analysis-nza-report",
+        "path": "./sample_output"
+      }
+    }
+  ]
+}
+

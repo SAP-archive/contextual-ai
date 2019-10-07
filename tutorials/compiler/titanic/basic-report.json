@@ -14,7 +14,8 @@
             "class": "FeatureImportanceRanking",
             "attr": {
               "trained_model": "model.pkl",
-              "train_data": "train_data.csv"
+              "train_data": "train_data.csv",
+              "method": "shap"
             }
           }
         }
