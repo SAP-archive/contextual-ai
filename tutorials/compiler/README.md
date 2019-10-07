@@ -5,7 +5,15 @@ allowing user to customize and create use-case-specific explainability report.
 
 This is to increase the modularity of XAI lib and make it easy for extensible.
 
-## Support Format
+## Example
+
+### Titanic Dataset
+* [Kaggle Overview](https://www.kaggle.com/c/titanic/overview)  
+* [Titanic dataset](https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv)  
+* [XAI Sample Notebook](titanic/sample.ipynb)
+
+
+## Supported Format
 The supported `external configuration` format are:
 * Json - Javascript Object Notation
 * Yaml - Rhymes with Camel (converted to Json when loaded)
