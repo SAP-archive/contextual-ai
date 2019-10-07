@@ -15,6 +15,7 @@ class NumericalStats(AbstractStats):
     """
     NumericalStats contains following basic information:
         - _total_count: total count of values
+        - _nan_count: total count of nan values
         - _min: minimum of all values
         - _max: maximum of all values
         - _mean: mean of the values
@@ -32,7 +33,8 @@ class NumericalStats(AbstractStats):
                  sd: Optional[Union[float, int, None]] = None,
                  histogram: Optional[List[Tuple[Union[float, int, None], Union[float, int, None], int]]] = [],
                  kde: Optional[List[Tuple[Union[float, int, None], Union[float, int, None]]]] = [],
-                 total_count: Optional[Union[float, int, None]] = 0):
+                 total_count: Optional[Union[float, int, None]] = 0,
+                 nan_count: Optional[Union[float, int, None]] = 0):
         super(NumericalStats).__init__()
         self.total_count = total_count
         self.min = min
@@ -42,6 +44,7 @@ class NumericalStats(AbstractStats):
         self.sd = sd
         self.histogram = histogram
         self.kde = kde
+        self.nan_count = nan_count
 
     @property
     def min(self):
@@ -92,6 +95,16 @@ class NumericalStats(AbstractStats):
         if not isinstance(value, float) and not isinstance(value, int) and value is not None:
             raise InvalidTypeError('sd', type(value), '<int> or <float> or None')
         self._sd = value
+
+    @property
+    def nan_count(self):
+        return self._nan_count
+
+    @nan_count.setter
+    def nan_count(self, value: int):
+        if not isinstance(value, int):
+            raise InvalidTypeError('nan_count', type(value), '<int>')
+        self._nan_count = value
 
     @property
     def histogram(self):
@@ -153,8 +166,9 @@ class NumericalStats(AbstractStats):
         json_obj[STATSKEY.MEAN] = self._mean
         json_obj[STATSKEY.MEDIAN] = self._median
         json_obj[STATSKEY.STDDEV] = self._sd
+        json_obj[STATSKEY.NAN_COUNT] = self._nan_count
 
-        json_obj[STATSKEY.DISTRIBUTION] = []
+        json_obj[STATSKEY.DISTRIBUTION] = {}
 
         json_obj[STATSKEY.DISTRIBUTION][STATSKEY.HISTOGRAM] = []
         for bin_left, bin_right, bin_count in self._histogram:

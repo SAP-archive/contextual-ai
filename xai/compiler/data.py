@@ -80,7 +80,7 @@ class DataStatisticsAnalysis(Dict2Obj):
             level (int): content level
         """
         super(DataStatisticsAnalysis, self).__call__(report=report,
-                                                       level=level)
+                                                     level=level)
         threshold = self.assert_attr(key='threshold', default=0.3)
         # -- Load Data --
         data_path = self.assert_attr(key='data')
@@ -99,7 +99,8 @@ class DataStatisticsAnalysis(Dict2Obj):
                 DataUtil.get_column_types(data=data, threshold=threshold,
                                           label=label)
         ### Get Data Stats
-        #TODO: where to get feature names and type when metadata provided
+        # TODO: where to get feature names and type when metadata provided
+
         stats = DataUtil.get_data_statistics(data=data,
                                              feature_names=valid_feature_names,
                                              feature_types=valid_feature_types,

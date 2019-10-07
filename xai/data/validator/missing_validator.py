@@ -7,15 +7,17 @@
 from collections import defaultdict
 
 from typing import Dict
+import math
+import numpy as np
 from xai.data.exceptions import AttributeNotFound
 from xai.data.validator.abstract_validator import AbstractValidator
 from xai.data.validator.validation_stats import ValidationStats
 
 
-class EnumValidator(AbstractValidator):
+class MissingValidator(AbstractValidator):
 
     def __init__(self, schema: Dict):
-        super(EnumValidator, self).__init__(schema=schema)
+        super(MissingValidator, self).__init__(schema=schema)
         self._column_count = defaultdict(int)
         self._total_count = 0
 
@@ -28,12 +30,23 @@ class EnumValidator(AbstractValidator):
         if len(keys_not_found) > 0:
             raise AttributeNotFound(attribute_name=keys_not_found, sample=sample)
 
-        for feature_name, enum_values in self.schema.items():
-            if sample[feature_name] in enum_values:
+        for feature_name, missing_values in self.schema.items():
+            x = sample[feature_name]
+            if x is None:
+                missing = True
+            elif type(x) == float and math.isnan(x):
+                missing = True
+            elif x in missing_values:
+                missing = True
+            else:
+                missing = False
+
+            if missing:
                 validate_result[feature_name] = True
                 self._column_count[feature_name] += 1
             else:
                 validate_result[feature_name] = False
+
         self._total_count += 1
         return validate_result
 

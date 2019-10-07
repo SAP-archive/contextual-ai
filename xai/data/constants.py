@@ -31,6 +31,7 @@ class STATSKEY:
     Constants for key used in stats json object
     """
     TOTAL_COUNT = 'total_count'
+    NAN_COUNT = 'nan_count'
     DATA_TYPE = 'data_type'
     DATA_COLUMN_NAME = 'attribute_name'
     STATS = 'stats'

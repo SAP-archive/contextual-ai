@@ -591,12 +591,13 @@ class PdfWriter(Writer):
                 x_limit=x_limit)
             table_header = ['Statistical Field', 'Value']
             table_values = list()
-            table_values.append(['Total count', "%d" % int(num_stats.total_count)])
+            table_values.append(['Total valid count', "%d" % int(num_stats.total_count)])
             table_values.append(['Min', "%d" % int(num_stats.min)])
             table_values.append(['Max', "%d" % int(num_stats.max)])
             table_values.append(['Mean', "%d" % int(num_stats.mean)])
             table_values.append(['Median', "%d" % int(num_stats.median)])
             table_values.append(['Standard deviation', "%d" % int(num_stats.sd)])
+            table_values.append(['NAN count', "%d" % int(num_stats.nan_count)])
 
             self.pdf.add_table_image_group(image_path=figure_path,
                                            table_header=table_header,

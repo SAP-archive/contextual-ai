@@ -9,9 +9,9 @@ from xai.data.abstract_stats import AbstractStats
 from xai.data.constants import STATSKEY
 
 
-class EnumValidationStats(AbstractStats):
+class ValidationStats(AbstractStats):
     def __init__(self):
-        super(EnumValidationStats).__init__()
+        super(ValidationStats).__init__()
         self.column_stats = None
         self.total_count = 0
 
@@ -26,7 +26,7 @@ class EnumValidationStats(AbstractStats):
         for feature_name, count in self.column_stats.items():
             json_column_obj = dict()
             json_column_obj['field'] = feature_name
-            json_column_obj['valid_count'] = count
+            json_column_obj['count'] = count
             json_obj[STATSKEY.DISTRIBUTION].append(json_column_obj)
 
         return json_obj

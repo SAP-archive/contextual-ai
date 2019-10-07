@@ -6,7 +6,8 @@
 
 from .base import (
     Controller,
-    Configuration
+    Configuration,
+    Constant
 )
 from .data import DataStatisticsAnalysis
 from .features import FeatureImportanceRanking
