@@ -4,6 +4,15 @@
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
 
+class THRESHOLD:
+    """
+    Predefined threshold for data type identification
+    """
+    UNIQUE_VALUE_REL_THRESHOLD = 0.3
+    FLOAT_UNIQUE_ABS_THRESHOLD = 10
+    INT_UNIQUE_ABS_THRESHOLD = 15
+
+
 class DATATYPE:
     """
     Predefined data type for data analyzer
