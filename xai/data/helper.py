@@ -193,6 +193,52 @@ def get_column_types(*, data, threshold, label=None):
 
     return feature, valid_feature_names, valid_feature_types, meta
 
+def get_valid_datatypes_from_meta(meta:dict):
+    """
+    Parse the meta data into valid input for data analyzers
+
+    Args:
+        meta: dict, data metat data
+
+    Returns:
+        feature: dict, which maps to data type for feature names
+        valid_feature_names: list, which contains all valid feature names
+        valid_feature_types: list, which contains all valid feature types
+        sequence_features: list, which contains all sequence features
+    """
+    sequence_features = []
+    valid_feature_names = []
+    valid_feature_types = []
+    feature = dict()
+    feature[DATATYPE.CATEGORY] = []
+    feature[DATATYPE.NUMBER] = []
+    feature[DATATYPE.FREETEXT] = []
+    feature[DATATYPE.DATETIME] = []
+    for feature_name, feature_config in meta.items():
+        feature_type = feature_config['type']
+        structured = feature_config['structured']
+
+        if structured == 'sequence':
+            sequence_features.append(feature_name)
+
+        if feature_type == 'categorical':
+            valid_feature_types.append(DATATYPE.CATEGORY)
+            valid_feature_names.append(feature_name)
+            feature[DATATYPE.CATEGORY].append(feature_name)
+        elif feature_type == 'numerical':
+            valid_feature_types.append(DATATYPE.NUMBER)
+            valid_feature_names.append(feature_name)
+            feature[DATATYPE.NUMBER].append(feature_name)
+        elif feature_type == 'text':
+            valid_feature_types.append(DATATYPE.FREETEXT)
+            valid_feature_names.append(feature_name)
+            feature[DATATYPE.FREETEXT].append(feature_name)
+        elif feature_type == 'datetime':
+            valid_feature_types.append(DATATYPE.DATETIME)
+            valid_feature_names.append(feature_name)
+            feature[DATATYPE.DATETIME].append(feature_name)
+
+    return feature, valid_feature_names, valid_feature_types, sequence_features
 
 def get_label_distribution(*, data, label):
     """
