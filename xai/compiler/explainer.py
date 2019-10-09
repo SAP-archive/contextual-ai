@@ -12,6 +12,8 @@ from __future__ import print_function
 from pathlib import Path
 
 import xai
+import json
+from xai.explainer.helper import parse_feature_meta_tabular
 from xai.compiler.base import Dict2Obj
 from xai.explainer import ExplainerFactory
 from xai.formatter import Report
@@ -101,11 +103,14 @@ class ModelAgnosticExplainer(Dict2Obj):
         predict_fn = self.load_data(Path(predict_fn_path))
 
         # -- Load Feature Meta--
-        fn_path = self.assert_attr(key='feature_meta', optional=True)
-        if not (fn_path is None):
-            feature_meta = self.load_data(Path(fn_path))
+        feature_meta_path = self.assert_attr(key='feature_meta', optional=True)
+        if not (feature_meta_path is None):
+            with open(feature_meta_path, 'r') as f:
+                meta_data = json.load(f)
+        else:
+            meta_data = {}
 
-        feature_names = list(feature_meta.values)
+        class_names = meta_data.get("class_names", None)
 
         # -- Load Training Data --
         data_path = self.assert_attr(key='train_data')
@@ -113,32 +118,34 @@ class ModelAgnosticExplainer(Dict2Obj):
             train_data = self.load_data(Path(data_path))
             train_data = train_data.values
 
-        class_num = predict_fn(train_data[:2, :]).shape[1]
+        kwargs = dict()
 
-        print(train_data.shape)
-        print(feature_names)
         algorithm = xai.ALG.LIME
         if method == 'shap':
             algorithm = xai.ALG.SHAP
 
         if domain == 'tabular':
             _domain = xai.DOMAIN.TABULAR
+            if algorithm == xai.ALG.LIME:
+                feature_names, categorical_index, categorical_mapping = parse_feature_meta_tabular(
+                    meta_data)
+                kwargs.update({"class_names": class_names,
+                               "categorical_features": categorical_index,
+                               "dict_categorical_mapping": categorical_mapping})
         elif domain == 'text':
             _domain = xai.DOMAIN.TEXT
+
         explainer_factory = ExplainerFactory.get_explainer(domain=_domain, algorithm=algorithm)
-        if algorithm == xai.ALG.LIME:
+
+        if _domain == xai.DOMAIN.TABULAR:
             explainer_factory.build_explainer(
                 training_data=train_data,
-                mode=xai.MODE.CLASSIFICATION,
                 predict_fn=predict_fn,
-                column_names=feature_names
+                feature_names=feature_names,
+                **kwargs
             )
-        elif algorithm == xai.ALG.SHAP:
-            explainer_factory.build_explainer(
-                predict_fn=predict_fn,
-                data=train_data,
-                feature_names=feature_names
-            )
+        elif _domain == xai.DOMAIN.TEXT:
+            explainer_factory.build_explainer(predict_fn=predict_fn, class_names=class_names)
 
         explainer_factory.save_explainer('explainer.pkl')
 
@@ -154,11 +161,12 @@ class ModelAgnosticExplainer(Dict2Obj):
         report.detail.add_model_info_summary(model_info=explainer_information, notes='Explainer Configuration')
         report.detail.add_header_level_3('Explanation Samples')
 
-        for i in range(3):
+        for i in range(2):
             report.detail.add_paragraph_title('Example %s: ' % i)
-            explainations = explainer_factory.explain_instance(train_data[i, :], top_labels=class_num,
+            explainations = explainer_factory.explain_instance(train_data[i, :],
                                                                num_features=num_features)
             for key, value in explainations.items():
-                details = [(item['feature'], item['score']) for item in value['explanation']]
+                details = [(item['feature'], "%.3f" % item['score']) for item in value['explanation']]
                 report.detail.add_model_info_summary(model_info=details,
-                                                     notes='Class %s - Confidence: %s' % (key, value['confidence']))
+                                                     notes='Class %s - Confidence: %s' % (
+                                                     class_names[key] if class_names else key, value['confidence']))

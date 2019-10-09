@@ -14,6 +14,7 @@ from xai.explainer.abstract_explainer import AbstractExplainer
 from xai.explainer.explainer_exceptions import ExplainerUninitializedError, UnsupportedModeError
 from xai.explainer.utils import explanation_to_json
 from xai.explainer.constants import MODE
+
 LOGGER = logging.getLogger(__name__)
 
 NUM_TOP_FEATURES = 5
@@ -24,7 +25,6 @@ class LimeTabularExplainer(AbstractExplainer):
     def __init__(self):
         super(LimeTabularExplainer, self).__init__()
         self.available_modes = ['classification', 'regression']
-        self.num_class = 1
 
     def build_explainer(self, training_data: np.ndarray,
                         predict_fn: Callable[[np.ndarray], np.ndarray],
@@ -142,10 +142,10 @@ class LimeTabularExplainer(AbstractExplainer):
             ExplainerUninitializedError: Raised if self.explainer_object is None
         """
 
-        if top_labels is None and labels is None:
-            top_labels = self.num_class
-
         if self.explainer_object:
+            if top_labels is None and labels is None:
+                top_labels = self.num_class
+
             explanation = self.explainer_object.explain_instance(
                 data_row=instance,
                 predict_fn=self.predict_fn,
@@ -181,7 +181,8 @@ class LimeTabularExplainer(AbstractExplainer):
         """
         dict_to_save = {
             'explainer_object': self.explainer_object,
-            'predict_fn': self.predict_fn
+            'predict_fn': self.predict_fn,
+            'num_class': self.num_class
         }
         with open(path, 'wb') as fp:
             dill.dump(dict_to_save, fp)
@@ -200,3 +201,4 @@ class LimeTabularExplainer(AbstractExplainer):
             dict_loaded = dill.load(fp)
             self.explainer_object = dict_loaded['explainer_object']
             self.predict_fn = dict_loaded['predict_fn']
+            self.num_class = dict_loaded['num_class']
