@@ -5,8 +5,19 @@
   "contents": [
     {
       "title": "Data Statistics Analysis - Titanic",
-      "desc": "This section provides the analysis Titanic NZa dataset",
+      "desc": "This section provides the analysis Titanic dataset",
       "sections": [
+        {
+          "title": "Default analysis with csv (without label and metadata)",
+          "component": {
+            "_comment": "refer to document section xxxx",
+            "class": "DataStatisticsAnalysis",
+            "attr": {
+              "data": "./sample_input/titanic/titanic.csv",
+              "metadata": "./sample_input/titanic/metadata.json"
+            }
+          }
+        },
         {
           "title": "Default analysis with csv (without label and metadata)",
           "component": {
@@ -25,7 +36,7 @@
     {
       "class": "Pdf",
       "attr": {
-        "name": "data-stats-analysis-nza-report",
+        "name": "data-stats-analysis-titanic-report",
         "path": "./sample_output"
       }
     }

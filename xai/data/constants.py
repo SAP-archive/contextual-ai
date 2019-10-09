@@ -18,6 +18,12 @@ class DATATYPE:
     Predefined data type for data analyzer
     """
 
+    TYPE = 'type'
+    USED = 'used'
+    STRUCTURED = 'structured'
+    ATTRIBUTE = 'attribute'
+    SEQUENCE = 'sequence'
+
     CATEGORY = 'categorical'
     NUMBER = 'numerical'
     FREETEXT = 'text'

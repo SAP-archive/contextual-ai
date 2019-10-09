@@ -10,10 +10,15 @@ from __future__ import division
 from __future__ import print_function
 
 from pathlib import Path
+import warnings
 
+from copy import deepcopy
 from xai.compiler.base import Dict2Obj
 from xai.data import DataUtil
-from xai.data.constants import DATATYPE
+from xai.data.constants import (
+    DATATYPE,
+    THRESHOLD
+)
 from xai.formatter import Report
 
 
@@ -34,7 +39,7 @@ class DataStatisticsAnalysis(Dict2Obj):
          metadata (str, Optional): path to training metadata data,
                 Optional, more details statistics can be generate, if provided
          label (str, Optional): label column name
-         threshold (number, Optional): data threshold, default 0.3
+         threshold (number, Optional): unique value rel threshold, default 0.3
 
      Example:
          "component": {
@@ -53,12 +58,21 @@ class DataStatisticsAnalysis(Dict2Obj):
         "type": "object",
         "properties": {
             "data": {" type": "string"},
+            "medatadata": {" type": "string"},
             "label": {"type": "string"},
             "threshold": {
                 "type": "number",
                 "default": 0.3
             }
         },
+        "anyOf": [
+            {
+                "required": ["metadata"]
+            },
+            {
+                "required": ["label"]
+            }
+        ],
         "required": ["data"]
     }
 
@@ -69,7 +83,8 @@ class DataStatisticsAnalysis(Dict2Obj):
         Args:
             dictionary (dict): attribute to set
         """
-        super(DataStatisticsAnalysis, self).__init__(dictionary, schema=self.schema)
+        super(DataStatisticsAnalysis, self).__init__(dictionary,
+                                                     schema=self.schema)
 
     def __call__(self, report: Report, level: int):
         """
@@ -81,7 +96,8 @@ class DataStatisticsAnalysis(Dict2Obj):
         """
         super(DataStatisticsAnalysis, self).__call__(report=report,
                                                      level=level)
-        threshold = self.assert_attr(key='threshold', default=0.3)
+        threshold = self.assert_attr(key='threshold',
+                                     default=THRESHOLD.UNIQUE_VALUE_REL_THRESHOLD)
         # -- Load Data --
         data_path = self.assert_attr(key='data')
         data = self.load_data(Path(data_path))
@@ -90,28 +106,50 @@ class DataStatisticsAnalysis(Dict2Obj):
         metadata = None
         if not (metadata_path is None):
             metadata = self.load_data(Path(metadata_path))
-        # -- Label --
-        label = self.assert_attr(key='label', optional=True)
 
+        copy_data = deepcopy(data)
         if metadata is None:
+            # -- Label is Mandatory when no metadata provided --
+            label = self.assert_attr(key='label')
             # -- Get default data types --
             feature, valid_feature_names, valid_feature_types, metadata = \
-                DataUtil.get_column_types(data=data, threshold=threshold,
+                DataUtil.get_column_types(data=copy_data, threshold=threshold,
                                           label=label)
-        ### Get Data Stats
-        # TODO: where to get feature names and type when metadata provided
+        else:
+            # -- Label is Optional when metadata is provided --
+            in_label = self.assert_attr(key='label', optional=True)
+            metadata = metadata.to_dict('dict')
+            # -- Get valid/defined data types based on metadata --
+            feature, valid_feature_names, valid_feature_types, \
+            sequence_features, label = DataUtil.get_valid_datatypes_from_meta(
+               meta=metadata)
+            if not (in_label is None) and in_label != label:
+                warnings.warn(
+                    message='Warning: the label column name is different,'
+                            'provided as [%s] in config '
+                            'but found label as [%s] in metadata' % (
+                                in_label, label))
 
-        stats = DataUtil.get_data_statistics(data=data,
-                                             feature_names=valid_feature_names,
-                                             feature_types=valid_feature_types,
-                                             label=label)
+        # -- Cast Data to String --
+        non_numeric_features = [name for name, _type in
+                        list(zip(valid_feature_names, valid_feature_types))
+                                if _type != DATATYPE.NUMBER]
+        if not (label is None):
+            non_numeric_features += [label]
+        DataUtil.cast_type_to_string(data=copy_data,
+                                     feature_names=non_numeric_features)
 
         # -- Add Data Label Distribution --
         if not (label is None):
             self.add_header(text='Data Class (Label) Distribution')
-            label_distributions = DataUtil.get_label_distribution(data=data,
+            label_distributions = DataUtil.get_label_distribution(data=copy_data,
                                                                   label=label)
             report.detail.add_data_set_distribution(label_distributions)
+
+        stats = DataUtil.get_data_statistics(data=copy_data,
+                                             feature_names=valid_feature_names,
+                                             feature_types=valid_feature_types,
+                                             label=label)
 
         # -- Add Data Field Attribute --
         if not (metadata is None):
@@ -121,7 +159,7 @@ class DataStatisticsAnalysis(Dict2Obj):
         # -- Add Missing Value Count --
         self.add_header(text='Data Missing Value Check')
         missing_count, total_count = \
-            DataUtil.get_missing_value_count(data=data,
+            DataUtil.get_missing_value_count(data=copy_data,
                                              feature_names=valid_feature_names,
                                              feature_types=valid_feature_types)
         report.detail.add_data_missing_value(missing_count=dict(missing_count),

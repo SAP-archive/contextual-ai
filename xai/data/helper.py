@@ -9,7 +9,7 @@
 import json
 import warnings
 from collections import Counter
-from copy import deepcopy
+
 from statistics import median
 
 import dateutil
@@ -40,9 +40,6 @@ def get_column_types(*, data, threshold, label=None):
     Returns:
         feature, valid_feature_names, valid_feature_types, meta
     """
-
-    copy_data = deepcopy(data)
-
     def check_key(_data):
         if _data.dtypes in [np.int32, np.int64, np.int16]:
             if _data.is_monotonic:
@@ -116,9 +113,6 @@ def get_column_types(*, data, threshold, label=None):
         else:
             return False
 
-    def cast_to_str(x):
-        return str(x)
-
     valid_feature_names = []
     valid_feature_types = []
     feature = dict()
@@ -127,69 +121,65 @@ def get_column_types(*, data, threshold, label=None):
     feature[DATATYPE.FREETEXT] = []
     feature[DATATYPE.DATETIME] = []
     meta = {}
-    for column in copy_data.columns:
+
+    for column in data.columns:
         if column == label:
-            meta[column] = {'type': DATATYPE.LABEL,
-                            'used': True,
-                            'structured': 'attribute'}
-            # cast data type into str
-            data[column] = data[column].apply(cast_to_str)
+            meta[column] = {DATATYPE.TYPE: DATATYPE.LABEL,
+                            DATATYPE.USED: True,
+                            DATATYPE.STRUCTURED: DATATYPE.ATTRIBUTE}
             continue
-        col_data = copy_data[column]
+        col_data = data[column]
 
         if check_datetime(_data=col_data):
             # datetime data
             feature[DATATYPE.DATETIME].append(column)
             valid_feature_names.append(column)
             valid_feature_types.append(DATATYPE.DATETIME)
-            meta[column] = {'type': DATATYPE.DATETIME,
-                            'used': True,
-                            'structured': 'attribute'}
-            data[column] = data[column].apply(cast_to_str)
+            meta[column] = {DATATYPE.TYPE: DATATYPE.DATETIME,
+                            DATATYPE.USED: True,
+                            DATATYPE.STRUCTURED: DATATYPE.ATTRIBUTE}
 
         elif check_categorical(_data=col_data):
             # categorical data
-            feature['categorical'].append(column)
+            feature[DATATYPE.CATEGORY].append(column)
             valid_feature_names.append(column)
             valid_feature_types.append(DATATYPE.CATEGORY)
-            meta[column] = {'type': DATATYPE.CATEGORY,
-                            'used': True,
-                            'structured': 'attribute'}
-            data[column] = data[column].astype(dtype=object).apply(cast_to_str)
+            meta[column] = {DATATYPE.TYPE: DATATYPE.CATEGORY,
+                            DATATYPE.USED: True,
+                            DATATYPE.STRUCTURED: DATATYPE.ATTRIBUTE}
 
         elif check_key(_data=col_data):
             warnings.warn(
                 message='Warning: the feature [%s] is suspected to be key feature as it is monotonic integer. \n'
                         '[Examples]: %s\n' % (column, col_data.tolist()[:5]))
-            meta[column] = {'type': DATATYPE.KEY,
-                            'used': False,
-                            'structured': 'attribute'}
+            meta[column] = {DATATYPE.TYPE: DATATYPE.KEY,
+                            DATATYPE.USED: False,
+                            DATATYPE.STRUCTURED: DATATYPE.ATTRIBUTE}
 
         elif check_numerical(_data=col_data):
             # numerical data
             feature[DATATYPE.NUMBER].append(column)
             valid_feature_names.append(column)
             valid_feature_types.append(DATATYPE.NUMBER)
-            meta[column] = {'type': DATATYPE.NUMBER,
-                            'used': True,
-                            'structured': 'attribute'}
+            meta[column] = {DATATYPE.TYPE: DATATYPE.NUMBER,
+                            DATATYPE.USED: True,
+                            DATATYPE.STRUCTURED: DATATYPE.ATTRIBUTE}
         elif check_text(_data=col_data):
             # text data
-            feature['text'].append(column)
+            feature[DATATYPE.FREETEXT].append(column)
             valid_feature_names.append(column)
             valid_feature_types.append(DATATYPE.FREETEXT)
-            meta[column] = {'type': DATATYPE.FREETEXT,
-                            'used': True,
-                            'structured': 'attribute'}
-            data[column] = data[column].apply(cast_to_str)
+            meta[column] = {DATATYPE.TYPE: DATATYPE.FREETEXT,
+                            DATATYPE.USED: True,
+                            DATATYPE.STRUCTURED: DATATYPE.ATTRIBUTE}
 
         else:
             warnings.warn(
                 message='Warning: the feature [%s] is suspected to be identifiable feature. \n'
                         '[Examples]: %s\n' % (column, col_data.tolist()[:5]))
-            meta[column] = {'type': DATATYPE.KEY,
-                            'used': False,
-                            'structured': 'attribute'}
+            meta[column] = {DATATYPE.TYPE: DATATYPE.KEY,
+                            DATATYPE.USED: False,
+                            DATATYPE.STRUCTURED: DATATYPE.ATTRIBUTE}
 
     return feature, valid_feature_names, valid_feature_types, meta
 
@@ -198,14 +188,16 @@ def get_valid_datatypes_from_meta(meta:dict):
     Parse the meta data into valid input for data analyzers
 
     Args:
-        meta: dict, data metat data
+        meta: dict, data meta data
 
     Returns:
         feature: dict, which maps to data type for feature names
         valid_feature_names: list, which contains all valid feature names
         valid_feature_types: list, which contains all valid feature types
         sequence_features: list, which contains all sequence features
+        label: str, label column name
     """
+    label = None
     sequence_features = []
     valid_feature_names = []
     valid_feature_types = []
@@ -214,31 +206,49 @@ def get_valid_datatypes_from_meta(meta:dict):
     feature[DATATYPE.NUMBER] = []
     feature[DATATYPE.FREETEXT] = []
     feature[DATATYPE.DATETIME] = []
-    for feature_name, feature_config in meta.items():
-        feature_type = feature_config['type']
-        structured = feature_config['structured']
 
-        if structured == 'sequence':
+    for feature_name, feature_config in meta.items():
+        feature_type = feature_config[DATATYPE.TYPE]
+        structured = feature_config[DATATYPE.STRUCTURED]
+
+        if structured == DATATYPE.SEQUENCE:
             sequence_features.append(feature_name)
 
-        if feature_type == 'categorical':
+        if feature_type == DATATYPE.LABEL:
+            label = feature_name
+        if feature_type == DATATYPE.CATEGORY:
             valid_feature_types.append(DATATYPE.CATEGORY)
             valid_feature_names.append(feature_name)
             feature[DATATYPE.CATEGORY].append(feature_name)
-        elif feature_type == 'numerical':
+        elif feature_type == DATATYPE.NUMBER:
             valid_feature_types.append(DATATYPE.NUMBER)
             valid_feature_names.append(feature_name)
             feature[DATATYPE.NUMBER].append(feature_name)
-        elif feature_type == 'text':
+        elif feature_type == DATATYPE.FREETEXT:
             valid_feature_types.append(DATATYPE.FREETEXT)
             valid_feature_names.append(feature_name)
             feature[DATATYPE.FREETEXT].append(feature_name)
-        elif feature_type == 'datetime':
+        elif feature_type == DATATYPE.DATETIME:
             valid_feature_types.append(DATATYPE.DATETIME)
             valid_feature_names.append(feature_name)
             feature[DATATYPE.DATETIME].append(feature_name)
 
-    return feature, valid_feature_names, valid_feature_types, sequence_features
+    return feature, valid_feature_names, valid_feature_types, \
+           sequence_features, label
+
+def cast_type_to_string(*, data, feature_names: list):
+    """
+    Cast non-str/int column to string
+
+    Args:
+        data (pandas): sample data
+        feature_names (list): feature names which not int or str
+    """
+    def cast_to_str(x):
+        return str(x)
+
+    for feature_name in feature_names:
+        data[feature_name] = data[feature_name].astype(dtype=object).apply(cast_to_str)
 
 def get_label_distribution(*, data, label):
     """
