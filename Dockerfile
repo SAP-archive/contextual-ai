@@ -1,4 +1,4 @@
-FROM python:3.5
+FROM python:3.7.2
 
 RUN groupadd xai && useradd -ms /bin/bash -g xai xai
 USER xai
