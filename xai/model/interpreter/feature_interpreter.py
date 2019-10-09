@@ -11,6 +11,7 @@ import pandas as pd
 import shap
 from scipy import stats
 from typing import List, Dict, Tuple
+import warnings
 
 from xai.data.constants import DATATYPE
 from xai.data.explorer.data_analyzer_suite import DataAnalyzerSuite
@@ -138,7 +139,8 @@ class FeatureInterpreter:
 
         return correlation_types, correlation_values
 
-    def _get_categorical_correlation(self, df, categorical_cols, correlation_type)->Dict[Tuple[str,str],Tuple[str,float]]:
+    def _get_categorical_correlation(self, df, categorical_cols, correlation_type) -> Dict[
+        Tuple[str, str], Tuple[str, float]]:
         """
         Internal function to calculate correlation among categorical features
 
@@ -154,7 +156,8 @@ class FeatureInterpreter:
         corr = dict()
         return corr
 
-    def _get_numerical_correlation(self, df, numerical_cols, correlation_type)->Dict[Tuple[str,str],Tuple[str,float]]:
+    def _get_numerical_correlation(self, df, numerical_cols, correlation_type) -> Dict[
+        Tuple[str, str], Tuple[str, float]]:
         """
         Internal function to calculate correlation among numerical features
 
@@ -176,7 +179,7 @@ class FeatureInterpreter:
                 correlations[(col_a, col_b)] = (correlation_type, corr[col_a][col_b])
         return correlations
 
-    def _get_text_correlation(self, df, text_cols, correlation_type)->Dict[Tuple[str,str],Tuple[str,float]]:
+    def _get_text_correlation(self, df, text_cols, correlation_type) -> Dict[Tuple[str, str], Tuple[str, float]]:
         """
         Internal function to calculate correlation among text features
 
@@ -192,7 +195,8 @@ class FeatureInterpreter:
         corr = dict()
         return corr
 
-    def _get_categorical_vs_numerical_correlation(self, df, categorical_cols, numerical_cols, correlation_type)->Dict[Tuple[str,str],Tuple[str,float]]:
+    def _get_categorical_vs_numerical_correlation(self, df, categorical_cols, numerical_cols, correlation_type) -> Dict[
+        Tuple[str, str], Tuple[str, float]]:
         """
         Internal function to calculate correlation between categorical feature and numerical feature
 
@@ -226,7 +230,8 @@ class FeatureInterpreter:
                 correlations[(numerical_col, categorical_col)] = correlations[(categorical_col, numerical_col)]
         return correlations
 
-    def get_feature_importance_ranking(self, trained_model, train_x: numpy.ndarray = None, method='default')->List[Tuple[str,float]]:
+    def get_feature_importance_ranking(self, trained_model, train_x: numpy.ndarray = None, method='default') -> List[
+        Tuple[str, float]]:
         """
         Get feature importance ranking
 
@@ -258,7 +263,7 @@ class FeatureInterpreter:
             if method == 'shap':
                 return self._get_ranking_by_shap(trained_model, train_x)
 
-    def _get_ranking_by_shap(self, trained_model, train_x)->List[Tuple[str,float]]:
+    def _get_ranking_by_shap(self, trained_model, train_x) -> List[Tuple[str, float]]:
         """
         Internal function to generate feature ranking using shap value
 
@@ -269,7 +274,25 @@ class FeatureInterpreter:
         Returns:
             A list of tuple (feature name, feature importance score) in descending order
         """
-        explainer = shap.TreeExplainer(trained_model)
+        enable_kernel_explainer = False
+        try:
+            explainer = shap.TreeExplainer(trained_model)
+        except Exception as e:
+            if 'Model type not yet supported by TreeExplainer' in str(e):
+                enable_kernel_explainer = True
+                warnings.warn(
+                    message='Warning: the current model type (%s) is not supported by TreeExplainer in shap. '\
+                            'Will call KernelExplainer and may take longer to generate the feature importance.' % type(
+                        trained_model))
+            else:
+                raise e
+        if enable_kernel_explainer:
+            predict_call = getattr(trained_model, "predict_proba", None)
+            if predict_call is None or not callable(predict_call):
+                raise Exception('Fail to initialize explainer as model does not have the function call <predict_proba>')
+            else:
+                explainer = shap.KernelExplainer(model=trained_model.predict_proba, data=train_x)
+
         shap_values = explainer.shap_values(train_x)
         sum_importance = numpy.zeros(len(self._feature_names))
 
