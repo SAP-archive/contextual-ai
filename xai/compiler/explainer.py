@@ -1,0 +1,164 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+""" Compiler - Explainer """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+from pathlib import Path
+
+import xai
+from xai.compiler.base import Dict2Obj
+from xai.explainer import ExplainerFactory
+from xai.formatter import Report
+
+
+################################################################################
+### Model-agnostic Explainer
+################################################################################
+class ModelAgnosticExplainer(Dict2Obj):
+    """
+    Compiler for Feature Importance Ranking
+
+    Param:
+        package (str, Optional): component package name
+        module (str, Optional): component module name
+        class (str): component class name
+
+    Attr:
+        predict_func (str): path to predict function call pickle
+        train_data (str): path to training sample data
+        feature_meta (str): path to a meta json file
+        method: (str, Optional) interpreter method, default = 'lime'
+        num_features (integer, Optional): number of features to show in the explanation, default 10
+
+    Example:
+        "component": {
+            "package": "xai",
+            "module": "compiler",
+            "class": "ModelAgnosticExplainer",
+            "attr": {
+                "predict_func": "./sample_input/func.pkl",
+                "train_data": "./sample_input/feature.csv",
+                "feature_meta": "./sample_input/feature_meta.json",
+                "method": "lime"
+                "num_features": 10
+            }
+        }
+    """
+    schema = {
+        "type": "object",
+        "properties": {
+            "predict_func": {"type": "string"},
+            "train_data": {" type": "string"},
+            "feature_meta": {"type": "string"},
+            "domain": {
+                "enum": ["tabular", "text"]
+            },
+            "method": {
+                "enum": ["lime", "shap"],
+                "default": "lime"
+            },
+            "num_features": {
+                "type": "integer",
+                "default": 5
+            }
+        },
+        "required": ["predict_func", "train_data", "domain", "feature_meta"]
+    }
+
+    def __init__(self, dictionary):
+        """
+        Init
+
+        Args:
+            dictionary (dict): attribute to set
+        """
+        super(ModelAgnosticExplainer, self).__init__(dictionary,
+                                                     schema=self.schema)
+
+    def __call__(self, report: Report, level: int):
+        """
+        Execution
+
+        Args:
+            report (Report): report object
+            level (int): content level
+        """
+        super(ModelAgnosticExplainer, self).__call__(report=report,
+                                                     level=level)
+        # -- Load Parameters --
+        num_features = self.assert_attr(key='num_features', default=10)
+        method = self.assert_attr(key='method', default='lime')
+        domain = self.assert_attr(key='domain')
+
+        # -- Load Predict Function --
+        predict_fn_path = self.assert_attr(key='predict_func')
+        predict_fn = self.load_data(Path(predict_fn_path))
+
+        # -- Load Feature Meta--
+        fn_path = self.assert_attr(key='feature_meta', optional=True)
+        if not (fn_path is None):
+            feature_meta = self.load_data(Path(fn_path))
+
+        feature_names = list(feature_meta.values)
+
+        # -- Load Training Data --
+        data_path = self.assert_attr(key='train_data')
+        if not (data_path is None):
+            train_data = self.load_data(Path(data_path))
+            train_data = train_data.values
+
+        class_num = predict_fn(train_data[:2, :]).shape[1]
+
+        print(train_data.shape)
+        print(feature_names)
+        algorithm = xai.ALG.LIME
+        if method == 'shap':
+            algorithm = xai.ALG.SHAP
+
+        if domain == 'tabular':
+            _domain = xai.DOMAIN.TABULAR
+        elif domain == 'text':
+            _domain = xai.DOMAIN.TEXT
+        explainer_factory = ExplainerFactory.get_explainer(domain=_domain, algorithm=algorithm)
+        if algorithm == xai.ALG.LIME:
+            explainer_factory.build_explainer(
+                training_data=train_data,
+                mode=xai.MODE.CLASSIFICATION,
+                predict_fn=predict_fn,
+                column_names=feature_names
+            )
+        elif algorithm == xai.ALG.SHAP:
+            explainer_factory.build_explainer(
+                predict_fn=predict_fn,
+                data=train_data,
+                feature_names=feature_names
+            )
+
+        explainer_factory.save_explainer('explainer.pkl')
+
+        # -- Add Explainer Information in Report --
+        report.detail.add_paragraph('The local explainer is generated as `explainer.pkl`')
+
+        explainer_information = list()
+        explainer_information.append(('Domain', domain))
+        explainer_information.append(('Algorithm', algorithm))
+        explainer_information.append(('Training data shape', train_data.shape))
+        explainer_information.append(('Number of features in explanations', num_features))
+
+        report.detail.add_model_info_summary(model_info=explainer_information, notes='Explainer Configuration')
+        report.detail.add_header_level_3('Explanation Samples')
+
+        for i in range(3):
+            report.detail.add_paragraph_title('Example %s: ' % i)
+            explainations = explainer_factory.explain_instance(train_data[i, :], top_labels=class_num,
+                                                               num_features=num_features)
+            for key, value in explainations.items():
+                details = [(item['feature'], item['score']) for item in value['explanation']]
+                report.detail.add_model_info_summary(model_info=details,
+                                                     notes='Class %s - Confidence: %s' % (key, value['confidence']))

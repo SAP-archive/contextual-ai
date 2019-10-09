@@ -15,3 +15,4 @@ from .writer import (
     Pdf,
     Html
 )
+from .explainer import ModelAgnosticExplainer

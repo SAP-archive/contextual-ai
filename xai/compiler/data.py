@@ -57,8 +57,8 @@ class DataStatisticsAnalysis(Dict2Obj):
     schema = {
         "type": "object",
         "properties": {
-            "data": {" type": "string"},
-            "medatadata": {" type": "string"},
+            "data": {"type": "string"},
+            "metadata": {"type": "string"},
             "label": {"type": "string"},
             "threshold": {
                 "type": "number",
