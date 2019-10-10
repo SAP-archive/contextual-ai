@@ -8,7 +8,17 @@
       "desc": "This section provides the analysis Titanic dataset",
       "sections": [
         {
-          "title": "Default analysis with csv (without label and metadata)",
+          "title": "Default analysis with csv ONLY",
+          "component": {
+            "_comment": "refer to document section xxxx",
+            "class": "DataStatisticsAnalysis",
+            "attr": {
+              "data": "./sample_input/titanic/titanic.csv"
+            }
+          }
+        },
+        {
+          "title": "Default analysis with csv and metadata",
           "component": {
             "_comment": "refer to document section xxxx",
             "class": "DataStatisticsAnalysis",
@@ -19,7 +29,7 @@
           }
         },
         {
-          "title": "Default analysis with csv (without label and metadata)",
+          "title": "Default analysis with csv and label",
           "component": {
             "_comment": "refer to document section xxxx",
             "class": "DataStatisticsAnalysis",

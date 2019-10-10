@@ -9,13 +9,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import json
 from pathlib import Path
 
 import xai
-import json
-from xai.explainer.helper import parse_feature_meta_tabular
 from xai.compiler.base import Dict2Obj
 from xai.explainer import ExplainerFactory
+from xai.explainer.helper import parse_feature_meta_tabular
 from xai.formatter import Report
 
 

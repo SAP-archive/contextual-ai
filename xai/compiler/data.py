@@ -65,14 +65,6 @@ class DataStatisticsAnalysis(Dict2Obj):
                 "default": 0.3
             }
         },
-        "anyOf": [
-            {
-                "required": ["metadata"]
-            },
-            {
-                "required": ["label"]
-            }
-        ],
         "required": ["data"]
     }
 
@@ -106,29 +98,29 @@ class DataStatisticsAnalysis(Dict2Obj):
         metadata = None
         if not (metadata_path is None):
             metadata = self.load_data(Path(metadata_path))
+        # -- Get label --
+        label = self.assert_attr(key='label', optional=True)
 
         copy_data = deepcopy(data)
         if metadata is None:
-            # -- Label is Mandatory when no metadata provided --
-            label = self.assert_attr(key='label')
             # -- Get default data types --
             feature, valid_feature_names, valid_feature_types, metadata = \
                 DataUtil.get_column_types(data=copy_data, threshold=threshold,
                                           label=label)
         else:
-            # -- Label is Optional when metadata is provided --
-            in_label = self.assert_attr(key='label', optional=True)
             metadata = metadata.to_dict('dict')
             # -- Get valid/defined data types based on metadata --
             feature, valid_feature_names, valid_feature_types, \
-            sequence_features, label = DataUtil.get_valid_datatypes_from_meta(
+            sequence_features, label_from_metadata = \
+                DataUtil.get_valid_datatypes_from_meta(
                meta=metadata)
-            if not (in_label is None) and in_label != label:
+            if not (label is None) and label != label_from_metadata:
                 warnings.warn(
                     message='Warning: the label column name is different,'
                             'provided as [%s] in config '
                             'but found label as [%s] in metadata' % (
-                                in_label, label))
+                                label, label_from_metadata))
+            label = label_from_metadata
 
         # -- Cast Data to String --
         non_numeric_features = [name for name, _type in
