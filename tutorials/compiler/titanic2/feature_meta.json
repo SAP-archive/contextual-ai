@@ -1,0 +1,76 @@
+{
+  "class_names": [
+    "Not Survived",
+    "Survived"
+  ],
+  "feature_types": [
+    {
+      "name": "Pclass",
+      "type": "categorical",
+      "mapping": [
+        "NAN",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "name": "Sex",
+      "type": "categorical",
+      "mapping": [
+        "female",
+        "male"
+      ]
+    },
+    {
+      "name": "Age",
+      "type": "categorical",
+      "mapping": [
+        "below 16",
+        "between 16 and 32",
+        "between 32 and 48",
+        "between 48 and 64",
+        "older than 64"
+      ]
+    },
+    {
+      "name": "Fare",
+      "type": "categorical",
+      "mapping": [
+        "lower than 7.91",
+        "between 7.91 and 14.45",
+        "between 14.45 and 31",
+        "higher than 31"
+      ]
+    },
+    {
+      "name": "Embarked",
+      "type": "categorical",
+      "mapping": [
+        "S",
+        "C",
+        "Q"
+      ]
+    },
+    {
+      "name": "is_alone",
+      "type": "categorical",
+      "mapping": [
+        "No",
+        "Yes"
+      ]
+    },
+    {
+      "name": "title",
+      "type": "categorical",
+      "mapping": [
+        "Unknown",
+        "Mr",
+        "Miss",
+        "Mrs",
+        "Master",
+        "Rare"
+      ]
+    }
+  ]
+}
