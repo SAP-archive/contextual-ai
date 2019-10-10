@@ -38,6 +38,25 @@
       ]
     },
     {
+      "title": "Training Result",
+      "desc": "This section summarized the training performance",
+      "sections": [
+        {
+          "title": "Training Result",
+          "component": {
+            "package": "xai",
+            "module": "compiler",
+            "class": "ClassificationEvaluationResult",
+            "attr": {
+              "y_true_file": "y_true.csv",
+              "y_pred_file": "y_conf.csv",
+              "labels_file": "labels.json"
+            }
+          }
+        }
+      ]
+    },
+    {
       "title": "Model-Agnostic Explainer",
       "desc": "This section provides a model-agnostic explainer",
       "sections": [
@@ -48,14 +67,14 @@
             "module": "compiler",
             "class": "ModelAgnosticExplainer",
             "attr": {
-                "predict_func": "func.pkl",
-                "train_data": "train_data.csv",
-                "feature_meta": "feature_meta.json",
-                "method": "lime",
-                "domain": "tabular",
-                "num_features": 5
+              "predict_func": "func.pkl",
+              "train_data": "train_data.csv",
+              "feature_meta": "feature_meta.json",
+              "method": "lime",
+              "domain": "tabular",
+              "num_features": 5
             }
-        }
+          }
         }
       ]
     }

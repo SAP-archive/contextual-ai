@@ -37,7 +37,7 @@ class ResultCompiler:
             self.metric_list = [METRIC_ACCURACY, METRIC_PRECISION, METRIC_RECALL, METRIC_F1, METRIC_CM, METRIC_AUC]
         else:
             self.metric_list = metric_list
-        self.metric_scores = dict()
+        self.metric_scores_ = dict()
         self.conf = None
 
     def load_results_from_raw_labels(self, y_true: np.array, y_pred: np.array, conf=None):
@@ -68,21 +68,21 @@ class ResultCompiler:
             f_score = {'class': class_f_score, 'average': np.mean(_f_score)}
 
         if METRIC_PRECISION in self.metric_list:
-            self.metric_scores[METRIC_PRECISION] = precision
+            self.metric_scores_[METRIC_PRECISION] = precision
         if METRIC_RECALL in self.metric_list:
-            self.metric_scores[METRIC_RECALL] = recall
+            self.metric_scores_[METRIC_RECALL] = recall
         if METRIC_F1 in self.metric_list:
-            self.metric_scores[METRIC_F1] = f_score
+            self.metric_scores_[METRIC_F1] = f_score
         if METRIC_CM in self.metric_list:
-            self.metric_scores[METRIC_CM] = confusion_matrix(y_true=y_true, y_pred=y_pred)
+            self.metric_scores_[METRIC_CM] = confusion_matrix(y_true=y_true, y_pred=y_pred)
         if METRIC_ACCURACY in self.metric_list:
-            self.metric_scores[METRIC_ACCURACY] = accuracy_score(y_pred=y_pred, y_true=y_true)
+            self.metric_scores_[METRIC_ACCURACY] = accuracy_score(y_pred=y_pred, y_true=y_true)
 
         self.conf = conf
 
         if self.conf is not None:
             if 'roc' in self.metric_list:
-                self.metric_scores['roc'] = roc_auc_score(y_true=y_true, y_score=conf)
+                self.metric_scores_['roc'] = roc_auc_score(y_true=y_true, y_score=conf)
 
     def load_results_from_raw_prediction(self, y_true: np.array, y_prob: np.array):
         """
@@ -110,8 +110,8 @@ class ResultCompiler:
         """
         if len(self.labels) == 2:
             result = BinaryClassificationResult()
-            result.load_results_from_meta(evaluation_result={'test': self.metric_scores})
+            result.load_results_from_meta(evaluation_result={'test': self.metric_scores_})
         else:
             result = MultiClassificationResult()
-            result.load_results_from_meta(evaluation_result=self.metric_scores)
+            result.load_results_from_meta(evaluation_result=self.metric_scores_)
         return result

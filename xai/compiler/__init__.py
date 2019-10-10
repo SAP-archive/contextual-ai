@@ -16,3 +16,4 @@ from .writer import (
     Html
 )
 from .explainer import ModelAgnosticExplainer
+from .evaluation import ClassificationEvaluationResult
