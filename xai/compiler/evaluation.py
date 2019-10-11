@@ -123,32 +123,34 @@ class ClassificationEvaluationResult(Dict2Obj):
         else:
             result_complier.load_results_from_raw_prediction(y_true=y_true, y_prob=y_conf)
 
-        result_pkg = {'gt': y_true, 'probability': y_conf}
-
         if len(labels) <= 2:
             report.detail.add_header_level_2('Metric Scores')
-            report.detail.add_binary_class_evaluation_metric_results([('Testing', result_complier.metric_scores_)])
+            report.detail.add_binary_class_evaluation_metric_results(('Testing', result_complier.metric_scores_))
 
             report.detail.add_header_level_2('Confusion Matrix')
-            report.detail.add_confusion_matrix_results(
-                [('', {'labels': labels, 'values': result_complier.metric_scores_[METRIC_CM]})])
+            report.detail.add_confusion_matrix_results(('', result_complier.metric_scores_[METRIC_CM]))
+
+            result_pkg = {'gt': y_true, 'probability': y_conf}
 
             report.detail.add_header_level_2('Confidence Distribution')
-            report.detail.add_binary_class_confidence_distribution([('Testing', result_pkg)])
+            report.detail.add_binary_class_confidence_distribution(('Testing', result_pkg))
 
             report.detail.add_header_level_2('Reliability Diagram')
-            report.detail.add_binary_class_reliability_diagram([('Testing', result_pkg)])
+            report.detail.add_binary_class_reliability_diagram(('Testing', result_pkg))
 
         else:
             report.detail.add_header_level_2('Metric Scores')
-            report.detail.add_multi_class_evaluation_metric_results([('Testing', result_complier.metric_scores_)])
+
+            report.detail.add_multi_class_evaluation_metric_results(('Testing', result_complier.metric_scores_))
 
             report.detail.add_header_level_2('Confusion Matrix')
-            report.detail.add_confusion_matrix_results(
-                [('', {'labels': labels, 'values': result_complier.metric_scores_[METRIC_CM]})])
+            report.detail.add_confusion_matrix_results(('', result_complier.metric_scores_[METRIC_CM]))
+            result_pkg = dict()
+            if y_conf is not None:
+                for idx, label in enumerate(labels):
+                    result_pkg[label] = dict()
+                    result_pkg[label]['probability'] = y_conf[y_pred == idx, idx]
+                    result_pkg[label]['gt'] = y_true[y_pred == idx]
 
-            report.detail.add_header_level_2('Confidence Distribution')
-            report.detail.add_multi_class_confidence_distribution([('Testing', result_pkg)])
-
-            report.detail.add_header_level_2('Reliability Diagram')
-            report.detail.add_multi_class_reliability_diagram([('Testing', result_pkg)])
+                report.detail.add_header_level_2('Confidence Distribution')
+                report.detail.add_multi_class_confidence_distribution(('Testing', result_pkg))

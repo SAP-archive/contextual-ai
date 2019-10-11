@@ -115,8 +115,8 @@ class ModelAgnosticExplainer(Dict2Obj):
         # -- Load Training Data --
         data_path = self.assert_attr(key='train_data')
         if not (data_path is None):
-            train_data = self.load_data(Path(data_path))
-            train_data = train_data.values
+            train_data = self.load_data(Path(data_path),header=True)
+            train_data = train_data.as_matrix()
 
         kwargs = dict()
 
@@ -156,7 +156,7 @@ class ModelAgnosticExplainer(Dict2Obj):
         explainer_information.append(('Domain', domain))
         explainer_information.append(('Algorithm', algorithm))
         explainer_information.append(('Training data shape', train_data.shape))
-        explainer_information.append(('Number of features in explanations', num_features))
+        explainer_information.append(('Number of features in explanations', min(num_features,train_data.shape[1])))
 
         report.detail.add_model_info_summary(model_info=explainer_information, notes='Explainer Configuration')
         report.detail.add_header_level_3('Explanation Samples')

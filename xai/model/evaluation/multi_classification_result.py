@@ -36,12 +36,15 @@ class MultiClassificationResult(ClassificationResult):
                 self.confusion_matrices = ConfusionMatrix(label=values['labels'],
                                                           confusion_matrix=values['values'])
             else:
-                if 'class' in values:
-                    class_values = values['class']
-                    for class_label, class_value in class_values.items():
-                        self.update_result(metric, class_label, class_value)
-                if 'average' in values:
-                    self.average_result_dict[metric] = values['average']
+                if type(values) != dict:
+                    continue
+                else:
+                    if 'class' in values.keys():
+                        class_values = values['class']
+                        for class_label, class_value in class_values.items():
+                            self.update_result(metric, class_label, class_value)
+                    if 'average' in values.keys():
+                        self.average_result_dict[metric] = values['average']
 
     def convert_metrics_to_table(self, label_as_row=True):
         """
@@ -81,13 +84,17 @@ class MultiClassificationResult(ClassificationResult):
         if table_header[0] == 'Label':
             row = ['Average']
             row.extend(
-                ["{:.4f}".format(self.average_result_dict[metric]) for metric in self.metric_set])
+                ["{:.4f}".format(self.average_result_dict[metric]) if type(self.average_result_dict[metric]) != str else
+                 self.average_result_dict[metric] for metric in self.metric_set])
             table_content.append(row)
         elif table_header[0] == 'Metric':
             table_header.append('Average')
             for row in table_content:
                 metric = row[0]
-                row.append("{:.4f}".format(self.average_result_dict[metric]))
+                if type(self.average_result_dict[metric]) != str:
+                    row.append("{:.4f}".format(self.average_result_dict[metric]))
+                else:
+                    row.append(self.average_result_dict[metric])
         layout = get_table_layout(table_header)
         table = ("Metric Result", table_header, table_content, layout)
 

@@ -50,10 +50,16 @@ class ResultCompiler:
             conf: numpy array, confidence scores of predicted labels
 
         """
+        accuracy = accuracy_score(y_pred=y_pred, y_true=y_true)
+        auc = None
+        self.conf = conf
+
         if len(self.labels) == 2:
             precision, recall, f_score, true_sum = precision_recall_fscore_support(y_true=y_true,
                                                                                    y_pred=y_pred,
                                                                                    labels=[1])
+            if self.conf is not None:
+                auc = roc_auc_score(y_true=y_true, y_score=conf)
         else:
             _precision, _recall, _f_score, _ = precision_recall_fscore_support(y_true=y_true,
                                                                                y_pred=y_pred,
@@ -67,22 +73,25 @@ class ResultCompiler:
             class_f_score = {key: value for key, value in list(zip(self.labels, _f_score.tolist()))}
             f_score = {'class': class_f_score, 'average': np.mean(_f_score)}
 
+            class_accuracy = {key: '-' for key in self.labels}
+            accuracy = {'class': class_accuracy, 'average': accuracy}
+
+            class_auc = {key: '-' for key in self.labels}
+            auc = {'class': class_auc, 'average': 'N.A.'}
+
         if METRIC_PRECISION in self.metric_list:
             self.metric_scores_[METRIC_PRECISION] = precision
         if METRIC_RECALL in self.metric_list:
             self.metric_scores_[METRIC_RECALL] = recall
         if METRIC_F1 in self.metric_list:
             self.metric_scores_[METRIC_F1] = f_score
-        if METRIC_CM in self.metric_list:
-            self.metric_scores_[METRIC_CM] = confusion_matrix(y_true=y_true, y_pred=y_pred)
         if METRIC_ACCURACY in self.metric_list:
-            self.metric_scores_[METRIC_ACCURACY] = accuracy_score(y_pred=y_pred, y_true=y_true)
-
-        self.conf = conf
-
-        if self.conf is not None:
-            if 'roc' in self.metric_list:
-                self.metric_scores_['roc'] = roc_auc_score(y_true=y_true, y_score=conf)
+            self.metric_scores_[METRIC_ACCURACY] = accuracy
+        if METRIC_CM in self.metric_list:
+            self.metric_scores_[METRIC_CM] = {'labels': self.labels,
+                                              'values': confusion_matrix(y_true=y_true, y_pred=y_pred)}
+        if METRIC_AUC in self.metric_list:
+            self.metric_scores_[METRIC_AUC] = auc
 
     def load_results_from_raw_prediction(self, y_true: np.array, y_prob: np.array):
         """

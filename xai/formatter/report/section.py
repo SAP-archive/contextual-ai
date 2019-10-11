@@ -456,7 +456,7 @@ class Section:
         self.contents.append(MultiClassEvaluationMetricResult(
             metric_tuple=metric_tuple, notes=notes))
 
-    def add_binary_class_evaluation_metric_results(self, metric_tuple: tuple,
+    def add_binary_class_evaluation_metric_results(self, *metric_tuple: tuple,
                                                    aggregated=True,
                                                    notes=None):
         """
@@ -477,7 +477,7 @@ class Section:
         self.contents.append(BinaryClassEvaluationMetricResult(
             metric_tuple=metric_tuple, aggregated=aggregated, notes=notes))
 
-    def add_confusion_matrix_results(self, confusion_matrix_tuple: tuple,
+    def add_confusion_matrix_results(self, *confusion_matrix_tuple: tuple,
                                      notes=None):
         """
         Add information about confusion matrix to report
@@ -497,7 +497,7 @@ class Section:
             confusion_matrix_tuple=confusion_matrix_tuple, notes=notes))
 
     def add_multi_class_confidence_distribution(self,
-                                                visual_result_tuple: tuple,
+                                                *visual_result_tuple: tuple,
                                                 max_num_classes=9,
                                                 notes=None):
         """
@@ -521,7 +521,7 @@ class Section:
             max_num_classes=max_num_classes, notes=notes))
 
     def add_binary_class_confidence_distribution(self,
-                                                 visual_result_tuple: tuple,
+                                                 *visual_result_tuple: tuple,
                                                  notes=None):
         """
         add information about binary class confidence distribution to report
@@ -541,7 +541,7 @@ class Section:
             visual_result_tuple=visual_result_tuple, notes=notes))
 
     def add_binary_class_reliability_diagram(self,
-                                             visual_result_tuple: tuple,
+                                             *visual_result_tuple: tuple,
                                              notes=None):
         """
         add information about reliability to report

@@ -1041,7 +1041,7 @@ class PdfWriter(Writer):
 
         Args:
             notes(str): Explain the block
-            confusion_matrix_tuple(tuple): (confusion_matrix_header, confusion_matrix_dict)
+            *confusion_matrix_tuple(tuple): (confusion_matrix_header, confusion_matrix_dict)
                 - confusion_matrix_header(str): a header for confusion_matrix,
                                                 can be split or round number.
                 - confusion_matrix_dict(dict):
@@ -1107,12 +1107,13 @@ class PdfWriter(Writer):
         self.pdf.add_new_line(notes)
 
         top_classes = list()
+
         for eval_name, eval_vis_result in visual_result_tuple:
             predicted_class_count = dict()
             label = ''
             for label in eval_vis_result.keys():
                 data = eval_vis_result[label]
-                num_sample = len(data['gt'])
+                num_sample = data['gt'].shape[0]
                 predicted_class_count[label] = num_sample
 
                 sorted_class_size = sorted(predicted_class_count.items(),
