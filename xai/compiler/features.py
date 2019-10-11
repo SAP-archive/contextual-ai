@@ -96,14 +96,14 @@ class FeatureImportanceRanking(Dict2Obj):
         header = True
         fn_path = self.assert_attr(key='feature_names', optional=True)
         feature_names = None
-        if not (fn_path is None):
+        if fn_path is not None:
             feature_names = self.load_data(Path(fn_path))
             header = False
         # -- Load Training Data for default method --
         data_path = self.assert_attr(key='train_data',
                                      optional=(method=='default'))
         train_data = None
-        if not (data_path is None):
+        if data_path is not None:
             train_data = self.load_data(Path(data_path), header=header)
             if  header:
                 feature_names = train_data.columns

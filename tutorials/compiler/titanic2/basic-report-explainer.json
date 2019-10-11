@@ -4,40 +4,6 @@
   "content_table": true,
   "contents": [
     {
-      "title": "Feature Importance Analysis",
-      "desc": "This section provides the analysis on feature",
-      "sections": [
-        {
-          "title": "Feature Importance Ranking",
-          "component": {
-            "_comment": "refer to document section xxxx",
-            "class": "FeatureImportanceRanking",
-            "attr": {
-              "trained_model": "model.pkl",
-              "train_data": "train_data.csv"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "title": "Data Statistics Analysis",
-      "desc": "This section provides the analysis on data",
-      "sections": [
-        {
-          "title": "Simple Data Statistic",
-          "component": {
-            "_comment": "refer to document section xxxx",
-            "class": "DataStatisticsAnalysis",
-            "attr": {
-              "data": "titanic.csv",
-              "label": "Survived"
-            }
-          }
-        }
-      ]
-    },
-    {
       "title": "Training Result",
       "desc": "This section summarized the training performance",
       "sections": [
@@ -51,6 +17,23 @@
               "y_true_file": "y_true.csv",
               "y_pred_file": "y_conf.csv",
               "labels_file": "labels.json"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Feature Importance Analysis",
+      "desc": "This section provides the analysis on feature",
+      "sections": [
+        {
+          "title": "Feature Importance Ranking",
+          "component": {
+            "_comment": "refer to document section xxxx",
+            "class": "FeatureImportanceRanking",
+            "attr": {
+              "trained_model": "model.pkl",
+              "train_data": "train_data.csv"
             }
           }
         }
@@ -73,6 +56,23 @@
               "method": "lime",
               "domain": "tabular",
               "num_features": 5
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Data Statistics Analysis",
+      "desc": "This section provides the analysis on data",
+      "sections": [
+        {
+          "title": "Simple Data Statistic",
+          "component": {
+            "_comment": "refer to document section xxxx",
+            "class": "DataStatisticsAnalysis",
+            "attr": {
+              "data": "titanic.csv",
+              "label": "Survived"
             }
           }
         }

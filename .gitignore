@@ -27,6 +27,9 @@ tutorials/compiler/titanic2/gender_submission.csv
 tutorials/compiler/titanic/model.pkl
 tutorials/compiler/titanic2/train_data.csv
 tutorials/compiler/titanic2/*.pkl
+tutorials/compiler/titanic2/result.csv
+tutorials/compiler/titanic2/y_conf.csv
+tutorials/compiler/titanic2/y_true.csv
 
 tutorials/compiler/automobile/model.pkl
 tutorials/compiler/automobile/train_data.csv

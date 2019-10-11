@@ -11,6 +11,7 @@ from __future__ import print_function
 
 from pathlib import Path
 import warnings
+from jsonschema import validate
 
 from copy import deepcopy
 from xai.compiler.base import Dict2Obj
@@ -68,6 +69,37 @@ class DataStatisticsAnalysis(Dict2Obj):
         "required": ["data"]
     }
 
+    # -- Json Schema for metadata --
+    metadata_schema = {
+        "definitions": {
+            "item": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": ["categorical",
+                                 "numerical",
+                                 "text",
+                                 "datetime",
+                                 "label",
+                                 "key"]
+                    },
+                    "used": {"type": "boolean"},
+                    "structured": {
+                        "type": "string",
+                        "enum": ["attribute",
+                                 "sequence"]
+                    }
+                }
+            }
+        },
+
+        "type": "object",
+        "patternProperties": {
+            "^[a-zA-Z0-9_]*$": {"$ref": "#/definitions/item"}
+        }
+    }
+
     def __init__(self, dictionary):
         """
         Init
@@ -96,8 +128,10 @@ class DataStatisticsAnalysis(Dict2Obj):
         # -- Load Metadata --
         metadata_path = self.assert_attr(key='metadata', optional=True)
         metadata = None
-        if not (metadata_path is None):
+        if metadata_path is not None:
             metadata = self.load_data(Path(metadata_path))
+            metadata = metadata.to_dict('dict')
+            validate(instance=metadata, schema=self.metadata_schema)
         # -- Get label --
         label = self.assert_attr(key='label', optional=True)
 
@@ -108,13 +142,12 @@ class DataStatisticsAnalysis(Dict2Obj):
                 DataUtil.get_column_types(data=copy_data, threshold=threshold,
                                           label=label)
         else:
-            metadata = metadata.to_dict('dict')
             # -- Get valid/defined data types based on metadata --
             feature, valid_feature_names, valid_feature_types, \
             sequence_features, label_from_metadata = \
                 DataUtil.get_valid_datatypes_from_meta(
                meta=metadata)
-            if not (label is None) and label != label_from_metadata:
+            if label is not None and label != label_from_metadata:
                 warnings.warn(
                     message='Warning: the label column name is different,'
                             'provided as [%s] in config '
@@ -126,13 +159,13 @@ class DataStatisticsAnalysis(Dict2Obj):
         non_numeric_features = [name for name, _type in
                         list(zip(valid_feature_names, valid_feature_types))
                                 if _type != DATATYPE.NUMBER]
-        if not (label is None):
+        if label is not None:
             non_numeric_features += [label]
         DataUtil.cast_type_to_string(data=copy_data,
                                      feature_names=non_numeric_features)
 
         # -- Add Data Label Distribution --
-        if not (label is None):
+        if label is not None:
             self.add_header(text='Data Class (Label) Distribution')
             label_distributions = DataUtil.get_label_distribution(data=copy_data,
                                                                   label=label)
@@ -144,7 +177,7 @@ class DataStatisticsAnalysis(Dict2Obj):
                                              label=label)
 
         # -- Add Data Field Attribute --
-        if not (metadata is None):
+        if metadata is not None:
             self.add_header(text='Data Field Attribute')
             report.detail.add_data_attributes(metadata)
 
