@@ -1,4 +1,4 @@
-FROM python:3.7.2
+FROM python:3.6
 
 RUN groupadd xai && useradd -ms /bin/bash -g xai xai
 USER xai
@@ -9,4 +9,4 @@ ENV PYTHONPATH=/home/xai
 
 COPY --chown=xai:xai . ./
 
-RUN pip install --trusted-host nexus.wdf.sap.corp --extra-index-url http://nexus.wdf.sap.corp:8081/nexus/content/groups/build.releases.pypi/simple --user -r test_requirements.txt
+RUN pip install --trusted-host nexus.wdf.sap.corp --extra-index-url http://nexus.wdf.sap.corp:8081/nexus/content/groups/build.releases.pypi/simple --user -r tests/test_requirements.txt
