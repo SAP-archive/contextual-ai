@@ -5,18 +5,23 @@
 # ============================================================================
 """  Basic Json Generator """
 
+
 import sys
 sys.path.append('../')
 
 import unittest
 from xai.compiler import Configuration, Controller, Constant
+from tests.compiler.util import prepare_template, remove_temp
 
 
 class TestReportBasicSkeleton(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.basic_json = 'sample_template/basic-skeleton.json'
-        self.basic_yaml = 'sample_template/basic-skeleton.yml'
+        self.basic_json = prepare_template(filename='basic-skeleton.json')
+        self.basic_yaml = prepare_template(filename='basic-skeleton.yml')
+
+    def tearDown(self) -> None:
+        remove_temp()
 
     def test_json_load_init(self):
         conf = Configuration(config=self.basic_json)

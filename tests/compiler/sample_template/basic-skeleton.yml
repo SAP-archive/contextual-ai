@@ -32,8 +32,8 @@ writers:
   - class: Pdf
     attr:
       name: basic-yaml-report
-      path: ./sample_output
+      path: {out_path}
   - class: Html
     attr:
       name: basic-yaml-report
-      path: ./sample_output
+      path: {out_path}

@@ -56,14 +56,14 @@
       "class": "Pdf",
       "attr": {
         "name": "basic-json-report",
-        "path": "./sample_output"
+        "path": "{out_path}"
       }
     },
     {
       "class": "Html",
       "attr": {
         "name": "basic-json-report",
-        "path": "./sample_output"
+        "path": "{out_path}"
       }
     }
   ]

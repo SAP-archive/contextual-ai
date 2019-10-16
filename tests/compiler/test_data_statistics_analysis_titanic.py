@@ -10,12 +10,17 @@ sys.path.append('../')
 
 import unittest
 from xai.compiler import Configuration, Controller
+from tests.compiler.util import prepare_template, remove_temp
 
 
 class TestDataStatisticsAnalysisTitanic(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.json = 'sample_template/data-statistics-analysis_titanic.json'
+        self.json = prepare_template(
+            filename='data-statistics-analysis_titanic.json')
+
+    def tearDown(self) -> None:
+        remove_temp()
 
     def test_json_generate_report(self):
         controller = Controller(config=Configuration(self.json))

@@ -13,7 +13,7 @@
             "_comment": "refer to document section xxxx",
             "class": "DataStatisticsAnalysis",
             "attr": {
-              "data": "./sample_input/stata_auto/auto.dta"
+              "data": "{in_path}/stata_auto/auto.dta"
             }
           }
         }
@@ -25,7 +25,7 @@
       "class": "Pdf",
       "attr": {
         "name": "data-stats-analysis-stat-auto-report",
-        "path": "./sample_output"
+        "path": "{out_path}"
       }
     }
   ]
