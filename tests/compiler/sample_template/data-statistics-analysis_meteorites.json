@@ -13,7 +13,7 @@
             "_comment": "refer to document section xxxx",
             "class": "DataStatisticsAnalysis",
             "attr": {
-              "data": "./sample_input/meteorites/meteorites.csv"
+              "data": "{in_path}/meteorites/meteorites.csv"
             }
           }
         }
@@ -25,7 +25,7 @@
       "class": "Pdf",
       "attr": {
         "name": "data-stats-analysis-meteorites-report",
-        "path": "./sample_output"
+        "path": "{out_path}"
       }
     }
   ]

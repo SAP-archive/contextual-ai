@@ -17,7 +17,7 @@
                 "_comment": "refer to document section xxxx",
                 "class": "DataStatisticsAnalysis",
                 "attr": {
-                  "data": "./sample_input/titanic/titanic.csv"
+                  "data": "{in_path}/titanic/titanic.csv"
                 }
               }
             },
@@ -27,7 +27,7 @@
                 "_comment": "refer to document section xxxx",
                 "class": "DataStatisticsAnalysis",
                 "attr": {
-                  "data": "./sample_input/titanic/titanic.csv",
+                  "data": "{in_path}/titanic/titanic.csv",
                   "label": "Survived"
                 }
               }
@@ -44,7 +44,7 @@
                 "_comment": "refer to document section xxxx",
                 "class": "DataStatisticsAnalysis",
                 "attr": {
-                  "data": "./sample_input/census/census.csv"
+                  "data": "{in_path}/census/census.csv"
                 }
               }
             }
@@ -60,7 +60,7 @@
                 "_comment": "refer to document section xxxx",
                 "class": "DataStatisticsAnalysis",
                 "attr": {
-                  "data": "./sample_input/website/data.csv"
+                  "data": "{in_path}/website/data.csv"
                 }
               }
             }
@@ -74,14 +74,14 @@
       "class": "Pdf",
       "attr": {
         "name": "data-stats-analysis-json-report",
-        "path": "./sample_output"
+        "path": "{out_path}"
       }
     },
     {
       "class": "Html",
       "attr": {
         "name": "data-stats-analysis-json-report",
-        "path": "./sample_output"
+        "path": "{out_path}"
       }
     }
   ]

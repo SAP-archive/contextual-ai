@@ -10,13 +10,17 @@ sys.path.append('../')
 
 import unittest
 from xai.compiler import Configuration, Controller
+from tests.compiler.util import prepare_template, remove_temp
 
 
 class TestFeatureImportanceRanking(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.json = 'sample_template/feature-importance-ranking.json'
-        self.yaml = 'sample_template/feature-importance-ranking.yml'
+        self.json = prepare_template(filename='feature-importance-ranking.json')
+        self.yaml = prepare_template(filename='feature-importance-ranking.yml')
+
+    def tearDown(self) -> None:
+        remove_temp()
 
     def test_json_generate_report(self):
         controller = Controller(config=Configuration(self.json))

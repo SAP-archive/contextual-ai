@@ -13,14 +13,14 @@ contents:
               _comment: refer to document section xxxx1
               class: DataStatisticsAnalysis
               attr:
-                data: ./sample_input/titanic/titanic.csv
+                data: {in_path}/titanic/titanic.csv
 
           - title: Default analysis with csv and label (without metadata)
             component:
               _comment: refer to document section xxxx
               class: DataStatisticsAnalysis
               attr:
-                data: ./sample_input/titanic/titanic.csv
+                data: {in_path}/titanic/titanic.csv
                 label: Survived
 
       - title: Data Statistics Analysis with census data-set
@@ -31,7 +31,7 @@ contents:
               _comment: refer to document section xxxx1
               class: DataStatisticsAnalysis
               attr:
-                data: ./sample_input/census/census.csv
+                data: {in_path}/census/census.csv
 
       - title: Data Statistics Analysis with website data-set
         desc: Website Inaccessibility data in csv
@@ -41,14 +41,14 @@ contents:
               _comment: refer to document section xxxx1
               class: DataStatisticsAnalysis
               attr:
-                data: ./sample_input/website/data.csv
+                data: {in_path}/website/data.csv
 
 writers:
   - class: Pdf
     attr:
       name: data-stats-analysis-yml-report
-      path: ./sample_output
+      path: {out_path}
   - class: Html
     attr:
       name: data-stats-analysis-yml-report
-      path: ./sample_output
+      path: {out_path}

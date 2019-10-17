@@ -13,7 +13,7 @@
             "_comment": "refer to document section xxxx",
             "class": "DataStatisticsAnalysis",
             "attr": {
-              "data": "./sample_input/nza/nza.csv"
+              "data": "{in_path}/nza/nza.csv"
             }
           }
         }
@@ -25,7 +25,7 @@
       "class": "Pdf",
       "attr": {
         "name": "data-stats-analysis-nza-report",
-        "path": "./sample_output"
+        "path": "{out_path}"
       }
     }
   ]

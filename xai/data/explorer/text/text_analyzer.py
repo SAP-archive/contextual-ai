@@ -1,8 +1,15 @@
+#!/usr/bin/python
+#
+# -- coding: utf-8 --
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
+import math
 from collections import Counter
 from collections import defaultdict
 
-import math
 import re
+
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from typing import Callable, Optional, Dict, List, Set

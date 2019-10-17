@@ -13,24 +13,24 @@ contents:
               _comment: refer to document section xxxx1
               class: FeatureImportanceRanking
               attr:
-                trained_model: ./sample_input/breast_cancer/model.pkl
-                train_data: ./sample_input/breast_cancer/train_data.csv
+                trained_model: {in_path}/breast_cancer/model.pkl
+                train_data: {in_path}/breast_cancer/train_data.csv
                 method: shap
           - title: Default analysis with csv (with header)
             component:
               _comment: refer to document section xxxx
               class: FeatureImportanceRanking
               attr:
-                trained_model: ./sample_input/breast_cancer/model.pkl
-                train_data: ./sample_input/breast_cancer/train_data.csv
+                trained_model: {in_path}/breast_cancer/model.pkl
+                train_data: {in_path}/breast_cancer/train_data.csv
           - title: SHAP analysis with numpy input file
             component:
               _comment: refer to document section xxxx2
               class: FeatureImportanceRanking
               attr:
-                trained_model: ./sample_input/breast_cancer/model.pkl
-                train_data: ./sample_input/breast_cancer/train_data.npy
-                feature_names: ./sample_input/breast_cancer/feature_names.npy
+                trained_model: {in_path}/breast_cancer/model.pkl
+                train_data: {in_path}/breast_cancer/train_data.npy
+                feature_names: {in_path}/breast_cancer/feature_names.npy
                 method: shap
       - title: Feature Importance Analysis with Titanic data-set
         desc: Model and train data from Titanic
@@ -40,14 +40,14 @@ contents:
               _comment: refer to document section xxxx
               class: FeatureImportanceRanking
               attr:
-                trained_model: ./sample_input/titanic/model.pkl
-                train_data: ./sample_input/titanic/train_data.csv
+                trained_model: {in_path}/titanic/model.pkl
+                train_data: {in_path}/titanic/train_data.csv
 writers:
   - class: Pdf
     attr:
       name: feature-importance-yml-report
-      path: ./sample_output
+      path: {out_path}
   - class: Html
     attr:
       name: feature-importance-yml-report
-      path: ./sample_output
+      path: {out_path}
