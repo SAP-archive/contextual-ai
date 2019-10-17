@@ -370,30 +370,31 @@ class PdfWriter(Writer):
                                     'missing_value_count'] / \
                                 data_dict[feature_name]['total_count']
             if len(total_count) > 0:
-                table_header = ['Feature', 'Missing Value Count',
+                table_header = ['Feature', 'Count',
                                 'Percentage']
                 table_data = []
                 for field_name, field_data in data_dict.items():
                     table_data.append(
-                        [field_name, "%s / %s" % (
+                        [field_name if len(field_name) < 45 else "%s_~" % (field_name[:45]), "%s / %s" % (
                             field_data['missing_value_count'],
                             field_data['total_count']),
                          "%.2f%%" % field_data['percentage']])
-                col_width = [70, 50, 50]
+                col_width = [130, 25, 25]
             else:
                 if ratio:
-                    table_header = ['Feature', 'Missing Value Percentage']
+                    table_header = ['Feature', 'Percentage']
                     table_data = []
                     for field_name, field_data in data_dict.items():
                         table_data.append(
                             [field_name, field_data['percentage']])
                 else:
-                    table_header = ['Feature', 'Missing Value Count']
+                    table_header = ['Feature', 'Count']
                     table_data = []
                     for field_name, field_data in data_dict.items():
                         table_data.append(
-                            [field_name, field_data['missing_value_count']])
-                col_width = [80, 70]
+                            [field_name if len(field_name) < 55 else "%s_~" % (field_name[:55]),
+                             field_data['missing_value_count']])
+                col_width = [155, 25]
 
             return table_header, table_data, col_width
 
@@ -472,7 +473,7 @@ class PdfWriter(Writer):
 
             table_data = []
             for field_name, field_attributes in data_attribute.items():
-                row = [field_name]
+                row = [field_name if len(field_name) < 40 else "%s_~" % (field_name[:40])]
                 for attribute_name in attribute_list:
                     if attribute_name in field_attributes.keys():
                         row.append(field_attributes[attribute_name])
@@ -485,7 +486,9 @@ class PdfWriter(Writer):
         # -- Draw Content --
         self.pdf.add_new_line(notes)
         _table_header, _table_data = get_data_attributes()
-        self.pdf.add_table(_table_header, _table_data)
+        col_width = [180 - 22 * (len(_table_header) - 1)] + [22] * (len(_table_header) - 1)
+
+        self.pdf.add_table(_table_header, _table_data, col_width=col_width)
         self.pdf.add_new_line()
 
     def draw_categorical_field_distribution(self, notes: str, *,
@@ -745,7 +748,9 @@ class PdfWriter(Writer):
         for feature_name, importance in importance_ranking:
             if float(importance) < importance_threshold:
                 break
-            table_data.append([feature_name, round(importance, 10)])
+            table_data.append(
+                [feature_name if len(feature_name) < 50 else "%s_~" % feature_name[:50], round(importance, 10)])
+            #
 
         self.pdf.add_table(header=table_header, data=table_data,
                            col_width=[140, 30])
@@ -1102,7 +1107,7 @@ class PdfWriter(Writer):
         """
         import operator
         from xai.graphs import graph_generator
-        from xai.graphs.format_contants import ABSOLUTE_3_EQUAL_GRID_SPEC
+        from xai.graphs.format_contants import ABSOLUTE_2_EQUAL_GRID_SPEC
         # -- Draw Content --
         self.pdf.add_new_line(notes)
 
@@ -1129,12 +1134,12 @@ class PdfWriter(Writer):
                         self.figure_path, label, class_label)
                     sw_image_path = graph_generator.ResultProbabilityForMultiClass(
                         image_path, data,
-                        'Predicted as %s' % label).draw()
+                        'Predicted as %s' % class_label).draw()
                     image_path_list.append(sw_image_path)
                 if len(image_path_list) >= max_num_classes:
                     break
             self.pdf.add_list_of_grid_images(image_set=image_path_list,
-                                             grid_spec=ABSOLUTE_3_EQUAL_GRID_SPEC)
+                                             grid_spec=ABSOLUTE_2_EQUAL_GRID_SPEC)
         self.pdf.ln(5)
 
     def draw_binary_class_confidence_distribution(self, notes: str, *,
