@@ -1,3 +1,9 @@
+#!/usr/bin/python
+#
+# -*- coding: utf-8 -*-
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
 from typing import Dict, Optional, Tuple
 
 from xai.data.abstract_stats import AbstractStats
