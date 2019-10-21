@@ -7,7 +7,9 @@
 * [NASA Meteorites (comprehensive set of meteorite landings)](https://data.nasa.gov/api/views/gh4g-9sfh/rows.csv?accessType=DOWNLOAD)
 * [Census Income (US Adult Census data relating income)](https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data)
 
-
+All dataset mentioned above can be found in the respective directory, please 
+note that these dataset is pre-downloaded and pre-processed. You may find 
+these pre-steps in the `build-sample.py`, to reproduce the same result.
 
 
 
