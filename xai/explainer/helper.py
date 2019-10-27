@@ -1,4 +1,13 @@
-def parse_feature_meta_tabular(metadata: dict):
+#!/usr/bin/python
+#
+# -*- coding: utf-8 -*-
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
+from typing import Tuple
+
+
+def parse_feature_meta_tabular(metadata: dict) -> Tuple[list, list, dict]:
     """
     parse feature meta data for tabular
     Args:
