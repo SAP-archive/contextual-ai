@@ -1,0 +1,54 @@
+name: Report for Data Statistics Analysis
+overview: true
+content_table: true
+contents: 
+  - title: Data Statistics Analysis
+    desc: This section provides the analysis on data
+    sections: 
+      - title: Data Statistics Analysis with Titanic data-set
+        desc: Titanic Dataset
+        sections: 
+          - title: Default analysis with csv (without label and metadata)
+            component:
+              _comment: refer to document section xxxx1
+              class: DataStatisticsAnalysis
+              attr:
+                data: {in_path}/titanic/titanic.csv
+
+          - title: Default analysis with csv and label (without metadata)
+            component:
+              _comment: refer to document section xxxx
+              class: DataStatisticsAnalysis
+              attr:
+                data: {in_path}/titanic/titanic.csv
+                label: Survived
+
+      - title: Data Statistics Analysis with census data-set
+        desc: census data in csv
+        sections:
+          - title: Default analysis with csv (without label and metadata)
+            component:
+              _comment: refer to document section xxxx1
+              class: DataStatisticsAnalysis
+              attr:
+                data: {in_path}/census/census.csv
+
+      - title: Data Statistics Analysis with website data-set
+        desc: Website Inaccessibility data in csv
+        sections:
+          - title: Default analysis with csv (without label and metadata)
+            component:
+              _comment: refer to document section xxxx1
+              class: DataStatisticsAnalysis
+              attr:
+                data: {in_path}/website/data.csv
+
+writers:
+  - class: Pdf
+    attr:
+      name: data-stats-analysis-yml-report
+      path: {out_path}
+  - class: Html
+    attr:
+      name: data-stats-analysis-yml-report
+      path: {out_path}

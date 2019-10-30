@@ -10,9 +10,10 @@ import dill
 import numpy as np
 from lime.lime_tabular import LimeTabularExplainer as OriginalLimeTabularExplainer
 
-from ..abstract_explainer import AbstractExplainer
-from ..explainer_exceptions import ExplainerUninitializedError, UnsupportedModeError
-from ..utils import explanation_to_json
+from xai.explainer.abstract_explainer import AbstractExplainer
+from xai.explainer.explainer_exceptions import ExplainerUninitializedError, UnsupportedModeError
+from xai.explainer.utils import explanation_to_json
+from xai.explainer.constants import MODE
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,10 +27,10 @@ class LimeTabularExplainer(AbstractExplainer):
         self.available_modes = ['classification', 'regression']
 
     def build_explainer(self, training_data: np.ndarray,
-                        mode: str,
                         predict_fn: Callable[[np.ndarray], np.ndarray],
+                        feature_names: Optional[List[str]] = None,
+                        mode: str = MODE.CLASSIFICATION,
                         training_labels: Optional[List[int]] = None,
-                        column_names: Optional[List[str]] = None,
                         categorical_features: Optional[List[int]] = None,
                         dict_categorical_mapping: Optional[Dict[int, List[str]]] = None,
                         kernel_width: Optional[float] = None,
@@ -49,12 +50,12 @@ class LimeTabularExplainer(AbstractExplainer):
         Args:
             training_data (np.ndarray): 2d Numpy array representing the training data 
                 (or some representative subset)
-            mode (str): Whether the problem is 'classification' or 'regression'
             predict_fn (Callable): A function that takes in a 1D numpy array and outputs a vector
                 of probabilities which should sum to 1.
+            feature_names (list): The names of the columns of the training data
+            mode (str): Whether the problem is 'classification' or 'regression'
             training_labels (list): Training labels, which can be used by the continuous feature
                 discretizer
-            column_names (list): The names of the columns of the training data
             categorical_features (list): Integer list indicating the indices of categorical features
             dict_categorical_mapping (dict): Mapping of integer index of categorical feature
                 (same as from categorical_features) to a list of values for that column.
@@ -82,7 +83,7 @@ class LimeTabularExplainer(AbstractExplainer):
             raise UnsupportedModeError(msg)
 
         if verbose:
-            if not column_names:
+            if not feature_names:
                 LOGGER.warning('Column names are not specified! Explanations will refer to'
                                'columns by their indices.')
             if not class_names:
@@ -94,7 +95,7 @@ class LimeTabularExplainer(AbstractExplainer):
             training_data=training_data,
             mode=mode,
             training_labels=training_labels,
-            feature_names=column_names,
+            feature_names=feature_names,
             categorical_features=categorical_features,
             categorical_names=dict_categorical_mapping,
             kernel_width=kernel_width,
@@ -106,16 +107,17 @@ class LimeTabularExplainer(AbstractExplainer):
             sample_around_instance=sample_around_instance,
             random_state=random_state
         )
+        self.num_class = training_data.shape[1]
 
         if verbose:
             LOGGER.info('Explainer built successfully!')
 
     def explain_instance(self,
                          instance: np.ndarray,
-                         labels: List = (1,),
-                         top_labels: Optional[int] = None,
-                         num_features: Optional[int] = NUM_TOP_FEATURES,
                          num_samples: int = 5000,
+                         num_features: Optional[int] = NUM_TOP_FEATURES,
+                         labels: List = None,
+                         top_labels: Optional[int] = None,
                          distance_metric: str = 'euclidean') -> Dict[int, Dict]:
         """
         Explain a prediction instance using the LIME tabular explainer.
@@ -126,7 +128,7 @@ class LimeTabularExplainer(AbstractExplainer):
 
         Args:
             instance (np.ndarray): A 1D numpy array corresponding to a row/single example
-            labels (list): The list of class indexes to produce explanations for
+            labels (list): The list of class indexes to produce explanations for, default is None and predict all labels.
             top_labels (int): If not None, this overwrites labels and the explainer instead produces
                 explanations for the top k classes
             num_features (int): Number of features to include in an explanation
@@ -139,7 +141,11 @@ class LimeTabularExplainer(AbstractExplainer):
         Raises:
             ExplainerUninitializedError: Raised if self.explainer_object is None
         """
+
         if self.explainer_object:
+            if top_labels is None and labels is None:
+                top_labels = self.num_class
+
             explanation = self.explainer_object.explain_instance(
                 data_row=instance,
                 predict_fn=self.predict_fn,
@@ -175,7 +181,8 @@ class LimeTabularExplainer(AbstractExplainer):
         """
         dict_to_save = {
             'explainer_object': self.explainer_object,
-            'predict_fn': self.predict_fn
+            'predict_fn': self.predict_fn,
+            'num_class': self.num_class
         }
         with open(path, 'wb') as fp:
             dill.dump(dict_to_save, fp)
@@ -194,3 +201,4 @@ class LimeTabularExplainer(AbstractExplainer):
             dict_loaded = dill.load(fp)
             self.explainer_object = dict_loaded['explainer_object']
             self.predict_fn = dict_loaded['predict_fn']
+            self.num_class = dict_loaded['num_class']

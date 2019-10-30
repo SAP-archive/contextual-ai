@@ -9,17 +9,22 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
 import copy
-import shutil
+import os
 import tempfile
 
+import shutil
 from typing import Tuple, Dict, List
 
-from xai.formatter.contents import Header, SectionTitle, Title
-from xai.formatter.report.section import OverviewSection, DetailSection
-
+from xai.data.explorer import (
+    CategoricalStats,
+    NumericalStats,
+    TextStats,
+    DatetimeStats
+)
+from xai.formatter.contents import Header, Title
 from xai.formatter.hypertext_markup.publisher import CustomHtml, Div
+from xai.formatter.report.section import OverviewSection, DetailSection
 from xai.formatter.writer import Writer
 
 
@@ -194,7 +199,6 @@ class HtmlWriter(Writer):
         self.html.article[-1].items.append(
             self.html.add_overview_table(data=timing))
 
-
     def draw_data_set_summary(self, notes: str, *,
                               data_summary: List[Tuple[str, int]]):
         """
@@ -270,7 +274,7 @@ class HtmlWriter(Writer):
                 else:
                     print(
                         'Unsupported metric value type for metric (%s): %s' % (
-                        metric_name, type(metric_value)))
+                            metric_name, type(metric_value)))
                     continue
                 if key not in items:
                     items[key] = list()
@@ -296,7 +300,6 @@ class HtmlWriter(Writer):
         #     self.html.create_unordered_kay_value_pair_list(items=model_info))
         self.html.article[-1].items.append(
             self.html.add_overview_table(data=model_info))
-
 
     ################################################################################
     ###  Data Section
@@ -374,7 +377,7 @@ class HtmlWriter(Writer):
 
             return table_header, table_data
 
-         # -- Draw Content --
+        # -- Draw Content --
         self.html.article[-1].items.append(
             self.html.add_paragraph(text=notes))
         header, data = get_missing_data_info()
@@ -383,7 +386,7 @@ class HtmlWriter(Writer):
                 self.html.add_table(header=header, data=data))
 
     def draw_data_set_distribution(self, notes: str, *,
-                                   data_set_distribution: Tuple[str, dict],
+                                   data_set_distribution: Tuple[str, Dict],
                                    max_class_shown=20):
         """
         Draw information of distribution on data set
@@ -392,8 +395,7 @@ class HtmlWriter(Writer):
             notes(str): Explain the block
             data_set_distribution (tuple: (str,dict)):
                 - tuple[0] str: label/split name
-                - tuple[1] dict: key - class_name/split_name,
-                                 value - class_count/split_count
+                - tuple[1] dict: key: class name, value: class count
             max_class_shown (int, Optional): maximum number of classes shown
                           in the figure, default is 20
             notes (str, Optional):
@@ -447,6 +449,7 @@ class HtmlWriter(Writer):
                     - key: attribute name
                     - value: attribute value
         """
+
         def get_data_attributes():
             attribute_list = list(
                 set().union(*[set(attribute_dict.keys())
@@ -475,7 +478,7 @@ class HtmlWriter(Writer):
 
     def draw_categorical_field_distribution(self, notes: str, *,
                                             field_name: str,
-                                            field_distribution: dict,
+                                            field_distribution: Dict[str, CategoricalStats],
                                             max_values_display=20,
                                             colors=None):
         """
@@ -485,11 +488,11 @@ class HtmlWriter(Writer):
         Args:
             notes(str): Explain the block
             field_name (str): data field name
-            field_distribution (:dict of :dict):
+            field_distribution (:dict of :CategoricalStats):
                 -key: label_name
                 -value: frequency distribution under the `label_name`(dict)
                     - key: field value
-                    - value: field value frequency
+                    - value: CategoricalStats object
             max_values_display (int): maximum number of values displayed
             colors (list): the list of color code for rendering different class
         """
@@ -500,8 +503,9 @@ class HtmlWriter(Writer):
         # -- Draw Content --
         self.html.article[-1].items.append(
             self.html.add_paragraph(text=notes))
-        for idx, (label_name, frequency_distribution) in enumerate(
+        for idx, (label_name, cat_stats) in enumerate(
                 field_distribution.items()):
+            frequency_distribution = cat_stats.frequency_count
             title = 'For %s samples' % label_name
             self.html.article[-1].items.append(
                 self.html.add_header(text=title, heading='h5'))
@@ -509,15 +513,15 @@ class HtmlWriter(Writer):
                     frequency_distribution.values()) > 0.5:
                 self.html.article[-1].items.append(
                     self.html.add_paragraph(text=
-                    'Warning: %s unique values found in %s samples.' % (
-                        len(frequency_distribution),
-                        sum(frequency_distribution.values()))), style='BI')
+                                            'Warning: %s unique values found in %s samples.' % (
+                                                len(frequency_distribution),
+                                                sum(frequency_distribution.values()))), style='BI')
                 break
 
             if len(field_distribution) > max_values_display:
                 self.html.article[-1].items.append(
                     self.html.add_paragraph(text='%s of %s are displayed)' % (
-                    max_values_display, len(field_distribution))))
+                        max_values_display, len(field_distribution))))
 
             figure_path = '%s/%s_%s_field_distribution.png' % (
                 self.figure_path, field_name, label_name)
@@ -533,7 +537,7 @@ class HtmlWriter(Writer):
 
     def draw_numeric_field_distribution(self, notes: str, *,
                                         field_name: str,
-                                        field_distribution: dict,
+                                        field_distribution: Dict[str, NumericalStats],
                                         force_no_log=False,
                                         x_limit=False,
                                         colors=None):
@@ -546,14 +550,7 @@ class HtmlWriter(Writer):
              field_name (str): data field name
              field_distribution (:dict of :dict):
                  -key: label_name
-                 -value: numeric statistics
-                     - key: statistics name
-                     - value: statistics value
-                 each field_distribution should must have 2 following predefined keys:
-                 - histogram (:list of :list): a list of bar specification
-                                                (x, y, width, height)
-                 - kde (:list of :list, Optional): a list of points which
-                                    draw`kernel density estimation` curve.
+                 -value: numeric statistics object
 
              force_no_log (bool): whether to change y-scale to logrithmic
                                               scale for a more balanced view
@@ -568,7 +565,7 @@ class HtmlWriter(Writer):
         # -- Draw Content --
         self.html.article[-1].items.append(
             self.html.add_paragraph(text=notes))
-        for idx, (label_name, data_distribution) in enumerate(
+        for idx, (label_name, num_stats) in enumerate(
                 field_distribution.items()):
             title = 'Distribution for %s' % label_name
             self.html.article[-1].items.append(
@@ -577,7 +574,7 @@ class HtmlWriter(Writer):
                 self.figure_path, field_name, label_name)
             figure_path = graph_generator.KdeDistribution(
                 figure_path=figure_path,
-                data=data_distribution,
+                data=num_stats,
                 title=title,
                 x_label=field_name,
                 y_label="").draw(
@@ -585,11 +582,14 @@ class HtmlWriter(Writer):
                 force_no_log=force_no_log,
                 x_limit=x_limit)
             table_header = ['Statistical Field', 'Value']
-            table_values = []
-            for key, value in data_distribution.items():
-                if key in ['kde', 'histogram', 'x_limit']:
-                    continue
-                table_values.append([key, "%d" % int(value)])
+            table_values = list()
+            table_values.append(['Total valid count', "%d" % int(num_stats.total_count)])
+            table_values.append(['Min', "%d" % int(num_stats.min)])
+            table_values.append(['Max', "%d" % int(num_stats.max)])
+            table_values.append(['Mean', "%d" % int(num_stats.mean)])
+            table_values.append(['Median', "%d" % int(num_stats.median)])
+            table_values.append(['Standard deviation', "%d" % int(num_stats.sd)])
+            table_values.append(['NAN count', "%d" % int(num_stats.nan_count)])
 
             self.html.article[-1].items.append(self.html.add_table_image_group(
                 header=table_header, data=table_values,
@@ -597,7 +597,7 @@ class HtmlWriter(Writer):
 
     def draw_text_field_distribution(self, notes: str, *,
                                      field_name: str,
-                                     field_distribution: dict):
+                                     field_distribution: Dict[str, TextStats]):
         """
         Draw information of field value distribution for text type to the
         report.
@@ -607,19 +607,17 @@ class HtmlWriter(Writer):
             field_name (str): data field name
             field_distribution (:dict of :dict):
                 -key: label_name
-                -value: tfidf and placeholder distribution under the `label_name`(dict):
-                    {'tfidf': tfidf, 'placeholder': placeholder}
-                    - tfidf (:list of :list): each sublist has 2 items: word and tfidf
-                    - placeholder (:dict):
-                        - key: PATTERN
-                        - value: percentage
+                -value: TextStats
         """
         from xai.graphs import graph_generator
         # -- Draw Content --
         self.html.article[-1].items.append(
             self.html.add_paragraph(text=notes))
-        for idx, (label_name, data_distribution) in enumerate(
+        for idx, (label_name, text_stats) in enumerate(
                 field_distribution.items()):
+            tfidf = text_stats.tfidf
+            pattern_stats = text_stats.pattern_stats
+
             title = 'Distribution for %s' % label_name
             self.html.article[-1].items.append(
                 self.html.add_header(text=title, heading='h5'))
@@ -627,21 +625,24 @@ class HtmlWriter(Writer):
                 self.figure_path, field_name, label_name)
             figure_path = graph_generator.WordCloudGraph(
                 figure_path=figure_path,
-                data=data_distribution['tfidf'],
+                data=tfidf,
                 title=title).draw()
             table_header = ['Placeholder', 'Percentage(%)']
             table_values = []
-            for w, v in data_distribution['placeholder'].items():
+            for w, v in pattern_stats.items():
                 table_values.append([w, '%.2f%%' % (v * 100)])
 
-            self.html.article[-1].items.append(self.html.add_table_image_group(
-                header=table_header, data=table_values,
-                src=figure_path, alt=title))
-
+            if len(table_values) == 0:
+                self.html.article[-1].items.append(self.html.add_image(
+                    src=figure_path, alt=title))
+            else:
+                self.html.article[-1].items.append(self.html.add_table_image_group(
+                    header=table_header, data=table_values,
+                    src=figure_path, alt=title))
 
     def draw_datetime_field_distribution(self, notes: str, *,
                                          field_name: str,
-                                         field_distribution: dict):
+                                         field_distribution: Dict[str, DatetimeStats]):
         """
         Draw information of field value distribution for datetime type to the
         report.
@@ -651,7 +652,7 @@ class HtmlWriter(Writer):
             field_name (str): data field name
             field_distribution (:dict of :dict):
                 -key: label_name
-                -value (:dict of :dict):
+                -value (:dict of :DatetimeStats): only support resolution_list size of 2
                     - 1st level key: year_X(int)
                     - 1st level value:
                         - 2nd level key: month_X(int)
@@ -661,23 +662,22 @@ class HtmlWriter(Writer):
         # -- Draw Content --
         self.html.article[-1].items.append(
             self.html.add_paragraph(text=notes))
-        for idx, (label_name, data_distribution) in enumerate(
+        for idx, (label_name, datetime_stats) in enumerate(
                 field_distribution.items()):
             title = 'Datetime distribution for %s (for %s samples) ' % (
-                                                             field_name,
-                                                             label_name)
+                field_name,
+                label_name)
             self.html.article[-1].items.append(
                 self.html.add_header(text=title, heading='h5'))
             figure_path = '%s/%s_%s_field_distribution.png' % (
                 self.figure_path, field_name, label_name)
             figure_path = graph_generator.DatePlot(figure_path=figure_path,
-                                                   data=data_distribution,
+                                                   data=datetime_stats.frequency_count,
                                                    title=title,
                                                    x_label="",
                                                    y_label="").draw()
             self.html.article[-1].items.append(
                 self.html.add_image(src=figure_path, alt=title))
-
 
     ################################################################################
     ###  Feature Section
@@ -699,15 +699,13 @@ class HtmlWriter(Writer):
             maximum_number_feature(int): maximum number of features shown in bar-chart diagram
         """
         from xai.graphs import graph_generator
-
-        feature_ranking = [(score, name) for name, score in importance_ranking]
         # -- Draw Content --
         if not (notes is None):
             modified_notes = notes
-        elif maximum_number_feature < len(feature_ranking):
+        elif maximum_number_feature < len(importance_ranking):
             modified_notes = (
-                "The figure below shows the top %s important features for the trained model."
-                % maximum_number_feature)
+                    "The figure below shows the top %s important features for the trained model."
+                    % maximum_number_feature)
         else:
             modified_notes = "The figure below shows importance ranking for all features from the trained model."
         self.html.article[-1].items.append(
@@ -715,7 +713,7 @@ class HtmlWriter(Writer):
 
         image_path = '%s/feature_importance.png' % self.figure_path
         image_path = graph_generator.FeatureImportance(figure_path=image_path,
-                                                       data=feature_ranking,
+                                                       data=importance_ranking,
                                                        title='feature_importance').draw(
             limit_length=maximum_number_feature)
 
@@ -728,10 +726,10 @@ class HtmlWriter(Writer):
 
         header = ['Feature', 'Importance']
         data = []
-        for feature_name, importance in feature_ranking:
+        for feature_name, importance in importance_ranking:
             if float(importance) < importance_threshold:
                 break
-            data.append([feature_name, importance])
+            data.append([feature_name, round(importance, 10)])
         self.html.article[-1].items.append(
             self.html.add_table(header=header, data=data))
 
@@ -834,14 +832,14 @@ class HtmlWriter(Writer):
             if final_metric_value > non_hyperopt_score:
                 if final_metric_value > benchmark_threshold:
                     text = 'and it is better than acceptance benchmark ' \
-                          'scoring (%.4f). We accept it as the final ' \
-                          'parameter setting for the trained model.' % \
-                          benchmark_threshold
+                           'scoring (%.4f). We accept it as the final ' \
+                           'parameter setting for the trained model.' % \
+                           benchmark_threshold
                 else:
                     text = 'but it fails to meet the acceptance benchmark ' \
-                          'scoring (%.4f). ' \
-                          'We still accept it as the final parameter setting for the trained model, ' \
-                          'but will continue to improve it.' % benchmark_threshold
+                           'scoring (%.4f). ' \
+                           'We still accept it as the final parameter setting for the trained model, ' \
+                           'but will continue to improve it.' % benchmark_threshold
                 self.html.article[-1].items.append(self.html.add_paragraph(
                     text='Hyperparameter tuning best result (%.4f) is better than benchmark score (%.4f), %s' % (
                         final_metric_value, non_hyperopt_score, text)))
@@ -858,9 +856,7 @@ class HtmlWriter(Writer):
                 self.html.article[-1].items.append(self.html.add_paragraph(
                     text='Hyperparameter tuning best result (%.4f) is worse '
                          'than benchmark score (%.4f), %s' % (
-                        final_metric_value, non_hyperopt_score, text)))
-
-
+                             final_metric_value, non_hyperopt_score, text)))
 
     def draw_learning_curve(self, notes: str, *,
                             history: dict, best_idx: str,
@@ -958,7 +954,7 @@ class HtmlWriter(Writer):
                                             and corresponding values, or
                      (2) have a `average` keyword to show a macro-average metric.
         """
-        from xai.evaluation.multi_classification_result import \
+        from xai.model.evaluation.multi_classification_result import \
             MultiClassificationResult
         # -- Draw Content --
         if not (notes is None):
@@ -994,7 +990,7 @@ class HtmlWriter(Writer):
             aggregated(bool): whether to aggregate multiple result tables into one
         """
         from collections import defaultdict
-        from xai.evaluation.binary_classification_result import \
+        from xai.model.evaluation.binary_classification_result import \
             BinaryClassificationResult
         # -- Draw Content --
         if not (notes is None):

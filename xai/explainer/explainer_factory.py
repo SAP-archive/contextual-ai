@@ -9,9 +9,9 @@ from xai.explainer import ExplainerFactory
 
 from typing import Optional
 
-from .abstract_explainer import AbstractExplainer
-from .config import DICT_DOMAIN_TO_CLASS, DICT_DOMAIN_TO_DEFAULT_ALG
-from .explainer_exceptions import DomainNotSupported, AlgorithmNotFoundInDomain
+from xai.explainer.abstract_explainer import AbstractExplainer
+from xai.explainer.config import DICT_DOMAIN_TO_CLASS, DICT_DOMAIN_TO_DEFAULT_ALG
+from xai.explainer.explainer_exceptions import DomainNotSupported, AlgorithmNotFoundInDomain
 
 
 class ExplainerFactory:

@@ -8,6 +8,7 @@ from xai.graphs.basic_graph import Graph
 from typing import List
 from collections import Counter
 import operator
+from xai.data.exceptions import NoItemsError
 
 
 class ReliabilityDiagram(Graph):
@@ -177,26 +178,25 @@ class KdeDistribution(Graph):
 
     def draw_core(self, color, force_no_log, x_limit):
         data = self.data
-        xywh = data['histogram']
-        line_data = np.array(data['kde'])
+        lrh = data.histogram
+        line_data = np.array(data.kde)
 
-        if len(xywh) == 0:
-            print("Error: no values in xywh for current data. %s" % data)
-            return
+        if len(lrh) == 0:
+            raise NoItemsError('NumericalStats')
 
         sum_perc = 0
         max_height = 0
-        for i in xywh:
-            sum_perc += i[3]
-            max_height = max(i[3], max_height)
+        for i in lrh:
+            sum_perc += i[2]
+            max_height = max(i[2], max_height)
 
-        perc = [i[3] / sum_perc for i in xywh]
+        perc = [i[2] / sum_perc for i in lrh]
 
         sorted_perc = sorted(perc)
 
-        x = [i[0] for i in xywh]
-        w = [i[2] * 0.95 for i in xywh]
-        h = [i[3] for i in xywh]
+        x = [i[0] for i in lrh]
+        w = [(i[1] - i[0]) * 0.95 for i in lrh]
+        h = [i[2] for i in lrh]
         if force_no_log:
             plt.bar(x=x, height=h, width=w, align='edge', color=color)
             plt.plot(line_data[:, 0], line_data[:, 1], color='k')
@@ -207,7 +207,7 @@ class KdeDistribution(Graph):
                 plt.bar(x=x, height=h, width=w, align='edge', color=color)
                 plt.plot(line_data[:, 0], line_data[:, 1])
         if x_limit:
-            plt.xlim(data['x_limit'])
+            plt.xlim((data.mean - data.sd * 2, data.mean + data.sd * 2))
 
 
 class EvaluationLinePlot(Graph):
@@ -258,7 +258,7 @@ class FeatureImportance(Graph):
             data = data[:limit_length]
 
         features = np.array([a for a, _ in data])
-        scores = np.array([b for _, b in data])
+        scores = np.array([round(b, 10) for _, b in data])
 
         ax = sns.barplot(x=scores, y=features, palette=sns.color_palette(color_palette), orient='h')
         for index, score_value in enumerate(scores.tolist()):
@@ -279,6 +279,8 @@ class WordCloudGraph(Graph):
         # generate word cloud
         if type(self.data) == list:
             data = {word: freq for (word, freq) in self.data if freq > 0}
+        else:
+            data = self.data
         wc.generate_from_frequencies(data)
         plt.imshow(wc, interpolation="bilinear")
         plt.axis("off")

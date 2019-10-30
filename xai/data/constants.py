@@ -1,18 +1,35 @@
 #!/usr/bin/python
 #
-# -- coding: utf-8 --
+# -*- coding: utf-8 -*-
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
+
+class THRESHOLD:
+    """
+    Predefined threshold for data type identification
+    """
+    UNIQUE_VALUE_REL_THRESHOLD = 0.3
+    FLOAT_UNIQUE_ABS_THRESHOLD = 10
+    INT_UNIQUE_ABS_THRESHOLD = 15
+
 
 class DATATYPE:
     """
     Predefined data type for data analyzer
     """
 
+    TYPE = 'type'
+    USED = 'used'
+    STRUCTURED = 'structured'
+    ATTRIBUTE = 'attribute'
+    SEQUENCE = 'sequence'
+
     CATEGORY = 'categorical'
     NUMBER = 'numerical'
     FREETEXT = 'text'
     DATETIME = 'datetime'
+    LABEL = 'label'
+    KEY = 'key'
 
 
 class STATSCONSTANTS:
@@ -29,6 +46,7 @@ class STATSKEY:
     Constants for key used in stats json object
     """
     TOTAL_COUNT = 'total_count'
+    NAN_COUNT = 'nan_count'
     DATA_TYPE = 'data_type'
     DATA_COLUMN_NAME = 'attribute_name'
     STATS = 'stats'

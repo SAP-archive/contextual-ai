@@ -52,21 +52,21 @@ EXTEND_TEST_DATA_FILE = 'extend_test_data.newdata'
 EXTEND_VALID_DATA_FILE = 'extend_valid_data.newdata'
 
 ## metric
-TRAIN_TEST_BATCH_NUM = 'batch_num'
-TRAIN_TEST_LOSS = 'loss'
-TRAIN_TEST_ACCURACY = 'accuracy'
-TRAIN_TEST_PRECISION = 'precision'
-TRAIN_TEST_RECALL = 'recall'
-TRAIN_TEST_F1 = 'f1'
-TRAIN_TEST_AUC = 'auc'
-TRAIN_TEST_CM = 'CM'
+METRIC_BATCH_NUM = 'batch_num'
+METRIC_LOSS = 'loss'
+METRIC_ACCURACY = 'accuracy'
+METRIC_PRECISION = 'precision'
+METRIC_RECALL = 'recall'
+METRIC_F1 = 'f1'
+METRIC_AUC = 'auc'
+METRIC_CM = 'confusion matrix'
 
-METRIC_MAPPING = {TRAIN_TEST_ACCURACY: [0, '0', TRAIN_TEST_ACCURACY],
-                  TRAIN_TEST_PRECISION: [1, '1', TRAIN_TEST_PRECISION],
-                  TRAIN_TEST_RECALL: [2, '2', TRAIN_TEST_RECALL],
-                  TRAIN_TEST_F1: [3, '3', TRAIN_TEST_F1],
-                  TRAIN_TEST_AUC: [4, '4', TRAIN_TEST_AUC],
-                  TRAIN_TEST_CM: [5, '5', TRAIN_TEST_CM],
+METRIC_MAPPING = {METRIC_ACCURACY: [0, '0', METRIC_ACCURACY],
+                  METRIC_PRECISION: [1, '1', METRIC_PRECISION],
+                  METRIC_RECALL: [2, '2', METRIC_RECALL],
+                  METRIC_F1: [3, '3', METRIC_F1],
+                  METRIC_AUC: [4, '4', METRIC_AUC],
+                  METRIC_CM: [5, '5', METRIC_CM],
                   }
 
 TRAIN_META_FILE = 'meta.json'
@@ -157,11 +157,11 @@ MODEL_STATUS_OVERFITTING = 2
 MODEL_STATUS_UNDERFITTING = 1
 MODEL_STATUS_FITTING = 0
 
-RECOMMEND_PERFORMANCE_BENCHMARK = {TRAIN_TEST_ACCURACY: 0.8,
-                                   TRAIN_TEST_F1: 0.8,
-                                   TRAIN_TEST_PRECISION: 0.8,
-                                   TRAIN_TEST_RECALL: 0.8,
-                                   TRAIN_TEST_AUC: 0.8}
+RECOMMEND_PERFORMANCE_BENCHMARK = {METRIC_ACCURACY: 0.8,
+                                   METRIC_F1: 0.8,
+                                   METRIC_PRECISION: 0.8,
+                                   METRIC_RECALL: 0.8,
+                                   METRIC_AUC: 0.8}
 
 RECOMMEND_PERFORMANCE_DIFFERENCE_BENCHMARK = 0.15
 RECOMMEND_DATA_DISTRIBUTION_DISTANCE_BENCHMARK = 0.999

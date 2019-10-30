@@ -11,6 +11,7 @@ from __future__ import print_function
 
 from typing import Tuple, Dict, List
 
+from xai.data import explorer
 
 ################################################################################
 ### Section Strategy
@@ -201,7 +202,8 @@ class Section:
                                               total_count=total_count,
                                               ratio=ratio, notes=notes))
 
-    def add_data_set_distribution(self, dataset_distribution: Tuple[str, dict],
+    def add_data_set_distribution(self,
+                                  dataset_distribution: Tuple[str, explorer.CategoricalStats],
                                   max_class_shown=20, notes=None):
         """
         add information of distribution on data set to the report
@@ -210,6 +212,8 @@ class Section:
             dataset_distribution (tuple: (str,dict)):
                 - tuple[0] str: label/split name
                 - tuple[1] dict: key - class_name/split_name,
+                - tuple[1] CategoricalStats object: `frequency_count` attribute
+                                 key - class_name/split_name,
                                  value - class_count/split_count
             max_class_shown (int, Optional): maximum number of classes shown
             in the figure, default is 20
@@ -452,7 +456,7 @@ class Section:
         self.contents.append(MultiClassEvaluationMetricResult(
             metric_tuple=metric_tuple, notes=notes))
 
-    def add_binary_class_evaluation_metric_results(self, metric_tuple: tuple,
+    def add_binary_class_evaluation_metric_results(self, *metric_tuple: tuple,
                                                    aggregated=True,
                                                    notes=None):
         """
@@ -473,7 +477,7 @@ class Section:
         self.contents.append(BinaryClassEvaluationMetricResult(
             metric_tuple=metric_tuple, aggregated=aggregated, notes=notes))
 
-    def add_confusion_matrix_results(self, confusion_matrix_tuple: tuple,
+    def add_confusion_matrix_results(self, *confusion_matrix_tuple: tuple,
                                      notes=None):
         """
         Add information about confusion matrix to report
@@ -493,7 +497,7 @@ class Section:
             confusion_matrix_tuple=confusion_matrix_tuple, notes=notes))
 
     def add_multi_class_confidence_distribution(self,
-                                                visual_result_tuple: tuple,
+                                                *visual_result_tuple: tuple,
                                                 max_num_classes=9,
                                                 notes=None):
         """
@@ -517,7 +521,7 @@ class Section:
             max_num_classes=max_num_classes, notes=notes))
 
     def add_binary_class_confidence_distribution(self,
-                                                 visual_result_tuple: tuple,
+                                                 *visual_result_tuple: tuple,
                                                  notes=None):
         """
         add information about binary class confidence distribution to report
@@ -537,7 +541,7 @@ class Section:
             visual_result_tuple=visual_result_tuple, notes=notes))
 
     def add_binary_class_reliability_diagram(self,
-                                             visual_result_tuple: tuple,
+                                             *visual_result_tuple: tuple,
                                              notes=None):
         """
         add information about reliability to report
@@ -588,8 +592,6 @@ class DetailSection(Section):
         """
         Details Section
         """
-        from xai.formatter.contents.base import NewPage
         contents = list()
-        contents.append(NewPage())
         super(DetailSection, self).__init__(type=Section.DETAIL,
                                             contents=contents)

@@ -1,0 +1,62 @@
+{
+  "PassengerId": {
+    "type": "key",
+    "used": false,
+    "structured": "attribute"
+  },
+  "Survived": {
+    "type": "label",
+    "used": true,
+    "structured": "attribute"
+  },
+  "Pclass": {
+    "type": "categorical",
+    "used": true,
+    "structured": "attribute"
+  },
+  "Name": {
+    "type": "text",
+    "used": true,
+    "structured": "attribute"
+  },
+  "Sex": {
+    "type": "categorical",
+    "used": true,
+    "structured": "attribute"
+  },
+  "Age": {
+    "type": "numerical",
+    "used": true,
+    "structured": "attribute"
+  },
+  "SibSp": {
+    "type": "categorical",
+    "used": true,
+    "structured": "attribute"
+  },
+  "Parch": {
+    "type": "categorical",
+    "used": true,
+    "structured": "attribute"
+  },
+  "Ticket": {
+    "type": "key",
+    "used": false,
+    "structured": "attribute"
+  },
+  "Fare": {
+    "type": "numerical",
+    "used": true,
+    "structured": "attribute"
+  },
+  "Cabin": {
+    "type": "key",
+    "used": false,
+    "structured": "attribute"
+  },
+  "Embarked": {
+    "type": "categorical",
+    "used": true,
+    "structured": "attribute"
+  }
+}

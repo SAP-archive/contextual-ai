@@ -1,0 +1,89 @@
+{
+  "name": "Report for Feature Importance Ranking",
+  "overview": true,
+  "content_table": true,
+  "contents": [
+    {
+      "title": "Feature Importance Ranking",
+      "desc": "This section provides the analysis on feature",
+      "sections": [
+        {
+          "title": "Feature Importance Analysis with Breast Cancer data-set",
+          "desc": "Model and train data from Breast Cancer",
+          "sections": [
+            {
+              "title": "SHAP analysis with csv (with header)",
+              "component": {
+                "_comment": "refer to document section xxxx",
+                "class": "FeatureImportanceRanking",
+                "attr": {
+                  "trained_model": "{in_path}/breast_cancer/model.pkl",
+                  "train_data": "{in_path}/breast_cancer/train_data.csv",
+                  "method": "shap"
+                }
+              }
+            },
+            {
+              "title": "Default analysis with csv (with header)",
+              "component": {
+                "_comment": "refer to document section xxxx",
+                "class": "FeatureImportanceRanking",
+                "attr": {
+                  "trained_model": "{in_path}/breast_cancer/model.pkl",
+                  "train_data": "{in_path}/breast_cancer/train_data.csv"
+                }
+              }
+            },
+            {
+              "title": "SHAP analysis with numpy input file",
+              "component": {
+                "_comment": "refer to document section xxxx",
+                "class": "FeatureImportanceRanking",
+                "attr": {
+                  "trained_model": "{in_path}/breast_cancer/model.pkl",
+                  "train_data": "{in_path}/breast_cancer/train_data.npy",
+                  "feature_names": "{in_path}/breast_cancer/feature_names.npy",
+                  "method": "shap"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "title": "Feature Importance Analysis with Titanic data-set",
+          "desc": "Model and train data from Titanic",
+          "sections": [
+            {
+              "title": "Default analysis with csv (with header)",
+              "component": {
+                "_comment": "refer to document section xxxx",
+                "class": "FeatureImportanceRanking",
+                "attr": {
+                  "trained_model": "{in_path}/titanic/model.pkl",
+                  "train_data": "{in_path}/titanic/train_data.csv"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "writers": [
+    {
+      "class": "Pdf",
+      "attr": {
+        "name": "feature-importance-json-report",
+        "path": "{out_path}"
+      }
+    },
+    {
+      "class": "Html",
+      "attr": {
+        "name": "feature-importance-json-report",
+        "path": "{out_path}"
+      }
+    }
+  ]
+}
+

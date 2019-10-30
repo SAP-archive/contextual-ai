@@ -1,9 +1,20 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
+from typing import List
+
+from xai import constants
 from xai.model.evaluation.basic_result import ClassificationResult
 from xai.model.evaluation.confusion_matrix import ConfusionMatrix
 from xai.util import get_table_layout
-from xai import constants
 
 
+################################################################################
+### Binary Classification Result
+################################################################################
 class BinaryClassificationResult(ClassificationResult):
     """
     evaluation result class for binary classification problem
@@ -12,7 +23,7 @@ class BinaryClassificationResult(ClassificationResult):
     def __init__(self):
         super(BinaryClassificationResult, self).__init__()
 
-    def load_results_from_meta(self, evaluation_result: dict):
+    def load_results_from_meta(self, evaluation_result: dict, label: List = None):
         """
         save metrics into the object result class
 
@@ -20,10 +31,13 @@ class BinaryClassificationResult(ClassificationResult):
             evaluation_result(dict): key-value pair for metric
                 - key: metric name
                 - value: metric dict
+            label(list): classification label list
         """
         for metric, value in evaluation_result.items():
-            if metric == constants.TRAIN_TEST_CM:
-                self.confusion_matrix = ConfusionMatrix(label=['0', '1'], confusion_matrix=value)
+            if metric == constants.METRIC_CM:
+                if label is None:
+                    label = ['0', '1']
+                self.confusion_matrix = ConfusionMatrix(label=label, confusion_matrix=value)
             else:
                 self.update_result(metric, 1, value)
 

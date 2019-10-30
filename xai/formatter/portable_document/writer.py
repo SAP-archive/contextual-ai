@@ -9,18 +9,27 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
 import copy
-import shutil
+import os
 import tempfile
 
+import shutil
 from typing import Tuple, Dict, List
 
-from xai.formatter.contents import Title, SectionTitle, Header
-from xai.formatter.report.section import OverviewSection, DetailSection
-
+from xai.data.constants import DatetimeResolution
+from xai.data.explorer import (
+    CategoricalStats,
+    NumericalStats,
+    TextStats,
+    DatetimeStats
+)
+from xai.formatter.contents import (
+    Title,
+    SectionTitle,
+    Header
+)
 from xai.formatter.portable_document.publisher import CustomPdf
-
+from xai.formatter.report.section import OverviewSection, DetailSection
 from xai.formatter.writer import Writer
 
 
@@ -29,7 +38,7 @@ from xai.formatter.writer import Writer
 ################################################################################
 class PdfWriter(Writer):
 
-    def __init__(self, name='pdf_report',
+    def __init__(self, name='pdf_report', *,
                  path='./', dest='F') -> None:
         """
         Generate PDF report
@@ -287,7 +296,7 @@ class PdfWriter(Writer):
                 else:
                     print(
                         'Unsupported metric value type for metric (%s): %s' % (
-                        metric_name, type(metric_value)))
+                            metric_name, type(metric_value)))
                     continue
                 self.pdf.add_key_value_pair(key, value)
             self.pdf.end_itemize()
@@ -344,7 +353,6 @@ class PdfWriter(Writer):
                 else:
                     data_dict[feature_name]['total_count'] = \
                         total_count[feature_name]
-
                 if feature_name not in missing_count:
                     data_dict[feature_name]['missing_value_count'] = 0
                     data_dict[feature_name]['percentage'] = 0
@@ -362,30 +370,31 @@ class PdfWriter(Writer):
                                     'missing_value_count'] / \
                                 data_dict[feature_name]['total_count']
             if len(total_count) > 0:
-                table_header = ['Feature', 'Missing Value Count',
+                table_header = ['Feature', 'Count',
                                 'Percentage']
                 table_data = []
                 for field_name, field_data in data_dict.items():
                     table_data.append(
-                        [field_name, "%s / %s" % (
+                        [field_name if len(field_name) < 45 else "%s_~" % (field_name[:45]), "%s / %s" % (
                             field_data['missing_value_count'],
                             field_data['total_count']),
                          "%.2f%%" % field_data['percentage']])
-                col_width = [70, 50, 50]
+                col_width = [130, 25, 25]
             else:
                 if ratio:
-                    table_header = ['Feature', 'Missing Value Percentage']
+                    table_header = ['Feature', 'Percentage']
                     table_data = []
                     for field_name, field_data in data_dict.items():
                         table_data.append(
                             [field_name, field_data['percentage']])
                 else:
-                    table_header = ['Feature', 'Missing Value Count']
+                    table_header = ['Feature', 'Count']
                     table_data = []
                     for field_name, field_data in data_dict.items():
                         table_data.append(
-                            [field_name, field_data['missing_value_count']])
-                col_width = [80, 70]
+                            [field_name if len(field_name) < 55 else "%s_~" % (field_name[:55]),
+                             field_data['missing_value_count']])
+                col_width = [155, 25]
 
             return table_header, table_data, col_width
 
@@ -398,7 +407,7 @@ class PdfWriter(Writer):
             self.pdf.add_new_line()
 
     def draw_data_set_distribution(self, notes: str, *,
-                                   data_set_distribution: Tuple[str, dict],
+                                   data_set_distribution: Tuple[str, Dict],
                                    max_class_shown=20):
         """
         Draw information of distribution on data set
@@ -407,8 +416,7 @@ class PdfWriter(Writer):
             notes(str): Explain the block
             data_set_distribution (tuple: (str,dict)):
                 - tuple[0] str: label/split name
-                - tuple[1] dict: key - class_name/split_name,
-                                 value - class_count/split_count
+                - tuple[1] dict: key: class name, value: class count
             max_class_shown (int, Optional): maximum number of classes shown
                           in the figure, default is 20
         """
@@ -455,6 +463,7 @@ class PdfWriter(Writer):
                     - key: attribute name
                     - value: attribute value
         """
+
         def get_data_attributes():
             attribute_list = list(
                 set().union(*[set(attribute_dict.keys())
@@ -464,7 +473,7 @@ class PdfWriter(Writer):
 
             table_data = []
             for field_name, field_attributes in data_attribute.items():
-                row = [field_name]
+                row = [field_name if len(field_name) < 40 else "%s_~" % (field_name[:40])]
                 for attribute_name in attribute_list:
                     if attribute_name in field_attributes.keys():
                         row.append(field_attributes[attribute_name])
@@ -477,12 +486,14 @@ class PdfWriter(Writer):
         # -- Draw Content --
         self.pdf.add_new_line(notes)
         _table_header, _table_data = get_data_attributes()
-        self.pdf.add_table(_table_header, _table_data)
+        col_width = [180 - 22 * (len(_table_header) - 1)] + [22] * (len(_table_header) - 1)
+
+        self.pdf.add_table(_table_header, _table_data, col_width=col_width)
         self.pdf.add_new_line()
 
     def draw_categorical_field_distribution(self, notes: str, *,
                                             field_name: str,
-                                            field_distribution: dict,
+                                            field_distribution: Dict[str, CategoricalStats],
                                             max_values_display=20,
                                             colors=None):
         """
@@ -490,14 +501,12 @@ class PdfWriter(Writer):
         the report.
         Details see analyzers inside `xai.data_explorer.categorical_analyzer`
 
-        Args:
+       Args:
             notes(str): Explain the block
             field_name (str): data field name
-            field_distribution (:dict of :dict):
+            field_distribution (:dict of :CategoricalStats):
                 -key: label_name
-                -value: frequency distribution under the `label_name`(dict)
-                    - key: field value
-                    - value: field value frequency
+                -value: CategoricalStats object
             max_values_display (int): maximum number of values displayed
             colors (list): the list of color code for rendering different class
         """
@@ -508,8 +517,9 @@ class PdfWriter(Writer):
         # -- Draw Content --
         self.pdf.add_new_line(notes)
         self.pdf.start_itemize(' - ')
-        for idx, (label_name, frequency_distribution) in enumerate(
+        for idx, (label_name, cat_stats) in enumerate(
                 field_distribution.items()):
+            frequency_distribution = cat_stats.frequency_count
             if len(frequency_distribution) / sum(
                     frequency_distribution.values()) > 0.5:
                 self.pdf.start_itemize('-')
@@ -540,7 +550,7 @@ class PdfWriter(Writer):
 
     def draw_numeric_field_distribution(self, notes: str, *,
                                         field_name: str,
-                                        field_distribution: dict,
+                                        field_distribution: Dict[str, NumericalStats],
                                         force_no_log=False,
                                         x_limit=False,
                                         colors=None):
@@ -553,14 +563,7 @@ class PdfWriter(Writer):
              field_name (str): data field name
              field_distribution (:dict of :dict):
                  -key: label_name
-                 -value: numeric statistics
-                     - key: statistics name
-                     - value: statistics value
-                 each field_distribution should must have 2 following predefined keys:
-                 - histogram (:list of :list): a list of bar specification
-                                                (x, y, width, height)
-                 - kde (:list of :list, Optional): a list of points which
-                                    draw`kernel density estimation` curve.
+                 -value: numeric statistics object
 
              force_no_log (bool): whether to change y-scale to logrithmic
                                               scale for a more balanced view
@@ -576,14 +579,13 @@ class PdfWriter(Writer):
         # -- Draw Content --
         self.pdf.add_new_line(notes)
         self.pdf.start_itemize(' - ')
-        for idx, (label_name, data_distribution) in enumerate(
+        for idx, (label_name, num_stats) in enumerate(
                 field_distribution.items()):
-
             figure_path = '%s/%s_%s_field_distribution.png' % (
                 self.figure_path, field_name, label_name)
             figure_path = graph_generator.KdeDistribution(
                 figure_path=figure_path,
-                data=data_distribution,
+                data=num_stats,
                 title="",
                 x_label=field_name,
                 y_label="").draw(
@@ -591,11 +593,14 @@ class PdfWriter(Writer):
                 force_no_log=force_no_log,
                 x_limit=x_limit)
             table_header = ['Statistical Field', 'Value']
-            table_values = []
-            for key, value in data_distribution.items():
-                if key in ['kde', 'histogram', 'x_limit']:
-                    continue
-                table_values.append([key, "%d" % int(value)])
+            table_values = list()
+            table_values.append(['Total valid count', "%d" % int(num_stats.total_count)])
+            table_values.append(['Min', "%d" % int(num_stats.min)])
+            table_values.append(['Max', "%d" % int(num_stats.max)])
+            table_values.append(['Mean', "%d" % int(num_stats.mean)])
+            table_values.append(['Median', "%d" % int(num_stats.median)])
+            table_values.append(['Standard deviation', "%d" % int(num_stats.sd)])
+            table_values.append(['NAN count', "%d" % int(num_stats.nan_count)])
 
             self.pdf.add_table_image_group(image_path=figure_path,
                                            table_header=table_header,
@@ -607,7 +612,7 @@ class PdfWriter(Writer):
 
     def draw_text_field_distribution(self, notes: str, *,
                                      field_name: str,
-                                     field_distribution: dict):
+                                     field_distribution: Dict[str, TextStats]):
         """
         Draw information of field value distribution for text type to the
         report.
@@ -617,43 +622,42 @@ class PdfWriter(Writer):
             field_name (str): data field name
             field_distribution (:dict of :dict):
                 -key: label_name
-                -value: tfidf and placeholder distribution under the `label_name`(dict):
-                    {'tfidf': tfidf, 'placeholder': placeholder}
-                    - tfidf (:list of :list): each sublist has 2 items: word and tfidf
-                    - placeholder (:dict):
-                        - key: PATTERN
-                        - value: percentage
+                -value: TextStats
         """
         from xai.graphs import graph_generator
         from xai.graphs.format_contants import IMAGE_TABLE_GRID_SPEC_NEW
         # -- Draw Content --
         self.pdf.add_new_line(notes)
         self.pdf.start_itemize(' - ')
-        for idx, (label_name, data_distribution) in enumerate(
+        for idx, (label_name, text_stats) in enumerate(
                 field_distribution.items()):
-
+            tfidf = text_stats.tfidf
+            tfidf = {key: value for key, value in tfidf.items() if value > 0}
+            pattern_stats = text_stats.pattern_stats
             figure_path = '%s/%s_%s_field_distribution.png' % (
                 self.figure_path, field_name, label_name)
             figure_path = graph_generator.WordCloudGraph(
                 figure_path=figure_path,
-                data=data_distribution['tfidf'],
+                data=tfidf,
                 title='').draw()
             table_header = ['Placeholder', 'Doc Percentage ']
             table_values = []
-            for w, v in data_distribution['placeholder'].items():
+            for w, v in pattern_stats.items():
                 table_values.append([w, '%.2f%%' % (v * 100)])
-
-            self.pdf.add_table_image_group(image_path=figure_path,
-                                           table_header=table_header,
-                                           table_content=table_values,
-                                           grid_spec=IMAGE_TABLE_GRID_SPEC_NEW,
-                                           caption='Distribution for %s' % label_name,
-                                           style='I')
+            if len(table_values) == 0:
+                self.pdf.add_large_image(image_path=figure_path)
+            else:
+                self.pdf.add_table_image_group(image_path=figure_path,
+                                               table_header=table_header,
+                                               table_content=table_values,
+                                               grid_spec=IMAGE_TABLE_GRID_SPEC_NEW,
+                                               caption='Distribution for %s' % label_name,
+                                               style='I')
         self.pdf.end_itemize()
 
     def draw_datetime_field_distribution(self, notes: str, *,
                                          field_name: str,
-                                         field_distribution: dict):
+                                         field_distribution: Dict[str, DatetimeStats]):
         """
         Draw information of field value distribution for datetime type to the
         report.
@@ -663,7 +667,7 @@ class PdfWriter(Writer):
             field_name (str): data field name
             field_distribution (:dict of :dict):
                 -key: label_name
-                -value (:dict of :dict):
+                -value (:dict of :DatetimeStats): only support resolution_list size of 2
                     - 1st level key: year_X(int)
                     - 1st level value:
                         - 2nd level key: month_X(int)
@@ -673,12 +677,14 @@ class PdfWriter(Writer):
         # -- Draw Content --
         self.pdf.add_new_line(notes)
         self.pdf.start_itemize(' - ')
-        for idx, (label_name, data_distribution) in enumerate(
+        for idx, (label_name, datetime_stats) in enumerate(
                 field_distribution.items()):
+            if datetime_stats.resolution_list != [DatetimeResolution.YEAR, DatetimeResolution.MONTH]:
+                raise Exception('Resolution list should be [year, month].')
             figure_path = '%s/%s_%s_field_distribution.png' % (
                 self.figure_path, field_name, label_name)
             figure_path = graph_generator.DatePlot(figure_path=figure_path,
-                                                   data=data_distribution,
+                                                   data=datetime_stats.frequency_count,
                                                    title='Datetime '
                                                          'distribution for %s (for %s samples) ' % (
                                                              field_name,
@@ -711,18 +717,16 @@ class PdfWriter(Writer):
             maximum_number_feature(int): maximum number of features shown in bar-chart diagram
         """
         from xai.graphs import graph_generator
-
-        feature_ranking = [(score, name) for name, score in importance_ranking]
         image_path = '%s/feature_importance.png' % self.figure_path
         image_path = graph_generator.FeatureImportance(figure_path=image_path,
-                                                       data=feature_ranking,
+                                                       data=importance_ranking,
                                                        title='feature_importance').draw(
             limit_length=maximum_number_feature)
 
         # -- Draw Content --
         if not (notes is None):
             self.pdf.add_new_line(notes)
-        elif maximum_number_feature < len(feature_ranking):
+        elif maximum_number_feature < len(importance_ranking):
             self.pdf.add_new_line(
                 "The figure below shows the top %s important features for the trained model."
                 % maximum_number_feature)
@@ -741,10 +745,12 @@ class PdfWriter(Writer):
         table_header = ['Feature', 'Importance']
         table_data = []
 
-        for feature_name, importance in feature_ranking:
+        for feature_name, importance in importance_ranking:
             if float(importance) < importance_threshold:
                 break
-            table_data.append([feature_name, importance])
+            table_data.append(
+                [feature_name if len(feature_name) < 50 else "%s_~" % feature_name[:50], round(importance, 10)])
+            #
 
         self.pdf.add_table(header=table_header, data=table_data,
                            col_width=[140, 30])
@@ -973,7 +979,7 @@ class PdfWriter(Writer):
                                             and corresponding values, or
                      (2) have a `average` keyword to show a macro-average metric.
         """
-        from xai.evaluation.multi_classification_result import \
+        from xai.model.evaluation.multi_classification_result import \
             MultiClassificationResult
         # -- Draw Content --
         self.pdf.add_new_line(notes)
@@ -1003,7 +1009,7 @@ class PdfWriter(Writer):
             aggregated(bool): whether to aggregate multiple result tables into one
         """
         from collections import defaultdict
-        from xai.evaluation.binary_classification_result import \
+        from xai.model.evaluation.binary_classification_result import \
             BinaryClassificationResult
         # -- Draw Content --
         self.pdf.add_new_line(notes)
@@ -1040,7 +1046,7 @@ class PdfWriter(Writer):
 
         Args:
             notes(str): Explain the block
-            confusion_matrix_tuple(tuple): (confusion_matrix_header, confusion_matrix_dict)
+            *confusion_matrix_tuple(tuple): (confusion_matrix_header, confusion_matrix_dict)
                 - confusion_matrix_header(str): a header for confusion_matrix,
                                                 can be split or round number.
                 - confusion_matrix_dict(dict):
@@ -1101,17 +1107,18 @@ class PdfWriter(Writer):
         """
         import operator
         from xai.graphs import graph_generator
-        from xai.graphs.format_contants import ABSOLUTE_3_EQUAL_GRID_SPEC
+        from xai.graphs.format_contants import ABSOLUTE_2_EQUAL_GRID_SPEC
         # -- Draw Content --
         self.pdf.add_new_line(notes)
 
         top_classes = list()
+
         for eval_name, eval_vis_result in visual_result_tuple:
             predicted_class_count = dict()
             label = ''
             for label in eval_vis_result.keys():
                 data = eval_vis_result[label]
-                num_sample = len(data['gt'])
+                num_sample = data['gt'].shape[0]
                 predicted_class_count[label] = num_sample
 
                 sorted_class_size = sorted(predicted_class_count.items(),
@@ -1127,12 +1134,12 @@ class PdfWriter(Writer):
                         self.figure_path, label, class_label)
                     sw_image_path = graph_generator.ResultProbabilityForMultiClass(
                         image_path, data,
-                        'Predicted as %s' % label).draw()
+                        'Predicted as %s' % class_label).draw()
                     image_path_list.append(sw_image_path)
                 if len(image_path_list) >= max_num_classes:
                     break
             self.pdf.add_list_of_grid_images(image_set=image_path_list,
-                                             grid_spec=ABSOLUTE_3_EQUAL_GRID_SPEC)
+                                             grid_spec=ABSOLUTE_2_EQUAL_GRID_SPEC)
         self.pdf.ln(5)
 
     def draw_binary_class_confidence_distribution(self, notes: str, *,

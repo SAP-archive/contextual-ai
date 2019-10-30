@@ -1,8 +1,18 @@
-from typing import List
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
 from collections import defaultdict
+from typing import List
+
 import numpy as np
 
 
+################################################################################
+### Confusion Matrix
+################################################################################
 class ConfusionMatrix:
     def __init__(self, label: List[str], confusion_matrix: List[List[float]]):
         self.label = label
@@ -16,8 +26,7 @@ class ConfusionMatrix:
 
     def get_top_k_similar_classes(self, k, top_n_class=10, tf_thresdhold=0.8):
         if k > len(self.confusion_matrix):
-            print('Error: N exceeds the class numbers.')
-            k = 1
+            raise Exception('Error: N exceeds the class numbers.')
         values = np.array(self.confusion_matrix)
         class_count = np.sum(values, axis=1)
 
@@ -47,35 +56,3 @@ class ConfusionMatrix:
                 j += 1
                 counter += 1
         return similar_class
-
-
-if __name__ == "__main__":
-    labels = [
-        "CI_5",
-        "CI_3",
-        "CA_1",
-        "CI_4",
-        "CI_1",
-        "CI_57",
-        "CI_7",
-        "CI_6",
-        "CI_8",
-        "CI_276",
-        "CI_49",
-        "CI_2"
-    ]
-    values = [[10, 1, 0, 68, 29, 0, 4, 10, 0, 0, 12, 0],
-              [0, 696, 0, 91, 34, 0, 37, 9, 0, 0, 10, 6],
-              [0, 5, 35, 16, 25, 0, 25, 3, 0, 0, 8, 5],
-              [0, 45, 0, 390, 62, 0, 36, 14, 0, 0, 15, 12],
-              [0, 52, 2, 230, 279, 0, 61, 39, 0, 0, 42, 6],
-              [0, 0, 0, 2, 0, 0, 48, 1, 0, 0, 79, 0],
-              [0, 1, 0, 15, 10, 0, 567, 6, 0, 0, 15, 2],
-              [0, 29, 0, 86, 49, 0, 48, 187, 0, 0, 15, 14],
-              [0, 23, 0, 37, 36, 0, 42, 5, 0, 0, 11, 1],
-              [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 1, 5, 0, 45, 6, 0, 0, 888, 0],
-              [1, 30, 1, 35, 13, 0, 15, 16, 0, 0, 5, 233]]
-
-    cm = ConfusionMatrix(label=labels, confusion_matrix=values)
-    cm.get_top_k_similar_classes(2)

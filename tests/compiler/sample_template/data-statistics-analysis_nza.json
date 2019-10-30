@@ -1,0 +1,33 @@
+{
+  "name": "Report for Data Statistics Analysis",
+  "overview": true,
+  "content_table": true,
+  "contents": [
+    {
+      "title": "Data Statistics Analysis - NZa",
+      "desc": "This section provides the analysis on NZa dataset",
+      "sections": [
+        {
+          "title": "Default analysis with csv (without label and metadata)",
+          "component": {
+            "_comment": "refer to document section xxxx",
+            "class": "DataStatisticsAnalysis",
+            "attr": {
+              "data": "{in_path}/nza/nza.csv"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "writers": [
+    {
+      "class": "Pdf",
+      "attr": {
+        "name": "data-stats-analysis-nza-report",
+        "path": "{out_path}"
+      }
+    }
+  ]
+}
+

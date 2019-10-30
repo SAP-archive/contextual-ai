@@ -1,1 +1,1 @@
-from .explainer.constants import DOMAIN, ALG, MODE
+from xai.explainer.constants import DOMAIN, ALG, MODE

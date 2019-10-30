@@ -41,7 +41,7 @@ class TestSHAPTabularExplainer(unittest.TestCase):
         explainer = SHAPTabularExplainer()
         data = np.arange(9).reshape((3, 3))
         explainer.build_explainer(predict_fn=self.dummy_predict_fn,
-                                  data=data)
+                                  training_data=data)
         self.assertIsInstance(explainer.explainer_object, KernelExplainer)
 
     def test_save_explainer(self):

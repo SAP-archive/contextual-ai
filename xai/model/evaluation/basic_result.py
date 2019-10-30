@@ -1,15 +1,23 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
 from abc import ABC, abstractmethod
 from typing import Tuple, List
-from collections import defaultdict
+
 from ordered_set import OrderedSet
 
-from xai.model.evaluation.confusion_matrix import ConfusionMatrix
 
-
+################################################################################
+### Classification Result
+################################################################################
 class ClassificationResult(ABC):
     """
     The base class for classification problem result.
     """
+
     def __init__(self):
         self.resultdict = dict()
         self.metric_set = OrderedSet()
@@ -44,7 +52,6 @@ class ClassificationResult(ABC):
         Returns: a set of tables (title, header, values)
         """
         raise NotImplementedError('The derived class should implement it.')
-
 
     def get_metric_list(self):
         """

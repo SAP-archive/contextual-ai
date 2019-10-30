@@ -1,12 +1,14 @@
 #!/usr/bin/python
 #
-# -- coding: utf-8 --
+# -*- coding: utf-8 -*-
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
 
+import math
+from typing import Optional, List, Tuple
+
 import numpy as np
 from sklearn.neighbors import KernelDensity
-from typing import Optional, List, Tuple
 
 from xai.data.constants import STATSCONSTANTS
 from xai.data.exceptions import ItemDataTypeNotSupported, NoItemsError
@@ -23,6 +25,7 @@ class NumericDataAnalyzer(AbstractDataAnalyzer):
     def __init__(self):
         super(NumericDataAnalyzer, self).__init__()
         self._values = []
+        self._nan_counter = 0
 
     def feed(self, value: int or str):
         """
@@ -33,7 +36,11 @@ class NumericDataAnalyzer(AbstractDataAnalyzer):
 
         """
         if type(value) not in NumericDataAnalyzer.SUPPORTED_TYPES:
-            raise ItemDataTypeNotSupported(type(value), type(self), NumericDataAnalyzer.SUPPORTED_TYPES)
+            raise ItemDataTypeNotSupported(type(value), type(self),
+                                           NumericDataAnalyzer.SUPPORTED_TYPES)
+        if np.isnan(value) or value is None or math.isnan(value):
+            self._nan_counter += 1
+            return
         self._values.append(value)
 
     def get_statistics(self, bin_edges: Optional[List[float]] = None,
@@ -91,5 +98,6 @@ class NumericDataAnalyzer(AbstractDataAnalyzer):
                                median=median,
                                sd=sd,
                                histogram=histogram,
-                               kde=kde)
+                               kde=kde,
+                               nan_count=self._nan_counter)
         return stats

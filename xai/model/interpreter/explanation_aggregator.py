@@ -1,12 +1,22 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+
 import operator
 from collections import defaultdict, Counter
 
 from typing import Dict, Tuple
 
 from xai.model.interpreter.exceptions import InvalidExplanationFormat, \
-    MutipleScoresFoundForSameFeature, UnsupportedMethodType, InvalidArgumentError
+    MutipleScoresFoundForSameFeature, UnsupportedMethodType, \
+    InvalidArgumentError
 
 
+################################################################################
+### Explanation Aggregator
+################################################################################
 class ExplanationAggregator:
     """
     Class for explanation aggregator. It aggregates the explanations based on classes, feature and scores.

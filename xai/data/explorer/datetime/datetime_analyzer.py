@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# -- coding: utf-8 --
+# -*- coding: utf-8 -*-
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
 
@@ -35,6 +35,7 @@ class DatetimeDataAnalyzer(AbstractDataAnalyzer):
         super(DatetimeDataAnalyzer, self).__init__()
         self._time_records = []
         self._frequency = dict()
+        self.invalid_count =  0
 
     def feed(self, value: str):
         """
