@@ -30,6 +30,10 @@ class DataframeValidator:
         """
         if key_col is None:
             key_col = df.columns
+        else:
+            for col in key_col:
+                if col not in df.columns:
+                    raise ColumnNotFound(col, df.columns)
         groups = df.groupby(by=key_col).groups
         results = list()
         for indices in groups.values():
@@ -51,6 +55,7 @@ class DataframeValidator:
         Returns:
             A list of indices
         """
+
         if col_a not in df_a.columns:
             raise ColumnNotFound(col_a, df_a.columns)
         if col_b not in df_b.columns:
