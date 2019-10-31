@@ -17,4 +17,7 @@ from .writer import (
 )
 from .explainer import ModelAgnosticExplainer
 from .evaluation import ClassificationEvaluationResult
-from .validator import DuplicationOrphanCheck
+from .validator import (
+    DuplicationOrphanCheck,
+    CompleteMatchCheck
+)

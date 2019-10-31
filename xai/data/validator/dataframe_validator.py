@@ -53,7 +53,7 @@ class DataframeValidator:
             col_b: column name b
 
         Returns:
-            A list of indices
+            A list of indices that is orphaned
         """
 
         if col_a not in df_a.columns:
@@ -61,16 +61,11 @@ class DataframeValidator:
         if col_b not in df_b.columns:
             raise ColumnNotFound(col_b, df_b.columns)
         foreign_key = set(df_b[col_b].values)
-        result = []
-        for value in df_a[col_a].values:
-            if value in foreign_key:
-                result.append(True)
-            else:
-                result.append(False)
-        return result
+
+        return df_a[~df_a[col_a].isin(foreign_key)].index.tolist()
 
     @classmethod
-    def unidirectional_matches(cls, df_a: pd.DataFrame, df_b: pd.DataFrame, col_a: str, col_b: str)->List[int]:
+    def unidirectional_matches(cls, df_a: pd.DataFrame, df_b: pd.DataFrame, col_a: str, col_b: str) -> List[int]:
         """
         Return for each value in column a [of dataframe A] return the number of its occurrence in column b [of dataframe B]
 
@@ -98,7 +93,8 @@ class DataframeValidator:
         return occurrences_count
 
     @classmethod
-    def find_m_to_n_complete_matches(cls, df: pd.DataFrame, col_a: str, col_b: str)->List[Tuple[List[int],List[int]]]:
+    def find_m_to_n_complete_matches(cls, df: pd.DataFrame, col_a: str, col_b: str) -> List[
+        Tuple[List[int], List[int]]]:
         """
         Find completed matches between two entities
 
@@ -117,6 +113,7 @@ class DataframeValidator:
                                sorted(copy_df[col_a].value_counts().items(), key=operator.itemgetter(1))[::-1]]
         matches_found = []
         processed_a = set()
+
         for idx, value_a in enumerate(sorted_unique_a_set):
             if value_a in processed_a:
                 continue
@@ -132,12 +129,13 @@ class DataframeValidator:
                 relevant_mr = copy_df[logic]
                 copy_df = copy_df[~logic]
                 if len(relevant_mr) == m * n:
-                    matches_found.append([list(back_a_set),list(back_b_set)])
+                    matches_found.append([list(back_a_set), list(back_b_set)])
             processed_a.update(back_a_set)
+
         return matches_found
 
     @classmethod
-    def relational_filter(cls, df:pd.DataFrame, relation_query:str):
+    def relational_filter(cls, df: pd.DataFrame, relation_query: str):
         """
         Check whether the query is satisfied
 
@@ -151,5 +149,3 @@ class DataframeValidator:
 
         valid_df = df.query(relation_query)
         return valid_df.index.to_list()
-
-
