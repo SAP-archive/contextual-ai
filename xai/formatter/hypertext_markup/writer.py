@@ -22,7 +22,11 @@ from xai.data.explorer import (
     TextStats,
     DatetimeStats
 )
-from xai.formatter.contents import Header, Title
+from xai.formatter.contents import (
+    Header,
+    Title,
+    SectionTitle
+)
 from xai.formatter.hypertext_markup.publisher import CustomHtml, Div
 from xai.formatter.report.section import OverviewSection, DetailSection
 from xai.formatter.writer import Writer
@@ -104,21 +108,23 @@ class HtmlWriter(Writer):
         _h3_count = 0
         dc_contents = copy.deepcopy(detail.contents)
         for content in dc_contents:
-            if isinstance(content, Header):
+            if isinstance(content, SectionTitle) and \
+                    content.level == Title.SECTION_TITLE:
+                _h1_count += 1
+                _h2_count = 0
+                _h3_count = 0
+                content.text = '%s %s' % (_h1_count, content.text)
+            elif isinstance(content, Header):
                 if content.level == Header.LEVEL_1:
-                    _h1_count += 1
-                    _h2_count = 0
-                    _h3_count = 0
-                    content.text = '%s %s' % (_h1_count, content.text)
-                elif content.level == Header.LEVEL_2:
                     _h2_count += 1
                     _h3_count = 0
                     content.text = '%s.%s %s' % (_h1_count, _h2_count,
                                                  content.text)
-                elif content.level == Header.LEVEL_3:
+                elif content.level == Header.LEVEL_2:
                     _h3_count += 1
                     content.text = '%s.%s.%s %s' % (_h1_count, _h2_count,
                                                     _h3_count, content.text)
+
         if len(dc_contents) > 1:
             for content in dc_contents:
                 content.draw(writer=self)
