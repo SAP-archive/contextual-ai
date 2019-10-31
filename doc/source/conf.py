@@ -25,7 +25,8 @@ copyright = '2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen'
 author = 'Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.1'
+version = '0.0.2'
+# release = '0.0.1'
 
 
 # -- General configuration ---------------------------------------------------
