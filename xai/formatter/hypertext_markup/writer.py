@@ -179,6 +179,25 @@ class HtmlWriter(Writer):
         self.html.article[-1].items.append(self.html.add_paragraph(text=text))
 
     ################################################################################
+    ###  Basic/Reusable Section
+    ################################################################################
+    def draw_basic_key_value_pairs(self, notes: str, *,
+                                   info: list):
+        """
+        Draw key-value pairs information to the report
+
+        Args:
+            notes(str): Explain the block
+            info (list): list of tuple / list of (list of tuple))
+                multi-level rendering, e.g. to display `model_info`
+        """
+        # -- Draw Content --
+        self.html.article[-1].items.append(
+            self.html.add_paragraph(text=notes))
+        self.html.article[-1].items.append(
+            self.html.add_basic_nested_info_table(data=info))
+
+    ################################################################################
     ###  Summary Section
     ################################################################################
 
@@ -296,8 +315,6 @@ class HtmlWriter(Writer):
         # -- Draw Content --
         self.html.article[-1].items.append(self.html.add_header(text=notes,
                                                                 heading='h3'))
-        # self.html.article[-1].items.append(
-        #     self.html.create_unordered_kay_value_pair_list(items=model_info))
         self.html.article[-1].items.append(
             self.html.add_overview_table(data=model_info))
 

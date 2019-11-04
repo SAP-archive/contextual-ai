@@ -412,7 +412,7 @@ class CustomPdf(FPDF):
 
     def add_nested_key_value_pair(self, info):
         """
-        add nestted key-value pair in the format of "KEY: VALUE"
+        add nested key-value pair in the format of "KEY: VALUE"
         (with a new line) to pdf, with current global indent level
 
         Args:

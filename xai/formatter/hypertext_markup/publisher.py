@@ -141,9 +141,35 @@ class CustomHtml:
         return doc.getvalue()
 
     @staticmethod
+    def add_basic_nested_info_table(data: list):
+        """
+        add basic nested info table
+
+        Args:
+             data (list): list of tuple / list of (list of tuple))
+                multi-level rendering, e.g. to display `model_info`
+        Returns: HTML String
+        """
+        def add_inner_pair(x, itemize_level=''):
+            for key, item in x:
+                with doc.tag('tr'):
+                    doc.asis('<td><b>%s%s</b></td>' % (itemize_level, key))
+                    if (type(item) is list) or (type(item) is tuple):
+                        itemize_level += '- '
+                        add_inner_pair(item, itemize_level)
+                    else:
+                        doc.asis('<td>%s</td>' % item)
+
+        doc = Doc()
+        with doc.tag('table'):
+            doc.attr(klass='standard_table')
+            add_inner_pair(data)
+        return doc.getvalue()
+
+    @staticmethod
     def add_overview_table_with_dict(data: dict):
         """
-        add overview table
+        add overview table with dict
 
         Args:
             data (dict): list of key:value pairs to add to table row

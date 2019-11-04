@@ -3,7 +3,7 @@
 
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
-""" Test Case to generate pdf report """
+""" Test Case to generate html report """
 
 import json
 import os
@@ -13,7 +13,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from PyPDF2 import PdfFileReader
 from datetime import datetime
 
 sys.path.append('../../')
@@ -22,46 +21,70 @@ from xai.data import DataUtil
 from xai.data.constants import DATATYPE
 
 from xai.model.interpreter import FeatureInterpreter
-from xai.formatter import Report, PdfWriter
-
+from xai.formatter import Report, HtmlWriter
 
 ################################################################################
-### Generate Pdf Report
+### Generate HTML Report
 ################################################################################
 
-class TestGeneratePdfReport(unittest.TestCase):
+class TestGenerateHtmlReport(unittest.TestCase):
     """
-    Test Case to generate pdf report
+    Test Case to generate html report
     """
 
     def setUp(self) -> None:
         self.name = None
         self.report_name = None
         self.report = None
-        self.page_number = 0
+        self.tag_number = 0
 
     def test_add_overview(self):
         self.name = "overview"
         self.report_name = "Overview Report"
-        self.page_number = 2
+        self.tag_number = 1
         ## Create Report
         self.report = Report(name=self.report_name)
+
         ### Create Cover Section
-        self.report.overview.add_section_title(text="Summary")
+        self.report.overview.add_new_page()
+        self.report.overview.add_section_title(text="Overview")
         self.report.overview.add_paragraph(text="This is summary Info")
+        model_info = [('Model ID', '12345678'),
+                      ('Model Version', 'v6'),
+                      ('Scenario ID', '111222333444555'),
+                      ('Notes', 'This model is created as a beta version.')
+                  ]
+        self.report.overview.add_model_info_summary(model_info=model_info)
+
+        timing = [('Data Preprocessing', 1000),
+                  ('Feature Engineering', 10000),
+                  ('Training', 200200),
+                  ('Evaluation', 30303)]
+        self.report.overview.add_training_timing(timing=timing)
+
+        data_summary = [('training', 10000),
+                        ('validation', 2000),
+                        ('testing', 1000)]
+        self.report.overview.add_data_set_summary(data_summary=data_summary)
+
+        with open('./sample_data/evaluation_result_summary.json', 'r') as f:
+            evaluation_result_data = json.load(f)
+        print(evaluation_result_data)
+
+        self.report.overview.add_evaluation_result_summary(
+            evaluation_result=evaluation_result_data)
         print(self.report.overview.contents)
-        ### added 2 component but length of overview is 3,
+        ### added 7 component but length of overview is 8,
         ### there is a default component - new page at the beginning (init)
-        self.assertEqual(len(self.report.overview.contents), 3)
+        self.assertEqual(len(self.report.overview.contents), 8)
 
     def test_add_header_in_detail(self):
         self.name = "header"
         self.report_name = "Header Report"
-        self.page_number = 2
+        self.tag_number = 1
         ## Create Report
         self.report = Report(name=self.report_name)
         ### Create Contents Section - Header
-        self.report.detail.add_new_page()
         self.report.detail.add_section_title(text="Example for Header")
         #### Header Level 1 and it paragraph
         self.report.detail.add_header_level_1(text='Section Header 1')
@@ -73,13 +96,14 @@ class TestGeneratePdfReport(unittest.TestCase):
         self.report.detail.add_header_level_3(text='Section Header 3')
         self.report.detail.add_paragraph(text="This is content Info of header 3")
         print(self.report.detail.contents)
-        self.assertEqual(len(self.report.detail.contents), 8)
+        ### There is no default new page -
+        self.assertEqual(len(self.report.detail.contents), 7)
 
 
     def test_add_basic_component(self):
         self.name = "basic"
         self.report_name = "Basic Report"
-        self.page_number = 2
+        self.tag_number = 1
         ## Create Report
         self.report = Report(name=self.report_name)
         ### Create Basic Info Section
@@ -100,11 +124,10 @@ class TestGeneratePdfReport(unittest.TestCase):
         print(self.report.detail.contents)
         self.assertEqual(len(self.report.detail.contents), 4)
 
-
     def test_add_data_analysis(self):
         self.name = "data-analysis"
         self.report_name = "Data Analysis Report"
-        self.page_number = 10
+        self.tag_number = 1
         ## Create Report
         self.report = Report(name=self.report_name)
         ### Create Data Analysis Section
@@ -127,13 +150,14 @@ class TestGeneratePdfReport(unittest.TestCase):
 
         label_column = 'Survived'
 
-
         ### Get data types - scenario where no metadata provided
         feature, valid_feature_names, valid_feature_types, meta = \
-            DataUtil.get_column_types(data=data, threshold=0.3, label=label_column)
+            DataUtil.get_column_types(data=data, threshold=0.3,
+                                      label=label_column)
         # -- Cast Data to String --
         non_numeric_features = [name for name, _type in
-                                list(zip(valid_feature_names, valid_feature_types))
+                                list(zip(valid_feature_names,
+                                         valid_feature_types))
                                 if _type != DATATYPE.NUMBER]
         if label_column is not None:
             non_numeric_features += [label_column]
@@ -240,7 +264,7 @@ class TestGeneratePdfReport(unittest.TestCase):
     def test_add_feature_analysis(self):
         self.name = "feature-analysis"
         self.report_name = "Feature Analysis Report"
-        self.page_number = 4
+        self.tag_number = 2
         ## Create Report
         self.report = Report(name=self.report_name)
         ### Create Feature Analysis Section as new page
@@ -254,7 +278,7 @@ class TestGeneratePdfReport(unittest.TestCase):
         self.report.detail.add_header_level_2(text='Feature Importance')
         self.assertEqual(len(self.report.detail.contents), 4)
         ### Feature Importance
-        path =  Path('./sample_data/model.pkl')
+        path = Path('./sample_data/model.pkl')
         model = pd.read_pickle(str(path))
         path = Path('./sample_data/train_data.csv')
         data = pd.read_csv(str(path))
@@ -292,9 +316,11 @@ class TestGeneratePdfReport(unittest.TestCase):
                list(hyperparameter_tuning['history'].keys())[:2]})
         print('benchmark_metric:', hyperparameter_tuning['benchmark_metric'])
         self.assertEqual(hyperparameter_tuning['benchmark_metric'], 'accuracy')
-        print('benchmark_threshold:', hyperparameter_tuning['benchmark_threshold'])
+        print('benchmark_threshold:',
+              hyperparameter_tuning['benchmark_threshold'])
         self.assertEqual(hyperparameter_tuning['benchmark_threshold'], 0.8)
-        print('non_hyperopt_score:', hyperparameter_tuning['non_hyperopt_score'])
+        print('non_hyperopt_score:',
+              hyperparameter_tuning['non_hyperopt_score'])
 
         self.report.detail.add_hyperparameter_tuning(
             history=hyperparameter_tuning['history'],
@@ -306,18 +332,72 @@ class TestGeneratePdfReport(unittest.TestCase):
         print(self.report.detail.contents)
         self.assertEqual(len(self.report.detail.contents), 11)
 
+
+    def test_add_training_analysis(self):
+        self.name = "training-analysis"
+        self.report_name = "Training Analysis Report"
+        self.tag_number = 1
+        ## Create Report
+        self.report = Report(name=self.report_name)
+        ### Add Header Level 2
+        self.report.detail.add_header_level_2(text='Deep Learning Training')
+        ### Learning Curve
+        with open('./sample_data/learning_curve.json', 'r') as f:
+            learning_curve = json.load(f)
+
+        print('best_idx:', learning_curve['best_idx'])
+        print('history [first 2 samples]:',
+              {k: learning_curve['history'][k] for k in
+               list(learning_curve['history'].keys())[:2]})
+        print('benchmark_metric:', learning_curve['benchmark_metric'])
+        print('benchmark_threshold:', learning_curve['benchmark_threshold'])
+        print('training_params:', learning_curve['training_params'])
+
+        self.report.detail.add_learning_curve(
+            history=learning_curve['history'],
+            best_idx=learning_curve['best_idx'],
+            benchmark_metric=learning_curve['benchmark_metric'],
+            benchmark_threshold=learning_curve['benchmark_threshold'],
+            training_params=learning_curve['training_params'])
+
     # TODO: Migrate to new format - assert need to update
     def test_add_model_evaluation(self):
         self.name = "model-evaluation"
         self.report_name = "Model Evaluation Report"
-        self.page_number = 2
+        self.tag_number = 1
         ## Create Report
         self.report = Report(name=self.report_name)
+        ### Create Data Evaluation Section
+        self.report.detail.add_new_page()
+        self.report.detail.add_section_title("Example for Data Evaluation")
+
+        ### Add Header Level 1
+        self.report.detail.add_header_level_1(
+            text='Binary Classification Evaluation Analysis')
+        ### Add Header Level 2
+        self.report.detail.add_header_level_2(text='Overall Result')
+        self.assertEqual(len(self.report.detail.contents), 4)
+
+        ### Numeric Metric
+        # with open('./sample_data/binary_evaluation_results.json', 'r') as f:
+        #     eval_result = json.load(f)
+        #
+        # splits = eval_result.keys()
+        # numeric_metrics_list = []
+        #
+        # for split in splits:
+        #     label_eval_result = eval_result[split]
+        #     del (label_eval_result['vis_result'])
+        #     numeric_metrics_list.append((split, label_eval_result))
+        # print(numeric_metrics_list)
+        #
+        # self.report.detail.add_binary_class_evaluation_metric_results(
+        #     numeric_metrics_list,
+        #     notes='The section shows general results like accuracy, precision, recall.')
+
         ### Add Header Level 2
         self.report.detail.add_header_level_2(text='Confusion Matrix')
-        self.assertEqual(len(self.report.detail.contents), 1)
-
-        # ### Confusion Matrix
+        ### Confusion Matrix
         # with open('./sample_data/binary_evaluation_results.json', 'r') as f:
         #     eval_result = json.load(f)
         # splits = eval_result.keys()
@@ -331,17 +411,51 @@ class TestGeneratePdfReport(unittest.TestCase):
         # print(confusion_matrix_list)
         #
         # self.report.detail.add_confusion_matrix_results(
-        # confusion_matrix_list)
-        # self.assertEqual(len(self.report.detail.contents), 2)
+        #     confusion_matrix_tuple=confusion_matrix_list)
+        self.assertEqual(len(self.report.detail.contents), 5)
 
-        ### Create Data Evaluation Section
-        self.report.detail.add_new_page()
-        self.report.detail.add_section_title("Example for Data Evaluation ")
+        ### Add Header Level 2
+        self.report.detail.add_header_level_2(text='Confidence Distribution')
+        ### Confidence Distribution
+        # with open('./sample_data/binary_evaluation_results.json', 'r') as f:
+        #     eval_result = json.load(f)
+        #
+        # splits = eval_result.keys()
+        # probability_plot_list = []
+        #
+        # for split in splits:
+        #     vis_result = eval_result[split]['vis_result']
+        #     probability_plot_list.append((split, vis_result))
+        #     print('Split name:', split)
+        #     for key, value in vis_result.items():
+        #         print(' - %s:' % key, type(value), value[:3])
+        #
+        # self.report.detail.add_binary_class_confidence_distribution(
+        #     probability_plot_list)
+        self.assertEqual(len(self.report.detail.contents), 6)
+
+        ### Add Header Level 2
+        self.report.detail.add_header_level_2(text='Reliability Diagram')
+        ### Reliability Diagram
+        # with open('./sample_data/binary_evaluation_results.json', 'r') as f:
+        #     eval_result = json.load(f)
+        #
+        # splits = eval_result.keys()
+        # probability_plot_list = []
+        #
+        # for split in splits:
+        #     label_eval_result = eval_result[split]['vis_result']
+        #     probability_plot_list.append((split, vis_result))
+        #     print('Split name:', split)
+        #     for key, value in vis_result.items():
+        #         print(' - %s:' % key, type(value), value[:3])
+        #
+        # self.report.detail.add_binary_class_reliability_diagram(probability_plot_list)
+        self.assertEqual(len(self.report.detail.contents), 7)
+
         ### Add Header Level 1
         self.report.detail.add_header_level_1(
-             text='Multi-class Classification Evaluation Analysis')
-        self.assertEqual(len(self.report.detail.contents), 4)
-
+            text='Multi-class Classification Evaluation Analysis')
         # with open('./sample_data/multi_evaluation_results.json', 'r') as f:
         #     eval_result = json.load(f)
         #
@@ -349,45 +463,44 @@ class TestGeneratePdfReport(unittest.TestCase):
         # label_eval_result = eval_result[label_key]
         # vis_result = label_eval_result['vis_result']
         # del (label_eval_result['vis_result'])
-        #
-        # ### Add Header Level 2
-        # report.detail.add_header_level_2(text='Confidence Distribution')
-        # ###  Probability Plot
-        # for class_name, class_value in vis_result.items():
-        #     print('Class:', class_name)
-        #     for key, value in class_value.items():
-        #         print(' - %s:' % key, type(value), value[:4])
-        #
-        # self.report.detail.add_multi_class_confidence_distribution([('',
-        # vis_result)])
-        # self.assertEqual(len(self.report.detail.contents), 2)
+        self.assertEqual(len(self.report.detail.contents), 8)
 
         ### Add Header Level 2
-        self.report.detail.add_header_level_2(text='Confusion Matrix')
-        self.assertEqual(len(self.report.detail.contents), 5)
+        self.report.detail.add_header_level_2(text='Overall Result')
+        ### Numeric Metrics
+        # print(label_eval_result)
+        #
+        # ### Add Header Level 2
+        # report.detail.add_header_level_2(text='Confusion Matrix')
         # ### Confusion Matrix
         # print(label_eval_result['CM'])
         #
         # self.report.detail.add_confusion_matrix_results(
         #     confusion_matrix_tuple=[('', label_eval_result['CM'])])
+        self.assertEqual(len(self.report.detail.contents), 9)
+
+        ### Add Header Level 2
+        self.report.detail.add_header_level_2(text='Confidence Distribution')
+        ###  Probability Plot
+        # for class_name, class_value in vis_result.items():
+        #     print('Class:', class_name)
+        #     for key, value in class_value.items():
+        #         print(' - %s:' % key, type(value), value[:4])
         #
-        # with open('./sample_data/evaluation_result_summary.json', 'r') as f:
-        #     evaluation_result_data = json.load(f)
-        # print(evaluation_result_data)
-        #
-        # self.report.overview.add_evaluation_result_summary(
-        #     evaluation_result=evaluation_result_data)
-        # self.assertEqual(len(self.report.detail.contents), 2)
+        # self.report.detail.add_multi_class_confidence_distribution([('', vis_result)])
+        self.assertEqual(len(self.report.detail.contents), 10)
+
+
 
     def tearDown(self) -> None:
         ### Lastly generate report with the writer instance
-        name = '{}-pdf-report'.format(self.name)
-        start_time = datetime.now().replace(microsecond=0)
-        self.report.generate(writer=PdfWriter(name=name,
+        name = '{}-html-report'.format(self.name)
+        start_time = datetime.now().replace(microsecond=0).replace(second=0)
+        self.report.generate(writer=HtmlWriter(name=name,
                                               path='./sample_output'))
-        end_time = datetime.now().replace(microsecond=0)
+        end_time = datetime.now().replace(microsecond=0).replace(second=0)
         dir_path = os.getcwd()
-        output = "%s/sample_output/%s.pdf" % (dir_path, name)
+        output = "%s/sample_output/%s.html" % (dir_path, name)
         print("report generated %s:" % output)
 
         def time_in_range(start, end, x):
@@ -397,24 +510,23 @@ class TestGeneratePdfReport(unittest.TestCase):
             else:
                 return start <= x or x <= end
 
-        with open(output, 'rb') as f:
-            pdf = PdfFileReader(f)
-            info = pdf.getDocumentInfo()
-            number_of_pages = pdf.getNumPages()
+        with open(output) as f:
+            read_data = f.read()
 
-        print(info)
-        self.assertEqual(info['/Title'], self.report_name)
+        index = read_data.find(self.report_name)
+        # -- the header start at index 1316 --
+        self.assertEqual(index, 1316)
 
-        # print(info['/CreationDate'])
-        report_time = datetime.strptime(
-            info['/CreationDate'], 'D:%Y%m%d%H%M%S')
+        index = read_data.find('created on')
+        create_date = read_data[index+11: index+27]
+        # print(create_date)
+        report_time = datetime.strptime(create_date, '%Y-%m-%d %H:%M')
         self.assertTrue(time_in_range(start_time, end_time, report_time))
 
-        # print(number_of_pages)
-        self.assertEqual(number_of_pages, self.page_number)
-
+        number_of_tags = read_data.count('class="tab_contents"')
+        # print(number_of_tags)
+        self.assertEqual(number_of_tags, self.tag_number)
 
 # -- Main --
 if __name__ == "__main__":
     unittest.main()
-
