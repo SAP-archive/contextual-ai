@@ -107,6 +107,22 @@ class Writer(ABC):
         pass
 
     ################################################################################
+    ###  Basic/Reusable Section
+    ################################################################################
+    @abstractmethod
+    def draw_basic_key_value_pairs(self, notes: str, *,
+                                   info: list):
+        """
+        Draw key-value pairs information to the report
+
+        Args:
+            notes(str): Explain the block
+            info (list): list of tuple / list of (list of tuple))
+                multi-level rendering, e.g. to display `model_info`
+        """
+        pass
+
+    ################################################################################
     ###  Summary Section
     ################################################################################
     @abstractmethod

@@ -112,6 +112,18 @@ class Section:
         from xai.formatter.contents import Paragraph
         self.contents.append(Paragraph(text=text))
 
+    def add_key_value_pairs (self, info_list: list, notes=None):
+        """
+        add key-values info as simple paragraph
+
+        Args:
+            info_list(list): list of tuple / list of (list of tuple))
+                multi-level rendering, e.g. to display `model_info`
+            notes (str): explain the block
+        """
+        from xai.formatter.contents import BasicKeyValuePairs
+        self.contents.append(BasicKeyValuePairs(info=info_list, notes=notes))
+
     ################################################################################
     ###  Content Summary Section
     ################################################################################

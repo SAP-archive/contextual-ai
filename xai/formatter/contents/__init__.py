@@ -18,6 +18,10 @@ from xai.formatter.contents.base import (
     ParagraphTitle
 )
 
+from xai.formatter.contents.basic import (
+    BasicKeyValuePairs
+)
+
 from xai.formatter.contents.data import (
     DataMissingValue,
     DataSetDistribution,

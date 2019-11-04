@@ -198,6 +198,30 @@ class PdfWriter(Writer):
         self.pdf.ln()
 
     ################################################################################
+    ###  Basic/Reusable Section
+    ################################################################################
+    def draw_basic_key_value_pairs(self, notes: str, *,
+                                   info: list):
+        """
+        Draw key-value pairs information to the report
+
+        Args:
+            notes(str): Explain the block
+            info (list): list of tuple / list of (list of tuple))
+                multi-level rendering, e.g. to display `model_info`
+        """
+        # -- Draw Content --
+        self.pdf.add_new_line(notes, style='BI')
+
+        self.pdf.start_itemize()
+
+        for attribute, value in info:
+            self.pdf.add_key_value_pair(key=attribute, value=value)
+
+        self.pdf.end_itemize()
+        self.pdf.ln()
+
+    ################################################################################
     ###  Summary Section
     ################################################################################
     def draw_training_time(self, notes: str, *, timing: List[Tuple[str, int]]):
