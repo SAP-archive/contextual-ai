@@ -3,18 +3,18 @@
 
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
-""" Sample Code to generate pdf report """
+""" Test Case to generate pdf report """
 
 import json
 import os
 import sys
+import unittest
 from pathlib import Path
 
-from PyPDF2 import PdfFileReader
-from datetime import datetime
-import unittest
 import numpy as np
 import pandas as pd
+from PyPDF2 import PdfFileReader
+from datetime import datetime
 
 sys.path.append('../../')
 
@@ -75,18 +75,30 @@ class TestGeneratePdfReport(unittest.TestCase):
         print(self.report.detail.contents)
         self.assertEqual(len(self.report.detail.contents), 8)
 
-    #
-    # ### Create Basic Info Section
-    # report.detail.add_section_title("Example for Basic Info ")
-    # ### Add Header Level 1
-    # report.detail.add_header_level_1(text='Basic Key-Value Pairs Info')
-    # info_list = list()
-    # info_list.append(("Filtered Sample Count", 1208))
-    # info_list.append(("Unique Value Count", [
-    #     ("BANKSTATEMENTKEY[BS]", 725),
-    #     ("RECEIVABLEKEY[RC]", 1208)]))
-    # print(info_list)
-    # report.detail.add_key_value_pairs(info_list)
+
+    def test_add_basic_component(self):
+        self.name = "basic"
+        self.report_name = "Basic Report"
+        self.page_number = 2
+        ## Create Report
+        self.report = Report(name=self.report_name)
+        ### Create Basic Info Section
+        self.report.detail.add_new_page()
+        self.report.detail.add_section_title("Example for Basic Info ")
+        ### Add Header Level 1
+        self.report.detail.add_header_level_1(
+            text='Business Logic Filter')
+        info_list = list()
+        info_list.append(("Filtered Sample Count", 1208))
+        info_list.append(("Unique Value Count", [
+            ("BANKSTATEMENTKEY[BS]", 725),
+            ("RECEIVABLEKEY[RC]", 1208)]))
+        print(info_list)
+        self.report.detail.add_key_value_pairs(info_list=info_list,
+                                               notes="Filter Name: "
+                                                     "<B>advance_payment</B>")
+        print(self.report.detail.contents)
+        self.assertEqual(len(self.report.detail.contents), 4)
 
 
     def test_add_data_analysis(self):

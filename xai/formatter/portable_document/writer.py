@@ -211,14 +211,8 @@ class PdfWriter(Writer):
                 multi-level rendering, e.g. to display `model_info`
         """
         # -- Draw Content --
-        self.pdf.add_new_line(notes, style='BI')
-
-        self.pdf.start_itemize()
-
-        for attribute, value in info:
-            self.pdf.add_key_value_pair(key=attribute, value=value)
-
-        self.pdf.end_itemize()
+        self.pdf.add_new_line(notes)
+        self.pdf.add_nested_key_value_pair(info)
         self.pdf.ln()
 
     ################################################################################
