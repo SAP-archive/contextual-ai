@@ -141,30 +141,32 @@ class CustomHtml:
         return doc.getvalue()
 
     @staticmethod
-    def add_basic_nested_info_table(data: list):
+    def add_basic_nested_info(data: list):
         """
-        add basic nested info table
+        add basic nested info
 
         Args:
              data (list): list of tuple / list of (list of tuple))
                 multi-level rendering, e.g. to display `model_info`
         Returns: HTML String
         """
-        def add_inner_pair(x, itemize_level=''):
+        def add_paragraph(x, itemize_level='&nbsp&nbsp- '):
+            doc = Doc()
             for key, item in x:
-                with doc.tag('tr'):
-                    doc.asis('<td><b>%s%s</b></td>' % (itemize_level, key))
-                    if (type(item) is list) or (type(item) is tuple):
-                        itemize_level += '- '
-                        add_inner_pair(item, itemize_level)
-                    else:
-                        doc.asis('<td>%s</td>' % item)
+                if (type(item) is list) or (type(item) is tuple):
+                    doc.asis('%s%s:<br>' % (itemize_level, key))
+                    new_indent = '&nbsp&nbsp' + itemize_level
+                    doc.asis(add_paragraph(item, new_indent))
+                else:
+                    doc.asis('%s%s: <b>%s</b><br>' % (
+                            itemize_level, key, item))
 
-        doc = Doc()
-        with doc.tag('table'):
-            doc.attr(klass='standard_table')
-            add_inner_pair(data)
-        return doc.getvalue()
+            return doc.getvalue()
+
+        outter_doc = Doc()
+        with outter_doc.tag('p'):
+            outter_doc.asis(add_paragraph(data))
+        return outter_doc.getvalue()
 
     @staticmethod
     def add_overview_table_with_dict(data: dict):

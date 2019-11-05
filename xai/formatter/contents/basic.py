@@ -84,10 +84,9 @@ class BasicTable(Content):
         self._table_header = table_header
         self._table_data = table_data
         self._col_width = col_width
+        self._notes = None
         if not (notes is None):
             self._notes = notes
-        else:
-            self._notes = "Basic Table"
 
     @property
     def table_header(self):
@@ -146,10 +145,9 @@ class BasicImageGrid(Content):
         super(BasicImageGrid, self).__init__(image_list, grid_spec, notes)
         self._image_list = image_list
         self._grid_spec = grid_spec
+        self._notes = None
         if not (notes is None):
             self._notes = notes
-        else:
-            self._notes = "Basic Images Grid"
 
     @property
     def image_list(self):

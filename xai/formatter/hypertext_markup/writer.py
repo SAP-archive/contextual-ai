@@ -195,7 +195,7 @@ class HtmlWriter(Writer):
         self.html.article[-1].items.append(
             self.html.add_paragraph(text=notes))
         self.html.article[-1].items.append(
-            self.html.add_basic_nested_info_table(data=info))
+            self.html.add_basic_nested_info(data=info))
 
     def draw_basic_table(self, notes: str, *,
                          table_header: list, table_data: list,
