@@ -197,6 +197,43 @@ class HtmlWriter(Writer):
         self.html.article[-1].items.append(
             self.html.add_basic_nested_info_table(data=info))
 
+    def draw_basic_table(self, notes: str, *,
+                         table_header: list, table_data: list,
+                         col_width=None):
+        """
+        Draw table to the report
+
+        Args:
+            notes(str): Explain the block
+            table_header (list): list of str
+            table_data (list): list of str
+            col_width: Not use in HTML - default None
+        """
+        # -- Draw Content --
+        self.html.article[-1].items.append(
+            self.html.add_paragraph(text=notes))
+        self.html.article[-1].items.append(
+            self.html.add_table(header=table_header, data=table_data))
+
+    def draw_basic_images_with_grid_spec(self, notes: str, *,
+                                        image_list: list, grid_spec=None):
+        """
+        Draw image blocks with formatted grid specification
+
+        Args
+            notes(str): Explain the block
+            image_list (list): the list of image_paths
+            grid_spec (dict): Not use in HTML - default None
+
+        """
+        # -- Draw Content --
+        self.html.article[-1].items.append(
+            self.html.add_paragraph(text=notes))
+        for figure_path in image_list:
+            self.html.article[-1].items.append(
+                self.html.add_image(src=figure_path))
+
+
     ################################################################################
     ###  Summary Section
     ################################################################################

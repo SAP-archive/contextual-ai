@@ -122,6 +122,39 @@ class Writer(ABC):
         """
         pass
 
+    @abstractmethod
+    def draw_basic_table(self, notes: str, *,
+                         table_header: list, table_data: list,
+                         col_width: list):
+        """
+        Draw table to the report
+
+        Args:
+            notes(str): Explain the block
+            table_header (list): list of str
+            table_data (list): list of str
+            col_width: list of float,
+                default: None (evenly divided for the whole page width)
+        """
+        pass
+
+    @abstractmethod
+    def draw_basic_images_with_grid_spec(self, notes: str, *,
+                                        image_list, grid_spec):
+        """
+        Draw image blocks with formatted grid specification
+
+        Args
+            notes(str): Explain the block
+            image_list (list): the list of image_paths
+            grid_spec (dict): indicate image size and position
+                - key: image_name, or index if image_set is a list
+                - value: (x,y,w,h) position and weight/height of image,
+                      with left top corner of the block as (0,0), unit in mm
+
+        """
+        pass
+
     ################################################################################
     ###  Summary Section
     ################################################################################

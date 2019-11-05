@@ -19,7 +19,9 @@ from xai.formatter.contents.base import (
 )
 
 from xai.formatter.contents.basic import (
-    BasicKeyValuePairs
+    BasicKeyValuePairs,
+    BasicImageGrid,
+    BasicTable
 )
 
 from xai.formatter.contents.data import (
