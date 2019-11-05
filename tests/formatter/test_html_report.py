@@ -100,9 +100,9 @@ class TestGenerateHtmlReport(unittest.TestCase):
         self.assertEqual(len(self.report.detail.contents), 7)
 
 
-    def test_add_basic_component(self):
-        self.name = "basic"
-        self.report_name = "Basic Report"
+    def test_add_basic_key_value_pairs(self):
+        self.name = "basic-key-value-pairs"
+        self.report_name = "Basic Key-Value Pairs Report"
         self.tag_number = 1
         ## Create Report
         self.report = Report(name=self.report_name)
@@ -124,6 +124,30 @@ class TestGenerateHtmlReport(unittest.TestCase):
         print(self.report.detail.contents)
         self.assertEqual(len(self.report.detail.contents), 4)
 
+    def test_add_basic_table(self):
+        self.name = "basic-table"
+        self.report_name = "Basic Table Report"
+        self.page_number = 2
+        ## Create Report
+        self.report = Report(name=self.report_name)
+        ### Create Basic Info Section
+        self.report.detail.add_new_page()
+        self.report.detail.add_section_title("Example for Basic Table ")
+        ### Add Header Level 1
+        self.report.detail.add_header_level_1(
+            text='Team Info Table')
+        header_list = ["Name", "Team"]
+        print(header_list)
+        data_list = [["Chai", "MKT"], ["NP", "MKT"],
+                     ["WJ", "CA"], ["Sean", "CA"]]
+        print(data_list)
+        self.report.detail.add_table(table_header=header_list,
+                                     table_data=data_list,
+                                     col_width=[20, 20],
+                                     notes="Team Info")
+        print(self.report.detail.contents)
+        self.assertEqual(len(self.report.detail.contents), 4)
+        
     def test_add_data_analysis(self):
         self.name = "data-analysis"
         self.report_name = "Data Analysis Report"
