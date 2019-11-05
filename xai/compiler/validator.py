@@ -470,12 +470,14 @@ class CompleteMatchCheck(Dict2Obj):
 
             report.detail.add_table(table_header=table_header, table_data=table_values, col_width=[20, 20, 20, 50, 50])
 
-            for col_name, analyzer in entity_a_stats[(m, n)].items():
-                report.detail.add_paragraph('Distribution: %s' % col_name)
-                stats = analyzer.get_statistics()
-                draw_distribution_for_stats(stats)
+            if entity_a_stats is not None:
+                for col_name, analyzer in entity_a_stats[(m, n)].items():
+                    report.detail.add_paragraph('Distribution: %s' % col_name)
+                    stats = analyzer.get_statistics()
+                    draw_distribution_for_stats(stats)
 
-            for col_name, analyzer in entity_b_stats[(m, n)].items():
-                report.detail.add_paragraph('Distribution: %s' % col_name)
-                stats = analyzer.get_statistics()
-                draw_distribution_for_stats(stats)
+            if entity_b_stats is not None:
+                for col_name, analyzer in entity_b_stats[(m, n)].items():
+                    report.detail.add_paragraph('Distribution: %s' % col_name)
+                    stats = analyzer.get_statistics()
+                    draw_distribution_for_stats(stats)
