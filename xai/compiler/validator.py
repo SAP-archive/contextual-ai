@@ -9,17 +9,19 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from collections import defaultdict
+from copy import deepcopy
+
 import itertools
 from pathlib import Path
-from copy import deepcopy
+
 from xai.compiler.base import Dict2Obj
+from xai.data.constants import DATATYPE
+from xai.data.exceptions import AnalyzerDataTypeNotSupported
+from xai.data.explorer import CategoricalDataAnalyzer, NumericDataAnalyzer, TextDataAnalyzer, DatetimeDataAnalyzer
+from xai.data.explorer import CategoricalStats, NumericalStats, TextStats, DatetimeStats
 from xai.data.validator.dataframe_validator import DataframeValidator
 from xai.formatter import Report
-from collections import defaultdict
-from xai.data.constants import DATATYPE
-from xai.data.explorer import CategoricalDataAnalyzer, NumericDataAnalyzer, TextDataAnalyzer, DatetimeDataAnalyzer
-from xai.data.exceptions import AnalyzerDataTypeNotSupported
-from xai.data.explorer import CategoricalStats, NumericalStats, TextStats, DatetimeStats
 
 
 ################################################################################
@@ -154,8 +156,8 @@ class DuplicationOrphanCheck(Dict2Obj):
             df = self.load_data(Path(data_path), header=True)
 
         # -- Information about Raw Dataframe --
-        self.report.detail.add_model_info_summary([('Total number of raw samples', df.shape[0])],
-                                                  notes='Raw Data Quantity')
+        self.report.detail.add_key_value_pairs(info_list=[('Total number of raw samples', df.shape[0])],
+                                               notes='Raw Data Quantity')
 
         # -- Initialize DataframeValidator --
         dv_processor = DataframeValidator()
@@ -173,11 +175,10 @@ class DuplicationOrphanCheck(Dict2Obj):
         duplicated_indices = dv_processor.duplication_check(df, duplication_keys)
         drop_indices = list(itertools.chain.from_iterable([l[1:] for l in duplicated_indices]))
 
-        self.report.detail.add_model_info_summary(
-            [('Total number of samples after duplication check on %s' % (
-                duplication_keys if duplication_keys is not None else "all columns"),
-              df.shape[0] - len(drop_indices))],
-            notes='Duplication Check')
+        self.report.detail.add_key_value_pairs(info_list=[('Total number of samples after duplication check on %s' % (
+            duplication_keys if duplication_keys is not None else "all columns"),
+                                                           df.shape[0] - len(drop_indices))],
+                                               notes='Duplication Check')
         duplicate_dropped_df = df.drop(index=drop_indices)
 
         if duplication_to_file is not None:
@@ -217,7 +218,7 @@ class DuplicationOrphanCheck(Dict2Obj):
                                       len(orphan_indices)))
 
         if len(orphan_check_info) > 0:
-            self.report.detail.add_model_info_summary(model_info=orphan_check_info, notes='Orphaned Relation Check')
+            self.report.detail.add_key_value_pairs(info_list=orphan_check_info, notes='Orphaned Relation Check')
 
         orphan_dropped_df = duplicate_dropped_df.drop(index=list(all_orphaned_index))
 
@@ -431,41 +432,50 @@ class CompleteMatchCheck(Dict2Obj):
         # -- Process complete match result and update visualization columns stats --
         table_header = ['M', 'N', 'Count', entity_a_column, entity_b_column]
 
+        def draw_distribution_for_stats(stats):
+            """
+            Internal function to draw stats
+            Args:
+                stats: stat object generated from data.explorer
+            """
+
+            if type(stats) == CategoricalStats:
+                dist_header = ["Value", "Count", "Percentage"]
+                dist_values = []
+                count_sum = sum(list(stats.frequency_count.values()))
+                for key, value in stats.frequency_count.items():
+                    dist_values.append([key, value, "%.2f%%" % (value / count_sum * 100)])
+                report.detail.add_table(table_header=dist_header, table_data=dist_values,
+                                        col_width=[40, 40, 40])
+            elif type(stats) == NumericalStats:
+                dist_header = ['Statistical Field', 'Value']
+                dist_values = list()
+                dist_values.append(['Total valid count', "%d" % int(stats.total_count)])
+                dist_values.append(['Min', "%.3f" % float(stats.min)])
+                dist_values.append(['Max', "%.3f" % float(stats.max)])
+                dist_values.append(['Mean', "%.3f" % float(stats.mean)])
+                dist_values.append(['Median', "%.3f" % float(stats.median)])
+                dist_values.append(['Standard deviation', "%.3f" % float(stats.sd)])
+                dist_values.append(['NAN count', "%d" % int(stats.nan_count)])
+                report.detail.add_table(table_header=dist_header, table_data=dist_values,
+                                        col_width=[60, 60])
+            elif type(stats) == TextStats:
+                report.detail.add_text_field_distribution(col_name, {'': stats})
+            elif type(stats) == DatetimeStats:
+                report.detail.add_datetime_field_distribution(col_name, {'': stats})
+
         for (m, n) in sorted(m2n_stats.keys()):
             count = m2n_stats[(m, n)]
             table_values = [[m, n, count, count * m, count * n]]
 
-            report.detail.add_paragraph(str(table_values))
-            ##TODO: delete the line above and uncomment the line below
-            report.detail.add_table(table_header=table_header, table_value=table_values, col_width=[20, 20, 20, 50, 50])
+            report.detail.add_table(table_header=table_header, table_data=table_values, col_width=[20, 20, 20, 50, 50])
 
             for col_name, analyzer in entity_a_stats[(m, n)].items():
                 report.detail.add_paragraph('Distribution: %s' % col_name)
                 stats = analyzer.get_statistics()
+                draw_distribution_for_stats(stats)
 
-                report.detail.add_paragraph(str(stats.frequency_count))
-                ##TODO: delete the line above and uncomment the block below
-                # if type(stats) == CategoricalStats:
-                #     dist_header = ["Value", "Count", "Percentage"]
-                #     dist_values = []
-                #     sum = sum(list(stats.frequency_count.values()))
-                #     for key, value in stats.frequency_count.items():
-                #         dist_values.append([key, value, "%.2f%%" % (value / sum * 100)])
-                #         report.detail.add_table(table_header=dist_header, table_value=dist_values,
-                #                                 col_width=[40, 40, 40])
-                # elif type(stats) == NumericalStats:
-                #     dist_header = ['Statistical Field', 'Value']
-                #     dist_values = list()
-                #     dist_values.append(['Total valid count', "%d" % int(stats.total_count)])
-                #     dist_values.append(['Min', "%.3f" % float(stats.min)])
-                #     dist_values.append(['Max', "%.3f" % float(stats.max)])
-                #     dist_values.append(['Mean', "%.3f" % float(stats.mean)])
-                #     dist_values.append(['Median', "%.3f" % float(stats.median)])
-                #     dist_values.append(['Standard deviation', "%.3f" % float(stats.sd)])
-                #     dist_values.append(['NAN count', "%d" % int(stats.nan_count)])
-                #     report.detail.add_table(table_header=dist_header, table_value=dist_values,
-                #                             col_width=[60, 60])
-                # elif type(stats) == TextStats:
-                #     report.detail.add_text_field_distribution(col_name, {'': stats})
-                # elif type(stats) == DatetimeStats:
-                #     report.detail.add_datetime_field_distribution(col_name, {'': stats})
+            for col_name, analyzer in entity_b_stats[(m, n)].items():
+                report.detail.add_paragraph('Distribution: %s' % col_name)
+                stats = analyzer.get_statistics()
+                draw_distribution_for_stats(stats)
