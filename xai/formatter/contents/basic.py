@@ -35,10 +35,9 @@ class BasicKeyValuePairs(Content):
         """
         super(BasicKeyValuePairs, self).__init__(info, notes)
         self._info = info
+        self._notes = None
         if not (notes is None):
             self._notes = notes
-        else:
-            self._notes = "Basic Info (key-value pairs)"
 
     @property
     def info(self):
