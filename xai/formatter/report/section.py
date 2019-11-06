@@ -361,7 +361,7 @@ class Section:
 
         Args:
             field_name (str): data field name
-            field_distribution (dict of [a type of stats]):
+            field_distribution (dict of [a type of TextStats]):
                 -key: label_name
                 -value: tfidf and placeholder distribution under the `label_name`(dict):
                     {'tfidf': tfidf, 'placeholder': placeholder}
@@ -384,7 +384,7 @@ class Section:
 
         Args:
             field_name (str): data field name
-            field_distribution (dict of [a type of stats]):
+            field_distribution (dict of [a type of DatetimeStats]):
                 -key: label_name
                 -value (:dict of :dict):
                     - 1st level key: year_X(int)
