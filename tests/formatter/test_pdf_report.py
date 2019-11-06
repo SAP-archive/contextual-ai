@@ -97,8 +97,11 @@ class TestGeneratePdfReport(unittest.TestCase):
         self.report.detail.add_key_value_pairs(info_list=info_list,
                                                notes="Filter Name: "
                                                      "<B>advance_payment</B>")
+        self.report.detail.add_header_level_1(
+            text='Business Logic Filter without Notes')
+        self.report.detail.add_key_value_pairs(info_list=info_list)
         print(self.report.detail.contents)
-        self.assertEqual(len(self.report.detail.contents), 4)
+        self.assertEqual(len(self.report.detail.contents), 6)
 
     def test_add_basic_table(self):
         self.name = "basic-table"
