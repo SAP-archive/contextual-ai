@@ -29,3 +29,9 @@ def remove_temp():
     working_path = os.path.join(path, '_temp')
     if os.path.exists(working_path):
         shutil.rmtree(working_path)
+
+
+def prepare_output_path(working_path: str):
+    path = os.path.dirname(__file__)
+    output_path = os.path.join(path, working_path)
+    return output_path

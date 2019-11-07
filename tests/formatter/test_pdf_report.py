@@ -24,6 +24,8 @@ from xai.data.constants import DATATYPE
 from xai.model.interpreter import FeatureInterpreter
 from xai.formatter import Report, PdfWriter
 
+from tests.compiler.util import prepare_output_path
+
 
 ################################################################################
 ### Generate Pdf Report
@@ -408,12 +410,11 @@ class TestGeneratePdfReport(unittest.TestCase):
     def tearDown(self) -> None:
         ### Lastly generate report with the writer instance
         name = '{}-pdf-report'.format(self.name)
+        dir_path = prepare_output_path(working_path='sample_output')
         start_time = datetime.now().replace(microsecond=0)
-        self.report.generate(writer=PdfWriter(name=name,
-                                              path='./sample_output'))
+        self.report.generate(writer=PdfWriter(name=name, path=dir_path))
         end_time = datetime.now().replace(microsecond=0)
-        dir_path = os.getcwd()
-        output = "%s/sample_output/%s.pdf" % (dir_path, name)
+        output = "%s/%s.pdf" % (dir_path, name)
         print("report generated %s:" % output)
 
         def time_in_range(start, end, x):
