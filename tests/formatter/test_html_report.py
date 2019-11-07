@@ -23,7 +23,7 @@ from xai.data.constants import DATATYPE
 from xai.model.interpreter import FeatureInterpreter
 from xai.formatter import Report, HtmlWriter
 
-from tests.compiler.util import prepare_output_path
+from tests.formatter.util import prepare_input_path, prepare_output_path
 
 ################################################################################
 ### Generate HTML Report
@@ -69,7 +69,9 @@ class TestGenerateHtmlReport(unittest.TestCase):
                         ('testing', 1000)]
         self.report.overview.add_data_set_summary(data_summary=data_summary)
 
-        with open('./sample_data/evaluation_result_summary.json', 'r') as f:
+        with open(prepare_input_path(
+                data_path='sample_data/evaluation_result_summary.json'),
+                'r') as f:
             evaluation_result_data = json.load(f)
         print(evaluation_result_data)
 
@@ -165,8 +167,8 @@ class TestGenerateHtmlReport(unittest.TestCase):
         self.assertEqual(len(self.report.detail.contents), 2)
 
         ### Load Data
-        training_file_name = './sample_data/titanic.csv'
-        data = pd.read_csv(training_file_name)
+        file_name = prepare_input_path(data_path='sample_data/titanic.csv')
+        data = pd.read_csv(file_name)
         ### Add dummy birthday to demonstrate datetime presentation
         bday = []
         for i in range(len(data)):
@@ -306,9 +308,9 @@ class TestGenerateHtmlReport(unittest.TestCase):
         self.report.detail.add_header_level_2(text='Feature Importance')
         self.assertEqual(len(self.report.detail.contents), 4)
         ### Feature Importance
-        path = Path('./sample_data/model.pkl')
+        path =  Path(prepare_input_path(data_path='sample_data/model.pkl'))
         model = pd.read_pickle(str(path))
-        path = Path('./sample_data/train_data.csv')
+        path = Path(prepare_input_path(data_path='sample_data/train_data.csv'))
         data = pd.read_csv(str(path))
         # -- csv including header --
         feature_names = data.columns
@@ -334,7 +336,8 @@ class TestGenerateHtmlReport(unittest.TestCase):
         self.assertEqual(len(self.report.detail.contents), 10)
 
         ### Hyperparameter Tuning
-        with open('./sample_data/hyperparameter_tuning.json', 'r') as f:
+        with open(prepare_input_path(
+                data_path='sample_data/hyperparameter_tuning.json'),'r') as f:
             hyperparameter_tuning = json.load(f)
         print('search_space:', hyperparameter_tuning['search_space'])
         print('best_idx:', hyperparameter_tuning['best_idx'])
@@ -370,7 +373,8 @@ class TestGenerateHtmlReport(unittest.TestCase):
         ### Add Header Level 2
         self.report.detail.add_header_level_2(text='Deep Learning Training')
         ### Learning Curve
-        with open('./sample_data/learning_curve.json', 'r') as f:
+        with open(prepare_input_path(
+                data_path='sample_data/learning_curve.json'), 'r') as f:
             learning_curve = json.load(f)
 
         print('best_idx:', learning_curve['best_idx'])
@@ -407,7 +411,7 @@ class TestGenerateHtmlReport(unittest.TestCase):
         self.assertEqual(len(self.report.detail.contents), 4)
 
         ### Numeric Metric
-        # with open('./sample_data/binary_evaluation_results.json', 'r') as f:
+        # with open(prepare_input_path(data_path='sample_data/binary_evaluation_results.json'), 'r') as f:
         #     eval_result = json.load(f)
         #
         # splits = eval_result.keys()
@@ -426,7 +430,7 @@ class TestGenerateHtmlReport(unittest.TestCase):
         ### Add Header Level 2
         self.report.detail.add_header_level_2(text='Confusion Matrix')
         ### Confusion Matrix
-        # with open('./sample_data/binary_evaluation_results.json', 'r') as f:
+        # with open(prepare_input_path(data_path='sample_data/binary_evaluation_results.json'), 'r') as f:
         #     eval_result = json.load(f)
         # splits = eval_result.keys()
         # confusion_matrix_list = []
@@ -445,7 +449,7 @@ class TestGenerateHtmlReport(unittest.TestCase):
         ### Add Header Level 2
         self.report.detail.add_header_level_2(text='Confidence Distribution')
         ### Confidence Distribution
-        # with open('./sample_data/binary_evaluation_results.json', 'r') as f:
+        # with open(prepare_input_path(data_path='sample_data/binary_evaluation_results.json'), 'r') as f:
         #     eval_result = json.load(f)
         #
         # splits = eval_result.keys()
@@ -465,7 +469,7 @@ class TestGenerateHtmlReport(unittest.TestCase):
         ### Add Header Level 2
         self.report.detail.add_header_level_2(text='Reliability Diagram')
         ### Reliability Diagram
-        # with open('./sample_data/binary_evaluation_results.json', 'r') as f:
+        # with open(prepare_input_path(data_path='sample_data/binary_evaluation_results.json'), 'r') as f:
         #     eval_result = json.load(f)
         #
         # splits = eval_result.keys()
@@ -484,7 +488,7 @@ class TestGenerateHtmlReport(unittest.TestCase):
         ### Add Header Level 1
         self.report.detail.add_header_level_1(
             text='Multi-class Classification Evaluation Analysis')
-        # with open('./sample_data/multi_evaluation_results.json', 'r') as f:
+        # with open(prepare_input_path(data_path='sample_data/multi_evaluation_results.json'), 'r') as f:
         #     eval_result = json.load(f)
         #
         # label_key = 'label_1'
