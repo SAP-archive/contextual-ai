@@ -113,6 +113,57 @@ class Section:
         self.contents.append(Paragraph(text=text))
 
     ################################################################################
+    ###  Content Basic Section
+    ################################################################################
+
+    def add_key_value_pairs(self, info_list: list, notes=None):
+        """
+        add key-values info as simple paragraph
+
+        Args:
+            info_list(list): list of tuple / list of (list of tuple))
+                multi-level rendering, e.g. to display `model_info`
+            notes (str): explain the block
+        """
+        from xai.formatter.contents import BasicKeyValuePairs
+        self.contents.append(BasicKeyValuePairs(info=info_list, notes=notes))
+
+    def add_table(self, table_header: list, table_data: list,
+                         col_width: list, notes=None):
+        """
+        add simple table
+
+        Args:
+            table_header (list): list of str
+            table_data (list): list of str
+            col_width (list): list of float,
+                default: None (evenly divided for the whole page width)
+            notes (str): explain the block
+        """
+        from xai.formatter.contents import BasicTable
+        self.contents.append(BasicTable(table_header=table_header,
+                                        table_data=table_data,
+                                        col_width=col_width,
+                                        notes=notes))
+
+    def add_images_grid(self, image_list: list, grid_spec: list, notes=None):
+        """
+        add image blocks with formatted grid specification
+
+        Args:
+            image_list (list): the list of image_paths
+            grid_spec (dict): indicate image size and position
+                - key: image_name, or index if image_set is a list
+                - value: (x,y,w,h) position and weight/height of image,
+                      with left top corner of the block as (0,0), unit in mm
+            notes (str): explain the block
+        """
+        from xai.formatter.contents import BasicImageGrid
+        self.contents.append(BasicImageGrid(image_list=image_list,
+                                            grid_spec=grid_spec,
+                                            notes=notes))
+
+    ################################################################################
     ###  Content Summary Section
     ################################################################################
     def add_training_timing(self, timing: List[Tuple[str, int]], notes=None):
@@ -252,7 +303,7 @@ class Section:
 
         Args:
             field_name (str): data field name
-            field_distribution (:dict of :dict):
+            field_distribution (:dict of [a type of stats]):
                 -key: label_name
                 -value: frequency distribution under the `label_name`(dict)
                     - key: field value
@@ -278,7 +329,7 @@ class Section:
 
         Args:
             field_name (str): data field name
-            field_distribution (:dict of :dict):
+            field_distribution (dict of [a type of stats]):
                 -key: label_name
                 -value: numeric statistics
                     - key: statistics name
@@ -310,7 +361,7 @@ class Section:
 
         Args:
             field_name (str): data field name
-            field_distribution (:dict of :dict):
+            field_distribution (dict of [a type of TextStats]):
                 -key: label_name
                 -value: tfidf and placeholder distribution under the `label_name`(dict):
                     {'tfidf': tfidf, 'placeholder': placeholder}
@@ -333,7 +384,7 @@ class Section:
 
         Args:
             field_name (str): data field name
-            field_distribution (:dict of :dict):
+            field_distribution (dict of [a type of DatetimeStats]):
                 -key: label_name
                 -value (:dict of :dict):
                     - 1st level key: year_X(int)

@@ -198,6 +198,64 @@ class PdfWriter(Writer):
         self.pdf.ln()
 
     ################################################################################
+    ###  Basic/Reusable Section
+    ################################################################################
+    def draw_basic_key_value_pairs(self, notes: str, *,
+                                   info: list):
+        """
+        Draw key-value pairs information to the report
+
+        Args:
+            notes(str): Explain the block
+            info (list): list of tuple / list of (list of tuple))
+                multi-level rendering, e.g. to display `model_info`
+        """
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+        self.pdf.add_nested_key_value_pair(info)
+        self.pdf.ln()
+
+    def draw_basic_table(self, notes: str, *,
+                         table_header: list, table_data: list,
+                         col_width: list):
+        """
+        Draw table to the report
+
+        Args:
+            notes(str): Explain the block
+            table_header (list): list of str
+            table_data (list): list of str
+            col_width (list): list of float,
+                default: None (evenly divided for the whole page width)
+        """
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+        if len(table_data) > 0:
+            self.pdf.add_table(table_header, table_data,
+                               col_width=col_width)
+            self.pdf.add_new_line()
+
+    def draw_basic_images_with_grid_spec(self, notes: str, *,
+                                        image_list, grid_spec):
+        """
+        Draw image blocks with formatted grid specification
+
+        Args
+            notes(str): Explain the block
+            image_list (list): the list of image_paths
+            grid_spec (dict): indicate image size and position
+                - key: image_name, or index if image_set is a list
+                - value: (x,y,w,h) position and weight/height of image,
+                      with left top corner of the block as (0,0), unit in mm
+
+        """
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+        if len(image_list) > 0:
+            self.pdf.add_list_of_grid_images(image_list, grid_spec)
+        self.pdf.ln(5)
+
+    ################################################################################
     ###  Summary Section
     ################################################################################
     def draw_training_time(self, notes: str, *, timing: List[Tuple[str, int]]):

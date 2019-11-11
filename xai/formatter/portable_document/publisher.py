@@ -410,6 +410,34 @@ class CustomPdf(FPDF):
         self.write_html("<B>%s</B>" % str(value))
         self.write_html('<BR>')
 
+    def add_nested_key_value_pair(self, info):
+        """
+        add nested key-value pair in the format of "KEY: VALUE"
+        (with a new line) to pdf, with current global indent level
+
+        Args:
+             info (list): list of tuple / list of (list of tuple))
+                multi-level rendering, e.g. to display `model_info`
+        """
+        if info is None or info == '':
+            return
+
+        def add_inner_pair(x):
+            self.start_itemize()
+            for key, value in x:
+                self.write_html("%s%s" % ("   " * self.itemize_level,
+                                          self.itemize_symbol))
+                self.write_html("%s: " % key)
+                if (type(value) is list) or (type(value) is tuple):
+                    self.write_html('<BR>')
+                    add_inner_pair(value)
+                else:
+                    self.write_html("<B>%s</B>" % str(value))
+                self.write_html('<BR>')
+            self.end_itemize()
+
+        add_inner_pair(info)
+
     def add_large_image(self, image_path, caption=None, style=None):
         """
         add an default large image to pdf with a caption above
