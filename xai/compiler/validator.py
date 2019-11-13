@@ -363,34 +363,38 @@ class CompleteMatchCheck(Dict2Obj):
 
             entity_df = df
             entity_unit_stats = dict()
+            entity_key = default_entity_key
+
+            if "foreign_file" in config:
+                foreign_path = config["foreign_file"]
+                if not (foreign_path is None):
+                    entity_df = self.load_data(Path(foreign_path), header=True)
+                if "foreign_index" in config:
+                    entity_key = config["foreign_index"]
+
             for item in config['columns']:
                 col_name = item['name']
                 col_type = item['type']
                 if col_type == DATATYPE.CATEGORY:
                     entity_unit_stats[col_name] = CategoricalDataAnalyzer()
+                    entity_df[col_name] = entity_df[col_name].astype(str)
                 elif col_type == DATATYPE.NUMBER:
                     entity_unit_stats[col_name] = NumericDataAnalyzer()
+                    entity_df[col_name] = entity_df[col_name].astype(float)
                 elif col_type == DATATYPE.FREETEXT:
                     entity_unit_stats[col_name] = TextDataAnalyzer()
+                    entity_df[col_name] = entity_df[col_name].astype(str)
                 elif col_type == DATATYPE.DATETIME:
                     entity_unit_stats[col_name] = DatetimeDataAnalyzer()
+                    entity_df[col_name] = entity_df[col_name].astype(str)
                 else:
                     raise AnalyzerDataTypeNotSupported(data_type=col_type)
-            entity_key = default_entity_key
-
-            if "foreign_data" in config:
-                foreign_path = config["foreign_data"]
-                if not (foreign_path is None):
-                    entity_df = self.load_data(Path(foreign_path), header=True)
-                if "foreign_key" in config:
-                    entity_key = config["foreign_key"]
 
             return entity_df, entity_key, entity_unit_stats
 
         # -- Initialize the stats default dict --
         entity_a_stats = None
         entity_b_stats = None
-
         if relational_a_columns is not None:
             entity_a_df, entity_a_key, entity_a_unit_stats = \
                 get_relational_column_config(config=relational_a_columns,
@@ -406,9 +410,9 @@ class CompleteMatchCheck(Dict2Obj):
         # -- Check Complete Match --
         dv = DataframeValidator()
         complete_matches = dv.find_m_to_n_complete_matches(df=df, col_a=entity_a_column, col_b=entity_b_column)
-
         # -- Process complete match result and update visualization columns stats --
 
+        print("number of complete matches:", complete_matches)
         m2n_stats = defaultdict(int)
 
         for col_a, col_b in complete_matches:
@@ -423,7 +427,7 @@ class CompleteMatchCheck(Dict2Obj):
                     analyzer.feed_all(values)
 
             if entity_b_stats is not None:
-                sub_df = entity_b_df[entity_b_df[entity_b_key].isin(col_b)].drop_duplicates(subset=[entity_a_key],
+                sub_df = entity_b_df[entity_b_df[entity_b_key].isin(col_b)].drop_duplicates(subset=[entity_b_key],
                                                                                             inplace=False)
                 for col_name, analyzer in entity_b_stats[(m, n)].keys():
                     values = sub_df[col_name].values.tolist()
@@ -467,7 +471,7 @@ class CompleteMatchCheck(Dict2Obj):
         for (m, n) in sorted(m2n_stats.keys()):
             count = m2n_stats[(m, n)]
             table_values = [[m, n, count, count * m, count * n]]
-
+            print(m, n, count, count * m, count * n)
             report.detail.add_table(table_header=table_header, table_data=table_values, col_width=[20, 20, 20, 50, 50])
 
             if entity_a_stats is not None:
