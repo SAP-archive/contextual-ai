@@ -5,6 +5,8 @@
 # ============================================================================
 
 import os
+import json
+import yaml
 import shutil
 
 def prepare_template(filename: str):
@@ -23,6 +25,28 @@ def prepare_template(filename: str):
     with open(out_file, 'w') as f:
         f.write(file_data)
     return out_file
+
+def read_json_source(filepath: str):
+    with open(filepath) as file:
+        data = json.load(file)
+    return data
+
+def read_yaml_source(filepath: str):
+    with open(filepath) as file:
+        data = yaml.load(file, Loader=yaml.SafeLoader)
+    return data
+
+def prepare_output_path(working_path: str):
+    path = os.path.dirname(__file__)
+    output_path = os.path.join(path, working_path)
+    return output_path
+
+def time_in_range(start, end, x):
+    """Return true if x is in the range [start, end]"""
+    if start <= end:
+        return start <= x <= end
+    else:
+        return start <= x or x <= end
 
 def remove_temp():
     path = os.path.dirname(__file__)
