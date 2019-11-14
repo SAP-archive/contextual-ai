@@ -102,7 +102,7 @@ class TestFeatureImportanceRanking(unittest.TestCase):
 
         index = read_data.find('created on')
         create_date = read_data[index+11: index+27]
-        # print(create_date)
+        # print("--- " + create_date)
         report_time = datetime.strptime(create_date, '%Y-%m-%d %H:%M')
         self.assertTrue(time_in_range(start_time, end_time, report_time))
 
@@ -129,9 +129,9 @@ class TestFeatureImportanceRanking(unittest.TestCase):
         print(info)
         self.assertEqual(info['/Title'], self.yaml_report_name)
 
-        # print(info['/CreationDate'])
         report_time = datetime.strptime(
             info['/CreationDate'], 'D:%Y%m%d%H%M%S')
+        print(report_time)
         self.assertTrue(time_in_range(start_time, end_time, report_time))
 
         print(number_of_pages)
