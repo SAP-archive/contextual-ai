@@ -22,6 +22,7 @@ from tests.compiler.util import (
     remove_temp
 )
 
+
 class TestDataStatisticsAnalysis(unittest.TestCase):
     """
     Test case: Create Report with ONLY Data Analysis (p1)
@@ -52,7 +53,6 @@ class TestDataStatisticsAnalysis(unittest.TestCase):
                 self.yaml_writer_html_name = writer["attr"]["name"]
         self.yaml_writer_pdf_page_number = 26
         self.yaml_writer_html_tag_number = 1
-
 
         self.out_path = prepare_output_path(working_path='sample_output')
 
