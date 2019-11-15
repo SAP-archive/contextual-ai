@@ -3,7 +3,7 @@
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
 
-import logging
+import warnings
 from typing import List, Optional, Callable, Dict
 
 import dill
@@ -14,7 +14,6 @@ from ..abstract_explainer import AbstractExplainer
 from ..explainer_exceptions import ExplainerUninitializedError
 from ..utils import explanation_to_json
 
-LOGGER = logging.getLogger(__name__)
 
 NUM_TOP_FEATURES = 5
 
@@ -67,7 +66,7 @@ class LimeTextExplainer(AbstractExplainer):
         )
 
         if verbose:
-            LOGGER.info('Explainer built successfully!')
+            warnings.warn(message='Explainer built successfully!')
 
     def explain_instance(self,
                          instance: np.ndarray,

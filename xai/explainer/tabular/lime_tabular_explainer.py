@@ -3,19 +3,22 @@
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
 
-import logging
-from typing import List, Dict, Optional, Callable
+import warnings
 
 import dill
 import numpy as np
-from lime.lime_tabular import LimeTabularExplainer as OriginalLimeTabularExplainer
+from lime.lime_tabular import (
+    LimeTabularExplainer as OriginalLimeTabularExplainer
+)
+from typing import List, Dict, Optional, Callable
 
 from xai.explainer.abstract_explainer import AbstractExplainer
-from xai.explainer.explainer_exceptions import ExplainerUninitializedError, UnsupportedModeError
-from xai.explainer.utils import explanation_to_json
 from xai.explainer.constants import MODE
-
-LOGGER = logging.getLogger(__name__)
+from xai.explainer.explainer_exceptions import (
+    ExplainerUninitializedError,
+    UnsupportedModeError
+)
+from xai.explainer.utils import explanation_to_json
 
 NUM_TOP_FEATURES = 5
 
@@ -84,10 +87,10 @@ class LimeTabularExplainer(AbstractExplainer):
 
         if verbose:
             if not feature_names:
-                LOGGER.warning('Column names are not specified! Explanations will refer to'
-                               'columns by their indices.')
+                warnings.warn(message='Column names are not specified! Explanations will '
+                         'refer to columns by their indices.')
             if not class_names:
-                LOGGER.warning('Class names are not specified! Explanations will refer to classes'
+                warnings.warn(message='Class names are not specified! Explanations will refer to classes'
                                'by their indices.')
 
         self.predict_fn = predict_fn
@@ -110,7 +113,7 @@ class LimeTabularExplainer(AbstractExplainer):
         self.num_class = training_data.shape[1]
 
         if verbose:
-            LOGGER.info('Explainer built successfully!')
+            warnings.warn(message='Explainer built successfully!')
 
     def explain_instance(self,
                          instance: np.ndarray,
