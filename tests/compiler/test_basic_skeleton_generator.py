@@ -5,9 +5,10 @@
 # ============================================================================
 """  Basic Json Generator """
 
-
 import sys
 sys.path.append('../')
+
+import warnings
 
 import unittest
 from xai.compiler import Configuration, Controller, Constant
@@ -21,6 +22,7 @@ class TestReportBasicSkeleton(unittest.TestCase):
     """
 
     def setUp(self) -> None:
+        warnings.simplefilter("ignore", ResourceWarning)
         """ Specify Config Files """
         self.basic_json = prepare_template(filename='basic-skeleton.json')
         self.basic_yaml = prepare_template(filename='basic-skeleton.yml')

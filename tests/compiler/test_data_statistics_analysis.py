@@ -8,6 +8,8 @@
 import sys
 sys.path.append('../')
 
+import warnings
+
 import unittest
 from xai.compiler import Configuration, Controller
 from tests.compiler.util import prepare_template, remove_temp
@@ -19,6 +21,7 @@ class TestDataStatisticsAnalysis(unittest.TestCase):
     """
 
     def setUp(self) -> None:
+        warnings.simplefilter("ignore", ResourceWarning)
         """ Specify Config Files """
         self.json = prepare_template(filename='data-statistics-analysis.json')
         self.yaml = prepare_template(filename='data-statistics-analysis.yml')
