@@ -2,7 +2,7 @@ Explainable_AI
 ==============
 
 [![Build Status](https://jenkins.ml.only.sap/buildStatus/icon?job=Explainable_AI%2Fmaster)](https://jenkins.ml.only.sap/job/Explainable_AI/job/master/)
-[![Documentation Status](https://readthedocs.org/projects/ansicolortags/badge/?version=latest?style=flat)](https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/)
+[![Documentation Status](https://readthedocs.org/projects/pip/badge/?version=latest?style=flat)](https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/)
 
 XAI is a Python package which helps both data scientists and business users 
 to better understand their machine learning pipelines:
