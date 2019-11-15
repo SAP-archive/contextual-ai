@@ -9,14 +9,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import logging
 import os
+import warnings
 
 import datetime
 import re
 from fpdf import FPDF
-
-LOGGER = logging.getLogger(__name__)
 
 
 ################################################################################
@@ -453,12 +451,12 @@ class CustomPdf(FPDF):
 
         if caption is None:
             if self.y + height > self.h - self.foot_size:
-                LOGGER.warning('Warning: figure will exceed the page bottom, '
+                warnings.warn(message='Warning: figure will exceed the page bottom, '
                                'adding a new page.')
                 self.add_page()
         else:
             if self.y + height + CustomPdf.LINE_HEIGHT > self.h - self.foot_size:
-                LOGGER.warning('Warning: figure will exceed the page bottom, '
+                warnings.warn(message='Warning: figure will exceed the page bottom, '
                                'adding a new page.')
                 self.add_page()
         if caption is not None:
@@ -491,46 +489,46 @@ class CustomPdf(FPDF):
         local_y = self.y
 
         if 'image' not in grid_spec:
-            LOGGER.error("Error in image_table_spec: no 'image' key found.")
+            warnings.warn(message="Error in image_table_spec: no 'image' key found.")
             return False
         else:
             if len(grid_spec['image']) != 2:
-                LOGGER.error("Error in image_table_spec:'image' "
+                warnings.warn(message="Error in image_table_spec:'image' "
                              "spec should have 2 elements (width, height)")
                 return False
             image_width, image_height = grid_spec['image']
 
             if type(image_width) not in [float, int] \
                     or type(image_height) not in [float, int]:
-                LOGGER.error("Error in image_table_spec: image_width and "
+                warnings.warn(message="Error in image_table_spec: image_width and "
                              "image_height should be int or float.")
                 return False
             if image_width <= 0 or image_height <= 0:
-                LOGGER.error("Error in image_table_spec: image_width and "
+                warnings.warn(message="Error in image_table_spec: image_width and "
                              "image_height should be larger than zeros.")
                 return False
         if 'table' not in grid_spec:
-            LOGGER.error("Error in image_table_spec: no 'table' key found.")
+            warnings.warn(message="Error in image_table_spec: no 'table' key found.")
             return False
         else:
             if len(grid_spec['image']) != 2:
-                LOGGER.error("Error in image_table_spec:'table' spec "
+                warnings.warn(message="Error in image_table_spec:'table' spec "
                              "should have 2 elements (width, height)")
                 return False
             table_width, table_height = grid_spec['table']
 
             if type(table_width) not in [float, int] \
                     or type(table_height) not in [float, int]:
-                LOGGER.error("Error in image_table_spec: table_width and "
+                warnings.warn(message="Error in image_table_spec: table_width and "
                              "table_height should be int or float.")
                 return False
             if table_width <= 0 or table_height <= 0:
-                LOGGER.error("Error in image_table_spec: table_width and "
+                warnings.warn(message="Error in image_table_spec: table_width and "
                              "table_height should be larger than zeros.")
                 return False
 
         if local_x + image_width + table_width > self.w - self.r_margin:
-            LOGGER.warning('Warning: figure will exceed the page edge '
+            warnings.warn(message='Warning: figure will exceed the page edge '
                            'on the right, rescale the whole group.')
             total_maximum_width = self.w - self.r_margin - local_x
 
@@ -545,12 +543,12 @@ class CustomPdf(FPDF):
 
         if caption is None:
             if local_y + block_height > self.h - self.foot_size:
-                LOGGER.warning('Warning: figure will exceed the page bottom, '
+                warnings.warn(message='Warning: figure will exceed the page bottom, '
                                'adding a new page.')
                 self.add_page()
         else:
             if local_y + block_height + CustomPdf.LINE_HEIGHT> self.h - self.foot_size:
-                LOGGER.warning('Warning: figure will exceed the page bottom, '
+                warnings.warn(message='Warning: figure will exceed the page bottom, '
                                'adding a new page.')
                 self.add_page()
             self.add_new_line(caption, style=style)
@@ -616,7 +614,7 @@ class CustomPdf(FPDF):
         for image_name, (x, y, w, h) in grid_spec.items():
             for e in [x, y, w, h]:
                 if type(e) not in [float, int]:
-                    LOGGER.error("Error in image_spec: x,y,w,h "
+                    warnings.warn(message="Error in image_spec: x,y,w,h "
                                  "should all be int or float and non-negative.")
                     return False
 
@@ -632,19 +630,19 @@ class CustomPdf(FPDF):
                 maximum_y = max(maximum_y, y + h)
 
         if local_x + maximum_x > self.w:
-            LOGGER.error('Error: figure will exceed the page edge '
+            warnings.warn(message='Error: figure will exceed the page edge '
                          'on the right, exiting plotting.')
             return False
 
         if caption is None:
             if local_y + maximum_y > self.h - self.foot_size:
-                LOGGER.warning('Warning: figure will exceed the page bottom, '
+                warnings.warn(message='Warning: figure will exceed the page bottom, '
                                'adding a new page.')
                 self.add_page()
         else:
             if self.y + maximum_y + CustomPdf.LINE_HEIGHT > \
                     self.h - self.foot_size:
-                LOGGER.warning('Warning: figure will exceed the page bottom, '
+                warnings.warn(message='Warning: figure will exceed the page bottom, '
                                'adding a new page.')
                 self.add_page()
 
@@ -656,7 +654,7 @@ class CustomPdf(FPDF):
         if type(image_set) == dict:
             for image_name, image_path in image_set.items():
                 if image_name not in grid_spec:
-                    LOGGER.error('Error: Image name [%s] '
+                    warnings.warn(message='Error: Image name [%s] '
                                  'not found in grid_spec.' % image_name)
                     return False
                 pos = grid_spec[image_name]
@@ -666,11 +664,11 @@ class CustomPdf(FPDF):
         if type(image_set) == list:
             ## follow the index
             if len(image_set) != len(grid_spec):
-                LOGGER.error('Error: Inconsistent length found. '
+                warnings.warn(message='Error: Inconsistent length found. '
                              'Image set should be of same length with grid spec.')
             for idx, image_path in enumerate(image_set):
                 if idx not in grid_spec:
-                    LOGGER.error('Error: Image index [%s] '
+                    warnings.warn(message='Error: Image index [%s] '
                                  'not found in grid_spec.' % idx)
                     return False
                 pos = grid_spec[idx]

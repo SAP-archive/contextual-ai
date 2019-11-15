@@ -8,8 +8,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import logging
-
 from xai.formatter.report.base import Report
 from xai.formatter.writer.base import Writer
 
@@ -17,5 +15,3 @@ from xai.formatter.portable_document.publisher import CustomPdf
 from xai.formatter.portable_document.writer import PdfWriter
 
 from xai.formatter.hypertext_markup.writer import HtmlWriter
-
-logging.getLogger(__name__).addHandler(logging.NullHandler())
