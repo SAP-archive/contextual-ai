@@ -4,7 +4,13 @@
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
 
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import operator
+import warnings
 
 import numpy
 from typing import List, Union, Dict, Tuple
@@ -72,7 +78,8 @@ class ModelInterpreter:
                                                        num_features=k)
                 _explainer_aggregator.feed(explanation=exp)
                 if (idx + 1) % 100 == 0:
-                    print('Interpret %s/%s samples' % (idx + 1, len(samples)))
+                    warnings.warn(message='Interpret %s/%s samples' % (
+                        idx + 1, len(samples)))
             return _explainer_aggregator.get_statistics(stats_type=stats_type, k=k)
         else:
             raise InterpreterUninitializedError('This interpreter is not yet instantiated! '
@@ -116,7 +123,8 @@ class ModelInterpreter:
                     error_analysis_dict[(gt_label, predict_label)] = ExplanationAggregator(confidence_threshold=0)
                 error_analysis_dict[(gt_label, predict_label)].feed(explanation=exp)
             if (idx + 1) % 10 == 0:
-                print('Analyze %s/%s samples' % (idx + 1, len(valid_x)))
+                warnings.warn(message='Analyze %s/%s samples' % (
+                    idx + 1, len(valid_x)))
 
         error_analysis_stats = dict()
         for cm_cell, aggregator in error_analysis_dict.items():

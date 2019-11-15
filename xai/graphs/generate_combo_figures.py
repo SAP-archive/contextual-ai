@@ -1,8 +1,21 @@
-import os
-from xai.graphs import graph_generator as gg
-from xai.graphs import format_contants as graph_constants
-from xai import constants
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
+# ============================================================================
+""" Generate Combo Figures """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import operator
+import os
+import warnings
+
+from xai import constants
+from xai.graphs import format_contants as graph_constants
+from xai.graphs import graph_generator as gg
 
 
 def get_feature_image_for_similar_classes(dataset, label_key, feature_name, base_class, similar_class,
@@ -42,7 +55,8 @@ def get_class_confidence_distribution_image_list(label_key, visualization_result
         predicted_class_count[label] = num_sample
 
     sorted_class_size = sorted(predicted_class_count.items(), key=operator.itemgetter(1))[::-1]
-    print('Top predicted classes:', sorted_class_size)
+    warnings.warn(
+        message='Top predicted classes: {}'.format(sorted_class_size))
     top_classes = [a for (a, _) in sorted_class_size]
 
     for class_label in top_classes:
@@ -68,7 +82,8 @@ def get_class_reliability_diagram_image_list(label_key, visualization_result, TO
         predicted_class_count[label] = num_sample
 
     sorted_class_size = sorted(predicted_class_count.items(), key=operator.itemgetter(1))[::-1]
-    print('Top predicted classes:', sorted_class_size)
+    warnings.warn(
+        message='Top predicted classes: {}'.format(sorted_class_size))
     top_classes = [a for (a, _) in sorted_class_size]
 
     for class_label in top_classes:
