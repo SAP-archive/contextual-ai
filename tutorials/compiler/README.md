@@ -5,29 +5,43 @@ allowing user to customize and create use-case-specific explainability report.
 
 This is to increase the modularity of XAI lib and make it easy for extensible.
 
-## Example
+
+<span style="font-size:1.5em;font-weight: bold;">Example</span>
+
 The following examples can give you an impression of what the package can do:
 
-### Titanic Dataset
-* [Kaggle Overview](https://www.kaggle.com/c/titanic/overview)  
-* [Titanic dataset](https://www.kaggle.com/c/titanic/data)  
-* [Sample Notebook 1](titanic/sample.ipynb)
-* [Sample Notebook 2](titanic2/sample.ipynb)
 
-## Automobile Dataset
+
+<span style="font-size:1.17em;font-weight: bold;">Titanic Dataset</span>
+
+* [Kaggle Overview](https://www.kaggle.com/c/titanic/overview)  
+* [Titanic dataset](https://www.kaggle.com/c/titanic/data)
+* :ref:doc:`Sample Notebook 1 <tutorials/compiler/tutorial_titanic>`
+* :ref:doc:`Sample Notebook 2 <tutorials/compiler/tutorial_titanic2>`
+
+
+
+<span style="font-size:1.17em;font-weight: bold;">Automobile Dataset</span>
+
 * [Kaggle Overview](https://www.kaggle.com/toramky/automobile-dataset)
-* [Automobile dataset](https://www.kaggle.com/toramky/automobile-dataset)  
-* [Sample Notebook 1](automobile/sample.ipynb)
+* [Automobile dataset](https://www.kaggle.com/toramky/automobile-dataset)
+* :ref:doc:`Sample Notebook 1 <tutorials/compiler/tutorial_automobile>`
+
  
 
-## Supported Format
+<span style="font-size:1.5em;font-weight: bold;">Supported Format</span>
+
 The supported `external configuration` format are:
 * Json - Javascript Object Notation
 * Yaml - Rhymes with Camel (converted to Json when loaded)
 
-## Validation
 
-### Validate with Json Schema
+
+<span style="font-size:1.5em;font-weight: bold;">Validation</span>
+
+
+<span style="font-size:1.17em;font-weight: bold;">Validate with Json Schema</span>
+
 The `external configuration` MUST follow the defined schema bvelow:
 ```json
       { "definitions": {
@@ -81,7 +95,9 @@ The `external configuration` MUST follow the defined schema bvelow:
     }
 ```
 
-### Example in Json
+
+<span style="font-size:1.17em;font-weight: bold;">Example in Json</span>
+
 ```json
 {
   "name": "Report for Feature Importance Ranking",
@@ -149,7 +165,9 @@ The `external configuration` MUST follow the defined schema bvelow:
 }
 ```
 
-### Example in Yaml
+
+<span style="font-size:1.17em;font-weight: bold;">Example in Yaml</span>
+
 ```yaml
 name: Report for Feature Importance Ranking
 overview: true

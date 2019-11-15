@@ -4,7 +4,6 @@ The following notebooks demonstrate different functionality of XAI data module:
 
 #### Data explorer
 
-* [data_explorer.ipynb](data_explorer.ipynb):
+* :ref:doc:`data_explorer.ipynb <tutorials/data/tutorial_data_explorer>`:
     * data explorer tutorial, which shows how to generate statistics for categorical, numerical, 
     free text and datetime data types
-   
