@@ -99,9 +99,10 @@ class TestDataStatisticsAnalysis(unittest.TestCase):
         self.assertEqual(index, 1316)
 
         index = read_data.find('created on')
-        create_date = read_data[index+11: index+27]
+        create_date = read_data[index+11: index+30]
         # print(create_date)
-        report_time = datetime.strptime(create_date, '%Y-%m-%d %H:%M')
+        report_time = datetime.strptime(create_date, '%Y-%m-%d %H:%M:%S')
+        print("{} {} {}".format(start_time, report_time, end_time))
         self.assertTrue(time_in_range(start_time, end_time, report_time))
 
         number_of_tags = read_data.count('class="tab_contents"')
@@ -148,9 +149,10 @@ class TestDataStatisticsAnalysis(unittest.TestCase):
         self.assertEqual(index, 1316)
 
         index = read_data.find('created on')
-        create_date = read_data[index+11: index+27]
+        create_date = read_data[index+11: index+30]
         # print(create_date)
-        report_time = datetime.strptime(create_date, '%Y-%m-%d %H:%M')
+        report_time = datetime.strptime(create_date, '%Y-%m-%d %H:%M:%S')
+        print("{} {} {}".format(start_time, report_time, end_time))
         self.assertTrue(time_in_range(start_time, end_time, report_time))
 
         number_of_tags = read_data.count('class="tab_contents"')
