@@ -177,6 +177,8 @@ class DataStatisticsAnalysis(Dict2Obj):
             label = label_from_metadata
             vis_feature = feature
 
+        metadata = default_metadata
+
         # -- Cast Data to String --
         non_numeric_features = [name for name, _type in
                                 list(zip(default_valid_feature_names, default_valid_feature_types))
