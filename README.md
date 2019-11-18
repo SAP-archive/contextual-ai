@@ -84,30 +84,30 @@ print('Label', raw_train.target_names[raw_test.target[0]], '=>', raw_test.target
 pprint(exp)
 ```
 
-#### Input:
+#### Input text:
 
 ```
 From: creps@lateran.ucs.indiana.edu (Stephen A. Creps)\nSubject: Re: The doctrine of Original Sin\nOrganization: Indiana University\nLines: 63\n\nIn article <May.11.02.39.07.1993.28331@athos.rutgers.edu> Eugene.Bigelow@ebay.sun.com writes:\n>>If babies are not supposed to be baptised then why doesn\'t the Bible\n>>ever say so.  It never comes right and says "Only people that know\n>>right from wrong or who are taught can be baptised."\n>\n>This is not a very sound argument for baptising babies
 ...
 ```
 
-#### Output:
+#### Output explanations:
 
 ```
 Label soc.religion.christian => 2
-{0: {'confidence': 6.798212345437472e-05,
+{0: {'confidence': 6.79821e-05,
      'explanation': [{'feature': 'Bible', 'score': -0.0023500809763485468},
                      {'feature': 'Scripture', 'score': -0.0014344577715211986},
                      {'feature': 'Heaven', 'score': -0.001381196356886895},
                      {'feature': 'Sin', 'score': -0.0013723724408794883},
                      {'feature': 'specific', 'score': -0.0013611914394935848}]},
- 1: {'confidence': 0.00044272540371258136,
+ 1: {'confidence': 0.00044,
      'explanation': [{'feature': 'Bible', 'score': -0.007407412195931125},
                      {'feature': 'Scripture', 'score': -0.003658367757678809},
                      {'feature': 'Heaven', 'score': -0.003652181996607397},
                      {'feature': 'immoral', 'score': -0.003469502264458387},
                      {'feature': 'Sin', 'score': -0.003246609821338066}]},
- 2: {'confidence': 0.9994892924728337,
+ 2: {'confidence': 0.99948,
      'explanation': [{'feature': 'Bible', 'score': 0.009736539971486623},
                      {'feature': 'Scripture', 'score': 0.005124375636024145},
                      {'feature': 'Heaven', 'score': 0.005053514624616295},
