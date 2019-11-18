@@ -12,6 +12,7 @@ from __future__ import print_function
 import copy
 import os
 import tempfile
+import warnings
 
 import shutil
 from typing import Tuple, Dict, List
@@ -316,8 +317,7 @@ class HtmlWriter(Writer):
                         value = "%.4f" % np.mean(
                             np.array(metric_value['class']))
                     else:
-                        print(
-                            'No defined keys (`class`,`average`) found in metric value: %s' % (
+                        warnings.warn(message='No defined keys (`class`,`average`) found in metric value: %s' % (
                                 metric_value.keys()))
                         continue
 
@@ -328,9 +328,8 @@ class HtmlWriter(Writer):
                     key = "%s" % metric_name.capitalize()
                     value = metric_value
                 else:
-                    print(
-                        'Unsupported metric value type for metric (%s): %s' % (
-                            metric_name, type(metric_value)))
+                    warnings.warn(message='Unsupported metric value type for metric (%s): %s' % (
+                        metric_name, type(metric_value)))
                     continue
                 if key not in items:
                     items[key] = list()

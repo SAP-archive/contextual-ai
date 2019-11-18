@@ -11,6 +11,7 @@ import sys
 import unittest
 from pathlib import Path
 
+import warnings
 import numpy as np
 import pandas as pd
 from PyPDF2 import PdfFileReader
@@ -37,6 +38,7 @@ class TestGeneratePdfReport(unittest.TestCase):
     """
 
     def setUp(self) -> None:
+        warnings.simplefilter("ignore", ResourceWarning)
         self.name = None
         self.report_name = None
         self.report = None

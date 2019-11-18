@@ -8,6 +8,8 @@
 import sys
 sys.path.append('../')
 
+import warnings
+
 from PyPDF2 import PdfFileReader
 from datetime import datetime
 
@@ -31,6 +33,7 @@ class TestDataStatisticsAnalysisStatAuto(unittest.TestCase):
     """
 
     def setUp(self) -> None:
+        warnings.simplefilter("ignore", ResourceWarning)
         """ Specify Config Files """
         self.json = prepare_template(
             filename='data-statistics-analysis_stat-auto.json')

@@ -3,18 +3,16 @@
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
 
-import logging
-from typing import Optional, Callable, Any, List, Dict
+import warnings
 
 import dill
 import numpy as np
 import shap
+from typing import Optional, Callable, Any, List, Dict
 
 from xai.explainer.abstract_explainer import AbstractExplainer
 from xai.explainer.explainer_exceptions import ExplainerUninitializedError
 from xai.explainer.utils import parse_shap_values
-
-LOGGER = logging.getLogger(__name__)
 
 NUM_TOP_FEATURES = 5
 
@@ -76,6 +74,7 @@ class SHAPTabularExplainer(AbstractExplainer):
         if num_samples is None:
             # Let SHAP figure out default number of samples
             num_samples = 'auto'
+            warnings.warn(message='SHAP default number of samples[{}]'.format(num_samples))
 
         if self.explainer_object:
             if len(instance.shape) != 2:

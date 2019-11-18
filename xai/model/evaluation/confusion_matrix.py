@@ -4,10 +4,16 @@
 # Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved
 # ============================================================================
 
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 from collections import defaultdict
 from typing import List
 
 import numpy as np
+import warnings
 
 
 ################################################################################
@@ -41,7 +47,8 @@ class ConfusionMatrix:
             true_positive = predicted_distribution[targeted_class]
             tf_rate = true_positive / class_count[targeted_class]
             if tf_rate > tf_thresdhold:
-                print('Class [%s] is well classified, ignored in finding similar class.' % self.label[targeted_class])
+                warnings.warn(message='Class [%s] is well classified, ignored in ' \
+                               'finding similar class.' % self.label[targeted_class])
                 continue
             args = np.argsort(predicted_distribution)[::-1]
             j = 0
