@@ -4,5 +4,6 @@ The following notebooks demonstrate different functionality of XAI model interpr
 ​
 #### Model interpreter
 
-* [model_interpreter.ipynb](model_interpreter.ipynb):
-    * This tutorial demonstrates how to use `xai` to analyze a trained model and its feature.
+* :ref:doc:`model_interpreter.ipynb <tutorials/model_interpreter/tutorial_model_interpreter>`:
+    * This tutorial demonstrates how to use :ref:doc:`xai.model <model/model>` to analyze a trained model and its feature.
+    

@@ -1,8 +1,10 @@
-# XAI ExplainerFactory Module
+# Explainer Module
 
 This module houses all algorithms which are used to generate explanations for model predictions.
 
-## A simple example
+
+<span style="font-size:1.5em;font-weight: bold;">A simple example</span>
+
 
 ```python
 from sklearn import datasets
@@ -71,13 +73,14 @@ Output:
                       'score': 0.05509499962470641}]}}
 ```
 
-### Development
+<span style="font-size:1.17em;font-weight: bold;">Development</span>
 
 If you are developing your own XAI-compatible explanation algorithm, you should do the following:
-* Extend the `AbstractExplainer` found in [abstract_explainer.py](abstract_explainer.py) and implement
+* Extend the :py:meth:`AbstractExplainer <explainer.abstract_explainer.AbstractExplainer>` and implement
 all the abstract methods.
 * Assign a particular domain to your explanation algorithm as well as a unique name. Place the module
 in the appropriate directory (e.g. `xai/explainer/tabular`) and create constants accordingly in
-[constants.py](constants.py).
-* Map the domain to your algorithm in [config.py](config.py).
-* Create unittests in the [tests](../tests) directory.
+:py:meth:`constants.py <explainer.constants>`.
+* Map the domain to your algorithm in 
+:py:meth:`config.py <explainer.config>`.
+* Create unittests in the `tests` directory.

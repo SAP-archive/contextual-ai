@@ -1,24 +1,24 @@
 # XAI Explainer tutorials
 
 This directory houses the Jupyter notebooks which demonstrate how to use each explanation algorithm
-found in `xai/explainer`.
+found in :ref:doc:`xai.explainer <explainer/explainer>`.
 
-* [lime_tabular_explainer.ipynb](lime_tabular_explainer.ipynb):
+* :ref:doc:`lime_tabular_explainer.ipynb <tutorials/explainer/tutorial_lime_tabular_explainer>`:
     * Explanation algorithm: [LIME tabular explainer](https://lime-ml.readthedocs.io/en/latest/lime.html#module-lime.lime_tabular)
     * Target model: RandomForest
     * Dataset: Wisconsin breast cancer
     
-* [lime_text_explainer.ipynb](lime_text_explainer.ipynb):
+* :ref:doc:`lime_text_explainer.ipynb <tutorials/explainer/tutorial_lime_text_explainer>`:
     * Explanation algorithm: [LIME text explainer](https://lime-ml.readthedocs.io/en/latest/lime.html#lime.lime_text.LimeTextExplainer)
     * Target model: Naive Bayes
     * Dataset: 20newsgroups
     
-* [shap_tabular_explainer.ipynb](shap_tabular_explainer.ipynb):
-    * Explanation algorithm: [SHAP kernel explainer](https://shap.readthedocs.io/en/latest/#shap.KernelExplainer)
-    * Target model: RandomForest
-    * Dataset: Wisconsin breast cancer
-    
-* [lime_text_explainer_with_keras.ipynb](lime_text_explainer_with_keras.ipynb):
+* :ref:doc:`lime_text_explainer_with_keras.ipynb <tutorials/explainer/tutorial_lime_text_explainer_with_keras>`:
     * Explanation algorithm: [LIME text explainer](https://lime-ml.readthedocs.io/en/latest/lime.html#lime.lime_text.LimeTextExplainer)
     * Target model: Convolutional Neural Network
     * Dataset: 20newsgroups
+
+* :ref:doc:`shap_tabular_explainer.ipynb <tutorials/explainer/tutorial_shap_tabular_explainer>`:
+    * Explanation algorithm: [SHAP kernel explainer](https://shap.readthedocs.io/en/latest/#shap.KernelExplainer)
+    * Target model: RandomForest
+    * Dataset: Wisconsin breast cancer
