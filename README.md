@@ -4,11 +4,7 @@ Explainable AI (XAI)
 [![Build Status](https://jenkins.ml.only.sap/buildStatus/icon?job=Explainable_AI%2Fmaster)](https://jenkins.ml.only.sap/job/Explainable_AI/job/master/)
 [![Generic badge](https://img.shields.io/badge/docs-passing-<GREEN>.svg)](https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/)
 
-
-
 XAI is a Python package that addresses the trust gap between machine learning systems and their developers and users.
-
-
 
 ## 🖥 Installation
 
@@ -147,6 +143,11 @@ XAI spans [three pillars](https://wiki.wdf.sap.corp/wiki/display/MLAPPS/Pillars+
 
 * Produce PDF/HTML reports of outputs from the above using only a few lines of code
 * [Tutorial](https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/compiler_module_tutorial.html)
+
+## ⭐️ Use case examples
+
+* [SAP Cash Application data report](https://wiki.wdf.sap.corp/wiki/download/attachments/2123358216/training_report.pdf?version=1&modificationDate=1563243859000&api=v2)
+* [Service Ticket Intelligence training report](https://wiki.wdf.sap.corp/wiki/display/MLAPPS/Service+Ticket+Intelligence+-+Training+Report?preview=/2123358161/2162139944/sti_sample_training_report.pdf)
 
 ## 🤝 Contributing
 
