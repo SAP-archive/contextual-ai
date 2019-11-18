@@ -10,7 +10,7 @@ XAI is a Python package that addresses the trust gap between machine learning sy
 
 
 
-## Installation ##
+## 🖥 Installation
 
 XAI has been tested with Python 3.5+. You can install it using pip:
 
@@ -27,7 +27,7 @@ $ pip install dist/*.whl
 
 _Coming soon_
 
-## Quickstart
+## ⚡️ Quickstart
 
 In this simple example, we will attempt to generate explanations for some ML model trained on 20newsgroups, a text classification dataset. In particular, we want to find out which words were important for a particular prediction.
 
@@ -64,7 +64,10 @@ y_test = raw_test.target
 clf = MultinomialNB(alpha=0.1)
 clf.fit(X_train, y_train)
 
-# Instantiate the text explainer via the ExplainerFactory interfact
+##################
+# Main XAI steps #
+##################
+# Instantiate the text explainer via the ExplainerFactory interface
 explainer = ExplainerFactory.get_explainer(domain=xai.DOMAIN.TEXT)
 
 # Build the explainer
@@ -76,16 +79,23 @@ explainer.build_explainer(predict_fn)
 
 # Generate explanations
 exp = explainer.explain_instance(
-    labels=[0, 1, 2],
+    labels=[0, 1, 2], # which classes to produce explanations for?
     instance=raw_test.data[9],
-    num_features=5
+    num_features=5 # how many words to show?
 )
 
 print('Label', raw_train.target_names[raw_test.target[0]], '=>', raw_test.target[0])
 pprint(exp)
 ```
 
-Output:
+#### Input:
+
+```
+From: creps@lateran.ucs.indiana.edu (Stephen A. Creps)\nSubject: Re: The doctrine of Original Sin\nOrganization: Indiana University\nLines: 63\n\nIn article <May.11.02.39.07.1993.28331@athos.rutgers.edu> Eugene.Bigelow@ebay.sun.com writes:\n>>If babies are not supposed to be baptised then why doesn\'t the Bible\n>>ever say so.  It never comes right and says "Only people that know\n>>right from wrong or who are taught can be baptised."\n>\n>This is not a very sound argument for baptising babies
+...
+```
+
+#### Output:
 
 ```
 Label soc.religion.christian => 2
@@ -111,20 +121,53 @@ Label soc.religion.christian => 2
 
 
 
-## The Three Pillars of Explainable AI
+## 🚀 What else can it do?
 
+XAI spans [three pillars](https://wiki.wdf.sap.corp/wiki/display/MLAPPS/Pillars+of+Explainability), or scopes, of explainability, each addressing a different stage of a machine learning solution's lifecycle.
 
+### Pre-training (Data)
 
+* Distributional analysis of data and features
+* Data validation
+* [Tutorial](https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/data_module_tutorial.html)
 
+### Training evaluation (Model)
 
+* Training performance
+* Feature importance
+* Per-class explanations
+* [Tutorial](https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/training_module.html)
 
+### Inference (Prediction)
 
-## Resources
+* Explanations per prediction instance
+* [Tutorial](https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/inference_module.html)
 
-* [Wiki](https://wiki.wdf.sap.corp/wiki/pages/viewpage.action?pageId=2098642718)
-* [Slack (#xai)](https://sap-ml.slack.com/messages/CHJMDJB17)
-* [Fiori UX4AI design guidelines](https://ux.wdf.sap.corp/fiori-design-web/explainable-ai/)
+### Formatter/Compiler
 
-## Contact Us
+* Produce PDF/HTML reports of outputs from the above using only a few lines of code
+* [Tutorial](https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/compiler_module_tutorial.html)
+
+## 🤝 Contributing
+
+We welcome contributions of all kinds, you do not need to code to be helpful! All of the following tasks are noble and worthy contributions that you can make without coding:
+
+- Reporting a bug (file an issue in this repository!)
+- Providing discussions in our communication channels
+- Fixing a typo in the code
+- Fixing a typo in the documentation
+- Providing your feedback on the proposed features and designs
+- Reviewing Pull Requests
+- General questions about usage/specifications
+
+Of course, we welcome code contributions to the XAI project as well. Please feel free to fork this project and issue a pull request.
+
+## 📙 Resources
+
+- [Wiki](https://wiki.wdf.sap.corp/wiki/pages/viewpage.action?pageId=2098642718)
+- [Slack (#xai)](https://sap-ml.slack.com/messages/CHJMDJB17)
+- [Fiori UX4AI design guidelines](https://ux.wdf.sap.corp/fiori-design-web/explainable-ai/)
+
+## 📧 Contact Us
 
 DL_5CE39E1B960F84027F4937EE@global.corp.sap (DL ML Explainable AI)
