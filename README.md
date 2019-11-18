@@ -168,6 +168,7 @@ Of course, we welcome code contributions to the XAI project as well. Please feel
 - [Wiki](https://wiki.wdf.sap.corp/wiki/pages/viewpage.action?pageId=2098642718)
 - [Slack (#xai)](https://sap-ml.slack.com/messages/CHJMDJB17)
 - [Fiori UX4AI design guidelines](https://ux.wdf.sap.corp/fiori-design-web/explainable-ai/)
+- [Advanced ML Training - Explainability](https://github.wdf.sap.corp/ML-Leonardo/ML-Advanced-Trainings/tree/master/explainability)
 
 ## 📧 Contact Us
 
