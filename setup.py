@@ -8,7 +8,7 @@ with open("README.md", "r", encoding='utf-8') as fh:
 
 setuptools.setup(
     name='sap_explainable_ai',
-    version='0.0.1',
+    version='0.1.0',
     packages=setuptools.find_packages(include=['xai*']),
     author="SAP",
     url="https://github.wdf.sap.corp/ML-Leonardo/Explainable_AI",
