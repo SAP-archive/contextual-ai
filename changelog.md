@@ -26,4 +26,7 @@ with a single line of code and a configuration file.
 
 ### [0.1.0] - 2019-11-18
 
-- Coming soon
+- Higher unit tests coverage
+- Checkmarx report
+- Data validation functions in compiler module
+- Logging cleanup
