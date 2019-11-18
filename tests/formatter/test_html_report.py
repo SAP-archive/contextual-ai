@@ -552,7 +552,7 @@ class TestGenerateHtmlReport(unittest.TestCase):
 
         index = read_data.find('created on')
         create_date = read_data[index+11: index+27]
-        # print(create_date)
+        print(create_date)
         report_time = datetime.strptime(create_date, '%Y-%m-%d %H:%M')
         self.assertTrue(time_in_range(start_time, end_time, report_time))
 

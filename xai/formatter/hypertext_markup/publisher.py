@@ -53,7 +53,8 @@ class CustomHtml:
         self._html_body_header = list()
         self._html_body_section_article = list()
 
-        self._create_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        self._create_date = datetime.datetime.now().strftime("%Y-%m-%d "
+                                                             "%H:%M:%S")
 
     @property
     def path(self):
