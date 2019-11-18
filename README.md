@@ -151,7 +151,7 @@ XAI spans [three pillars](https://wiki.wdf.sap.corp/wiki/display/MLAPPS/Pillars+
 
 ## 🤝 Contributing
 
-We welcome contributions of all kinds, you do not need to code to be helpful! All of the following tasks are noble and worthy contributions that you can make without coding:
+We welcome contributions of all kinds!
 
 - Reporting a bug (file an issue in this repository!)
 - Providing discussions in our communication channels
