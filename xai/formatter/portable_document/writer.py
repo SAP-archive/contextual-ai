@@ -237,7 +237,7 @@ class PdfWriter(Writer):
             self.pdf.add_new_line()
 
     def draw_basic_images_with_grid_spec(self, notes: str, *,
-                                        image_list, grid_spec):
+                                         image_list, grid_spec):
         """
         Draw image blocks with formatted grid specification
 
@@ -1244,7 +1244,7 @@ class PdfWriter(Writer):
                                               visual_result_tuple: tuple):
         """
         Add information about reliability to report
-        
+
         Args:
             notes(str): Explain the block
             visual_result_tuple(tuple): (visual_result_header, visual_result_dict)

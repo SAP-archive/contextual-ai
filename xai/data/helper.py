@@ -65,6 +65,8 @@ def get_column_types(*, data, threshold, label=None):
                 return 0
             except ValueError:
                 return 1
+            except OverflowError:
+                return 1
 
         counter = Counter(_data.tolist())
         if len(counter) >= threshold * len(_data):
