@@ -104,39 +104,34 @@ class PdfWriter(Writer):
         for content in dc_contents:
             if isinstance(content, SectionTitle) and \
                     content.level == Title.SECTION_TITLE:
+                _h1_count += 1
+                _h2_count = 0
+                _h3_count = 0
+                content.text = '%s   %s' % (_h1_count, content.text)
                 if content_table:
                     content.link = self.pdf.add_link()
                     self.pdf.add_new_line(line='<B>%s</B>' % content.text,
                                           link=content.link)
             elif isinstance(content, Header):
                 if content.level == Header.LEVEL_1:
-                    _h1_count += 1
-                    _h2_count = 0
-                    _h3_count = 0
-                    content.text = '%s   %s' % (_h1_count, content.text)
-                    if content_table:
-                        content.link = self.pdf.add_link()
-                        self.pdf.add_new_line(line='<B>%s</B>' % content.text,
-                                              link=content.link)
-                elif content.level == Header.LEVEL_2:
                     _h2_count += 1
                     _h3_count = 0
                     content.text = '%s.%s   %s' % (_h1_count, _h2_count,
                                                    content.text)
                     if content_table:
                         content.link = self.pdf.add_link()
-                        self.pdf.add_new_line(line='.. %s' % content.text,
+                        self.pdf.add_new_line(line='<B>%s</B>' % content.text,
                                               link=content.link)
-                elif content.level == Header.LEVEL_3:
+                elif content.level == Header.LEVEL_2:
                     _h3_count += 1
                     content.text = '%s.%s.%s   %s' % (_h1_count, _h2_count,
                                                       _h3_count,
                                                       content.text)
                     if content_table:
                         content.link = self.pdf.add_link()
-                        self.pdf.add_new_line(line='.... <I>%s</I>' %
-                                                   content.text,
+                        self.pdf.add_new_line(line='.. %s' % content.text,
                                               link=content.link)
+
         # -- Draw Details Contents --
         if len(dc_contents) > 1:
             for content in dc_contents:
