@@ -1,0 +1,13 @@
+attributes:
+  milestonestaging: true
+
+defaultTemplate: all
+templates:
+  - Template: all
+    variants:
+      - sonar
+      - linuxx86_64
+
+variants:
+- Variant: sonar
+  args: [ '--buildplugin-option', 'options="-Psonar sonar:sonar  -Dsonar.branch=dev  -Dsonar.profile=SAPDefaultProfile_1_4_6"']
