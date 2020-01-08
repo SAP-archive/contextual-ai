@@ -30,7 +30,7 @@ def explanation_to_json(explanation: Explanation,
         list_explanations = explanation.as_list(label)
         tmp = []
         for exp in list_explanations:
-            tmp.append({'feature': exp[0], 'score': exp[1]})
+            tmp.append({'feature': str(exp[0]), 'score': float(exp[1])})
         dict_explanation[label] = {
             'confidence': confidences[label],
             'explanation': tmp
