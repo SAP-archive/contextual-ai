@@ -547,8 +547,8 @@ class TestGenerateHtmlReport(unittest.TestCase):
             read_data = f.read()
 
         index = read_data.find(self.report_name)
-        # -- the header start at index 1316 --
-        self.assertEqual(index, 1316)
+        # -- the header start at index 1279 --
+        self.assertEqual(index, 1279)
 
         index = read_data.find('created on')
         create_date = read_data[index+11: index+27]
