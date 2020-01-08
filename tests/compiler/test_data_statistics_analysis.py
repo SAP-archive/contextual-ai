@@ -98,8 +98,8 @@ class TestDataStatisticsAnalysis(unittest.TestCase):
             read_data = f.read()
 
         index = read_data.find(self.json_report_name)
-        # -- the header start at index 1316 --
-        self.assertEqual(index, 1316)
+        # -- the header start at index 1279 --
+        self.assertEqual(index, 1279)
 
         index = read_data.find('created on')
         create_date = read_data[index+11: index+30]
@@ -148,8 +148,8 @@ class TestDataStatisticsAnalysis(unittest.TestCase):
             read_data = f.read()
 
         index = read_data.find(self.yaml_report_name)
-        # -- the header start at index 1316 --
-        self.assertEqual(index, 1316)
+        # -- the header start at index 1279 --
+        self.assertEqual(index, 1279)
 
         index = read_data.find('created on')
         create_date = read_data[index+11: index+30]

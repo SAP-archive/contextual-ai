@@ -138,7 +138,11 @@ class CustomHtml:
             for key, item in data:
                 with doc.tag('tr'):
                     doc.asis('<td><b>%s</b></td>' % key)
-                    doc.asis('<td>%s</td>' % item)
+                    if isinstance(item, tuple):
+                        joined = ",".join(str(v) for v in item)
+                        doc.asis('<td>(%s)</td>' % joined)
+                    else:
+                        doc.asis('<td>%s</td>' % item)
         return doc.getvalue()
 
     @staticmethod
@@ -534,7 +538,7 @@ class CustomHtml:
                 doc.asis(self.create_body_footer(text=self.COPY_RIGHT))
                 with doc.tag('script'):
                     doc.asis(self._get_js(path=self.script))
-        return indent(doc.getvalue())
+        return doc.getvalue()
 
     def to_file(self):
         """
