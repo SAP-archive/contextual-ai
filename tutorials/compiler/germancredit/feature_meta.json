@@ -1,0 +1,88 @@
+{
+  "class_names": [
+    "0",
+    "1"
+  ],
+  "feature_types": [
+    {
+     "name": "Sex",
+      "type": "categorical",
+      "mapping": [
+        "0",
+        "1"
+      ]
+    },
+    {
+     "name": "Job",
+      "type": "categorical",
+      "mapping": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+     "name": "Housing",
+      "type": "categorical",
+      "mapping": [
+        "0",
+        "1",
+        "2"
+      ]
+    },
+    {
+     "name": "Saving accounts",
+      "type": "categorical",
+      "mapping": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4"
+      ]
+    },
+    {
+     "name": "Checking account",
+      "type": "categorical",
+      "mapping": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+     "name": "Checking amount",
+      "type": "numeric"
+    },
+    {
+     "name": "Duration",
+      "type": "numeric"
+    },
+    {
+      "name": "Purpose",
+      "type": "categorical",
+      "mapping": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    {
+     "name": "Age Bucket",
+      "type": "categorical",
+      "mapping": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    }
+  ]
+}
