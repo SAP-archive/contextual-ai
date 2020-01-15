@@ -25,8 +25,25 @@ with a single line of code and a configuration file.
 ### [Released]
 
 ### [0.1.0] - 2019-11-18
+#### Added
 
 - Higher unit tests coverage
 - Checkmarx report
 - Data validation functions in compiler module
 - Logging cleanup
+
+### [0.1.1] - 2020-01-08
+#### Added
+
+- German credit risk tutorial
+- Bug fix
+  - html compiler unit test
+  - explainer data type
+
+### [0.1.2] - 2020-01-15
+#### Added
+
+- Bug fix
+  - Include missing formatter font files
+  - Include nltk library pickles
+  - Update library dependencies (pyyaml, jsonschema)
