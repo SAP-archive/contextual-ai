@@ -32,18 +32,13 @@ with a single line of code and a configuration file.
 - Data validation functions in compiler module
 - Logging cleanup
 
-### [0.1.1] - 2020-01-08
+### [0.1.1] - 2020-01-15
 #### Added
 
 - German credit risk tutorial
 - Bug fix
-  - html compiler unit test
-  - explainer data type
-
-### [0.1.2] - 2020-01-15
-#### Added
-
-- Bug fix
-  - Include missing formatter font files
-  - Include nltk library pickles
-  - Update library dependencies (pyyaml, jsonschema)
+  - add html compiler unit test
+  - fix explainer data type
+  - include missing formatter font files
+  - include nltk library pickles
+  - update library dependencies (pyyaml, jsonschema)
