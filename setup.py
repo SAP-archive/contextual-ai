@@ -8,7 +8,7 @@ with open("README.md", "r", encoding='utf-8') as fh:
 
 setuptools.setup(
     name='sap_explainable_ai',
-    version='0.1.1',
+    version='0.1.2',
     packages=setuptools.find_packages(include=['xai*']),
     author="SAP",
     url="https://github.wdf.sap.corp/ML-Leonardo/Explainable_AI",
@@ -32,7 +32,9 @@ setuptools.setup(
                       'lime==0.1.1.32',
                       'dill==0.3.0',
                       'shap==0.29.3',
-                      'yattag==1.12.2'],
+                      'yattag==1.12.2',
+                      'pyyaml==5.1.2',
+                      'jsonschema==3.0.2'],
     classifiers=[
         'Programming Language :: Python :: 3.6',
         'Operating System :: OS Independent',
@@ -41,3 +43,4 @@ setuptools.setup(
         'Topic :: Software Development :: XAI'
     ]
 )
+
