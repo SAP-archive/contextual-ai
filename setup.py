@@ -32,7 +32,9 @@ setuptools.setup(
                       'lime==0.1.1.32',
                       'dill==0.3.0',
                       'shap==0.29.3',
-                      'yattag==1.12.2'],
+                      'yattag==1.12.2',
+                      'pyyaml==5.1.2',
+                      'jsonschema==3.0.2'],
     classifiers=[
         'Programming Language :: Python :: 3.6',
         'Operating System :: OS Independent',
@@ -41,3 +43,4 @@ setuptools.setup(
         'Topic :: Software Development :: XAI'
     ]
 )
+

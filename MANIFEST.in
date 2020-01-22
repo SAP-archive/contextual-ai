@@ -1,0 +1,2 @@
+include xai/formatter/portable_document/fonts/*.ttf
+include xai/data/tokenizers/punkt/PY3/*.pickle
