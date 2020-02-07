@@ -118,10 +118,10 @@ class Configuration:
         """
         extension = config.suffix.lower()
         if extension == '.json':
-            with open(config) as file:
+            with open(str(config)) as file:
                 data = json.load(file)
         elif extension == '.yml':
-            with open(config) as file:
+            with open(str(config)) as file:
                 data = yaml.load(file, Loader=yaml.SafeLoader)
         else:
             raise CompilerException('Unsupported config file, %s' % config)
