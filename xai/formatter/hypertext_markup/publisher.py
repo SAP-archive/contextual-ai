@@ -443,7 +443,7 @@ class CustomHtml:
         return doc.getvalue()
 
     @staticmethod
-    def create_div(contents: list, *, link=None, tab=False, ):
+    def create_div(contents: list, *, link=None, tab=False):
         """
         create div
 
