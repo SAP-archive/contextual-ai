@@ -8,31 +8,70 @@ from typing import List, Dict, Optional, Any
 import numpy as np
 from lime.explanation import Explanation
 
+from xai.explainer.constants import MODE
+
 
 def explanation_to_json(explanation: Explanation,
                         labels: List[int],
-                        confidences: np.ndarray) -> Dict[int, Dict]:
+                        predictions: np.ndarray,
+                        mode: str) -> Dict[int, Dict]:
     """
     Parses LIME explanation to produce JSON-parseable output format.
+
+    ### Schema for classification:
+    {
+        class_idx: {'explanation': [
+                    {
+                    'feature': str,
+                    'score': float
+                    },
+                      ...
+                    ],
+        'prediction': float},
+        ...
+    }
+
+    ### Schema for regression:
+    {
+        'explanation': [
+            {
+                'feature': str,
+                'score': float
+            }
+            ...
+        ],
+        'predictions': float
+    }
 
     Args:
         explanation (lime.explanation.Explanation): The explanation output from LIME
         labels (list): List of labels for which to get explanations
-        confidences (np.ndarray): Model output for a particular instance, which should be a list
-        of confidences that sum to one
+        predictions (np.ndarray): Model output for a particular instance, which should be a list
+        of confidences that sum to one (if classification)
+        mode (str): Regression or classification
 
     Returns:
         (dict) Explanations in JSON format
     """
     dict_explanation = {}
 
-    for label in labels:
-        list_explanations = explanation.as_list(label)
+    if mode == MODE.CLASSIFICATION:
+        for label in labels:
+            list_explanations = explanation.as_list(label)
+            tmp = []
+            for exp in list_explanations:
+                tmp.append({'feature': str(exp[0]), 'score': float(exp[1])})
+            dict_explanation[label] = {
+                'prediction': predictions[label],
+                'explanation': tmp
+            }
+    else:
+        list_explanations = explanation.as_list()
         tmp = []
         for exp in list_explanations:
             tmp.append({'feature': str(exp[0]), 'score': float(exp[1])})
-        dict_explanation[label] = {
-            'confidence': confidences[label],
+        dict_explanation = {
+            'prediction': predictions,
             'explanation': tmp
         }
 
