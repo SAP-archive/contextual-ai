@@ -13,7 +13,7 @@ from lime.lime_text import LimeTextExplainer as OriginalLimeTextExplainer
 from ..abstract_explainer import AbstractExplainer
 from ..explainer_exceptions import ExplainerUninitializedError
 from ..utils import explanation_to_json
-
+from ..constants import MODE
 
 NUM_TOP_FEATURES = 5
 
@@ -115,7 +115,8 @@ class LimeTextExplainer(AbstractExplainer):
 
             confidences = explanation.predict_proba
 
-            return explanation_to_json(explanation, labels_to_extract, confidences)
+            return explanation_to_json(explanation, labels_to_extract, confidences,
+                                       mode=MODE.CLASSIFICATION)
         else:
             raise ExplainerUninitializedError('This explainer is not yet instantiated! '
                                               'Please call build_explainer()'
