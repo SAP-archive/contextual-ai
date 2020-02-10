@@ -51,8 +51,8 @@ class TestUtils(unittest.TestCase):
         labels = [0, 1]
         confidences = np.array([0.0, 1.0])
 
-        expected = {0: {'confidence': 0.0,
-                        'explanation': [{'feature': 'worst perimeter <= 83.79',
+        expected = {0: {'prediction': 0.0,
+                        'explanation': sorted([{'feature': 'worst perimeter <= 83.79',
                                          'score': -0.10275161028167702},
                                         {'feature': 'worst area <= 509.25',
                                          'score': -0.09479442043867894},
@@ -71,9 +71,10 @@ class TestUtils(unittest.TestCase):
                                         {'feature': 'area error <= 18.17',
                                          'score': -0.027911303586217028},
                                         {'feature': 'worst compactness <= 0.15',
-                                         'score': -0.024483076857988333}]},
-                    1: {'confidence': 1.0,
-                        'explanation': [{'feature': 'worst perimeter <= 83.79',
+                                         'score': -0.024483076857988333}],
+                                              key=lambda x: x['score'], reverse=True)},
+                    1: {'prediction': 1.0,
+                        'explanation': sorted([{'feature': 'worst perimeter <= 83.79',
                                          'score': 0.10275161028167702},
                                         {'feature': 'worst area <= 509.25',
                                          'score': 0.09479442043867897},
@@ -92,7 +93,8 @@ class TestUtils(unittest.TestCase):
                                         {'feature': 'area error <= 18.17',
                                          'score': 0.027911303586217028},
                                         {'feature': 'worst compactness <= 0.15',
-                                         'score': 0.024483076857988346}]}}
+                                         'score': 0.024483076857988346}],
+                                              key=lambda x: x['score'], reverse=True)}}
 
         actual = explanation_to_json(
             explanation=dummy_explanation,

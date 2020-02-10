@@ -63,7 +63,7 @@ def explanation_to_json(explanation: Explanation,
                 tmp.append({'feature': str(exp[0]), 'score': float(exp[1])})
             dict_explanation[label] = {
                 'prediction': predictions[label],
-                'explanation': tmp
+                'explanation': sorted(tmp, key=lambda x: x['score'], reverse=True)
             }
     else:
         list_explanations = explanation.as_list()
@@ -72,7 +72,7 @@ def explanation_to_json(explanation: Explanation,
             tmp.append({'feature': str(exp[0]), 'score': float(exp[1])})
         dict_explanation = {
             'prediction': predictions,
-            'explanation': tmp
+            'explanation': sorted(tmp, key=lambda x: x['score'], reverse=True)
         }
 
     return dict_explanation
