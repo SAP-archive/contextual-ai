@@ -8,7 +8,7 @@ import unittest
 import numpy as np
 
 from xai.explainer.utils import explanation_to_json
-
+from xai.explainer.constants import MODE
 
 class DummyExplanation(object):
 
@@ -97,7 +97,8 @@ class TestUtils(unittest.TestCase):
         actual = explanation_to_json(
             explanation=dummy_explanation,
             labels=labels,
-            confidences=confidences
+            predictions=confidences,
+            mode=MODE.CLASSIFICATION
         )
 
         self.assertEquals(expected, actual, msg='JSON explanations should be the same!')
