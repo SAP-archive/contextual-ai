@@ -165,9 +165,14 @@ class LimeTabularExplainer(AbstractExplainer):
             else:
                 labels_to_extract = labels
 
-            confidences = explanation.predict_proba
+            if self.mode == MODE.CLASSIFICATION:
+                # For a classification model, the predictions are softmax probabilities
+                predictions = explanation.predict_proba
+            else:
+                # For a regression model, the predictions are single scalars
+                predictions = explanation.predicted_value
 
-            return explanation_to_json(explanation, labels_to_extract, confidences)
+            return explanation_to_json(explanation, labels_to_extract, predictions, self.mode)
         else:
             raise ExplainerUninitializedError('This explainer is not yet instantiated! '
                                               'Please call build_explainer()'
