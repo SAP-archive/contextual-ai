@@ -7,7 +7,7 @@ pipeline {
     parameters{
         booleanParam(defaultValue: false, description: '\'true\' will create a release artifact on Nexus', name: 'PROMOTE')
     }
-
+/*
     stages{
         stage('Pull-request voting') {
             when { branch "PR-*" }
@@ -25,7 +25,7 @@ pipeline {
             }
             post { always { deleteDir() } }
         }
-
+*/
         /*
         stage('Unit Tests, Coverage & Pylint') {
             agent {
