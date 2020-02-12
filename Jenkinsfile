@@ -333,3 +333,4 @@ pipeline {
         }
     }
     // Send notification mail when pipeline fails
+}
