@@ -129,28 +129,74 @@ class Configuration:
         validate(instance=data, schema=Configuration.SCHEMA)
         return data
 
-    def __init__(self, config=None) -> None:
+    @staticmethod
+    def render_config(contents: dict, variables):
+        """
+        Rendering Config
+
+        Args:
+            contents (dict): contents dict object
+            variables: dictionary of the current globals/locals symbol table
+        """
+        for content in contents:
+            if Constant.COMPONENT.value in content:
+                component = content[Constant.COMPONENT.value]
+                if Constant.COMPONENT_ATTR.value in component:
+                    attributes = component[Constant.COMPONENT_ATTR.value]
+                    for value in attributes.values():
+                        if value in variables:
+                             print(variables[value])
+
+            if Constant.SECTION_LIST.value in content:
+                Configuration.render_config(
+                    contents=content[Constant.SECTION_LIST.value],
+                    variables=variables)
+
+    @staticmethod
+    def _load_config(config, variables):
+        """
+        Load Config File - file path or dict
+
+        Args:
+            config (str/dict): path to config json/yaml file or dict pre-loaded
+            variables: dictionary of the current globals/locals symbol table
+        """
+        _result = dict()
+        if not (config is None):
+            if type(config) == str:
+                _result = Configuration._load(Path(config))
+            elif type(config) == dict:
+                _result = config
+                if not (variables is None):
+                    Configuration.render_config(
+                        contents=config[Constant.CONTENT_LIST.value],
+                        variables=variables)
+            else:
+                raise CompilerException('Unsupported config format, %s' % config)
+        return _result
+
+    def __init__(self, config=None, variables=None) -> None:
         """
         Configuration setup
 
         Args:
-            config (str): path to config json/yaml file
+            config (str/dict): path to config json/yaml file or dict pre-loaded
+            variables: dictionary of the current globals/locals symbol table
         """
-        self._config = dict()
-        if not (config is None):
-            self._config = self._load(Path(config))
+        self._config = Configuration._load_config(config, variables)
 
-    def __call__(self, config=None):
+    def __call__(self, config=None, variables=None):
         """
         Configuration execution
 
         Args:
-            config (str): config json/yaml file
+            config (str/dict): path to config json/yaml file or dict pre-loaded
+            variables: dictionary of the current globals/locals symbol table
         Returns:
             configuration dict object
         """
         if not (config is None):
-            self._config = self._load(Path(config))
+            self._config = Configuration._load_config(config, variables)
         return self._config
 
 
@@ -406,6 +452,9 @@ class Dict2Obj:
         Returns:
             DataFrame / Numpy
         """
+        #TODO:
+        globals()
+
         extension = path.suffix.lower()
         if extension == '.npy':
             data = np.load(path)
