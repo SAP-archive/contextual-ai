@@ -90,7 +90,7 @@ pipeline {
 
         stage('Central Build') {
             when {
-                branch 'master'
+                branch 'XAI_NEW'
             }
             steps {
                 script{
@@ -125,7 +125,7 @@ pipeline {
             when {
                 anyOf {
                     branch 'develop'
-                    branch 'master'
+                    branch 'XAI_NEW'
                     branch 'PR-*'
                 }
             }
@@ -145,7 +145,7 @@ pipeline {
                                 executeSonarScan script: this, projectVersion: "${version}",
                                     options: "-Dsonar.pullrequest.key=${CHANGE_ID} -Dsonar.pullrequest.branch=${BRANCH_NAME} -Dsonar.pullrequest.base=${CHANGE_TARGET}"
 
-                            } else if(env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'release' || env.BRANCH_NAME == 'master') {
+                            } else if(env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'release' || env.BRANCH_NAME == 'XAI_NEW') {
 
                                 echo "SonarQube Long Lived Branch Analysis"
                                 executeSonarScan script: this, projectVersion: "${version}",
@@ -164,7 +164,7 @@ pipeline {
 
 
         stage('Deploy to Integration') {
-            when { branch 'master' }
+            when { branch 'XAI_NEW' }
             steps {
                 lock(resource: "${env.JOB_NAME}/30", inversePrecedence: true) {
                     milestone 30
@@ -179,7 +179,7 @@ pipeline {
 
 
         stage('Integration tests') {
-            when { branch 'master' }
+            when { branch 'XAI_NEW' }
             steps {
                 sh """
                                             echo "add your integration tests"
@@ -189,7 +189,7 @@ pipeline {
         }
 
         stage('Deploy to Performance') {
-            when { branch 'master' }
+            when { branch 'XAI_NEW' }
             steps {
                 echo "Add deployment to Performance space"
             }
@@ -198,7 +198,7 @@ pipeline {
 
 
         stage('Performance tests') {
-            when { branch 'master' }
+            when { branch 'XAI_NEW' }
             steps {
                 echo "Add performance tests"
             }
@@ -206,7 +206,7 @@ pipeline {
         }
 
         stage('Deploy to Acceptance') {
-            when { branch 'master' }
+            when { branch 'XAI_NEW' }
             steps {
                 echo "Add deployment to Acceptance space"
             }
@@ -214,7 +214,7 @@ pipeline {
         }
 
         stage('Acceptance tests') {
-            when { branch 'master' }
+            when { branch 'XAI_NEW' }
             steps {
                 echo "Add acceptance tests"
             }
@@ -251,7 +251,7 @@ pipeline {
 
         // for additional behavior, please visit: https://github.wdf.sap.corp/pages/ContinuousDelivery/piper-doc/steps/executeCheckmarxScan/
         stage('Checkmarx') {
-            when { branch 'master' }
+            when { branch 'XAI_NEW' }
             steps {
                 lock(resource: "${env.JOB_NAME}/60") {
                     milestone 60
@@ -277,7 +277,7 @@ pipeline {
         //          }
         // for additional behavior please visit: https://github.wdf.sap.corp/pages/ContinuousDelivery/piper-doc/steps/executeVulasScan/
         stage('Vulas') {
-            when { branch 'master' }
+            when { branch 'XAI_NEW' }
             steps {
                 lock(resource: "${env.JOB_NAME}/80") {
                     milestone 80
@@ -316,7 +316,7 @@ pipeline {
 
         // for additional behavior, please visit: https://github.wdf.sap.corp/pages/ContinuousDelivery/piper-doc/stages/promote/
         stage('Promote') {
-            when { branch 'master' }
+            when { branch 'XAI_NEW' }
             steps {
                 script{
                     lock(resource: "${env.JOB_NAME}/90", inversePrecedence: true) {
