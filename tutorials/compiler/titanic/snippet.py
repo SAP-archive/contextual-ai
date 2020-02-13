@@ -30,15 +30,7 @@ def v2():
         config = json.load(file)
 
     controller = Controller(config=Configuration(config, locals()))
-    print(controller.config)
-
-
-
-
-
-
-    #
-    # controller.render()
+    controller.render()
     print("[DONE] the v2 compiler")
 
 if __name__== "__main__":

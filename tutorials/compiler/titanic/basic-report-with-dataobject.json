@@ -13,8 +13,8 @@
             "_comment": "refer to document section xxxx",
             "class": "FeatureImportanceRanking",
             "attr": {
-              "trained_model": "model_pkl",
-              "train_data": "train_data_csv",
+              "trained_model": "var:model_pkl",
+              "train_data": "var:train_data_csv",
               "method": "shap"
             }
           }
