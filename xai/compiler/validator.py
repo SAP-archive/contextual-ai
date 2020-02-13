@@ -83,7 +83,7 @@ class DuplicationOrphanCheck(Dict2Obj):
                 "type": "object",
                 "properties": {
                     "local_key": {"type": "string"},
-                    "foreign_data": {"type": "string"},
+                    "foreign_data": {"type": ["string", "object"]},
                     "foreign_key": {"type": "string"},
                 },
                 "required": ["local_key", "foreign_data", "foreign_key"]
@@ -91,7 +91,7 @@ class DuplicationOrphanCheck(Dict2Obj):
         },
         "type": "object",
         "properties": {
-            "data": {"type": "string"},
+            "data": {"type": ["string", "object"]},
             "duplication_rule": {
                 "type": "object",
                 "properties": {
@@ -146,14 +146,14 @@ class DuplicationOrphanCheck(Dict2Obj):
         super(DuplicationOrphanCheck, self).__call__(report=report,
                                                      level=level)
         # -- Load Parameters --
-        data_path = self.assert_attr(key='data')
+        data_var = self.assert_attr(key='data')
         duplication_rule = self.assert_attr(key='duplication_rule', default=None)
         orphan_rules = self.assert_attr(key='orphan_rules')
 
         df = None
         # -- Load Data --
-        if not (data_path is None):
-            df = self.load_data(Path(data_path), header=True)
+        if not (data_var is None):
+            df = self.load_data(data_var, header=True)
 
         # -- Information about Raw Dataframe --
         self.report.detail.add_key_value_pairs(info_list=[('Total number of raw samples', df.shape[0])],
@@ -200,12 +200,12 @@ class DuplicationOrphanCheck(Dict2Obj):
 
         for rule in rules:
             local_key = rule['local_key']
-            foreign_path = rule['foreign_data']
+            foreign_var = rule['foreign_data']
             foreign_key = rule['foreign_key']
 
             foreign_df = None
-            if not (foreign_path is None):
-                foreign_df = self.load_data(Path(foreign_path), header=True)
+            if not (foreign_var is None):
+                foreign_df = self.load_data(foreign_var, header=True)
 
             orphan_indices = dv_processor.orphaned_relation_check(df_a=duplicate_dropped_df,
                                                                   df_b=foreign_df,
@@ -214,7 +214,7 @@ class DuplicationOrphanCheck(Dict2Obj):
 
             all_orphaned_index.update(set(orphan_indices))
 
-            orphan_check_info.append(("[%s] not in [%s of %s]" % (local_key, foreign_key, foreign_path),
+            orphan_check_info.append(("[%s] not in [%s of %s]" % (local_key, foreign_key, foreign_var),
                                       len(orphan_indices)))
 
         if len(orphan_check_info) > 0:
@@ -285,7 +285,7 @@ class CompleteMatchCheck(Dict2Obj):
             "relational_columns": {
                 "type": "object",
                 "properties": {
-                    "foreign_file": {"type": "string"},
+                    "foreign_file": {"type": ["string", "object"]},
                     "foreign_index": {"type": "string"},
                     "columns": {
                         "type": "array",
@@ -303,7 +303,7 @@ class CompleteMatchCheck(Dict2Obj):
         },
         "type": "object",
         "properties": {
-            "data": {"type": "string"},
+            "data": {"type": ["string", "object"]},
             "entity_a_column": {"type": "string"},
             "entity_b_column": {"type": "string"},
             "relational_a_columns": {"$ref": "#/definitions/relational_columns"},
@@ -334,7 +334,7 @@ class CompleteMatchCheck(Dict2Obj):
                                                  level=level)
 
         # -- Load Parameters --
-        data_path = self.assert_attr(key='data')
+        data_var = self.assert_attr(key='data')
         entity_a_column = self.assert_attr(key='entity_a_column')
         entity_b_column = self.assert_attr(key='entity_b_column')
 
@@ -343,8 +343,8 @@ class CompleteMatchCheck(Dict2Obj):
 
         df = None
         # -- Load Data --
-        if not (data_path is None):
-            df = self.load_data(Path(data_path), header=True)
+        if not (data_var is None):
+            df = self.load_data(data_var, header=True)
 
         def get_relational_column_config(config, default_entity_key):
             """
@@ -366,9 +366,9 @@ class CompleteMatchCheck(Dict2Obj):
             entity_key = default_entity_key
 
             if "foreign_file" in config:
-                foreign_path = config["foreign_file"]
-                if not (foreign_path is None):
-                    entity_df = self.load_data(Path(foreign_path), header=True)
+                foreign_var = config["foreign_file"]
+                if not (foreign_var is None):
+                    entity_df = self.load_data(foreign_var, header=True)
                 if "foreign_index" in config:
                     entity_key = config["foreign_index"]
 
