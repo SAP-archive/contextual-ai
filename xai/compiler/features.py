@@ -97,7 +97,7 @@ class FeatureImportanceRanking(Dict2Obj):
         fn_var = self.assert_attr(key='feature_names', optional=True)
         feature_names = None
         if fn_var is not None:
-            feature_names = self.load_data(Path(fn_var))
+            feature_names = self.load_data(fn_var)
             header = False
         # -- Load Training Data for default method --
         data_var = self.assert_attr(key='train_data',
