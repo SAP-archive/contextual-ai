@@ -1,5 +1,4 @@
 #!/usr/bin/env groovy
-#!/usr/bin/env groovy
 @Library(['piper-lib', 'piper-lib-os']) _
 
 
