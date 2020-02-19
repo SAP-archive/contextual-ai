@@ -1,0 +1,37 @@
+general:
+  buildTool: 'pip'
+  scanType: 'pip'
+  cfOrg: 'PLM'                                     
+  gitSshKeyCredentialsId: 'SSH_github' 
+  xMakeBuildQuality: 'Release'
+steps:
+  executeCheckmarxScan:
+    checkmarxCredentialsId: 'CheckmarxUser'
+    checkmarxProject: 'SAP_ML_LEONARDO_ML_TRAINING_PIPELINE'                            
+    checkmarxGroupId: '015cbae8-618e-486e-898c-e3c8db58e4b0'   
+    generatePdfReport: false
+    preset: '100125'
+    filterPattern: '!**/tests/**/*'
+  executeFortifyScan:
+    fortifyCredentialsId: 'FortifyCredentials'
+    fortifyProjectName: 'ML-TRAINING-PIPELINE'         
+    fortifyProjectVersion: '1.0'        
+  executeSonarScan:
+    instance: 'SAP_EE_sonar'
+  executeBuild:
+    xMakeShipmentType: 'indirectshipment'
+  writeInflux:
+    influxServer: 'jenkins'
+    wrapInNode: true
+  sendNotificationMail:
+    wrapInNode: true
+stages:
+  Integration:
+    cfManifest: 'manifest.yml'
+    cfSpace: ''                   
+  Performance:
+    cfManifest: 'manifest.yml'
+    cfSpace: ''                   
+  Acceptance:
+    cfManifest: 'manifest.yml'
+    cfSpace: ''                   
