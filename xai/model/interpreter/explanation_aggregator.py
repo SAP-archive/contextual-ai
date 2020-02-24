@@ -60,7 +60,7 @@ class ExplanationAggregator:
                     raise InvalidExplanationFormat(item)
 
         for _label, _exp in explanation.items():
-            if _exp['confidence'] > self._confidence_threshold:
+            if _exp['prediction'] > self._confidence_threshold:
                 self._explanation_list[_label].append({item['feature']: item['score'] for item in _exp['explanation']})
                 self._class_counter[_label] += 1
         self._total_count += 1
