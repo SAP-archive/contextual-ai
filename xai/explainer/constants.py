@@ -24,3 +24,9 @@ class MODE:
     """
     CLASSIFICATION = 'classification'
     REGRESSION = 'regression'
+
+class OUTPUT:
+    PREDICTION = 'prediction'
+    EXPLANATION = 'explanation'
+    FEATURE = 'feature'
+    SCORE = 'score'

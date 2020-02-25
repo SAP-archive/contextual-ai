@@ -8,7 +8,7 @@ from typing import List, Dict, Optional, Any
 import numpy as np
 from lime.explanation import Explanation
 
-from xai.explainer.constants import MODE
+from xai.explainer.constants import MODE, OUTPUT
 
 
 def explanation_to_json(explanation: Explanation,
@@ -20,23 +20,23 @@ def explanation_to_json(explanation: Explanation,
 
     ### Schema for classification:
     {
-        class_idx: {'explanation': [
+        class_idx: {OUTPUT.EXPLANATION: [
                     {
-                    'feature': str,
-                    'score': float
+                    OUTPUT.FEATURE: str,
+                    OUTPUT.SCORE: float
                     },
                       ...
                     ],
-        'prediction': float},
+        OUTPUT.PREDICTION: float},
         ...
     }
 
     ### Schema for regression:
     {
-        'explanation': [
+        OUTPUT.EXPLANATION: [
             {
-                'feature': str,
-                'score': float
+                OUTPUT.FEATURE: str,
+                OUTPUT.SCORE: float
             }
             ...
         ],
@@ -60,19 +60,19 @@ def explanation_to_json(explanation: Explanation,
             list_explanations = explanation.as_list(label)
             tmp = []
             for exp in list_explanations:
-                tmp.append({'feature': str(exp[0]), 'score': float(exp[1])})
+                tmp.append({OUTPUT.FEATURE: str(exp[0]), OUTPUT.SCORE: float(exp[1])})
             dict_explanation[label] = {
-                'prediction': predictions[label],
-                'explanation': sorted(tmp, key=lambda x: x['score'], reverse=True)
+                OUTPUT.PREDICTION: predictions[label],
+                OUTPUT.EXPLANATION: sorted(tmp, key=lambda x: x[OUTPUT.SCORE], reverse=True)
             }
     else:
         list_explanations = explanation.as_list()
         tmp = []
         for exp in list_explanations:
-            tmp.append({'feature': str(exp[0]), 'score': float(exp[1])})
+            tmp.append({OUTPUT.FEATURE: str(exp[0]), OUTPUT.SCORE: float(exp[1])})
         dict_explanation = {
-            'prediction': predictions,
-            'explanation': sorted(tmp, key=lambda x: x['score'], reverse=True)
+            OUTPUT.PREDICTION: predictions,
+            OUTPUT.EXPLANATION: sorted(tmp, key=lambda x: x[OUTPUT.SCORE], reverse=True)
         }
 
     return dict_explanation
@@ -110,13 +110,13 @@ def parse_shap_values(shap_values: List[np.ndarray], confidences: List[float],
                 if feature_names and feature_values:
                     feature = '{} = {}'.format(
                         feature_names[feature_idx], feature_values[feature_idx])
-                    tmp.append({'feature': feature, 'score': shap_value})
+                    tmp.append({OUTPUT.FEATURE: feature, OUTPUT.SCORE: shap_value})
                 else:
-                    tmp.append({'feature': feature_idx, 'score': shap_value})
+                    tmp.append({OUTPUT.FEATURE: feature_idx, OUTPUT.SCORE: shap_value})
 
         dict_explanation[label] = {
-            'confidence': confidence,
-            'explanation': tmp
+            OUTPUT.PREDICTION: confidence,
+            OUTPUT.EXPLANATION: tmp
         }
 
     return dict_explanation
