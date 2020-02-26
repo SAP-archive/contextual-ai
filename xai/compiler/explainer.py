@@ -15,6 +15,7 @@ from pathlib import Path
 import xai
 from xai.compiler.base import Dict2Obj
 from xai.explainer import ExplainerFactory
+from xai.explainer.constants import OUTPUT
 from xai.explainer.helper import parse_feature_meta_tabular
 from xai.formatter import Report
 
@@ -166,7 +167,7 @@ class ModelAgnosticExplainer(Dict2Obj):
             explainations = explainer_factory.explain_instance(train_data[i, :],
                                                                num_features=num_features)
             for key, value in explainations.items():
-                details = [(item['feature'], "%.3f" % item['score']) for item in value['explanation']]
+                details = [(item[OUTPUT.FEATURE], "%.3f" % item[OUTPUT.SCORE]) for item in value[OUTPUT.EXPLANATION]]
                 report.detail.add_model_info_summary(model_info=details,
                                                      notes='Class %s - Confidence: %s' % (
-                                                     class_names[key] if class_names else key, value['confidence']))
+                                                     class_names[key] if class_names else key, value[OUTPUT.PREDICTION]))

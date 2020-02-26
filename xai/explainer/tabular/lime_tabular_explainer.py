@@ -111,6 +111,7 @@ class LimeTabularExplainer(AbstractExplainer):
             random_state=random_state
         )
         self.num_class = training_data.shape[1]
+        self.mode = mode
 
         if verbose:
             warnings.warn(message='Explainer built successfully!')
@@ -164,9 +165,14 @@ class LimeTabularExplainer(AbstractExplainer):
             else:
                 labels_to_extract = labels
 
-            confidences = explanation.predict_proba
+            if self.mode == MODE.CLASSIFICATION:
+                # For a classification model, the predictions are softmax probabilities
+                predictions = explanation.predict_proba
+            else:
+                # For a regression model, the predictions are single scalars
+                predictions = explanation.predicted_value
 
-            return explanation_to_json(explanation, labels_to_extract, confidences)
+            return explanation_to_json(explanation, labels_to_extract, predictions, self.mode)
         else:
             raise ExplainerUninitializedError('This explainer is not yet instantiated! '
                                               'Please call build_explainer()'
@@ -185,7 +191,8 @@ class LimeTabularExplainer(AbstractExplainer):
         dict_to_save = {
             'explainer_object': self.explainer_object,
             'predict_fn': self.predict_fn,
-            'num_class': self.num_class
+            'num_class': self.num_class,
+            'mode': self.mode
         }
         with open(path, 'wb') as fp:
             dill.dump(dict_to_save, fp)
@@ -205,3 +212,5 @@ class LimeTabularExplainer(AbstractExplainer):
             self.explainer_object = dict_loaded['explainer_object']
             self.predict_fn = dict_loaded['predict_fn']
             self.num_class = dict_loaded['num_class']
+            if 'mode' in dict_loaded:
+                self.mode = dict_loaded['mode']

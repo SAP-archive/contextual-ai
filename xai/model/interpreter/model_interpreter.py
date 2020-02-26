@@ -16,6 +16,7 @@ import numpy
 from typing import List, Union, Dict, Tuple
 
 from xai.explainer.explainer_factory import ExplainerFactory
+from xai.explainer.constants import OUTPUT
 from xai.model.interpreter.exceptions import InterpreterUninitializedError
 from xai.model.interpreter.explanation_aggregator import ExplanationAggregator
 
@@ -116,7 +117,7 @@ class ModelInterpreter:
             exp = self._explainer.explain_instance(instance=sample, top_labels=class_num,
                                                    num_samples=100,
                                                    num_features=k)
-            prob = {_class: _class_exp['confidence'] for _class, _class_exp in exp.items()}
+            prob = {_class: _class_exp[OUTPUT.PREDICTION] for _class, _class_exp in exp.items()}
             predict_label = sorted(prob.items(), key=operator.itemgetter(1), reverse=1)[0][0]
             if predict_label != gt_label:
                 if (gt_label, predict_label) not in error_analysis_dict.keys():
