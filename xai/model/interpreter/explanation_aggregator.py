@@ -6,8 +6,7 @@
 
 import operator
 from collections import defaultdict, Counter
-
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List, Set
 
 from xai.explainer.constants import OUTPUT
 from xai.model.interpreter.exceptions import InvalidExplanationFormat, \
@@ -29,41 +28,72 @@ class ExplanationAggregator:
         self._class_counter = defaultdict(int)
         self._confidence_threshold = confidence_threshold
 
-    def feed(self, explanation: Dict[int, Dict]):
+    def get_feature_names(self, list_explanations: List[Dict]) -> Set:
+        """
+        Get feature names for an explanation, plus schema validation
+        Args:
+            list_explanations (list): List of explanations
+
+        Returns:
+            (set) feature names
+        """
+        feature_names = set()
+        for item in list_explanations:
+            if type(item) != dict:
+                raise InvalidExplanationFormat(item)
+            if OUTPUT.FEATURE not in item.keys():
+                raise InvalidExplanationFormat(item)
+            if type(item[OUTPUT.FEATURE]) != str:
+                raise InvalidExplanationFormat(item)
+            if item[OUTPUT.FEATURE] in feature_names:
+                raise MutipleScoresFoundForSameFeature(item[OUTPUT.FEATURE], list_explanations)
+            else:
+                feature_names.add(item[OUTPUT.FEATURE])
+            if OUTPUT.SCORE not in item.keys():
+                raise InvalidExplanationFormat(item)
+            if type(item[OUTPUT.SCORE]) != float:
+                raise InvalidExplanationFormat(item)
+
+        return feature_names
+
+    def feed(self, explanation: Dict):
         """
         Feed explanation into the aggregator for further analysis
 
         Args:
             explanation: dict, the pre-defined format as the output in `xai.explainer.utils.explanation_to_json`
         """
-        for _label, _exp in explanation.items():
-            if type(_exp) != dict:
-                raise InvalidExplanationFormat(_exp)
-            if OUTPUT.EXPLANATION not in _exp.keys():
-                raise InvalidExplanationFormat(_exp)
-            if type(_exp[OUTPUT.EXPLANATION]) != list:
-                raise InvalidExplanationFormat(_exp)
-            feature_names = set()
-            for item in _exp[OUTPUT.EXPLANATION]:
-                if type(item) != dict:
-                    raise InvalidExplanationFormat(item)
-                if OUTPUT.FEATURE not in item.keys():
-                    raise InvalidExplanationFormat(item)
-                if type(item[OUTPUT.FEATURE]) != str:
-                    raise InvalidExplanationFormat(item)
-                if item[OUTPUT.FEATURE] in feature_names:
-                    raise MutipleScoresFoundForSameFeature(item[OUTPUT.FEATURE], _exp)
-                else:
-                    feature_names.add(item[OUTPUT.FEATURE])
-                if OUTPUT.SCORE not in item.keys():
-                    raise InvalidExplanationFormat(item)
-                if type(item[OUTPUT.SCORE]) != float:
-                    raise InvalidExplanationFormat(item)
+        if OUTPUT.EXPLANATION in explanation:
+            # Regression schema
+            _ = self.get_feature_names(explanation[OUTPUT.EXPLANATION])
+        else:
+            # Classification schema
+            for _label, _exp in explanation.items():
+                if type(_exp) != dict:
+                    raise InvalidExplanationFormat(_exp)
+                if OUTPUT.EXPLANATION not in _exp.keys():
+                    raise InvalidExplanationFormat(_exp)
+                if type(_exp[OUTPUT.EXPLANATION]) != list:
+                    raise InvalidExplanationFormat(_exp)
+                _ = self.get_feature_names(_exp[OUTPUT.EXPLANATION])
 
-        for _label, _exp in explanation.items():
-            if _exp[OUTPUT.PREDICTION] > self._confidence_threshold:
-                self._explanation_list[_label].append({item[OUTPUT.FEATURE]: item[OUTPUT.SCORE] for item in _exp[OUTPUT.EXPLANATION]})
+        if OUTPUT.EXPLANATION in explanation:
+            # Regression schema
+            # To follow downstream schema, we set the "label" of regression prediction to 0
+            _label = 0
+            if explanation[OUTPUT.PREDICTION] > self._confidence_threshold:
+                self._explanation_list[_label].append(
+                    {item[OUTPUT.FEATURE]: item[OUTPUT.SCORE] for item in
+                     explanation[OUTPUT.EXPLANATION]})
                 self._class_counter[_label] += 1
+        else:
+            # Classification schema
+            for _label, _exp in explanation.items():
+                if _exp[OUTPUT.PREDICTION] > self._confidence_threshold:
+                    self._explanation_list[_label].append(
+                        {item[OUTPUT.FEATURE]: item[OUTPUT.SCORE] for item in
+                         _exp[OUTPUT.EXPLANATION]})
+                    self._class_counter[_label] += 1
         self._total_count += 1
 
     def get_statistics(self, stats_type: str = 'top_k', k: int = 5) -> Tuple[Dict[int, Dict], int]:
@@ -105,13 +135,15 @@ class ExplanationAggregator:
                     _exp_counter = Counter(_exp)
                 elif stats_type == 'average_ranking':
                     top_k_list = sorted(_exp.items(), key=operator.itemgetter(1), reverse=True)[:k]
-                    _exp_counter = Counter({feature_name: k - idx for idx, (feature_name, _) in enumerate(top_k_list)})
+                    _exp_counter = Counter(
+                        {feature_name: k - idx for idx, (feature_name, _) in enumerate(top_k_list)})
 
                 label_counter[_label].update(_exp_counter)
 
         stats = dict()
         for _label, _counter in label_counter.items():
             stats[_label] = {name: (score / self._class_counter[_label]) for name, score in
-                             list(sorted(_counter.items(), key=operator.itemgetter(1), reverse=True))}
+                             list(sorted(_counter.items(), key=operator.itemgetter(1),
+                                         reverse=True))}
 
         return stats, self._total_count
