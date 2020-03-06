@@ -40,7 +40,9 @@ class Constant(Enum):
     COMPONENT_PACKAGE = 'package'
     COMPONENT_MODULE = 'module'
     COMPONENT_ATTR = 'attr'
+    COMPONENT_ATTR_VARS_PREFIX = 'var:'
     SECTION_LIST = 'sections'
+
 
     S1 = 0
     H1 = 1
@@ -129,28 +131,76 @@ class Configuration:
         validate(instance=data, schema=Configuration.SCHEMA)
         return data
 
-    def __init__(self, config=None) -> None:
+    @staticmethod
+    def render_config(contents: dict, variables: dict):
+        """
+        Rendering Config
+
+        Args:
+            contents (dict): contents dict object
+            variables: dictionary of the current globals/locals symbol table
+        """
+        for content in contents:
+            if Constant.COMPONENT.value in content:
+                component = content[Constant.COMPONENT.value]
+                if Constant.COMPONENT_ATTR.value in component:
+                    attr = component[Constant.COMPONENT_ATTR.value]
+                    for k, v in attr.items():
+                        if Constant.COMPONENT_ATTR_VARS_PREFIX.value in v:
+                            p, n = v.split(Constant.COMPONENT_ATTR_VARS_PREFIX.value, 1)
+                            if n in variables:
+                                attr[k] = variables[n]
+
+            if Constant.SECTION_LIST.value in content:
+                Configuration.render_config(
+                    contents=content[Constant.SECTION_LIST.value],
+                    variables=variables)
+
+    @staticmethod
+    def _load_config(config, variables: dict):
+        """
+        Load Config File - file path or dict
+
+        Args:
+            config (str/dict): path to config json/yaml file or dict pre-loaded
+            variables: dictionary of the current globals/locals symbol table
+        """
+        _result = dict()
+        if not (config is None):
+            if type(config) == str:
+                _result = Configuration._load(Path(config))
+            elif type(config) == dict:
+                _result = config
+                if not (variables is None):
+                    Configuration.render_config(
+                        contents=config[Constant.CONTENT_LIST.value],
+                        variables=variables)
+            else:
+                raise CompilerException('Unsupported config format, %s' % config)
+        return _result
+
+    def __init__(self, config=None, variables: dict = None) -> None:
         """
         Configuration setup
 
         Args:
-            config (str): path to config json/yaml file
+            config (str/dict): path to config json/yaml file or dict pre-loaded
+            variables: dictionary of the current globals/locals symbol table
         """
-        self._config = dict()
-        if not (config is None):
-            self._config = self._load(Path(config))
+        self._config = Configuration._load_config(config, variables)
 
-    def __call__(self, config=None):
+    def __call__(self, config=None, variables: dict = None):
         """
         Configuration execution
 
         Args:
-            config (str): config json/yaml file
+            config (str/dict): path to config json/yaml file or dict pre-loaded
+            variables: dictionary of the current globals/locals symbol table
         Returns:
             configuration dict object
         """
         if not (config is None):
-            self._config = self._load(Path(config))
+            self._config = Configuration._load_config(config, variables)
         return self._config
 
 
@@ -328,7 +378,7 @@ class Dict2Obj:
         self._dict = dictionary
         self._schema = schema
 
-        validate(instance=self._dict, schema=self._schema)
+        # validate(instance=self._dict, schema=self._schema)
         for key in self._dict:
             setattr(self, key, self._dict[key])
 
@@ -392,20 +442,25 @@ class Dict2Obj:
                 self.report.detail.add_paragraph(text=text)
 
     @staticmethod
-    def load_data(path: Path, *, header=True):
+    def load_data(input, *, header=True):
         """
-        Load Data from file based on the file extension.
+        Load Data from variable or file based on the file extension.
         This function is based on pandas and numpy tools, when the file is in a
         standard format. Various file types are supported (.npy, .csv, .json,
         .jsonl, .xls, .xlsx, .tsv, .pickle, .pick)
 
         Args:
-            path (str): path to the data file
+            input: vars to the data file
             header (bool): load data with header, default is True
 
         Returns:
-            DataFrame / Numpy
+            Object
         """
+        if type(input) != str:
+            return input
+
+        # -- Parse/read if the input is a str --
+        path = Path(input)
         extension = path.suffix.lower()
         if extension == '.npy':
             data = np.load(path)

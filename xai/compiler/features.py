@@ -90,21 +90,21 @@ class FeatureImportanceRanking(Dict2Obj):
         threshold = self.assert_attr(key='threshold', default=0.005)
         method = self.assert_attr(key='method', default='default')
         # -- Load Model --
-        model_path = self.assert_attr(key='trained_model')
-        model = self.load_data(Path(model_path))
+        model_var = self.assert_attr(key='trained_model')
+        model = self.load_data(model_var)
         # -- Check if feature names is set --
         header = True
-        fn_path = self.assert_attr(key='feature_names', optional=True)
+        fn_var = self.assert_attr(key='feature_names', optional=True)
         feature_names = None
-        if fn_path is not None:
-            feature_names = self.load_data(Path(fn_path))
+        if fn_var is not None:
+            feature_names = self.load_data(fn_var)
             header = False
         # -- Load Training Data for default method --
-        data_path = self.assert_attr(key='train_data',
-                                     optional=(method=='default'))
+        data_var = self.assert_attr(key='train_data',
+                                    optional=(method=='default'))
         train_data = None
-        if data_path is not None:
-            train_data = self.load_data(Path(data_path), header=header)
+        if data_var is not None:
+            train_data = self.load_data(data_var, header=header)
             if  header:
                 feature_names = train_data.columns
 
