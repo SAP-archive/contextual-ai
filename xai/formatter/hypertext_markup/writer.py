@@ -39,7 +39,10 @@ from xai.formatter.writer import Writer
 class HtmlWriter(Writer):
 
     def __init__(self, name='training_report',
-                 path='./', ) -> None:
+                 path='./',
+                 style=None,
+                 script=None
+                 ) -> None:
         """
         Generate HTML report
 
@@ -47,11 +50,15 @@ class HtmlWriter(Writer):
             name (str, Optional): filename of report,
                         default is 'training_report'
             path (str, Optional): output path (default current dict './')
+            style (str, Optional): css style file path
+                       (default to same as 'path')
+            script (str, Optional): jsp script file path
+                       (default to same as 'path')
         """
         super(HtmlWriter, self).__init__()
         self._path = path
         self._name = name
-        self._html = CustomHtml(name=name, path=path)
+        self._html = CustomHtml(name=name, path=path, style=style, script=script)
 
         # create article division list
         self.html.article.append(Div())

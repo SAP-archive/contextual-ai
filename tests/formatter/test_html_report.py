@@ -9,9 +9,9 @@ import json
 import os
 import sys
 import unittest
+import warnings
 from pathlib import Path
 
-import warnings
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -530,8 +530,14 @@ class TestGenerateHtmlReport(unittest.TestCase):
         ### Lastly generate report with the writer instance
         name = '{}-html-report'.format(self.name)
         dir_path = prepare_output_path(working_path='sample_output')
+        css = os.path.join(dir_path, 'simple.css')
+        js = os.path.join(dir_path, 'simple.js')
+
         start_time = datetime.now().replace(microsecond=0).replace(second=0)
-        self.report.generate(writer=HtmlWriter(name=name, path=dir_path))
+        self.report.generate(writer=HtmlWriter(name=name,
+                                               path=dir_path,
+                                               style=css,
+                                               script=js))
         end_time = datetime.now().replace(microsecond=0).replace(second=0)
         output = "%s/%s.html" % (dir_path, name)
         print("report generated %s:" % output)

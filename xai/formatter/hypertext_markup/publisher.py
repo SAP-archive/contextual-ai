@@ -42,11 +42,11 @@ class CustomHtml:
 
         self._style = style
         if self._style is None:
-            self._style = self._path
+            self._style = os.path.join(self._path, 'simple.css')
 
         self._script = script
         if self._script is None:
-            self._script = self._path
+            self._script = os.path.join(self._path, 'simple.js')
 
         self._extension = 'html'
 
@@ -514,30 +514,24 @@ class CustomHtml:
         return doc.getvalue()
 
     @staticmethod
-    def _get_css(path: str, *, css='simple.css'):
-        with open(os.path.join(path, css), "rb") as css_file:
-            css_str = css_file.read()
-        return css_str.decode('utf-8').replace('/n', '')
-
-    @staticmethod
-    def _get_js(path: str, *, js='simple.js'):
-        with open(os.path.join(path, js), "rb") as js_file:
-            js_str = js_file.read()
-        return js_str.decode('utf-8').replace('/n', '')
+    def _get_file_to_string(path: str):
+        with open(path, "rb") as file:
+            str = file.read()
+        return str.decode('utf-8').replace('/n', '')
 
     def generate(self):
         """Generate HTML"""
         doc = Doc()
         doc.asis('<!DOCTYPE html>')
         with doc.tag('html'):
-            doc.asis(self.create_head(style=self._get_css(path=self.style)))
+            doc.asis(self.create_head(style=self._get_file_to_string(path=self.style)))
             with doc.tag('body'):
                 doc.asis(self.create_body_header(header=self.header))
                 doc.asis(self.create_body_section(articles=self.article,
                                                   create_date=self._create_date))
                 doc.asis(self.create_body_footer(text=self.COPY_RIGHT))
                 with doc.tag('script'):
-                    doc.asis(self._get_js(path=self.script))
+                    doc.asis(self._get_file_to_string(path=self.script))
         return doc.getvalue()
 
     def to_file(self):

@@ -91,7 +91,9 @@
       "class": "Html",
       "attr": {
         "name": "german-credit-risk-report",
-        "path": "./"
+        "path": "./",
+        "style": "./simple.css",
+        "script": "./simple.js"
       }
     }
   ]
