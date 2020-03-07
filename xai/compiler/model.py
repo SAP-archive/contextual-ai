@@ -176,8 +176,7 @@ class ModelInterpreter(Dict2Obj):
                 labels = json.load(f)
         # -- Load Predict Function --
         predict_fn_var = self.assert_attr(key='predict_func')
-        predict_cls = self.load_data(predict_fn_var)
-        predict_fn = predict_cls.predict_proba
+        predict_fn = self.load_data(predict_fn_var)
         # -- Check if feature names is set --
         fn_var = self.assert_attr(key='feature_names', optional=True)
         feature_names = None

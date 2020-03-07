@@ -22,7 +22,7 @@
                   "mode": "classification",
                   "train_data": "var:X_train",
                   "labels": "var:y_train",
-                  "predict_func": "var:clf",
+                  "predict_func": "var:clf_fn",
                   "feature_names": "var:feature_names",
                   "target_names": "var:target_names_list",
                   "model_interpret_stats_type": "top_k",

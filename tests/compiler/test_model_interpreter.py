@@ -85,6 +85,7 @@ class TestModelInterpreter(unittest.TestCase):
         clf = RandomForestClassifier()
         clf.fit(X_train, y_train)
         clf.score(X_test, y_test)
+        clf_fn = clf.predict_proba
 
         start_time = datetime.now().replace(microsecond=0)
         controller = Controller(config=Configuration(self.json, locals()))
@@ -149,6 +150,7 @@ class TestModelInterpreter(unittest.TestCase):
         clf = RandomForestClassifier()
         clf.fit(X_train, y_train)
         clf.score(X_test, y_test)
+        clf_fn = clf.predict_proba
 
         start_time = datetime.now().replace(microsecond=0)
         controller = Controller(config=Configuration(self.yaml, locals()))
