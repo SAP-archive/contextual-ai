@@ -10,7 +10,6 @@ from __future__ import division
 from __future__ import print_function
 
 import json
-from pathlib import Path
 
 import xai
 from xai.compiler.base import Dict2Obj

@@ -9,14 +9,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from pathlib import Path
+import json
 
 import numpy as np
-import json
+
 from xai.compiler.base import Dict2Obj
-from xai.model.evaluation.result_compiler import ResultCompiler
-from xai.formatter import Report
 from xai.constants import METRIC_CM
+from xai.formatter import Report
+from xai.model.evaluation.result_compiler import ResultCompiler
 
 
 ################################################################################

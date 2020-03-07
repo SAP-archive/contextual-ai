@@ -9,17 +9,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import itertools
 from collections import defaultdict
 from copy import deepcopy
-
-import itertools
-from pathlib import Path
 
 from xai.compiler.base import Dict2Obj
 from xai.data.constants import DATATYPE
 from xai.data.exceptions import AnalyzerDataTypeNotSupported
-from xai.data.explorer import CategoricalDataAnalyzer, NumericDataAnalyzer, TextDataAnalyzer, DatetimeDataAnalyzer
-from xai.data.explorer import CategoricalStats, NumericalStats, TextStats, DatetimeStats
+from xai.data.explorer import CategoricalDataAnalyzer, NumericDataAnalyzer, \
+    TextDataAnalyzer, DatetimeDataAnalyzer
+from xai.data.explorer import CategoricalStats, NumericalStats, TextStats, \
+    DatetimeStats
 from xai.data.validator.dataframe_validator import DataframeValidator
 from xai.formatter import Report
 

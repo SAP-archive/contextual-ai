@@ -13,7 +13,6 @@ import warnings
 from copy import deepcopy
 
 from jsonschema import validate
-from pathlib import Path
 
 from xai.compiler.base import Dict2Obj
 from xai.data import DataUtil
