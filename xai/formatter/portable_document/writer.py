@@ -1042,6 +1042,34 @@ class PdfWriter(Writer):
 
         self.pdf.ln()
 
+    def draw_error_analysis_by_class(self, notes: str, *, error_stats: dict,
+                                     top: int=15):
+        """
+        Add error analysis by class
+
+        Args:
+            error_stats (dict): A dictionary maps the label to its aggregated statistics
+            top (int): the number of top explanation to display
+            notes(str): text to explain the block
+        """
+        from xai.graphs import graph_generator
+
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+        for (gt_class, predict_class),(_explanation_dict, num_sample) in error_stats.items():
+            title = '%s sample from class [%s] is wrongly classified as class[%s]' % (num_sample, gt_class, predict_class)
+            self.pdf.add_new_line(title)
+            self.pdf.add_new_line(' - Top reasons that they are predicted as class[%s]' % predict_class)
+            image_path = '%s/feature_importance_%s.png' % (self.figure_path, predict_class)
+            importance_ranking = [(key,value) for key,value in _explanation_dict[predict_class].items()][:top]
+            image_path = graph_generator.FeatureImportance(
+                figure_path=image_path,
+                data=importance_ranking,
+                title=title).draw()
+            self.pdf.add_large_image(image_path)
+
+        self.pdf.ln()
+
     ################################################################################
     ###  Evaluation Section
     ################################################################################

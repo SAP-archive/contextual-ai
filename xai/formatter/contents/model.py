@@ -73,3 +73,54 @@ class ModelInterpreterByClass(Content):
                                                class_stats=self.class_stats,
                                                total_count=self.total_count,
                                                top=self.top)
+
+################################################################################
+###  Error Analysis By Class
+################################################################################
+class ErrorAnalysisByClass(Content):
+    """
+    Error Analysis By Class
+    """
+
+    def __init__(self,error_stats: dict, top: int=15, notes=None) -> None:
+        """
+        Add error analysis by class
+
+        Args:
+            error_stats (dict): A dictionary maps the label to its aggregated statistics
+            top (int): the number of top explanation to display
+            notes(str): text to explain the block
+        """
+        super(ErrorAnalysisByClass, self).__init__(error_stats, top, notes)
+        self._error_stats = error_stats
+        self._top = top
+        if not (notes is None):
+            self._notes = notes
+        else:
+            self._notes = "This section shows error analysis by class."
+
+    @property
+    def error_stats(self):
+        """Returns Class Aggregated Statistics."""
+        return self._error_stats
+
+    @property
+    def top(self):
+        """Returns the number of top explanation to display."""
+        return self._top
+
+    @property
+    def notes(self):
+        """Returns model interpreter by class info."""
+        return self._notes
+
+    def draw(self, writer: Writer):
+        """
+        Draw Error Analysis By Class
+
+        Args:
+            writer (Writer): Report Writer
+        """
+        writer.draw_error_analysis_by_class(notes=self.notes,
+                                            error_stats=self.error_stats,
+                                            top=self.top)

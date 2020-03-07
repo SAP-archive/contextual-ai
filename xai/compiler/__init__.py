@@ -13,7 +13,7 @@ from .data import DataStatisticsAnalysis
 from .evaluation import ClassificationEvaluationResult
 from .explainer import ModelAgnosticExplainer
 from .features import FeatureImportanceRanking
-from .model import ModelInterpreterByClass
+from .model import ModelInterpreter
 from .validator import (
     DuplicationOrphanCheck,
     CompleteMatchCheck

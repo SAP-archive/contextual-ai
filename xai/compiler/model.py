@@ -13,7 +13,7 @@ import json
 
 from xai.compiler.base import Dict2Obj
 from xai.formatter import Report
-from xai.model.interpreter import ModelInterpreter
+from xai.model.interpreter import ModelInterpreter as MI
 from xai import (
  ALG,
  MODE
@@ -21,11 +21,11 @@ from xai import (
 
 
 ################################################################################
-### Model Interpreter By Class
+### Model Interpreter
 ################################################################################
-class ModelInterpreterByClass(Dict2Obj):
+class ModelInterpreter(Dict2Obj):
     """
-    Compiler for Model Interpreter by Class
+    Compiler for Model Interpreter
 
     Param:
         package (str, Optional): component package name
@@ -35,6 +35,8 @@ class ModelInterpreterByClass(Dict2Obj):
     Attr:
         domain (str): User-provided domain
         method: (str, Optional) interpreter method, default (lime) = 'default'
+
+        ** For Model Interpretation **
         mode: (str, Optional) classification/regression model,
                 default = 'classification'
         train_data: numpy.dnarray - Training data
@@ -43,20 +45,38 @@ class ModelInterpreterByClass(Dict2Obj):
         predict_func: model object or path to predict function call pickle
         feature_names: array-list of feature names
         target_names: array-list of target names
-        stats_type: str, default = 'top_k'
+        model_interpret_stats_type: str, default = 'top_k'
                 The pre-defined stats_type for statistical analysis.
-                For details see `xai.model_interpreter.explanation_aggregator.get_statistics()`
-        k: int, the k value for `top_k` method and `average_ranking`.
-                It will be ignored if the stats type are not `top_k` or `average_ranking`.
-                Default value of k is 5.
-        num_of_top_explanation: int, the number of top explanation to display
+                - top_k: how often a feature appears in the top K features in the explanation
+                - average_score: average score for each feature in the explanation
+                - average_ranking: average ranking for each feature in the explanation
+        model_interpret_k_value: int, the k value for `top_k` method and `average_ranking`
+                It will be ignored if the stats type are not `top_k` or `average_ranking`
+                Default value of k is 5
+        model_interpret_top_value: int, the number of top explanation to display
+                Default value is 15
+
+        ** For Error Analysis **
+        num_of_class: int, number of classes
+        valid_x: A list of 1D ndarray. Validation data
+        valid_y: A list of int or a list of str. Validation ground truth class label (str) or (index)
+                The type should be consistent to the classes label passed in when building the model interpreter
+        error_analysis_stats_type: str, pre-defined types. For now, it supports 3 types:
+                - top_k: how often a feature appears in the top K features in the explanation
+                - average_score: average score for each feature in the explanation
+                - average_ranking: average ranking for each feature in the explanation
+                Default type is `top_k`
+        error_analysis_k_value:  int, not None. the k value for `top_k` method and `average_ranking`
+                It will be ignored if the stats type are not `top_k` or `average_ranking`
+                Default value of k is 5
+        error_analysis_top_value: int, the number of top error analysis explanation to display
                 Default value is 15
 
     Example:
         "component": {
             "package": "xai",
             "module": "compiler",
-            "class": "ModelInterpreterByClass",
+            "class": "ModelInterpreter",
             "attr": {
                 "domain": "tabular",
                 "method": "lime",
@@ -66,9 +86,15 @@ class ModelInterpreterByClass(Dict2Obj):
                 "predict_func": "var:clf",
                 "feature_names": "var:feature_names",
                 "target_names": "var:target_names_list",
-                "stats_type": "top_k",
-                "k": 5,
-                "num_of_top_explanation": 15
+                "model_interpret_stats_type": "top_k",
+                "model_interpret_k_value": 5,
+                "model_interpret_top_value": 15,
+                "num_of_class": 2,
+                "valid_x": "var:X_test",
+                "valid_y": "var:y_test",
+                "error_analysis_stats_type": "average_score",
+                "error_analysis_k_value": 5,
+                "error_analysis_top_value": 15
             }
         }
     """
@@ -92,21 +118,25 @@ class ModelInterpreterByClass(Dict2Obj):
             "predict_func": {"type": ["string", "object"]},
             "feature_names": {"type": ["string", "object"]},
             "target_names": {"type": ["string", "object"]},
-            "state_type": {
+            "model_interpret_stats_type": {
                 "enum": ["top_k", "average_score", "average_ranking"],
                 "default": "top_k"
             },
-            "k": {
-                "type": "number",
-                "default": 5
+            "model_interpret_k_value": { "type": "number", "default": 5},
+            "model_interpret_top_value": { "type": "number", "default": 15},
+            "num_of_class": {"type": "number"},
+            "valid_x":  {"type": ["string", "object"]},
+            "valid_y":  {"type": ["string", "object"]},
+            "error_analysis_stats_type": {
+                "enum": ["top_k", "average_score", "average_ranking"],
+                "default": "top_k"
             },
-            "num_of_top_explanation": {
-                "type": "number",
-                "default": 15
-            }
+            "error_analysis_k_value": { "type": "number", "default": 5},
+            "error_analysis_top_value": {"type": "number", "default": 15},
         },
         "required": ["domain", "train_data", "labels", "predict_func",
-                     "feature_names", "target_names"]
+                     "feature_names", "target_names",
+                     "num_of_class", "valid_x", "valid_y"]
     }
 
     def __init__(self, dictionary):
@@ -116,7 +146,7 @@ class ModelInterpreterByClass(Dict2Obj):
         Args:
             dictionary (dict): attribute to set
         """
-        super(ModelInterpreterByClass, self).__init__(dictionary,
+        super(ModelInterpreter, self).__init__(dictionary,
                                                schema=self.schema)
 
     def __call__(self, report: Report, level: int):
@@ -127,7 +157,7 @@ class ModelInterpreterByClass(Dict2Obj):
             report (Report): report object
             level (int): content level
         """
-        super(ModelInterpreterByClass, self).__call__(report=report,
+        super(ModelInterpreter, self).__call__(report=report,
                                                level=level)
         domain = self.assert_attr(key='domain')
         method = self.assert_attr(key='method', default=ALG.LIME)
@@ -158,12 +188,28 @@ class ModelInterpreterByClass(Dict2Obj):
         target_names = None
         if tn_var is not None:
             target_names = self.load_data(tn_var)
-        stats_type = self.assert_attr(key='state_type', default='top_k')
-        k_value = self.assert_attr(key='k', default=5)
-        top = self.assert_attr(key="num_of_top_explanation", default=15)
+        stats_type = self.assert_attr(key='model_interpret_stats_type', default='top_k')
+        k_value = self.assert_attr(key='model_interpret_k_value', default=5)
+        top = self.assert_attr(key="model_interpret_top_value", default=15)
+
+        # -- Check Number of Class --
+        classes = self.assert_attr(key="num_of_class")
+        # -- Load Validation Data --
+        valid_x_var = self.assert_attr(key='valid_x', optional=True)
+        valid_x = None
+        if valid_x_var is not None:
+            valid_x = self.load_data(valid_x_var)
+        # -- Load Validation ground truth class label --
+        valid_y_var = self.assert_attr(key='valid_y', optional=True)
+        valid_y = None
+        if valid_y_var is not None:
+            valid_y = self.load_data(valid_y_var)
+        ea_stats_type = self.assert_attr(key='error_analysis_stats_type', default='top_k')
+        ea_k_value = self.assert_attr(key='error_analysis_k_value', default=5)
+        ea_top = self.assert_attr(key="error_analysis_top_value", default=15)
 
         # -- Define the domain and algorithm for interpreter --
-        mi = ModelInterpreter(domain=domain, algorithm=method)
+        mi = MI(domain=domain, algorithm=method)
 
         # -- Build and initialize model interpreter --
         mi.build_interpreter(training_data=train_data,
@@ -181,3 +227,10 @@ class ModelInterpreterByClass(Dict2Obj):
         report.detail.add_model_interpreter_by_class(class_stats=class_stats,
                                                      total_count=total_count,
                                                      top=top)
+        # -- Error Analysis with validation data --
+        error_stats = mi.error_analysis(class_num=classes, valid_x=valid_x,
+                                        valid_y=valid_y, stats_type=ea_stats_type,
+                                        k=ea_k_value)
+        # -- Add Error Analysis for class --
+        report.detail.add_error_analysis_by_class(error_stats=error_stats,
+                                                  top=ea_top)

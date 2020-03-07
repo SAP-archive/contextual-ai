@@ -454,6 +454,19 @@ class Writer(ABC):
         """
         pass
 
+    @abstractmethod
+    def draw_error_analysis_by_class(self, notes: str, *, error_stats: dict,
+                                     top: int=15):
+        """
+        Add error analysis by class
+
+        Args:
+            error_stats (dict): A dictionary maps the label to its aggregated statistics
+            top (int): the number of top explanation to display
+            notes(str): text to explain the block
+        """
+        pass
+
     ################################################################################
     ###  Evaluation Section
     ################################################################################

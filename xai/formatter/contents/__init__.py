@@ -43,7 +43,8 @@ from xai.formatter.contents.feature import (
     FeatureImportance
 )
 from xai.formatter.contents.model import (
-    ModelInterpreterByClass
+    ModelInterpreterByClass,
+    ErrorAnalysisByClass
 )
 from xai.formatter.contents.summary import (
     TrainingTiming,

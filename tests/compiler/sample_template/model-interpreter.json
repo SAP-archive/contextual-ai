@@ -15,7 +15,7 @@
               "title": "Lime Model Interpreter analysis",
               "component": {
                 "_comment": "refer to document section xxxx",
-                "class": "ModelInterpreterByClass",
+                "class": "ModelInterpreter",
                 "attr": {
                   "domain": "tabular",
                   "method": "lime",
@@ -25,9 +25,15 @@
                   "predict_func": "var:clf",
                   "feature_names": "var:feature_names",
                   "target_names": "var:target_names_list",
-                  "stats_type": "top_k",
-                  "k": 5,
-                  "num_of_top_explanation": 15
+                  "model_interpret_stats_type": "top_k",
+                  "model_interpret_k_value": 5,
+                  "model_interpret_top_value": 15,
+                  "num_of_class": 2,
+                  "valid_x": "var:X_test",
+                  "valid_y": "var:y_test",
+                  "error_analysis_stats_type": "average_score",
+                  "error_analysis_k_value": 5,
+                  "error_analysis_top_value": 15
                 }
               }
             }
