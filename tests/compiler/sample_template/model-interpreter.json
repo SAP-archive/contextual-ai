@@ -1,0 +1,56 @@
+{
+  "name": "Report for Model Interpreter.",
+  "overview": true,
+  "content_table": true,
+  "contents": [
+    {
+      "title": "Model Interpreter",
+      "desc": "This section provides the Interpretation of model",
+      "sections": [
+        {
+          "title": "Model Interpreter Analysis with Breast Cancer data-set",
+          "desc": "Model and train data from Breast Cancer",
+          "sections": [
+            {
+              "title": "Lime Model Interpreter analysis",
+              "component": {
+                "_comment": "refer to document section xxxx",
+                "class": "ModelInterpreterByClass",
+                "attr": {
+                  "domain": "tabular",
+                  "method": "lime",
+                  "mode": "classification",
+                  "train_data": "var:X_train",
+                  "labels": "var:y_train",
+                  "predict_func": "var:clf",
+                  "feature_names": "var:feature_names",
+                  "target_names": "var:target_names_list",
+                  "stats_type": "top_k",
+                  "k": 5,
+                  "num_of_top_explanation": 15
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "writers": [
+    {
+      "class": "Pdf",
+      "attr": {
+        "name": "model-interpreter-json-report",
+        "path": "{out_path}"
+      }
+    },
+    {
+      "class": "Html",
+      "attr": {
+        "name": "model-interpreter-json-report",
+        "path": "{out_path}"
+      }
+    }
+  ]
+}
+

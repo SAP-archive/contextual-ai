@@ -438,6 +438,23 @@ class Writer(ABC):
         pass
 
     ################################################################################
+    ###  Interpreter Section
+    ################################################################################
+    @abstractmethod
+    def draw_model_interpreter_by_class(self, notes: str, *, class_stats: dict,
+                                        total_count: int, top: int=15):
+        """
+        Add model interpreter by class
+
+        Args:
+            class_stats (dict): A dictionary maps the label to its aggregated statistics
+            total_count (int): The total number of explanations to generate the statistics
+            top (int): the number of top explanation to display
+            notes(str): text to explain the block
+        """
+        pass
+
+    ################################################################################
     ###  Evaluation Section
     ################################################################################
     @abstractmethod

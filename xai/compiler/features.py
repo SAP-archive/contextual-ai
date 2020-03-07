@@ -50,9 +50,9 @@ class FeatureImportanceRanking(Dict2Obj):
     schema = {
         "type": "object",
         "properties": {
-            "trained_model": {"type": "string"},
-            "train_data": {" type": "string"},
-            "feature_names": {"type": "string"},
+            "trained_model": {"type": ["string", "object"]},
+            "train_data": {" type": ["string", "object"]},
+            "feature_names": {"type": ["string", "object"]},
             "method": {
                 "enum": ["default", "shap"],
                 "default": "default"

@@ -17,13 +17,11 @@ from xai.formatter.contents.base import (
     Paragraph,
     ParagraphTitle
 )
-
 from xai.formatter.contents.basic import (
     BasicKeyValuePairs,
     BasicImageGrid,
     BasicTable
 )
-
 from xai.formatter.contents.data import (
     DataMissingValue,
     DataSetDistribution,
@@ -33,16 +31,6 @@ from xai.formatter.contents.data import (
     TextFieldDistribution,
     DateTimeFieldDistribution,
 )
-
-from xai.formatter.contents.feature import (
-    FeatureImportance
-)
-
-from xai.formatter.contents.training import (
-    HyperParameterTuning,
-    LearningCurve
-)
-
 from xai.formatter.contents.evaluation import (
     MultiClassEvaluationMetricResult,
     BinaryClassEvaluationMetricResult,
@@ -51,10 +39,19 @@ from xai.formatter.contents.evaluation import (
     BinaryClassConfidenceDistribution,
     BinaryClassReliabilityDiagram
 )
-
+from xai.formatter.contents.feature import (
+    FeatureImportance
+)
+from xai.formatter.contents.model import (
+    ModelInterpreterByClass
+)
 from xai.formatter.contents.summary import (
     TrainingTiming,
     DataSetSummary,
     EvaluationResultSummary,
     ModelInfoSummary
+)
+from xai.formatter.contents.training import (
+    HyperParameterTuning,
+    LearningCurve
 )

@@ -1012,6 +1012,37 @@ class PdfWriter(Writer):
         self.pdf.ln(5)
 
     ################################################################################
+    ###  Interpreter Section
+    ################################################################################
+    def draw_model_interpreter_by_class(self, notes: str, *, class_stats: dict,
+                                        total_count: int, top: int=15):
+        """
+        Add model interpreter by class
+
+        Args:
+            class_stats (dict): A dictionary maps the label to its aggregated statistics
+            total_count (int): The total number of explanations to generate the statistics
+            top (int): the number of top explanation to display
+            notes(str): text to explain the block
+        """
+        from xai.graphs import graph_generator
+
+        # -- Draw Content --
+        self.pdf.add_new_line(notes)
+        for _class, _explanation_ranking in class_stats.items():
+            title = 'Interpretation for Class %s' % _class
+            self.pdf.add_new_line(title)
+            image_path = '%s/feature_importance_%s.png' % (self.figure_path, _class)
+            importance_ranking = [(key, value) for key, value in _explanation_ranking.items()][: top]
+            image_path = graph_generator.FeatureImportance(
+                figure_path=image_path,
+                data=importance_ranking,
+                title=title).draw()
+            self.pdf.add_large_image(image_path)
+
+        self.pdf.ln()
+
+    ################################################################################
     ###  Evaluation Section
     ################################################################################
     def draw_multi_class_evaluation_metric_results(self, notes: str, *,

@@ -1000,6 +1000,38 @@ class HtmlWriter(Writer):
             self.html.add_table_with_dict(data=validation_result))
 
     ################################################################################
+    ###  Interpreter Section
+    ################################################################################
+    def draw_model_interpreter_by_class(self, notes: str, *, class_stats: dict,
+                                        total_count: int, top: int=15):
+        """
+        Add model interpreter by class
+
+        Args:
+            class_stats (dict): A dictionary maps the label to its aggregated statistics
+            total_count (int): The total number of explanations to generate the statistics
+            top (int): the number of top explanation to display
+            notes(str): text to explain the block
+        """
+        from xai.graphs import graph_generator
+
+        self.html.article[-1].items.append(
+            self.html.add_paragraph(text=notes))
+        for _class, _explanation_ranking in class_stats.items():
+            title = 'Interpretation for Class %s' % _class
+            self.html.article[-1].items.append(
+                self.html.add_paragraph(text=title, style='BI'))
+            image_path = '%s/feature_importance_%s.png' % (self.figure_path, _class)
+            importance_ranking = [(key, value) for key, value in _explanation_ranking.items()][: top]
+            image_path = graph_generator.FeatureImportance(
+                figure_path=image_path,
+                data=importance_ranking,
+                title=title).draw()
+            self.html.article[-1].items.append(
+                self.html.add_image(src=image_path, alt=title))
+
+
+    ################################################################################
     ###  Evaluation Section
     ################################################################################
 

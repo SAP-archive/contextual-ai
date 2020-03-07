@@ -104,7 +104,8 @@ class ModelAgnosticExplainer(Dict2Obj):
 
         # -- Load Feature Meta--
         feature_meta_path = self.assert_attr(key='feature_meta', optional=True)
-        if not (feature_meta_path is None):
+        if not (feature_meta_path is None) \
+                and isinstance(feature_meta_path, str):
             with open(feature_meta_path, 'r') as f:
                 meta_data = json.load(f)
         else:

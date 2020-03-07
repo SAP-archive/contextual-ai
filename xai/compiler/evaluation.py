@@ -32,11 +32,9 @@ class ClassificationEvaluationResult(Dict2Obj):
         class (str): component class name
 
     Attr:
-        predict_func (str): path to predict function call pickle
-        train_data (str): path to training sample data
-        feature_meta (str): path to a meta json file
-        method: (str, Optional) interpreter method, default = 'lime'
-        num_features (integer, Optional): number of features to show in the explanation, default 10
+        y_true_file (str): path to test ground-true sample data
+        y_pred_file (str): path to test predict sample data
+        labels_file (str): path to a label json file
 
     Example:
         "component": {
@@ -110,12 +108,11 @@ class ClassificationEvaluationResult(Dict2Obj):
                 y_pred = np.argmax(y_conf, axis=1)
 
         labels = None
-        if labels_file is not None:
+        if labels_file is not None and isinstance(labels_file, str):
             with open(labels_file, 'r') as f:
                 labels = json.load(f)
 
         # -- Create Result Object --
-
         result_complier = ResultCompiler(labels=labels)
 
         if y_conf is None:
