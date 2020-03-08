@@ -41,6 +41,38 @@
       ]
     },
     {
+      "title": "Model Interpreter Analysis ",
+      "desc": "This section provides the analysis of model interpreter",
+      "sections": [
+        {
+          "title": "Model Interpreter by Class",
+          "component": {
+            "_comment": "refer to document section xxxx",
+            "class": "ModelInterpreter",
+            "attr": {
+              "domain": "tabular",
+              "method": "lime",
+              "mode": "classification",
+              "train_data": "var:X_train_np_array",
+              "labels": "var:y_train",
+              "predict_func": "var:clf_fn",
+              "feature_names": "var:feature_names",
+              "target_names": "var:target_names_list",
+              "model_interpret_stats_type": "top_k",
+              "model_interpret_k_value": 5,
+              "model_interpret_top_value": 8,
+              "num_of_class": 2,
+              "valid_x": "var:X_test_np_array",
+              "valid_y": "var:y_test_np_array",
+              "error_analysis_stats_type": "average_score",
+              "error_analysis_k_value": 5,
+              "error_analysis_top_value": 8
+            }
+          }
+        }
+      ]
+    },
+    {
       "title": "Model-Agnostic Explainer",
       "desc": "This section provides a model-agnostic explainer",
       "sections": [
@@ -81,7 +113,7 @@
     }
   ],
   "writers": [
-        {
+    {
       "class": "Pdf",
       "attr": {
         "name": "german-credit-risk-report"
