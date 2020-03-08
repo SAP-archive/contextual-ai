@@ -10,6 +10,7 @@ from __future__ import division
 from __future__ import print_function
 
 import json
+from pandas import DataFrame
 
 from xai.compiler.base import Dict2Obj
 from xai.formatter import Report
@@ -168,6 +169,8 @@ class ModelInterpreter(Dict2Obj):
         train_data = None
         if not (data_var is None):
             train_data = self.load_data(data_var, header=True)
+        if isinstance(train_data, DataFrame):
+            train_data = train_data.values
         # -- Load Labels --
         labels_var = self.assert_attr(key='labels')
         labels = None
@@ -198,11 +201,15 @@ class ModelInterpreter(Dict2Obj):
         valid_x = None
         if valid_x_var is not None:
             valid_x = self.load_data(valid_x_var)
+        if isinstance(valid_x, DataFrame):
+            valid_x = valid_x.values
         # -- Load Validation ground truth class label --
         valid_y_var = self.assert_attr(key='valid_y', optional=True)
         valid_y = None
         if valid_y_var is not None:
             valid_y = self.load_data(valid_y_var)
+        if isinstance(valid_y, DataFrame):
+            valid_x = valid_y.values
         ea_stats_type = self.assert_attr(key='error_analysis_stats_type', default='top_k')
         ea_k_value = self.assert_attr(key='error_analysis_k_value', default=5)
         ea_top = self.assert_attr(key="error_analysis_top_value", default=15)
