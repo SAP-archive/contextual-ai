@@ -4,11 +4,25 @@
   "content_table": true,
   "contents": [
     {
-      "title": "Model Interpreter",
+      "title": "Model Interpreter with Breast Cancer data-set",
       "desc": "This section provides the Interpretation of model",
       "sections": [
         {
-          "title": "Model Interpreter Analysis with Breast Cancer data-set",
+          "title": "Feature Importance Analysis",
+          "desc": "This section provides the analysis on feature",
+          "component": {
+            "_comment": "refer to document section xxxx",
+            "class": "FeatureImportanceRanking",
+            "attr": {
+              "trained_model": "var:clf",
+              "train_data": "var:X_train",
+              "feature_names": "var:feature_names",
+              "method": "default"
+            }
+          }
+        },
+        {
+          "title": "Model Interpreter Analysis ",
           "desc": "Model and train data from Breast Cancer",
           "component": {
             "_comment": "refer to document section xxxx",
