@@ -49,7 +49,7 @@ class TestModelInterpreter(unittest.TestCase):
                 self.json_writer_pdf_name = writer["attr"]["name"]
             if writer["class"] == "Html":
                 self.json_writer_html_name = writer["attr"]["name"]
-        self.json_writer_pdf_page_number = 3
+        self.json_writer_pdf_page_number = 4
         self.json_writer_html_tag_number = 1
 
         self.yaml = prepare_template(filename='model-interpreter.yml')

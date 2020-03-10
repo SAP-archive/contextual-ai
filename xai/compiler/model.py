@@ -58,6 +58,8 @@ class ModelInterpreter(Dict2Obj):
                 Default value is 15
 
         ** For Error Analysis **
+        enable_error_analysis: bool set to True to enable error analysis else False to disable
+                Default value is False - error analysis disabled
         num_of_class: int, number of classes
         valid_x: A list of 1D ndarray. Validation data
         valid_y: A list of int or a list of str. Validation ground truth class label (str) or (index)
@@ -95,7 +97,8 @@ class ModelInterpreter(Dict2Obj):
                 "valid_y": "var:y_test",
                 "error_analysis_stats_type": "average_score",
                 "error_analysis_k_value": 5,
-                "error_analysis_top_value": 15
+                "error_analysis_top_value": 15,
+                "enable_error_analysis": true
             }
         }
     """
@@ -134,10 +137,16 @@ class ModelInterpreter(Dict2Obj):
             },
             "error_analysis_k_value": { "type": "number", "default": 5},
             "error_analysis_top_value": {"type": "number", "default": 15},
+            "enable_error_analysis": {"type": "boolean", "default": False}
         },
         "required": ["domain", "train_data", "labels", "predict_func",
-                     "feature_names", "target_names",
-                     "num_of_class", "valid_x", "valid_y"]
+                     "feature_names", "target_names"],
+        "if": {
+            "properties": {
+                "enable_error_analysis": {"const": True}
+            },
+            "required": ["num_of_class", "valid_x", "valid_y"]
+        }
     }
 
     def __init__(self, dictionary):
@@ -190,29 +199,36 @@ class ModelInterpreter(Dict2Obj):
         target_names = None
         if tn_var is not None:
             target_names = self.load_data(tn_var)
-        stats_type = self.assert_attr(key='model_interpret_stats_type', default='top_k')
+        stats_type = self.assert_attr(key='model_interpret_stats_type',
+                                      default='top_k')
         k_value = self.assert_attr(key='model_interpret_k_value', default=5)
         top = self.assert_attr(key="model_interpret_top_value", default=15)
 
-        # -- Check Number of Class --
-        classes = self.assert_attr(key="num_of_class")
-        # -- Load Validation Data --
-        valid_x_var = self.assert_attr(key='valid_x', optional=True)
-        valid_x = None
-        if valid_x_var is not None:
-            valid_x = self.load_data(valid_x_var)
-        if isinstance(valid_x, DataFrame):
-            valid_x = valid_x.values
-        # -- Load Validation ground truth class label --
-        valid_y_var = self.assert_attr(key='valid_y', optional=True)
-        valid_y = None
-        if valid_y_var is not None:
-            valid_y = self.load_data(valid_y_var)
-        if isinstance(valid_y, DataFrame):
-            valid_x = valid_y.values
-        ea_stats_type = self.assert_attr(key='error_analysis_stats_type', default='top_k')
-        ea_k_value = self.assert_attr(key='error_analysis_k_value', default=5)
-        ea_top = self.assert_attr(key="error_analysis_top_value", default=15)
+        # -- Error Analysis --
+        en_flag = self.assert_attr(key="enable_error_analysis", default=False)
+        if en_flag:
+            # -- Check Number of Class --
+            classes = self.assert_attr(key="num_of_class")
+            # -- Load Validation Data --
+            valid_x_var = self.assert_attr(key='valid_x', optional=True)
+            valid_x = None
+            if valid_x_var is not None:
+                valid_x = self.load_data(valid_x_var)
+            if isinstance(valid_x, DataFrame):
+                valid_x = valid_x.values
+            # -- Load Validation ground truth class label --
+            valid_y_var = self.assert_attr(key='valid_y', optional=True)
+            valid_y = None
+            if valid_y_var is not None:
+                valid_y = self.load_data(valid_y_var)
+            if isinstance(valid_y, DataFrame):
+                valid_x = valid_y.values
+            ea_stats_type = self.assert_attr(key='error_analysis_stats_type',
+                                             default='top_k')
+            ea_k_value = self.assert_attr(key='error_analysis_k_value',
+                                          default=5)
+            ea_top = self.assert_attr(key="error_analysis_top_value",
+                                      default=15)
 
         # -- Define the domain and algorithm for interpreter --
         mi = MI(domain=domain, algorithm=method)
@@ -233,10 +249,12 @@ class ModelInterpreter(Dict2Obj):
         report.detail.add_model_interpreter_by_class(class_stats=class_stats,
                                                      total_count=total_count,
                                                      top=top)
-        # -- Error Analysis with validation data --
-        error_stats = mi.error_analysis(class_num=classes, valid_x=valid_x,
-                                        valid_y=valid_y, stats_type=ea_stats_type,
-                                        k=ea_k_value)
-        # -- Add Error Analysis for class --
-        report.detail.add_error_analysis_by_class(error_stats=error_stats,
-                                                  top=ea_top)
+        if en_flag:
+            # -- Error Analysis with validation data --
+            error_stats = mi.error_analysis(class_num=classes, valid_x=valid_x,
+                                            valid_y=valid_y,
+                                            stats_type=ea_stats_type,
+                                            k=ea_k_value)
+            # -- Add Error Analysis for class --
+            report.detail.add_error_analysis_by_class(error_stats=error_stats,
+                                                      top=ea_top)
