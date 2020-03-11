@@ -488,7 +488,7 @@ class Section:
     ################################################################################
     def add_model_interpreter_by_class(self, *,
                                        class_stats: dict, total_count: int,
-                                       top: int=15,
+                                       stats_type: str, k:int, top: int=15,
                                        notes=None):
         """
         add model interpreter by class
@@ -496,27 +496,32 @@ class Section:
         Args:
             class_stats (dict): A dictionary maps the label to its aggregated statistics
             total_count (int): The total number of explanations to generate the statistics
+            stats_type (str): The defined stats_type for statistical analysis
+            k (int): The k value of the defined stats_type
             top (int): the number of top explanation to display
             notes(str): text to explain the block
         """
         from xai.formatter.contents import ModelInterpreterByClass
         self.contents.append(ModelInterpreterByClass(
             class_stats=class_stats, total_count=total_count,
-            top=top, notes=notes))
+            stats_type=stats_type, k=k, top=top, notes=notes))
 
-    def add_error_analysis_by_class(self, *, error_stats: dict, top: int=15,
-                                    notes=None):
+    def add_error_analysis_by_class(self, *, error_stats: dict, stats_type: str,
+                                    k:int, top: int=15, notes=None):
         """
         add error analysis by class
 
         Args:
             error_stats (dict): A dictionary maps the label to its aggregated statistics
+            stats_type (str): The defined stats_type for statistical analysis
+            k (int): The k value of the defined stats_type
             top (int): the number of top explanation to display
             notes(str): text to explain the block
         """
         from xai.formatter.contents import ErrorAnalysisByClass
         self.contents.append(ErrorAnalysisByClass(
-            error_stats=error_stats, top=top, notes=notes))
+            error_stats=error_stats, stats_type=stats_type, k=k,
+            top=top, notes=notes))
 
     ################################################################################
     ###  Content Evaluation Section

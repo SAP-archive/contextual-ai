@@ -442,13 +442,16 @@ class Writer(ABC):
     ################################################################################
     @abstractmethod
     def draw_model_interpreter_by_class(self, notes: str, *, class_stats: dict,
-                                        total_count: int, top: int=15):
+                                        total_count: int, stats_type: str,
+                                        k:int, top: int=15):
         """
         Add model interpreter by class
 
         Args:
             class_stats (dict): A dictionary maps the label to its aggregated statistics
             total_count (int): The total number of explanations to generate the statistics
+            stats_type (str): The defined stats_type for statistical analysis
+            k (int): The k value of the defined stats_type
             top (int): the number of top explanation to display
             notes(str): text to explain the block
         """
@@ -456,12 +459,14 @@ class Writer(ABC):
 
     @abstractmethod
     def draw_error_analysis_by_class(self, notes: str, *, error_stats: dict,
-                                     top: int=15):
+                                     stats_type: str, k: int, top: int=15):
         """
         Add error analysis by class
 
         Args:
             error_stats (dict): A dictionary maps the label to its aggregated statistics
+            stats_type (str): The defined stats_type for statistical analysis
+            k (int): The k value of the defined stats_type
             top (int): the number of top explanation to display
             notes(str): text to explain the block
         """

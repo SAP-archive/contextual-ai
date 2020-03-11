@@ -248,7 +248,8 @@ class ModelInterpreter(Dict2Obj):
         # -- Add Feature Importance for class --
         report.detail.add_model_interpreter_by_class(class_stats=class_stats,
                                                      total_count=total_count,
-                                                     top=top)
+                                                     stats_type=stats_type,
+                                                     k=k_value, top=top)
         if en_flag:
             # -- Error Analysis with validation data --
             error_stats = mi.error_analysis(class_num=classes, valid_x=valid_x,
@@ -257,4 +258,5 @@ class ModelInterpreter(Dict2Obj):
                                             k=ea_k_value)
             # -- Add Error Analysis for class --
             report.detail.add_error_analysis_by_class(error_stats=error_stats,
-                                                      top=ea_top)
+                                                      stats_type=ea_stats_type,
+                                                      k=ea_k_value, top=ea_top)
