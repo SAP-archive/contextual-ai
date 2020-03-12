@@ -127,13 +127,13 @@ class DataStatisticsAnalysis(Dict2Obj):
         threshold = self.assert_attr(key='threshold',
                                      default=THRESHOLD.UNIQUE_VALUE_REL_THRESHOLD)
         # -- Load Data --
-        data_path = self.assert_attr(key='data')
-        data = self.load_data(Path(data_path))
+        data_var = self.assert_attr(key='data')
+        data = self.load_data(data_var)
         # -- Load Metadata --
-        metadata_path = self.assert_attr(key='metadata', optional=True)
+        metadata_var = self.assert_attr(key='metadata', optional=True)
         metadata = None
-        if metadata_path is not None:
-            metadata = self.load_data(Path(metadata_path))
+        if metadata_var is not None:
+            metadata = self.load_data(metadata_var)
             metadata = metadata.to_dict('dict')
             validate(instance=metadata, schema=self.metadata_schema)
 

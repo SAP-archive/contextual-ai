@@ -15,6 +15,7 @@ from pathlib import Path
 import xai
 from xai.compiler.base import Dict2Obj
 from xai.explainer import ExplainerFactory
+from xai.explainer.constants import OUTPUT
 from xai.explainer.helper import parse_feature_meta_tabular
 from xai.formatter import Report
 
@@ -55,8 +56,8 @@ class ModelAgnosticExplainer(Dict2Obj):
     schema = {
         "type": "object",
         "properties": {
-            "predict_func": {"type": "string"},
-            "train_data": {" type": "string"},
+            "predict_func": {"type": ["string", "object"]},
+            "train_data": {" type": ["string", "object"]},
             "feature_meta": {"type": "string"},
             "domain": {
                 "enum": ["tabular", "text"]
@@ -99,8 +100,8 @@ class ModelAgnosticExplainer(Dict2Obj):
         domain = self.assert_attr(key='domain')
 
         # -- Load Predict Function --
-        predict_fn_path = self.assert_attr(key='predict_func')
-        predict_fn = self.load_data(Path(predict_fn_path))
+        predict_fn_var = self.assert_attr(key='predict_func')
+        predict_fn = self.load_data(predict_fn_var)
 
         # -- Load Feature Meta--
         feature_meta_path = self.assert_attr(key='feature_meta', optional=True)
@@ -113,9 +114,9 @@ class ModelAgnosticExplainer(Dict2Obj):
         class_names = meta_data.get("class_names", None)
 
         # -- Load Training Data --
-        data_path = self.assert_attr(key='train_data')
-        if not (data_path is None):
-            train_data = self.load_data(Path(data_path),header=True)
+        data_var = self.assert_attr(key='train_data')
+        if not (data_var is None):
+            train_data = self.load_data(data_var, header=True)
             train_data = train_data.as_matrix()
 
         kwargs = dict()
@@ -166,7 +167,7 @@ class ModelAgnosticExplainer(Dict2Obj):
             explainations = explainer_factory.explain_instance(train_data[i, :],
                                                                num_features=num_features)
             for key, value in explainations.items():
-                details = [(item['feature'], "%.3f" % item['score']) for item in value['explanation']]
+                details = [(item[OUTPUT.FEATURE], "%.3f" % item[OUTPUT.SCORE]) for item in value[OUTPUT.EXPLANATION]]
                 report.detail.add_model_info_summary(model_info=details,
                                                      notes='Class %s - Confidence: %s' % (
-                                                     class_names[key] if class_names else key, value['confidence']))
+                                                     class_names[key] if class_names else key, value[OUTPUT.PREDICTION]))

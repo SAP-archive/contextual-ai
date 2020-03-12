@@ -9,6 +9,7 @@ from collections import defaultdict, Counter
 
 from typing import Dict, Tuple
 
+from xai.explainer.constants import OUTPUT
 from xai.model.interpreter.exceptions import InvalidExplanationFormat, \
     MutipleScoresFoundForSameFeature, UnsupportedMethodType, \
     InvalidArgumentError
@@ -38,30 +39,30 @@ class ExplanationAggregator:
         for _label, _exp in explanation.items():
             if type(_exp) != dict:
                 raise InvalidExplanationFormat(_exp)
-            if 'explanation' not in _exp.keys():
+            if OUTPUT.EXPLANATION not in _exp.keys():
                 raise InvalidExplanationFormat(_exp)
-            if type(_exp['explanation']) != list:
+            if type(_exp[OUTPUT.EXPLANATION]) != list:
                 raise InvalidExplanationFormat(_exp)
             feature_names = set()
-            for item in _exp['explanation']:
+            for item in _exp[OUTPUT.EXPLANATION]:
                 if type(item) != dict:
                     raise InvalidExplanationFormat(item)
-                if 'feature' not in item.keys():
+                if OUTPUT.FEATURE not in item.keys():
                     raise InvalidExplanationFormat(item)
-                if type(item['feature']) != str:
+                if type(item[OUTPUT.FEATURE]) != str:
                     raise InvalidExplanationFormat(item)
-                if item['feature'] in feature_names:
-                    raise MutipleScoresFoundForSameFeature(item['feature'], _exp)
+                if item[OUTPUT.FEATURE] in feature_names:
+                    raise MutipleScoresFoundForSameFeature(item[OUTPUT.FEATURE], _exp)
                 else:
-                    feature_names.add(item['feature'])
-                if 'score' not in item.keys():
+                    feature_names.add(item[OUTPUT.FEATURE])
+                if OUTPUT.SCORE not in item.keys():
                     raise InvalidExplanationFormat(item)
-                if type(item['score']) != float:
+                if type(item[OUTPUT.SCORE]) != float:
                     raise InvalidExplanationFormat(item)
 
         for _label, _exp in explanation.items():
-            if _exp['confidence'] > self._confidence_threshold:
-                self._explanation_list[_label].append({item['feature']: item['score'] for item in _exp['explanation']})
+            if _exp[OUTPUT.PREDICTION] > self._confidence_threshold:
+                self._explanation_list[_label].append({item[OUTPUT.FEATURE]: item[OUTPUT.SCORE] for item in _exp[OUTPUT.EXPLANATION]})
                 self._class_counter[_label] += 1
         self._total_count += 1
 

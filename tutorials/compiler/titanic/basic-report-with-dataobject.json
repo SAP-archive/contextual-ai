@@ -1,0 +1,50 @@
+{
+  "name": "Report for Titanic Dataset with Data Object",
+  "overview": true,
+  "content_table": true,
+  "contents": [
+    {
+      "title": "Feature Importance Analysis",
+      "desc": "This section provides the analysis on feature",
+      "sections": [
+        {
+          "title": "Feature Importance Ranking",
+          "component": {
+            "_comment": "refer to document section xxxx",
+            "class": "FeatureImportanceRanking",
+            "attr": {
+              "trained_model": "var:model_pkl",
+              "train_data": "var:train_data_csv",
+              "method": "shap"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Data Statistics Analysis",
+      "desc": "This section provides the analysis on data",
+      "sections": [
+        {
+          "title": "Simple Data Statistic",
+          "component": {
+            "_comment": "refer to document section xxxx",
+            "class": "DataStatisticsAnalysis",
+            "attr": {
+              "data": "titanic.csv"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "writers": [
+    {
+      "class": "Pdf",
+      "attr": {
+        "name": "titanic-basic-report-v2"
+      }
+    }
+  ]
+}
+

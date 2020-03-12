@@ -53,8 +53,8 @@ class ClassificationEvaluationResult(Dict2Obj):
     schema = {
         "type": "object",
         "properties": {
-            "y_true_file": {"type": "string"},
-            "y_pred_file": {"type": "string"},
+            "y_true_file": {"type": ["string", "object"]},
+            "y_pred_file": {"type": ["string", "object"]},
             "labels_file": {"type": "string"}
         },
         "required": ["y_true_file", "y_pred_file", "labels_file"]
@@ -81,20 +81,20 @@ class ClassificationEvaluationResult(Dict2Obj):
         super(ClassificationEvaluationResult, self).__call__(report=report,
                                                              level=level)
         # -- Load Result Filepath --
-        y_true_file = self.assert_attr(key='y_true_file')
-        y_pred_file = self.assert_attr(key='y_pred_file')
+        y_true_var = self.assert_attr(key='y_true_file')
+        y_pred_var = self.assert_attr(key='y_pred_file')
         labels_file = self.assert_attr(key='labels_file')
 
         # -- Load Data --
         y_true = None
-        if y_true_file is not None:
-            y_true = self.load_data(Path(y_true_file))
+        if y_true_var is not None:
+            y_true = self.load_data(y_true_var)
             y_true = y_true.values.flatten()
 
         y_pred = None
         y_conf = None
-        if y_pred_file is not None:
-            y = self.load_data(Path(y_pred_file))
+        if y_pred_var is not None:
+            y = self.load_data(y_pred_var)
             y = y.values
             if len(y.shape) == 1 or y.shape[1] == 1:
                 y = y.flattern()
