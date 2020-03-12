@@ -79,8 +79,8 @@ class ExplanationAggregator:
 
         if OUTPUT.EXPLANATION in explanation:
             # Regression schema
-            # To follow downstream schema, we set the "label" of regression prediction to 0
-            _label = 0
+            # To follow downstream schema, we set the "label" of regression prediction to 'NA'
+            _label = 'NA'
             if explanation[OUTPUT.PREDICTION] > self._confidence_threshold:
                 self._explanation_list[_label].append(
                     {item[OUTPUT.FEATURE]: item[OUTPUT.SCORE] for item in
