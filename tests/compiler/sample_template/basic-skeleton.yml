@@ -37,3 +37,5 @@ writers:
     attr:
       name: basic-yaml-report
       path: {out_path}
+      style: {out_path}/simple.css
+      script: {out_path}/simple.js

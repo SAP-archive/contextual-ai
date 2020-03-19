@@ -146,7 +146,8 @@ class Configuration:
                 if Constant.COMPONENT_ATTR.value in component:
                     attr = component[Constant.COMPONENT_ATTR.value]
                     for k, v in attr.items():
-                        if Constant.COMPONENT_ATTR_VARS_PREFIX.value in v:
+                        if isinstance(v, str) and \
+                                Constant.COMPONENT_ATTR_VARS_PREFIX.value in v:
                             p, n = v.split(Constant.COMPONENT_ATTR_VARS_PREFIX.value, 1)
                             if n in variables:
                                 attr[k] = variables[n]
@@ -171,12 +172,15 @@ class Configuration:
                 _result = Configuration._load(Path(config))
             elif type(config) == dict:
                 _result = config
-                if not (variables is None):
-                    Configuration.render_config(
-                        contents=config[Constant.CONTENT_LIST.value],
-                        variables=variables)
             else:
-                raise CompilerException('Unsupported config format, %s' % config)
+                raise CompilerException(
+                    'Unsupported config format, %s' % config)
+
+            # -- Start Rendering --
+            if not (variables is None):
+                Configuration.render_config(
+                    contents=_result[Constant.CONTENT_LIST.value],
+                    variables=variables)
         return _result
 
     def __init__(self, config=None, variables: dict = None) -> None:

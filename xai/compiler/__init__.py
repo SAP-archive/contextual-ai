@@ -10,14 +10,15 @@ from .base import (
     Constant
 )
 from .data import DataStatisticsAnalysis
-from .features import FeatureImportanceRanking
-from .writer import (
-    Pdf,
-    Html
-)
-from .explainer import ModelAgnosticExplainer
 from .evaluation import ClassificationEvaluationResult
+from .explainer import ModelAgnosticExplainer
+from .features import FeatureImportanceRanking
+from .model import ModelInterpreter
 from .validator import (
     DuplicationOrphanCheck,
     CompleteMatchCheck
+)
+from .writer import (
+    Pdf,
+    Html
 )

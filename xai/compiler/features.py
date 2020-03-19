@@ -9,11 +9,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from pathlib import Path
-
 from xai.compiler.base import Dict2Obj
-from xai.model.interpreter import FeatureInterpreter
 from xai.formatter import Report
+from xai.model.interpreter import FeatureInterpreter
 
 
 ################################################################################
@@ -52,9 +50,9 @@ class FeatureImportanceRanking(Dict2Obj):
     schema = {
         "type": "object",
         "properties": {
-            "trained_model": {"type": "string"},
-            "train_data": {" type": "string"},
-            "feature_names": {"type": "string"},
+            "trained_model": {"type": ["string", "object"]},
+            "train_data": {" type": ["string", "object"]},
+            "feature_names": {"type": ["string", "object"]},
             "method": {
                 "enum": ["default", "shap"],
                 "default": "default"

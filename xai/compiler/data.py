@@ -13,7 +13,6 @@ import warnings
 from copy import deepcopy
 
 from jsonschema import validate
-from pathlib import Path
 
 from xai.compiler.base import Dict2Obj
 from xai.data import DataUtil
@@ -61,9 +60,9 @@ class DataStatisticsAnalysis(Dict2Obj):
     schema = {
         "type": "object",
         "properties": {
-            "data": {"type": "string"},
-            "metadata": {"type": "string"},
-            "label": {"type": "string"},
+            "data": {"type": ["string", "object"]},
+            "metadata": {"type": ["string", "object"]},
+            "label": {"type": ["string", "object"]},
             "threshold": {
                 "type": "number",
                 "default": 0.3

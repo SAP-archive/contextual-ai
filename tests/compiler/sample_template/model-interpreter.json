@@ -1,0 +1,89 @@
+{
+  "name": "Report for Model Interpreter.",
+  "overview": true,
+  "content_table": true,
+  "contents": [
+    {
+      "title": "Model Interpreter",
+      "desc": "This section provides the Interpretation of model",
+      "sections": [
+        {
+          "title": "Model Interpreter Analysis with Breast Cancer data-set",
+          "desc": "Model and train data from Breast Cancer",
+          "sections": [
+            {
+              "title": "Lime Model Interpreter analysis",
+              "component": {
+                "_comment": "refer to document section xxxx",
+                "class": "ModelInterpreter",
+                "attr": {
+                  "domain": "tabular",
+                  "method": "lime",
+                  "mode": "classification",
+                  "train_data": "var:X_train",
+                  "labels": "var:y_train",
+                  "predict_func": "var:clf_fn",
+                  "feature_names": "var:feature_names",
+                  "target_names": "var:target_names_list",
+                  "model_interpret_stats_type": "top_k",
+                  "model_interpret_k_value": 5,
+                  "model_interpret_top_value": 15,
+                  "num_of_class": 2,
+                  "valid_x": "var:X_test",
+                  "valid_y": "var:y_test",
+                  "error_analysis_stats_type": "average_score",
+                  "error_analysis_k_value": 5,
+                  "error_analysis_top_value": 15,
+                  "enable_error_analysis": true
+                }
+              }
+            },
+            {
+              "title": "Lime Model Interpreter analysis - disable error analysis",
+              "component": {
+                "_comment": "refer to document section xxxx",
+                "class": "ModelInterpreter",
+                "attr": {
+                  "domain": "tabular",
+                  "method": "lime",
+                  "mode": "classification",
+                  "train_data": "var:X_train",
+                  "labels": "var:y_train",
+                  "predict_func": "var:clf_fn",
+                  "feature_names": "var:feature_names",
+                  "target_names": "var:target_names_list",
+                  "model_interpret_stats_type": "top_k",
+                  "model_interpret_k_value": 5,
+                  "model_interpret_top_value": 15,
+                  "num_of_class": 2,
+                  "valid_x": "var:X_test",
+                  "valid_y": "var:y_test",
+                  "error_analysis_stats_type": "average_score",
+                  "error_analysis_k_value": 5,
+                  "error_analysis_top_value": 15
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "writers": [
+    {
+      "class": "Pdf",
+      "attr": {
+        "name": "model-interpreter-json-report",
+        "path": "{out_path}"
+      }
+    },
+    {
+      "class": "Html",
+      "attr": {
+        "name": "model-interpreter-json-report",
+        "path": "{out_path}"
+      }
+    }
+  ]
+}
+
