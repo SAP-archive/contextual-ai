@@ -7,9 +7,8 @@ pipeline {
     parameters{
         booleanParam(defaultValue: false, description: '\'true\' will create a release artifact on Nexus', name: 'PROMOTE')
     }
-
+/*
     stages{
-    /*
         stage('Pull-request voting') {
             when { branch "PR-*" }
             steps {
@@ -27,7 +26,6 @@ pipeline {
             post { always { deleteDir() } }
         }
 */
-        /*
         stage('Unit Tests, Coverage & Pylint') {
             agent {
                 node {
@@ -37,8 +35,9 @@ pipeline {
             }
             when {
                 anyOf {
-                    branch 'master'
-                    branch 'PR-*'
+                    branch 'XAI_NEW'
+                    //branch 'master'
+                    //branch 'PR-*'
                 }
             }
             steps {
@@ -73,7 +72,7 @@ pipeline {
             }
             post { always { deleteDir() }  }
         }
-        */
+
         //**********************************************************************************
         // Here is an example, you can implement a different way
         //                           sh """
@@ -124,9 +123,9 @@ pipeline {
             }
             when {
                 anyOf {
-                    branch 'develop'
+                    //branch 'develop'
                     branch 'XAI_NEW'
-                    branch 'PR-*'
+                    //branch 'PR-*'
                 }
             }
             steps {
