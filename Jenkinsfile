@@ -46,7 +46,7 @@ pipeline {
                     customImage.inside(){
                         sh """
                              echo "Making Unit Test Script to Executable"
-                             chmod +x jenkins_scripts/unit_test.sh
+                             chmod +x scripts/run_unit_tests.sh
 
                              echo "Executing Unit Tests"
                              ./jenkins_scripts/unit_test.sh
