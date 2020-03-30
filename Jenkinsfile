@@ -86,7 +86,7 @@ pipeline {
               }
            post { always { deleteDir() } }
           }
-
+/*
           stage('SonarQube') {
                  agent { label 'slave' }
                      when { branch 'XAI_NEW' }
@@ -197,7 +197,7 @@ pipeline {
                                         failOnError: false )
                             }
             }
-
+*/
             stage('Promote') {
                 agent { label 'slave' }
                    when { branch 'XAI_NEW' }
