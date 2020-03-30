@@ -38,7 +38,7 @@ $PYTHON_VENV_PATH $PIP_VENV_PATH freeze
 
 nosetests --tests=./tests \
     -v --nologcapture --exe --with-xunit --with-xcoverage \
-    --cover-package=./generic_line_item_matcher \
+    --cover-package=./xai \
     --cover-erase  --xunit-file=nosetests_result.xml
 
 
