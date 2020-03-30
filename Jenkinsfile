@@ -25,52 +25,37 @@ pipeline {
             post { always { deleteDir() } }
         }
 */
-        stage('Unit Tests, Coverage & Pylint') {
-            agent {
-                node {
-                    label 'slave'
-                    customWorkspace "workspace/${env.JOB_NAME}/${env.BUILD_NUMBER}"
-                }
-            }
-            when {
-                anyOf {
-                    branch 'XAI_NEW'
-                    //branch 'master'
-                    //branch 'PR-*'
-                }
-            }
-            steps {
-                script{
-                    def customImage = docker.build("mlf_training")
-                    customImage.inside(){
-                        sh """
-                             echo "Making Unit Test Script to Executable"
-                             chmod +x scripts/run_unit_tests.sh
+            stage('Unit tests') {
+                 agent { label 'slave' }
+                       when { branch 'XAI_NEW' }
+                        steps {
+                          script{
+                            sh """
+                                echo "add unit tests"
+                                chmod +x script/run_unit_test.sh
+                                ./script/run_unit_test.sh
+                              """
 
-                             echo "Executing Unit Tests"
-                             ./scripts/run_unit_tests.sh
-                       """
+                            junit allowEmptyResults: true, testResults: "nosetests_result.xml"
+                            stash includes: 'nosetests_result.xml', name: 'unit_results'
+                            stash includes: 'coverage.xml', name: 'coverage_results'
+                           }
+
+                       publishTestResults(
+                        junit: [updateResults: true, archive: true, pattern:'nosetests_result.xml'],
+                        cobertura: [archive: true, pattern: 'coverage.xml'],
+                        allowUnstableBuilds: true
+                     )
+
+
+				          // publish python results from pylint
+                checksPublishResults script: this, archive: true, tasks: true,
+                    pylint: [pattern: '**/pylint.out', thresholds: [fail: [all: '3999', low: '1999', normal: '1999', high: '1999']]],
+                    aggregation: [thresholds: [fail: [all: '3999', low: '1999', normal: '1999', high: '1999']]]
+
                     }
-                    stash includes: 'nosetests.xml', name: 'unit_results'
-                    stash includes: 'coverage.xml', name: 'coverage_results'
-                    stash includes: 'pylint.out', name: 'pylint_results'
 
-                }
-                publishTestResults(
-                    junit: [updateResults: true, archive: true, pattern:'nosetests.xml'],
-                    cobertura: [archive: true, pattern: 'coverage.xml', onlyStableBuilds: false],
-                    allowUnstableBuilds: true
-                )
-                checksPublishResults(
-                    script: this,
-                    archive: true,
-                    tasks: true,
-                    pylint: [pattern: 'pylint.out', thresholds: [fail: [all: '3999', low: '999', normal: '999', high: '50']]],
-                    aggregation: [thresholds: [fail: [all: '3999', low: '999', normal: '999', high: '50']]]
-                )
             }
-            post { always { deleteDir() }  }
-        }
 
         stage('Central Build') {
              agent { label 'slave' }
