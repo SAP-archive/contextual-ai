@@ -72,10 +72,6 @@ pipeline {
             post { always { deleteDir() }  }
         }
 
-                    }
-
-            }
-
         stage('Central Build') {
              agent { label 'slave' }
                   when { branch 'XAI_NEW' }
