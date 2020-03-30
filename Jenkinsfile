@@ -49,7 +49,7 @@ pipeline {
                              chmod +x scripts/run_unit_tests.sh
 
                              echo "Executing Unit Tests"
-                             ./jenkins_scripts/unit_test.sh
+                             ./scripts/run_unit_tests.sh
                        """
                     }
                     stash includes: 'nosetests.xml', name: 'unit_results'
