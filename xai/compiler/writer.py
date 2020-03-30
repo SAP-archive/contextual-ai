@@ -92,7 +92,9 @@ class Html(Dict2Obj):
           "class": "Html",
           "attr": {
             "name": "first-simple-report",
-            "path": "./sample_output"
+            "path": "./sample_output",
+            "style": "./simple.css",
+            "script": "./simple.jsp"
           }
         }
       ]
@@ -101,7 +103,9 @@ class Html(Dict2Obj):
         "type": "object",
         "properties": {
             "name": {"type": "string"},
-            "path": {" type": "string"}
+            "path": {" type": "string"},
+            "style": {" type": "string"},
+            "script": {" type": "string"}
         },
         "required": ["name", "path"]
     }

@@ -63,7 +63,9 @@
       "class": "Html",
       "attr": {
         "name": "basic-json-report",
-        "path": "{out_path}"
+        "path": "{out_path}",
+        "style": "{out_path}/simple.css",
+        "script": "{out_path}/simple.js"
       }
     }
   ]

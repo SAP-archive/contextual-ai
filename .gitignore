@@ -36,6 +36,8 @@ tutorials/compiler/titanic2/y_true.csv
 tutorials/compiler/automobile/model.pkl
 tutorials/compiler/automobile/train_data.csv
 
+tutorials/compiler/germancredit/__MACOSX/
+
 doc/build
 doc/source/data
 doc/source/explainer
