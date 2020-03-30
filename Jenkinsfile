@@ -32,8 +32,8 @@ pipeline {
                           script{
                             sh """
                                 echo "add unit tests"
-                                chmod +x script/run_unit_tests.sh
-                                ./script/run_unit_tests.sh
+                                chmod +x scripts/run_unit_tests.sh
+                                ./scripts/run_unit_tests.sh
                               """
 
                             junit allowEmptyResults: true, testResults: "nosetests_result.xml"
