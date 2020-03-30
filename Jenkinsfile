@@ -25,6 +25,7 @@ pipeline {
             post { always { deleteDir() } }
         }
 */
+/*
             stage('Unit tests') {
                  agent { label 'slave' }
                        when { branch 'XAI_NEW' }
@@ -86,6 +87,7 @@ pipeline {
               }
            post { always { deleteDir() } }
           }
+          */
 
 
           stage('SonarQube') {
