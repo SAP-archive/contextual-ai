@@ -25,7 +25,6 @@ pipeline {
             post { always { deleteDir() } }
         }
 */
-/*
             stage('Unit tests') {
                  agent { label 'slave' }
                        when { branch 'XAI_NEW' }
@@ -57,7 +56,7 @@ pipeline {
                     }
 
             }
-
+/*
         stage('Central Build') {
              agent { label 'slave' }
                   when { branch 'XAI_NEW' }
