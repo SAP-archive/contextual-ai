@@ -2,73 +2,78 @@
 @Library(['piper-lib', 'piper-lib-os']) _
 
 pipeline {
-   agent { label 'slave' }
-      parameters{
-            booleanParam(defaultValue: false, description: '\'true\' will create a development artifact on Nexus', name: 'PROMOTE')
-      }
-      environment {
-        VERSION=readFile('version.txt')
-      }
-      
-         stages{        
-            stage('Pull-request voting') {
-                  agent { label 'slave' }
-                  when { branch "PR*" }
-                  steps {
-                    script {
-                      deleteDir()
-                      checkout scm
-                      setupPipelineEnvironment script: this
-                      measureDuration(script: this, measurementName: 'voter_duration') {
-                         sh """  
-                              echo "add simple tests that should run as part of PR check, e.g. unit tests"
-                            chmod +x script/run_unit_test.sh
-                                ./script/run_unit_tests.sh
-                            """
-
-                        junit "nosetests_result.xml"
-                        stash includes: 'nosetests_result.xml', name: 'unit_results'
-                     }
-                     publishTestResults(
-                        junit: [updateResults: true, archive: true, pattern:'nosetests_result.xml'],
-                        cobertura: [archive: true, pattern: 'coverage.xml'],
-                        allowUnstableBuilds: true
-                     )
-                  }
+    agent { label 'slave' }
+    parameters{
+        booleanParam(defaultValue: false, description: '\'true\' will create a release artifact on Nexus', name: 'PROMOTE')
+    }
+    stages{
+    /*
+        stage('Pull-request voting') {
+            when { branch "PR-*" }
+            steps {
+                script {
+                    deleteDir()
+                    checkout scm
+                    setupPipelineEnvironment script: this
+                    measureDuration(script: this, measurementName: 'voter_duration') {
+                        sh """
+                             echo "add simple tests that should run as part of PR check, e.g. unit tests"
+                           """
+                    }
                 }
-                 post { always { deleteDir() } }
-              } 
-                                           
-            stage('Unit tests') {
-                 agent { label 'slave' }
-                       when { branch 'XAI_NEW' }
-                        steps {
-                          script{   
-                            sh """
-                                echo "add unit tests"
-                                chmod +x script/run_unit_tests.sh
-                                ./script/run_unit_tests.sh
-                              """
+            }
+            post { always { deleteDir() } }
+        }
+*/
+        stage('Unit Tests, Coverage & Pylint') {
+            agent {
+                node {
+                    label 'slave'
+                    customWorkspace "workspace/${env.JOB_NAME}/${env.BUILD_NUMBER}"
+                }
+            }
+            when {
+                anyOf {
+                    branch 'XAI_NEW'
+                    //branch 'master'
+                    //branch 'PR-*'
+                }
+            }
+            steps {
+                script{
+                    def customImage = docker.build("mlf_training")
+                    customImage.inside(){
+                        sh """
+                             echo "Making Unit Test Script to Executable"
+                             chmod +x scripts/run_unit_tests.sh
 
-                            junit allowEmptyResults: true, testResults: "nosetests_result.xml"
-                            stash includes: 'nosetests_result.xml', name: 'unit_results'
-                            stash includes: 'coverage.xml', name: 'coverage_results'
-                           }
+                             echo "Executing Unit Tests"
+                             ./scripts/run_unit_tests.sh
+                       """
+                    }
+                    stash includes: 'nosetests.xml', name: 'unit_results'
+                    stash includes: 'coverage.xml', name: 'coverage_results'
+                    stash includes: 'pylint.out', name: 'pylint_results'
 
-                       publishTestResults(
-                        junit: [updateResults: true, archive: true, pattern:'nosetests_result.xml'],
-                        cobertura: [archive: true, pattern: 'coverage.xml'],
-                        allowUnstableBuilds: true
-                     )
-
-
-				// publish python results from pylint
-                checksPublishResults script: this, archive: true, tasks: true,
-                    pylint: [pattern: '**/pylint.out', thresholds: [fail: [all: '3999', low: '1999', normal: '1999', high: '1999']]],
-                    aggregation: [thresholds: [fail: [all: '3999', low: '1999', normal: '1999', high: '1999']]]
+                }
+                publishTestResults(
+                    junit: [updateResults: true, archive: true, pattern:'nosetests.xml'],
+                    cobertura: [archive: true, pattern: 'coverage.xml', onlyStableBuilds: false],
+                    allowUnstableBuilds: true
+                )
+                checksPublishResults(
+                    script: this,
+                    archive: true,
+                    tasks: true,
+                    pylint: [pattern: 'pylint.out', thresholds: [fail: [all: '3999', low: '999', normal: '999', high: '50']]],
+                    aggregation: [thresholds: [fail: [all: '3999', low: '999', normal: '999', high: '50']]]
+                )
+            }
+            post { always { deleteDir() }  }
+        }
 
                     }
-                     
+
             }
 
         stage('Central Build') {
@@ -103,7 +108,7 @@ pipeline {
 
           stage('SonarQube') {
                  agent { label 'slave' }
-                     when { branch 'skip' }
+                     when { branch 'XAI_NEW' }
                         steps {
                            lock(resource: "${env.JOB_NAME}/20") {
                               milestone 20
@@ -124,7 +129,7 @@ pipeline {
 
             stage('Vulas') {
                        agent { label 'slave' }
-                             when { branch 'skip' }
+                             when { branch 'XAI_NEW' }
                                     steps {
                                        lock(resource: "${env.JOB_NAME}/80") {
                                           milestone 30
@@ -140,32 +145,6 @@ pipeline {
                             deleteDir()
                         }
                       }
-            }
-
-            stage('Sirius Document Upload') {
-                       agent { label 'slave' }
-                            when { branch 'skip' }
-                                steps {
-                                   script{
-                                    try{
-                                        unstash 'unit_results'
-                                        sh"""
-                                            cp nosetests_result.xml test_results.html
-                                        """
-                                        siriusUploadDocument script: this,
-                                                             siriusCredentialsId: 'SiriusCredentials',
-                                                             siriusProgramName: 'ML for S/4HANA',
-                                                             siriusDeliveryName: 'Intelligent Financial Close 1908',
-                                                             siriusTaskGuid: '6CAE8B26E4CB1ED6A0C8D43FBCF8B445',
-                                                             fileName: 'test_results.html'
-                                    }catch(err){
-                                        echo """
-                                        Staged failed: Sirus upload
-                                        Caught: ${err}"""
-                                   }
-                                  }
-                            }
-               post { always { deleteDir() }  }
             }
 
             stage('Whitesource') {
@@ -185,7 +164,7 @@ pipeline {
                                         Staged failed: executeWhitesourceScan
                                         Caught: ${e}
                                         """
-                                    
+
                                 }
                             }
                         }
@@ -200,7 +179,7 @@ pipeline {
 
             stage('Checkmarx') {
                agent { label 'slave' }
-                     when { branch 'developmentskip' }
+                     when { branch 'XAI_NEW' }
                        steps {
                           lock(resource: "${env.JOB_NAME}/60") {
                             milestone 50
@@ -214,7 +193,7 @@ pipeline {
 
             stage('PPMS Whitesource Compliance') {
                       agent { label 'slave' }
-                         when { branch 'developmentskip' }
+                         when { branch 'XAI_NEW' }
                                 steps {
                                    lock(resource: "${env.JOB_NAME}/50") {
                                        milestone 60
@@ -226,38 +205,10 @@ pipeline {
                       post { always { deleteDir() } }
                 }
 
-            stage('Deploy to Integration') {
-              agent { label 'slave' }
-                   when { branch 'developmentskip' }
-                      steps {
-                          lock(resource: "${env.JOB_NAME}/30", inversePrecedence: true) {
-                              milestone 70
-                                  measureDuration(script: this, measurementName: 'deploy_test_duration') {
-                                  downloadArtifactsFromNexus script: this, fromStaging: true
 
-                                  cloudFoundryDeploy(
-                                        script: this,
-                                        deployType: 'standard',
-                                        cloudFoundry: [apiEndpoint: 'https://api.cf.sap.hana.ondemand.com', appName:'accruals-acceptance-worker', credentialsId: 'CF_Credential', manifest: 'manifest_worker_acceptance.yml', org: 'ml-ia', space: 'acceptance-accruals-service'],
-                                        deployTool: 'cf_native'
-                                    )
-
-                                  cloudFoundryDeploy(
-                                        script: this,
-                                        deployType: 'standard',
-                                        cloudFoundry: [apiEndpoint: 'https://api.cf.sap.hana.ondemand.com', appName:'accruals-acceptance-api', credentialsId: 'CF_Credential', manifest: 'manifest_api_acceptance.yml', org: 'ml-ia', space: 'acceptance-accruals-service'],
-                                        deployTool: 'cf_native'
-                                    )
-
-
-                                 }
-                            }
-                        }
-                 post { always { deleteDir() } }
-            }
             stage('Create traceability report') {
                agent { label 'slave' }
-                      when { branch 'developmentskip' }
+                      when { branch 'XAI_NEW' }
                             steps {
                                   sapCreateTraceabilityReport(
                                         deliveryMappingFile: '.pipeline/delivery.mapping',
@@ -265,47 +216,6 @@ pipeline {
                                         failOnError: false )
                             }
             }
-
-            stage('Integration tests') {
-                  agent { label 'slave' }
-                      when { branch 'developmentskip' }
-                      steps {
-                        measureDuration(script: this, measurementName: 'jmeter_duration') {
-                        executePerformanceJMeterTests(script: this,
-                        testServerUrl: "accruals-route.cfapps.sap.hana.ondemand.com",
-                        testRepository: 'https://github.wdf.sap.corp/ML-Leonardo/ML-S4FC-Accruals.git',
-                        testOptions:  "-f integration-test/pom.xml"
-                        )
-                        testsPublishResults(
-                                script: this,
-                                jmeter: [archive: true, dashboard: true],
-                                allowUnstableBuilds: true
-                            )
-                      }
-                      }
-                    post { always { deleteDir() } }
-            }
-
-            stage('perfrmance tests') {
-                  agent { label 'slave' }
-                      when { branch 'developmentskip' }
-                      steps {
-                        measureDuration(script: this, measurementName: 'jmeter_duration') {
-                        executePerformanceJMeterTests(script: this,
-                        testServerUrl: "accruals-route.cfapps.sap.hana.ondemand.com",
-                        testRepository: 'https://github.wdf.sap.corp/ML-Leonardo/ML-S4FC-Accruals.git',
-                        testOptions:  "-f performance-test/pom.xml"
-                        )
-                        testsPublishResults(
-                                script: this,
-                                jmeter: [archive: true, dashboard: true],
-                                allowUnstableBuilds: true
-                            )
-                      }
-                      }
-                    post { always { deleteDir() } }
-            }
-
 
             stage('Promote') {
                 agent { label 'slave' }
@@ -325,5 +235,5 @@ pipeline {
                  post { always { deleteDir() } }
                 }
             }
-               // Send notification mail when pipeline fails      
+               // Send notification mail when pipeline fails
          }
