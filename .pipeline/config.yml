@@ -7,15 +7,19 @@ general:
 steps:
   executeCheckmarxScan:
     checkmarxCredentialsId: 'CheckmarxUser'
-    checkmarxProject: 'SAP_ML_LEONARDO_ML_TRAINING_PIPELINE'                            
+    checkmarxProject: 'SAP_ML_LEONARDO_EXPLAINABLE_AI'
     checkmarxGroupId: '015cbae8-618e-486e-898c-e3c8db58e4b0'   
     generatePdfReport: false
     preset: '100125'
     filterPattern: '!**/tests/**/*'
   executeFortifyScan:
     fortifyCredentialsId: 'FortifyCredentials'
-    fortifyProjectName: 'ML-TRAINING-PIPELINE'         
+    fortifyProjectName: 'SAP_ML_LEONARDO_EXPLAINABLE_AI'
     fortifyProjectVersion: '1.0'        
+  executeVulasScan:
+    scanType: 'pip'
+    pip:
+      buildDescriptorFile: './setup.py'
   executeSonarScan:
     instance: 'SAP_EE_sonar'
   executeBuild:
