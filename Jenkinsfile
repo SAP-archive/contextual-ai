@@ -112,7 +112,7 @@ pipeline {
 
             stage('Vulas') {
                        agent { label 'slave' }
-                             when { branch 'XAI_NEW' }
+                             when { branch 'skip' }
                                     steps {
                                        lock(resource: "${env.JOB_NAME}/80") {
                                           milestone 30
