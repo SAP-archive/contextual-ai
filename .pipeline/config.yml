@@ -4,6 +4,8 @@ general:
   cfOrg: 'PLM'                                     
   gitSshKeyCredentialsId: 'SSH_github' 
   xMakeBuildQuality: 'Release'
+  whitesourceProductName: 'SAP_ML_LEONARDO_EXPLAINABLE_AISAP_ML_LEONARDO_EXPLAINABLE_AI'
+  whitesourceUserTokenCredentialsId: 'Whitesource_UserKey'
 steps:
   executeCheckmarxScan:
     checkmarxCredentialsId: 'CheckmarxUser'
@@ -24,6 +26,9 @@ steps:
     instance: 'SAP_EE_sonar'
   executeBuild:
     xMakeShipmentType: 'indirectshipment'
+  executeWhitesourceScan:
+    securityVulnerabilities: true
+    configFilePath: 'config_file.py'
   writeInflux:
     influxServer: 'jenkins'
     wrapInNode: true
