@@ -43,12 +43,18 @@ class Graph(ABC):
 
         self.draw_core(**kwargs)
 
-        if self.label_ax is None:
-            plt.xlabel(xlabel=self.x_label)
-            plt.ylabel(ylabel=self.y_label)
-        else:
-            self.label_ax.set_xlabel(self.x_label)
-            self.label_ax.set_ylabel(self.y_label)
+        if self.x_label is not None:
+            if self.label_ax is None:
+                plt.xlabel(xlabel=self.x_label)
+            else:
+                self.label_ax.set_xlabel(self.x_label)
+
+        if self.y_label is not None:
+            if self.label_ax is None:
+                plt.xlabel(xlabel=self.x_label)
+            else:
+                self.label_ax.set_xlabel(self.x_label)
+
         plt.tight_layout()
         n = 0
         while os.path.exists(self.file_path):

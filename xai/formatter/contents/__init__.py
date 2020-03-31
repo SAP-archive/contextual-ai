@@ -40,7 +40,8 @@ from xai.formatter.contents.evaluation import (
     BinaryClassReliabilityDiagram
 )
 from xai.formatter.contents.feature import (
-    FeatureImportance
+    FeatureImportance,
+    FeatureShapValues
 )
 from xai.formatter.contents.model import (
     ModelInterpreterByClass,

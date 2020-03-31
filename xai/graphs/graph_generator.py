@@ -11,6 +11,7 @@ import pandas as pd
 import seaborn as sns
 import xai.constants as Const
 from wordcloud import WordCloud
+import shap
 from xai.graphs.basic_graph import Graph
 from typing import List
 from collections import Counter
@@ -272,6 +273,24 @@ class FeatureImportance(Graph):
             ax.text(score_value, index, score_value, color='black', ha="left")
         plt.autoscale(enable=True, axis='both', tight=True)
         self.label_ax = ax
+
+
+class FeatureShapValues(Graph):
+    def __init__(self, figure_path, shap_values, class_id, title, train_data = None):
+        data = dict()
+        data['shap_values'] = shap_values
+        data['class_id'] = class_id
+        data['train_data'] = train_data
+        super(FeatureShapValues, self).__init__(file_path=figure_path, data=data, title=title, figure_size=(10, 10),
+                                                x_label=None,
+                                                y_label=None)
+
+    def draw_core(self, max_display=None):
+        feature_shap_values = self.data['shap_values']
+        shap_values = np.array([v for _, v in feature_shap_values]).transpose()[self.data['class_id'], ::]
+        train_data = self.data['train_data']
+        feature_names = [n for n, _ in feature_shap_values]
+        shap.summary_plot(shap_values, train_data, feature_names=feature_names, max_display=max_display, show=False)
 
 
 class WordCloudGraph(Graph):

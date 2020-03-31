@@ -15,6 +15,7 @@ import tempfile
 import warnings
 
 import shutil
+import numpy as np
 from typing import Tuple, Dict, List
 
 from xai.data.constants import DatetimeResolution
@@ -806,6 +807,38 @@ class PdfWriter(Writer):
 
         self.pdf.add_table(header=table_header, data=table_data,
                            col_width=[140, 30])
+
+    def draw_feature_shap_values(self, notes: str, *,
+                                 feature_shap_values: List[Tuple[str, List]],
+                                 class_id: int,
+                                 train_data: np.ndarray = None):
+        """
+        Add information of feature importance to the report.
+
+        Args:
+            notes(str): Explain the block
+            feature_shap_values(:list of :tuple): a list of 2-item tuple,
+                                                  item[0]: feature name, item[1] shap values on each training samples
+            class_id(int): the class id for visualization.
+            train_data(numpy.dnarray): Optional, training data, row is for samples, column is for features.
+        """
+        from xai.graphs import graph_generator
+        image_path = '%s/feature_shap_values_%s.png' % (self.figure_path, class_id)
+        image_path = graph_generator.FeatureShapValues(figure_path=image_path,
+                                                       shap_values=feature_shap_values,
+                                                       class_id=class_id,
+                                                       train_data=train_data,
+                                                       title=None).draw()
+
+        # -- Draw Content --
+        if not (notes is None):
+            self.pdf.add_new_line(notes)
+        self.pdf.add_new_line("The figure below shows an overview of which features are most important class %s,"
+                              " by plotting SHAP values of every feature for every sample." % class_id)
+        self.pdf.add_large_image(image_path)
+
+        self.pdf.ln()
+
 
     ################################################################################
     ###  Training Section
