@@ -88,8 +88,20 @@ pipeline {
           }
           */
 
+        stage('Vulas') {
+            when { branch 'XAI_NEW' }
+            steps {
+                lock(resource: "${env.JOB_NAME}/80") {
+                    milestone 80
+                    measureDuration(script: this, measurementName: 'vulas_duration') {
+                        executeVulasScan script: this, scanType: 'pip'
+                    }
+                }
+            }
+            post { always { deleteDir() } }
+        }
 
-          stage('SonarQube') {
+         stage('SonarQube') {
                  agent { label 'slave' }
                      when { branch 'XAI_NEW' }
                         steps {
