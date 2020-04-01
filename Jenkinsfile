@@ -56,7 +56,7 @@ pipeline {
                     }
 
             }
-/*
+
         stage('Central Build') {
              agent { label 'slave' }
                   when { branch 'XAI_NEW' }
@@ -86,7 +86,7 @@ pipeline {
               }
            post { always { deleteDir() } }
           }
-          */
+
 
          stage('SonarQube') {
                  agent { label 'slave' }
@@ -111,7 +111,7 @@ pipeline {
 
             stage('Vulas') {
                        agent { label 'slave' }
-                             when { branch 'skip' }
+                             when { branch 'XAI_NEW' }
                                     steps {
                                        lock(resource: "${env.JOB_NAME}/80") {
                                           milestone 30
