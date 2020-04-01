@@ -59,7 +59,7 @@ pipeline {
 
         stage('Central Build') {
              agent { label 'slave' }
-                  when { branch 'XAI_NEW' }
+                  when { branch 'XAI_NEW_skip' }
                     steps {
                        script{
                              lock(resource: "${env.JOB_NAME}/10", inversePrecedence: true) {
@@ -200,7 +200,7 @@ pipeline {
             }
             stage('Promote') {
                 agent { label 'slave' }
-                   when { branch 'XAI_NEW' }
+                   when { branch 'XAI_NEW_skip' }
                         steps {
                           script{
                             lock(resource: "${env.JOB_NAME}/90", inversePrecedence: true) {
