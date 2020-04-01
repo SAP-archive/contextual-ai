@@ -161,7 +161,7 @@ pipeline {
 
             stage('Checkmarx') {
                agent { label 'slave' }
-                     when { branch 'XAI_NEW' }
+                     when { branch 'XAI_NEW_skip' }
                        steps {
                           lock(resource: "${env.JOB_NAME}/60") {
                             milestone 50
