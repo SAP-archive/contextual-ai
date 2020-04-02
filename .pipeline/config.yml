@@ -1,11 +1,12 @@
 general:
   buildTool: 'pip'
   scanType: 'pip'
-  cfOrg: 'PLM'                                     
+  cfOrg: 'ml-foundation_sapml-ca'
   gitSshKeyCredentialsId: 'SSH_github' 
   xMakeBuildQuality: 'Release'
-  whitesourceProductName: 'SAP_ML_LEONARDO_EXPLAINABLE_AISAP_ML_LEONARDO_EXPLAINABLE_AI'
+  whitesourceProductName: 'SHC - LEO AI BUSVC XAI OD 1.0'
   whitesourceUserTokenCredentialsId: 'Whitesource_UserKey'
+  ppmsCredentialsId: 'PPMSCompliance'
 steps:
   executeCheckmarxScan:
     checkmarxCredentialsId: 'CheckmarxUser'
@@ -13,7 +14,7 @@ steps:
     checkmarxGroupId: '015cbae8-618e-486e-898c-e3c8db58e4b0'   
     generatePdfReport: false
     preset: '100125'
-    filterPattern: '!**/tests/**/*'
+    filterPattern: '!**/.pipeline/**, !**/**/**/*.html,!**/**/*.html,!**/.xmake/**, !**/cfg/**, !**/integration-test/**, !**/performance-test/**, !**/tests/**, !**/.git/**/*, !**/*git*, !**/*.cfg, !**/*.json, !**/*.yml, !**/*.txt, !**/*.md, !**/*.config, !**/*.properties, !**/vendor/**/*'
   executeFortifyScan:
     fortifyCredentialsId: 'FortifyCredentials'
     fortifyProjectName: 'SAP_ML_LEONARDO_EXPLAINABLE_AI'
@@ -22,6 +23,10 @@ steps:
     scanType: 'pip'
     pip:
       buildDescriptorFile: './setup.py'
+  executePPMSComplianceCheck:
+    ppmsCredentialsId: 'PPMSCompliance'
+    ppmsID: '73555000100200011630'
+    ppmsChangeRequestUpload: true
   executeSonarScan:
     instance: 'SAP_EE_sonar'
   executeBuild:
