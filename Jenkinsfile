@@ -187,7 +187,6 @@ pipeline {
                       post { always { deleteDir() } }
                 }
 
-                */
             stage('Create traceability report') {
                agent { label 'slave' }
                       when { branch 'XAI_NEW' }
@@ -198,6 +197,7 @@ pipeline {
                                         failOnError: false )
                             }
             }
+                */
             stage('Promote') {
                 agent { label 'slave' }
                    when { branch 'XAI_NEW' }
