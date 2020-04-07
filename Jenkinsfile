@@ -59,7 +59,7 @@ pipeline {
 
         stage('Central Build') {
              agent { label 'slave' }
-                  when { branch 'XAI_NEW_skip' }
+                  when { branch 'XAI_NEW' }
                     steps {
                        script{
                              lock(resource: "${env.JOB_NAME}/10", inversePrecedence: true) {
@@ -128,7 +128,7 @@ pipeline {
                         }
                       }
             }
-
+          /*
             stage('Whitesource') {
                 agent { label 'slave' }
                 when { branch 'XAI_NEW' }
@@ -158,10 +158,10 @@ pipeline {
                     }
                 }
             }
-
+            */
             stage('Checkmarx') {
                agent { label 'slave' }
-                     when { branch 'XAI_NEW_skip' }
+                     when { branch 'XAI_NEW' }
                        steps {
                           lock(resource: "${env.JOB_NAME}/60") {
                             milestone 50
@@ -172,7 +172,7 @@ pipeline {
             }
                 post { always { deleteDir() } }
             }
-
+              /*
             stage('PPMS Whitesource Compliance') {
                       agent { label 'slave' }
                          when { branch 'XAI_NEW' }
@@ -187,7 +187,7 @@ pipeline {
                       post { always { deleteDir() } }
                 }
 
-
+                */
             stage('Create traceability report') {
                agent { label 'slave' }
                       when { branch 'XAI_NEW' }
@@ -200,7 +200,7 @@ pipeline {
             }
             stage('Promote') {
                 agent { label 'slave' }
-                   when { branch 'XAI_NEW_skip' }
+                   when { branch 'XAI_NEW' }
                         steps {
                           script{
                             lock(resource: "${env.JOB_NAME}/90", inversePrecedence: true) {
