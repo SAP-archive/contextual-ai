@@ -158,7 +158,7 @@ pipeline {
                     }
                 }
             }
-            */
+
             stage('Checkmarx') {
                agent { label 'slave' }
                      when { branch 'XAI_NEW' }
@@ -172,7 +172,7 @@ pipeline {
             }
                 post { always { deleteDir() } }
             }
-              /*
+
             stage('PPMS Whitesource Compliance') {
                       agent { label 'slave' }
                          when { branch 'XAI_NEW' }
