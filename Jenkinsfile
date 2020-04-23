@@ -27,7 +27,7 @@ pipeline {
 */
             stage('Unit tests') {
                  agent { label 'slave' }
-                       when { branch 'XAI_NEW' }
+                       when { branch 'master' }
                         steps {
                           script{
                             sh """
@@ -90,7 +90,7 @@ pipeline {
 
          stage('SonarQube') {
                  agent { label 'slave' }
-                     when { branch 'XAI_NEW' }
+                     when { branch 'master' }
                         steps {
                            lock(resource: "${env.JOB_NAME}/20") {
                               milestone 20
@@ -111,7 +111,7 @@ pipeline {
 
             stage('Vulas') {
                        agent { label 'slave' }
-                             when { branch 'XAI_NEW' }
+                             when { branch 'master' }
                                     steps {
                                        lock(resource: "${env.JOB_NAME}/80") {
                                           milestone 30
@@ -131,7 +131,7 @@ pipeline {
           /*
             stage('Whitesource') {
                 agent { label 'slave' }
-                when { branch 'XAI_NEW' }
+                when { branch 'master' }
                 steps {
                     lock(resource: "${env.JOB_NAME}/40") {
                         milestone 40
@@ -161,7 +161,7 @@ pipeline {
 
             stage('Checkmarx') {
                agent { label 'slave' }
-                     when { branch 'XAI_NEW' }
+                     when { branch 'master' }
                        steps {
                           lock(resource: "${env.JOB_NAME}/60") {
                             milestone 50
@@ -175,7 +175,7 @@ pipeline {
 
             stage('PPMS Whitesource Compliance') {
                       agent { label 'slave' }
-                         when { branch 'XAI_NEW' }
+                         when { branch 'master' }
                                 steps {
                                    lock(resource: "${env.JOB_NAME}/50") {
                                        milestone 60
@@ -189,7 +189,7 @@ pipeline {
 
             stage('Create traceability report') {
                agent { label 'slave' }
-                      when { branch 'XAI_NEW' }
+                      when { branch 'master' }
                             steps {
                                   sapCreateTraceabilityReport(
                                         deliveryMappingFile: '.pipeline/delivery.mapping',
@@ -200,7 +200,7 @@ pipeline {
                 */
             stage('Promote') {
                 agent { label 'slave' }
-                   when { branch 'XAI_NEW' }
+                   when { branch 'master' }
                         steps {
                           script{
                             lock(resource: "${env.JOB_NAME}/90", inversePrecedence: true) {
