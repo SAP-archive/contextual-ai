@@ -56,7 +56,7 @@ class SHAPTabularExplainer(AbstractExplainer):
     def explain_instance(self,
                          instance: np.ndarray,
                          num_samples: Optional[int] = None,
-                         num_features: int = NUM_TOP_FEATURES) -> Dict[int, Dict]:
+                         num_features: int = NUM_TOP_FEATURES, **kwargs) -> Dict[int, Dict]:
         """
         Estimate the SHAP values for a sample
 

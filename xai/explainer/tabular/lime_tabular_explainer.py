@@ -123,7 +123,7 @@ class LimeTabularExplainer(AbstractExplainer):
                          num_features: Optional[int] = NUM_TOP_FEATURES,
                          labels: List = None,
                          top_labels: Optional[int] = None,
-                         distance_metric: str = 'euclidean') -> Dict[int, Dict]:
+                         distance_metric: str = 'euclidean', **kwargs) -> Dict[int, Dict]:
         """
         Explain a prediction instance using the LIME tabular explainer.
         Like with `build_explainer`, the parameters of `explain_instance` are exactly those of

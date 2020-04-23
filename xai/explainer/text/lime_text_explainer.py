@@ -75,7 +75,7 @@ class LimeTextExplainer(AbstractExplainer):
                          top_labels: Optional[int] = None,
                          num_features: Optional[int] = NUM_TOP_FEATURES,
                          num_samples: int = 5000,
-                         distance_metric: str = 'cosine') -> Dict[int, Dict]:
+                         distance_metric: str = 'cosine', **kwargs) -> Dict[int, Dict]:
         """
         Explain a prediction instance using the LIME text explainer.
         Like with `build_explainer`, the parameters of `explain_instance` are exactly those of
