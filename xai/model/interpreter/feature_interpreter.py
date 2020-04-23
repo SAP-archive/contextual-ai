@@ -263,16 +263,17 @@ class FeatureInterpreter:
             if method == 'shap':
                 return self._get_ranking_by_shap(trained_model, train_x)
 
-    def _get_ranking_by_shap(self, trained_model, train_x) -> List[Tuple[str, float]]:
+    def get_feature_shap_values(self, trained_model, train_x: numpy.ndarray) -> List[Tuple[str,List[float]]]:
         """
-        Internal function to generate feature ranking using shap value
+        Get shap values for all samples group by features
 
         Args:
             trained_model: model obj, the trained model object
             train_x: numpy.dnarray, training data
 
         Returns:
-            A list of tuple (feature name, feature importance score) in descending order
+            A list of tuple (feature name, shap values for each sample) if aggregation is False
+
         """
         enable_kernel_explainer = False
         try:
@@ -281,9 +282,9 @@ class FeatureInterpreter:
             if 'Model type not yet supported by TreeExplainer' in str(e):
                 enable_kernel_explainer = True
                 warnings.warn(
-                    message='Warning: the current model type (%s) is not supported by TreeExplainer in shap. '\
+                    message='Warning: the current model type (%s) is not supported by TreeExplainer in shap. ' \
                             'Will call KernelExplainer and may take longer to generate the feature importance.' % type(
-                        trained_model))
+                            trained_model))
             else:
                 raise e
         if enable_kernel_explainer:
@@ -296,8 +297,24 @@ class FeatureInterpreter:
                 explainer = shap.KernelExplainer(model=trained_model.predict_proba, data=train_x)
 
         shap_values = explainer.shap_values(train_x)
-        sum_importance = numpy.zeros(len(self._feature_names))
 
+        feature_values = list(zip(self._feature_names, numpy.array(shap_values).transpose().tolist()))
+        return feature_values
+
+    def _get_ranking_by_shap(self, trained_model, train_x) -> List[Tuple[str, float]]:
+        """
+        Internal function to generate feature ranking using shap value
+
+        Args:
+            trained_model: model obj, the trained model object
+            train_x: numpy.dnarray, training data
+
+        Returns:
+            A list of tuple (feature name, feature importance score) in descending order
+        """
+        feature_values = self.get_feature_shap_values(trained_model=trained_model,train_x=train_x)
+        sum_importance = numpy.zeros(len(self._feature_names))
+        shap_values = numpy.array([v for _,v in feature_values]).transpose()
         for ind in range(len(shap_values)):
             global_shap_values = numpy.abs(shap_values[ind]).mean(axis=0)
             sum_importance += global_shap_values

@@ -150,6 +150,13 @@ class NotebookPlots:
         plt.show()
 
     @classmethod
+    def plot_feature_shap_values(cls, feature_shap_values, class_id, X_train = None):
+        feature_name = [n for n, _ in feature_shap_values]
+        shap_values = np.array([v for _, v in feature_shap_values]).transpose()
+        import shap
+        shap.summary_plot(shap_values[class_id, ::], X_train, feature_names=feature_name)
+
+    @classmethod
     def plot_labelled_text_stats(cls, labelled_stats, all_stats):
         import operator
         labelled_stats_table = []

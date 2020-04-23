@@ -103,14 +103,25 @@ class FeatureImportanceRanking(Dict2Obj):
         train_data = None
         if data_var is not None:
             train_data = self.load_data(data_var, header=header)
-            if  header:
+            if header:
                 feature_names = train_data.columns
 
-        # -- Get Feature Importance --
         fi = FeatureInterpreter(feature_names=feature_names)
+
+        # -- Get Feature Importance --
         rank = fi.get_feature_importance_ranking(trained_model=model,
                                                  train_x=train_data,
                                                  method=method)
         # -- Add Feature Importance --
         report.detail.add_feature_importance(
             importance_ranking=rank, importance_threshold=threshold)
+
+        # -- Get Feature Importance --
+        shap_values = fi.get_feature_shap_values(trained_model=model,
+                                                 train_x=train_data.values)
+        num_class = len(shap_values[0][1][0])
+        # -- Add Feature Importance --
+        for class_id in range(num_class):
+            report.detail.add_feature_shap_values(feature_shap_values=shap_values,
+                                                  class_id=class_id,
+                                                  train_data=train_data.values)

@@ -12,6 +12,7 @@ from __future__ import print_function
 from abc import ABC, abstractmethod
 
 from typing import Tuple, Dict, List
+import numpy
 
 from xai.data import explorer
 from xai.formatter.report.section import OverviewSection, DetailSection
@@ -377,6 +378,26 @@ class Writer(ABC):
             importance_threshold(float): threshold for displaying the feature
                                         name and score in tables
             maximum_number_feature(int): maximum number of features shown in bar-chart diagram
+        """
+        pass
+
+    ################################################################################
+    ###  Feature Shap Values
+    ################################################################################
+    @abstractmethod
+    def draw_feature_shap_values(self, notes: str, *,
+                                 feature_shap_values: List[Tuple[str, List]],
+                                 class_id: int,
+                                 train_data: numpy.ndarray = None):
+        """
+        Add information of feature shap values to the report.
+
+        Args:
+            notes(str): Explain the block
+            feature_shap_values(:list of :tuple): a list of 2-item tuple,
+                                        item[0]: feature name, item[1] shap values on each training samples
+            class_id(int): the class id for visualization.
+            train_data(numpy.dnarray): Optional, training data, row is for samples, column is for features.
         """
         pass
 

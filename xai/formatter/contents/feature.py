@@ -9,7 +9,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from typing import List
+from typing import List, Tuple
+import numpy
 
 from xai.formatter.contents.base import Content
 from xai.formatter.writer.base import Writer
@@ -76,3 +77,69 @@ class FeatureImportance(Content):
                                        importance_ranking=self.importance_ranking,
                                        importance_threshold=self.importance_threshold,
                                        maximum_number_feature=self.maximum_number_feature)
+
+
+################################################################################
+###  Feature Shap Values Content
+################################################################################
+class FeatureShapValues(Content):
+    """
+    Feature Importance
+    """
+
+    def __init__(self,
+                 feature_shap_values: List[Tuple[str, List]],
+                 class_id: int,
+                 train_data: numpy.ndarray,
+                 notes=None) -> None:
+        """
+        Add information of feature shap values to the report.
+
+        Args:
+            feature_shap_values(:list of :tuple): a list of 2-item tuple,
+                                                  item[0]: feature name, item[1] shap values on each training samples
+            class_id(int): the class id for visualization.
+            train_data(numpy.dnarray): Optional, training data, row is for samples, column is for features.
+            notes(str): text to explain the block
+        """
+        super(FeatureShapValues, self).__init__(feature_shap_values,
+                                                class_id,
+                                                train_data,
+                                                notes)
+        self._feature_shap_values = feature_shap_values
+        self._class_id = class_id
+        self._train_data = train_data
+        self._notes = notes
+
+    @property
+    def feature_shap_values(self):
+        """Returns feature shap values."""
+        return self._feature_shap_values
+
+    @property
+    def class_id(self):
+        """Returns class id."""
+        return self._class_id
+
+    @property
+    def train_data(self):
+        """Returns train_data."""
+        return self._train_data
+
+    @property
+    def notes(self):
+        """Returns feature importance info."""
+        return self._notes
+
+    def draw(self, writer: Writer):
+        """
+        Draw Feature Importance
+
+        Args:
+            writer (Writer): Report Writer
+        """
+        writer.draw_feature_shap_values(notes=self.notes,
+                                        feature_shap_values=self.feature_shap_values,
+                                        class_id=self.class_id,
+                                        train_data=self.train_data)
+

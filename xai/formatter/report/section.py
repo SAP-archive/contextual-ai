@@ -9,6 +9,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import numpy
 from typing import Tuple, Dict, List
 
 from xai.data import explorer
@@ -420,6 +421,24 @@ class Section:
             importance_ranking=importance_ranking,
             importance_threshold=importance_threshold,
             maximum_number_feature=maximum_number_feature, notes=notes))
+
+    def add_feature_shap_values(self, feature_shap_values: List[Tuple[str,List]], class_id: int,
+                               train_data: numpy.ndarray, notes=None):
+        """
+        add information of feature importance to the report.
+
+        Args:
+            feature_shap_values(:list of :tuple): a list of 2-item tuple,
+                                                  item[0]: feature name, item[1] shap values on each training samples
+            class_id(int): the class id for visualization.
+            train_data(numpy.dnarray): Optional, training data, row is for samples, column is for features.
+            notes(str): text to explain the block
+        """
+        from xai.formatter.contents import FeatureShapValues
+        self.contents.append(FeatureShapValues(feature_shap_values=feature_shap_values,
+                                               class_id=class_id,
+                                               train_data=train_data,
+                                               notes=notes))
 
     ################################################################################
     ###  Content Training Section
