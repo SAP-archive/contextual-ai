@@ -289,7 +289,9 @@ class FeatureInterpreter:
         if enable_kernel_explainer:
             predict_call = getattr(trained_model, "predict_proba", None)
             if predict_call is None or not callable(predict_call):
-                raise Exception('Fail to initialize explainer as model does not have the function call <predict_proba>')
+                if not callable(getattr(trained_model, 'predict', None)):
+                    raise Exception('Fail to initialize explainer as model does not have the function call <predict_proba> and <predict>')
+                explainer = shap.KernelExplainer(model=trained_model.predict, data=train_x)
             else:
                 explainer = shap.KernelExplainer(model=trained_model.predict_proba, data=train_x)
 

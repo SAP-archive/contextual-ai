@@ -26,7 +26,8 @@ class SHAPTabularExplainer(AbstractExplainer):
     def build_explainer(self,
                         training_data: Any,
                         predict_fn: Callable,
-                        feature_names: List[str] = None):
+                        feature_names: List[str] = None,
+                        **kwargs):
         """
         Builds the SHAP kernel explainer
         See https://shap.readthedocs.io/en/latest/#shap.KernelExplainer for additional details
@@ -55,7 +56,7 @@ class SHAPTabularExplainer(AbstractExplainer):
     def explain_instance(self,
                          instance: np.ndarray,
                          num_samples: Optional[int] = None,
-                         num_features: int = NUM_TOP_FEATURES) -> Dict[int, Dict]:
+                         num_features: int = NUM_TOP_FEATURES, **kwargs) -> Dict[int, Dict]:
         """
         Estimate the SHAP values for a sample
 
