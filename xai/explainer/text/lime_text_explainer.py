@@ -30,7 +30,8 @@ class LimeTextExplainer(AbstractExplainer):
                         class_names: Optional[List[str]] = None,
                         feature_selection: str = 'auto',
                         split_expression: str = '\W+',
-                        bow: bool = True):
+                        bow: bool = True,
+                        **kwargs):
         """
         Build the LIME text explainer
         For now, the parameters used to instantiate this class are exactly those of

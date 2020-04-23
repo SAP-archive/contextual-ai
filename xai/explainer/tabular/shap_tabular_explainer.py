@@ -26,7 +26,8 @@ class SHAPTabularExplainer(AbstractExplainer):
     def build_explainer(self,
                         training_data: Any,
                         predict_fn: Callable,
-                        feature_names: List[str] = None):
+                        feature_names: List[str] = None,
+                        **kwargs):
         """
         Builds the SHAP kernel explainer
         See https://shap.readthedocs.io/en/latest/#shap.KernelExplainer for additional details

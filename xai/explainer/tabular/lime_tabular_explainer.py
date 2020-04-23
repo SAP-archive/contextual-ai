@@ -43,7 +43,8 @@ class LimeTabularExplainer(AbstractExplainer):
                         discretize_continuous: bool = True,
                         discretizer: str = 'quartile',
                         sample_around_instance: bool = False,
-                        random_state: Optional[int] = None):
+                        random_state: Optional[int] = None,
+                        **kwargs):
         """
         Build the LIME tabular explainer.
         For now, the parameters used to instantiate this class are exactly those of
