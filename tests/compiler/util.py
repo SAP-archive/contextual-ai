@@ -39,6 +39,12 @@ def read_yaml_source(filepath: str):
         data = yaml.load(file, Loader=yaml.SafeLoader)
     return data
 
+def prepare_input_path(working_path: str):
+    """ Prepare input path """
+    path = os.path.dirname(__file__)
+    input_path = os.path.join(path, working_path)
+    return input_path
+
 def prepare_output_path(working_path: str):
     """ Prepare output path """
     path = os.path.dirname(__file__)

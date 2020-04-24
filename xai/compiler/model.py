@@ -139,13 +139,19 @@ class ModelInterpreter(Dict2Obj):
             "error_analysis_top_value": {"type": "number", "default": 15},
             "enable_error_analysis": {"type": "boolean", "default": False}
         },
-        "required": ["domain", "train_data", "labels", "predict_func",
+        "required": ["domain", "train_data", "predict_func",
                      "feature_names", "target_names"],
+        "if": {
+            "properties": {
+                "mode": {"const": "classification"}
+            },
+            "required": ["num_of_class", "labels"]
+        },
         "if": {
             "properties": {
                 "enable_error_analysis": {"const": True}
             },
-            "required": ["num_of_class", "valid_x", "valid_y"]
+            "required": ["valid_x", "valid_y"]
         }
     }
 
@@ -176,16 +182,17 @@ class ModelInterpreter(Dict2Obj):
         # -- Load Training Data --
         data_var = self.assert_attr(key='train_data')
         train_data = None
-        if not (data_var is None):
+        if data_var is not None:
             train_data = self.load_data(data_var, header=True)
         if isinstance(train_data, DataFrame):
             train_data = train_data.values
         # -- Load Labels --
-        labels_var = self.assert_attr(key='labels')
         labels = None
-        if labels_var is not None and isinstance(labels_var, str):
-            with open(labels_var, 'r') as f:
-                labels = json.load(f)
+        if mode == MODE.CLASSIFICATION:
+            labels_var = self.assert_attr(key='labels')
+            if labels_var is not None and isinstance(labels_var, str):
+                with open(labels_var, 'r') as f:
+                    labels = json.load(f)
         # -- Load Predict Function --
         predict_fn_var = self.assert_attr(key='predict_func')
         predict_fn = self.load_data(predict_fn_var)
@@ -205,10 +212,12 @@ class ModelInterpreter(Dict2Obj):
         top = self.assert_attr(key="model_interpret_top_value", default=15)
 
         # -- Error Analysis --
+        classes = 0
         en_flag = self.assert_attr(key="enable_error_analysis", default=False)
         if en_flag:
             # -- Check Number of Class --
-            classes = self.assert_attr(key="num_of_class")
+            if mode == MODE.CLASSIFICATION:
+                classes = self.assert_attr(key="num_of_class")
             # -- Load Validation Data --
             valid_x_var = self.assert_attr(key='valid_x', optional=True)
             valid_x = None
@@ -245,18 +254,19 @@ class ModelInterpreter(Dict2Obj):
         class_stats, total_count = mi.interpret_model(samples=train_data,
                                                       stats_type=stats_type,
                                                       k=k_value)
-        # -- Add Feature Importance for class --
-        report.detail.add_model_interpreter_by_class(class_stats=class_stats,
-                                                     total_count=total_count,
-                                                     stats_type=stats_type,
-                                                     k=k_value, top=top)
+        # -- Add Model Interpreter  --
+        report.detail.add_model_interpreter(mode=mode, class_stats=class_stats,
+                                            total_count=total_count,
+                                            stats_type=stats_type,
+                                            k=k_value, top=top)
+
         if en_flag:
             # -- Error Analysis with validation data --
             error_stats = mi.error_analysis(class_num=classes, valid_x=valid_x,
                                             valid_y=valid_y,
                                             stats_type=ea_stats_type,
                                             k=ea_k_value)
-            # -- Add Error Analysis for class --
-            report.detail.add_error_analysis_by_class(error_stats=error_stats,
-                                                      stats_type=ea_stats_type,
-                                                      k=ea_k_value, top=ea_top)
+            # -- Add Error Analysis --
+            report.detail.add_error_analysis(mode=mode, error_stats=error_stats,
+                                             stats_type=ea_stats_type,
+                                             k=ea_k_value, top=ea_top)
