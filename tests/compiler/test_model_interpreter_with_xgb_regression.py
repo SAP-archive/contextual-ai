@@ -40,7 +40,7 @@ class TestModelInterpreter(unittest.TestCase):
     def setUp(self) -> None:
         warnings.simplefilter("ignore", ResourceWarning)
         """ Specify Config Files """
-        self.json = prepare_template(filename='model-interpreter-rf-regression2.json')
+        self.json = prepare_template(filename='model-interpreter-xgb-regression.json')
         json_obj = read_json_source(self.json)
         self.json_report_name = json_obj["name"]
         json_writers = json_obj["writers"]
