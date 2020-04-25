@@ -16,6 +16,7 @@ import warnings
 
 import shutil
 from typing import Tuple, Dict, List
+import numpy as np
 
 from xai.data.explorer import (
     CategoricalStats,
@@ -798,6 +799,40 @@ class HtmlWriter(Writer):
             data.append([feature_name, round(importance, 10)])
         self.html.article[-1].items.append(
             self.html.add_table(header=header, data=data))
+
+    def draw_feature_shap_values(self, notes: str, *,
+                                 feature_shap_values: List[Tuple[str, List]],
+                                 class_id: int,
+                                 train_data: np.ndarray = None):
+        """
+        Add information of feature importance to the report.
+
+        Args:
+            notes(str): Explain the block
+            feature_shap_values(:list of :tuple): a list of 2-item tuple,
+                                                  item[0]: feature name, item[1] shap values on each training samples
+            class_id(int): the class id for visualization.
+            train_data(numpy.dnarray): Optional, training data, row is for samples, column is for features.
+        """
+        from xai.graphs import graph_generator
+        image_path = '%s/feature_shap_values_%s.png' % (self.figure_path, class_id)
+        image_path = graph_generator.FeatureShapValues(figure_path=image_path,
+                                                       shap_values=feature_shap_values,
+                                                       class_id=class_id,
+                                                       train_data=train_data,
+                                                       title=None).draw()
+
+        # -- Draw Content --
+        if not (notes is None):
+            self.html.article[-1].items.append(
+                self.html.add_paragraph(text=notes))
+
+        self.html.article[-1].items.append(self.html.add_paragraph(
+            text="The figure below shows an overview of which features are most important class %s,"
+                 " by plotting SHAP values of every feature for every sample." % class_id))
+        self.html.article[-1].items.append(
+            self.html.add_image(src=image_path, alt='feature_shap'))
+
 
     ################################################################################
     ###  Training Section

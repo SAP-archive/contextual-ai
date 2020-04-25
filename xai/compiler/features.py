@@ -9,6 +9,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from pandas import DataFrame
 from xai.compiler.base import Dict2Obj
 from xai.formatter import Report
 from xai.model.interpreter import FeatureInterpreter
@@ -105,6 +106,8 @@ class FeatureImportanceRanking(Dict2Obj):
             train_data = self.load_data(data_var, header=header)
             if header:
                 feature_names = train_data.columns
+        if isinstance(train_data, DataFrame):
+            train_data = train_data.values
 
         fi = FeatureInterpreter(feature_names=feature_names)
 
@@ -118,10 +121,10 @@ class FeatureImportanceRanking(Dict2Obj):
 
         # -- Get Feature Importance --
         shap_values = fi.get_feature_shap_values(trained_model=model,
-                                                 train_x=train_data.values)
+                                                 train_x=train_data)
         num_class = len(shap_values[0][1][0])
         # -- Add Feature Importance --
         for class_id in range(num_class):
             report.detail.add_feature_shap_values(feature_shap_values=shap_values,
                                                   class_id=class_id,
-                                                  train_data=train_data.values)
+                                                  train_data=train_data)
