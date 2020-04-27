@@ -11,10 +11,10 @@ from __future__ import print_function
 
 from pandas import DataFrame
 
+from xai import ALG
 from xai.compiler.base import Dict2Obj
 from xai.formatter import Report
 from xai.model.interpreter import FeatureInterpreter
-from xai import ALG
 
 
 ################################################################################
@@ -42,6 +42,7 @@ class FeatureImportanceRanking(Dict2Obj):
             "module": "compiler",
             "class": "FeatureImportanceRanking",
             "attr": {
+                "mode": "classification",
                 "trained_model": "./sample_input/model.pkl",
                 "train_data": "./sample_input/train.csv",
                 "feature_names": "./sample_input/feature_name.csv",
@@ -53,6 +54,7 @@ class FeatureImportanceRanking(Dict2Obj):
     schema = {
         "type": "object",
         "properties": {
+            "mode": {"type": "string"},
             "trained_model": {"type": ["string", "object"]},
             "train_data": {" type": ["string", "object"]},
             "feature_names": {"type": ["string", "object"]},
@@ -88,6 +90,7 @@ class FeatureImportanceRanking(Dict2Obj):
         """
         super(FeatureImportanceRanking, self).__call__(report=report,
                                                        level=level)
+        mode = self.assert_attr(key='mode', default='classification')
         threshold = self.assert_attr(key='threshold', default=0.005)
         method = self.assert_attr(key='method', default='default')
         # -- Load Model --
@@ -102,7 +105,7 @@ class FeatureImportanceRanking(Dict2Obj):
             header = False
         # -- Load Training Data for default method --
         data_var = self.assert_attr(key='train_data',
-                                    optional=(method=='default'))
+                                    optional=(method == 'default'))
         train_data = None
         if data_var is not None:
             train_data = self.load_data(data_var, header=header)
@@ -125,6 +128,9 @@ class FeatureImportanceRanking(Dict2Obj):
             # -- Get Feature Shap Values --
             shap_values = fi.get_feature_shap_values(trained_model=model,
                                                      train_x=train_data)
+            if mode == 'regression':
+                shap_values = [(feature_name, [[x] for x in feature_value]) for feature_name, feature_value in
+                               shap_values]
 
             num_class = len(shap_values[0][1][0])
             # -- Add Feature Importance --

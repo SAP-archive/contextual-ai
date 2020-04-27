@@ -14,6 +14,7 @@
             "_comment": "refer to document section xxxx",
             "class": "FeatureImportanceRanking",
             "attr": {
+              "mode": "regression",
               "trained_model": "var:clf",
               "train_data": "var:train_X_df",
               "feature_names": "var:feature_names",
