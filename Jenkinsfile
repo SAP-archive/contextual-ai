@@ -7,7 +7,6 @@ pipeline {
         booleanParam(defaultValue: false, description: '\'true\' will create a release artifact on Nexus', name: 'PROMOTE')
     }
     stages{
-    /*
         stage('Pull-request voting') {
             when { branch "PR-*" }
             steps {
@@ -17,14 +16,15 @@ pipeline {
                     setupPipelineEnvironment script: this
                     measureDuration(script: this, measurementName: 'voter_duration') {
                         sh """
-                             echo "add simple tests that should run as part of PR check, e.g. unit tests"
+                                echo "add unit tests"
+                                chmod +x scripts/run_unit_tests.sh
+                                ./scripts/run_unit_tests.sh
                            """
                     }
                 }
             }
             post { always { deleteDir() } }
         }
-*/
             stage('Unit tests') {
                  agent { label 'slave' }
                        when {
