@@ -7,7 +7,6 @@ pipeline {
         booleanParam(defaultValue: false, description: '\'true\' will create a release artifact on Nexus', name: 'PROMOTE')
     }
     stages{
-    /*
         stage('Pull-request voting') {
             when { branch "PR-*" }
             steps {
@@ -17,17 +16,23 @@ pipeline {
                     setupPipelineEnvironment script: this
                     measureDuration(script: this, measurementName: 'voter_duration') {
                         sh """
-                             echo "add simple tests that should run as part of PR check, e.g. unit tests"
+                                echo "add unit tests"
+                                chmod +x scripts/run_unit_tests.sh
+                                ./scripts/run_unit_tests.sh
                            """
                     }
                 }
             }
             post { always { deleteDir() } }
         }
-*/
             stage('Unit tests') {
                  agent { label 'slave' }
-                       when { branch 'master' }
+                       when {
+                         anyOf {
+                         branch 'master'
+                         branch 'PR-*'
+                         }
+                       }
                         steps {
                           script{
                             sh """
@@ -59,7 +64,12 @@ pipeline {
 
         stage('Central Build') {
              agent { label 'slave' }
-                  when { branch 'XAI_NEW_skip' }
+                       when {
+                         anyOf {
+                         branch 'master'
+                         branch 'PR-*'
+                         }
+                       }
                     steps {
                        script{
                              lock(resource: "${env.JOB_NAME}/10", inversePrecedence: true) {
@@ -90,7 +100,12 @@ pipeline {
 
          stage('SonarQube') {
                  agent { label 'slave' }
-                     when { branch 'master' }
+                       when {
+                         anyOf {
+                         branch 'master'
+                         branch 'PR-*'
+                         }
+                       }
                         steps {
                            lock(resource: "${env.JOB_NAME}/20") {
                               milestone 20
@@ -111,7 +126,12 @@ pipeline {
 
             stage('Vulas') {
                        agent { label 'slave' }
-                             when { branch 'master' }
+                       when {
+                         anyOf {
+                         branch 'master'
+                         branch 'PR-*'
+                         }
+                       }
                                     steps {
                                        lock(resource: "${env.JOB_NAME}/80") {
                                           milestone 30
@@ -131,7 +151,12 @@ pipeline {
           /*
             stage('Whitesource') {
                 agent { label 'slave' }
-                when { branch 'master' }
+                       when {
+                         anyOf {
+                         branch 'master'
+                         branch 'PR-*'
+                         }
+                       }
                 steps {
                     lock(resource: "${env.JOB_NAME}/40") {
                         milestone 40
@@ -161,7 +186,12 @@ pipeline {
 
             stage('Checkmarx') {
                agent { label 'slave' }
-                     when { branch 'master' }
+                       when {
+                         anyOf {
+                         branch 'master'
+                         branch 'PR-*'
+                         }
+                       }
                        steps {
                           lock(resource: "${env.JOB_NAME}/60") {
                             milestone 50
@@ -175,7 +205,12 @@ pipeline {
 
             stage('PPMS Whitesource Compliance') {
                       agent { label 'slave' }
-                         when { branch 'master' }
+                       when {
+                         anyOf {
+                         branch 'master'
+                         branch 'PR-*'
+                         }
+                       }
                                 steps {
                                    lock(resource: "${env.JOB_NAME}/50") {
                                        milestone 60
@@ -189,7 +224,12 @@ pipeline {
 
             stage('Create traceability report') {
                agent { label 'slave' }
-                      when { branch 'master' }
+                       when {
+                         anyOf {
+                         branch 'master'
+                         branch 'PR-*'
+                         }
+                       }
                             steps {
                                   sapCreateTraceabilityReport(
                                         deliveryMappingFile: '.pipeline/delivery.mapping',
@@ -200,7 +240,11 @@ pipeline {
                 */
             stage('Promote') {
                 agent { label 'slave' }
-                   when { branch 'master' }
+                       when {
+                         anyOf {
+                         branch 'master'
+                         }
+                       }
                         steps {
                           script{
                             lock(resource: "${env.JOB_NAME}/90", inversePrecedence: true) {
