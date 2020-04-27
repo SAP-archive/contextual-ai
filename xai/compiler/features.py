@@ -11,7 +11,10 @@ from __future__ import print_function
 
 from pandas import DataFrame
 
-from xai import ALG
+from xai import (
+    ALG,
+    MODE
+)
 from xai.compiler.base import Dict2Obj
 from xai.formatter import Report
 from xai.model.interpreter import FeatureInterpreter
@@ -128,13 +131,14 @@ class FeatureImportanceRanking(Dict2Obj):
             # -- Get Feature Shap Values --
             shap_values = fi.get_feature_shap_values(trained_model=model,
                                                      train_x=train_data)
-            if mode == 'regression':
+            if mode == MODE.REGRESSION:
                 shap_values = [(feature_name, [[x] for x in feature_value]) for feature_name, feature_value in
                                shap_values]
 
             num_class = len(shap_values[0][1][0])
             # -- Add Feature Importance --
             for class_id in range(num_class):
-                report.detail.add_feature_shap_values(feature_shap_values=shap_values,
+                report.detail.add_feature_shap_values(mode=mode,
+                                                      feature_shap_values=shap_values,
                                                       class_id=class_id,
                                                       train_data=train_data)

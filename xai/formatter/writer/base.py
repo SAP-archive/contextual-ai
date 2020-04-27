@@ -385,7 +385,7 @@ class Writer(ABC):
     ###  Feature Shap Values
     ################################################################################
     @abstractmethod
-    def draw_feature_shap_values(self, notes: str, *,
+    def draw_feature_shap_values(self, notes: str, *, mode: str,
                                  feature_shap_values: List[Tuple[str, List]],
                                  class_id: int,
                                  train_data: numpy.ndarray = None):
@@ -394,6 +394,7 @@ class Writer(ABC):
 
         Args:
             notes(str): Explain the block
+            mode (str): Model Model - classification/regression model
             feature_shap_values(:list of :tuple): a list of 2-item tuple,
                                         item[0]: feature name, item[1] shap values on each training samples
             class_id(int): the class id for visualization.
@@ -462,13 +463,15 @@ class Writer(ABC):
     ###  Interpreter Section
     ################################################################################
     @abstractmethod
-    def draw_model_interpreter_for_classification(self, notes: str, *, class_stats: dict,
-                                                  total_count: int, stats_type: str,
-                                                  k:int, top: int=15):
+    def draw_model_interpreter(self, notes: str, *,
+                               mode: str, class_stats: dict,
+                               total_count: int, stats_type: str,
+                               k:int, top: int=15):
         """
         Add model interpreter for classification
 
         Args:
+            mode (str): Model Model - classification/regression model
             class_stats (dict): A dictionary maps the label to its aggregated statistics
             total_count (int): The total number of explanations to generate the statistics
             stats_type (str): The defined stats_type for statistical analysis
@@ -478,30 +481,15 @@ class Writer(ABC):
         """
         pass
 
-    @abstractmethod
-    def draw_model_interpreter_for_regression(self, notes: str, *, class_stats: dict,
-                                              total_count: int, stats_type: str,
-                                              k:int, top: int=15):
-        """
-        Add model interpreter for regression
-
-        Args:
-            class_stats (dict): A dictionary maps the label to its aggregated statistics
-            total_count (int): The total number of explanations to generate the statistics
-            stats_type (str): The defined stats_type for statistical analysis
-            k (int): The k value of the defined stats_type
-            top (int): the number of top explanation to display
-            notes(str): text to explain the block
-        """
-        pass
 
     @abstractmethod
-    def draw_error_analysis_for_classification(self, notes: str, *, error_stats: dict,
-                                               stats_type: str, k: int, top: int=15):
+    def draw_error_analysis(self, notes: str, *, mode: str, error_stats: dict,
+                            stats_type: str, k: int, top: int=15):
         """
         Add error analysis for classification
 
         Args:
+            mode (str): Model Model - classification/regression model
             error_stats (dict): A dictionary maps the label to its aggregated statistics
             stats_type (str): The defined stats_type for statistical analysis
             k (int): The k value of the defined stats_type

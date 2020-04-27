@@ -47,7 +47,7 @@ class TestModelInterpreter(unittest.TestCase):
         for writer in json_writers:
             if writer["class"] == "Pdf":
                 self.json_writer_pdf_name = writer["attr"]["name"]
-        self.json_writer_pdf_page_number = 4
+        self.json_writer_pdf_page_number = 3
 
         self.out_path = prepare_output_path(working_path='sample_output')
 

@@ -87,7 +87,7 @@ class FeatureShapValues(Content):
     Feature Importance
     """
 
-    def __init__(self,
+    def __init__(self, mode: str,
                  feature_shap_values: List[Tuple[str, List]],
                  class_id: int,
                  train_data: numpy.ndarray,
@@ -96,20 +96,27 @@ class FeatureShapValues(Content):
         Add information of feature shap values to the report.
 
         Args:
+            mode (str): Model Model - classification/regression model
             feature_shap_values(:list of :tuple): a list of 2-item tuple,
                                                   item[0]: feature name, item[1] shap values on each training samples
             class_id(int): the class id for visualization.
             train_data(numpy.dnarray): Optional, training data, row is for samples, column is for features.
             notes(str): text to explain the block
         """
-        super(FeatureShapValues, self).__init__(feature_shap_values,
+        super(FeatureShapValues, self).__init__(mode, feature_shap_values,
                                                 class_id,
                                                 train_data,
                                                 notes)
+        self._mode = mode
         self._feature_shap_values = feature_shap_values
         self._class_id = class_id
         self._train_data = train_data
         self._notes = notes
+
+    @property
+    def mode(self):
+        """Returns Mode."""
+        return self._mode
 
     @property
     def feature_shap_values(self):
@@ -138,8 +145,7 @@ class FeatureShapValues(Content):
         Args:
             writer (Writer): Report Writer
         """
-        writer.draw_feature_shap_values(notes=self.notes,
+        writer.draw_feature_shap_values(notes=self.notes, mode=self.mode,
                                         feature_shap_values=self.feature_shap_values,
                                         class_id=self.class_id,
                                         train_data=self.train_data)
-

@@ -16,7 +16,12 @@ import warnings
 
 import shutil
 from typing import Tuple, Dict, List
-import numpy as np
+import numpy
+
+
+from xai import (
+ MODE
+)
 
 from xai.data.explorer import (
     CategoricalStats,
@@ -800,17 +805,18 @@ class HtmlWriter(Writer):
         self.html.article[-1].items.append(
             self.html.add_table(header=header, data=data))
 
-    def draw_feature_shap_values(self, notes: str, *,
+    def draw_feature_shap_values(self, notes: str, *, mode: str,
                                  feature_shap_values: List[Tuple[str, List]],
                                  class_id: int,
-                                 train_data: np.ndarray = None):
+                                 train_data: numpy.ndarray = None):
         """
-        Add information of feature importance to the report.
+        Add information of feature shap values to the report.
 
         Args:
             notes(str): Explain the block
+            mode (str): Model Model - classification/regression model
             feature_shap_values(:list of :tuple): a list of 2-item tuple,
-                                                  item[0]: feature name, item[1] shap values on each training samples
+                                        item[0]: feature name, item[1] shap values on each training samples
             class_id(int): the class id for visualization.
             train_data(numpy.dnarray): Optional, training data, row is for samples, column is for features.
         """
@@ -827,9 +833,14 @@ class HtmlWriter(Writer):
             self.html.article[-1].items.append(
                 self.html.add_paragraph(text=notes))
 
-        self.html.article[-1].items.append(self.html.add_paragraph(
-            text="The figure below shows an overview of which features are most important class %s,"
-                 " by plotting SHAP values of every feature for every sample." % class_id))
+        if mode == MODE.CLASSIFICATION:
+            self.html.article[-1].items.append(self.html.add_paragraph(
+                text="The figure below shows an overview of which features are most important class %s,"
+                     " by plotting SHAP values of every feature for every sample." % class_id))
+        else:
+            self.html.article[-1].items.append(self.html.add_paragraph(
+                text="The figure below shows an overview of which features are most important in regression model,"
+                     " by plotting SHAP values of every feature for every sample."))
         self.html.article[-1].items.append(
             self.html.add_image(src=image_path, alt='feature_shap'))
 
@@ -1037,13 +1048,15 @@ class HtmlWriter(Writer):
     ################################################################################
     ###  Interpreter Section
     ################################################################################
-    def draw_model_interpreter_for_classification(self, notes: str, *, class_stats: dict,
-                                                  total_count: int, stats_type: str,
-                                                  k:int, top: int=15):
+    def draw_model_interpreter(self, notes: str, *,
+                               mode: str, class_stats: dict,
+                               total_count: int, stats_type: str,
+                               k:int, top: int=15):
         """
         Add model interpreter for classification
 
         Args:
+            mode (str): Model Model - classification/regression model
             class_stats (dict): A dictionary maps the label to its aggregated statistics
             total_count (int): The total number of explanations to generate the statistics
             stats_type (str): The defined stats_type for statistical analysis
@@ -1059,7 +1072,10 @@ class HtmlWriter(Writer):
             self.html.add_paragraph(
                 text="Statistical type: %s with K value: %d" % (stats_type, k)))
         for _class, _explanation_ranking in class_stats.items():
-            title = 'Interpretation for Class %s' % _class
+            if mode == MODE.CLASSIFICATION:
+                title = 'Interpretation for Class %s' % _class
+            else:
+                title = 'Interpretation for Regression'
             self.html.article[-1].items.append(
                 self.html.add_paragraph(text=title, style='BI'))
             image_path = '%s/model_interpreter_%s.png' % (self.figure_path, _class)
@@ -1071,46 +1087,13 @@ class HtmlWriter(Writer):
             self.html.article[-1].items.append(
                 self.html.add_image(src=image_path, alt=title))
 
-    def draw_model_interpreter_for_regression(self, notes: str, *, class_stats: dict,
-                                              total_count: int, stats_type: str,
-                                              k:int, top: int=15):
-        """
-        Add model interpreter for regression
-
-        Args:
-            class_stats (dict): A dictionary maps the label to its aggregated statistics
-            total_count (int): The total number of explanations to generate the statistics
-            stats_type (str): The defined stats_type for statistical analysis
-            k (int): The k value of the defined stats_type
-            top (int): the number of top explanation to display
-            notes(str): text to explain the block
-        """
-        from xai.graphs import graph_generator
-
-        self.html.article[-1].items.append(
-            self.html.add_paragraph(text=notes))
-        self.html.article[-1].items.append(
-            self.html.add_paragraph(
-                text="Statistical type: %s with K value: %d" % (stats_type, k)))
-        for _class, _explanation_ranking in class_stats.items():
-            title = 'Interpretation for Regression'
-            self.html.article[-1].items.append(
-                self.html.add_paragraph(text=title, style='BI'))
-            image_path = '%s/model_interpreter_%s.png' % (self.figure_path, _class)
-            importance_ranking = [(key, value) for key, value in _explanation_ranking.items()][: top]
-            image_path = graph_generator.FeatureImportance(
-                figure_path=image_path,
-                data=importance_ranking,
-                title=title).draw()
-            self.html.article[-1].items.append(
-                self.html.add_image(src=image_path, alt=title))
-
-    def draw_error_analysis_for_classification(self, notes: str, *, error_stats: dict,
-                                               stats_type: str, k: int, top: int=15):
+    def draw_error_analysis(self, notes: str, *, mode: str, error_stats: dict,
+                            stats_type: str, k: int, top: int=15):
         """
         Add error analysis for classification
 
         Args:
+            mode (str): Model Model - classification/regression model
             error_stats (dict): A dictionary maps the label to its aggregated statistics
             stats_type (str): The defined stats_type for statistical analysis
             k (int): The k value of the defined stats_type
@@ -1127,13 +1110,21 @@ class HtmlWriter(Writer):
                 text="Statistical type: %s with K value: %d" % (stats_type, k)))
         for (gt_class, predict_class), (
         _explanation_dict, num_sample) in error_stats.items():
-            title = '%s sample from class [%s] is wrongly classified as class[%s]' % (
-            num_sample, gt_class, predict_class)
-            self.html.article[-1].items.append(
-                self.html.add_paragraph(text=title, style='BI'))
-            reason = ' - Top reasons that they are predicted as class[%s]' % predict_class
-            self.html.article[-1].items.append(
-                self.html.add_paragraph(text=reason, style='BI'))
+            if mode == MODE.CLASSIFICATION:
+                title = '%s sample from class [%s] is wrongly classified as class[%s]' % (
+                num_sample, gt_class, predict_class)
+                self.html.article[-1].items.append(
+                    self.html.add_paragraph(text=title, style='BI'))
+                reason = ' - Top reasons that they are predicted as class[%s]' % predict_class
+                self.html.article[-1].items.append(
+                    self.html.add_paragraph(text=reason, style='BI'))
+            else:
+                title = 'sample for regression model'
+                self.html.article[-1].items.append(
+                    self.html.add_paragraph(text=title, style='BI'))
+                reason = ' - Top reasons in regression prediction'
+                self.html.article[-1].items.append(
+                    self.html.add_paragraph(text=reason, style='BI'))
             image_path = '%s/feature_importance_%s.png' % (
             self.figure_path, predict_class)
             importance_ranking = [(key, value) for key, value in
@@ -1145,9 +1136,6 @@ class HtmlWriter(Writer):
                 title=title).draw()
             self.html.article[-1].items.append(
                 self.html.add_image(src=image_path, alt=title))
-
-
-
 
     ################################################################################
     ###  Evaluation Section
