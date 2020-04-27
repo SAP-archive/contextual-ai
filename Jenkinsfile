@@ -28,7 +28,7 @@ pipeline {
             stage('Unit tests') {
                  agent { label 'slave' }
                        when {
-                         anyof {
+                         anyOf {
                          branch 'master'
                          branch 'PR-*'
                          }
@@ -65,7 +65,7 @@ pipeline {
         stage('Central Build') {
              agent { label 'slave' }
                        when {
-                         anyof {
+                         anyOf {
                          branch 'master'
                          branch 'PR-*'
                          }
@@ -101,7 +101,7 @@ pipeline {
          stage('SonarQube') {
                  agent { label 'slave' }
                        when {
-                         anyof {
+                         anyOf {
                          branch 'master'
                          branch 'PR-*'
                          }
@@ -127,7 +127,7 @@ pipeline {
             stage('Vulas') {
                        agent { label 'slave' }
                        when {
-                         anyof {
+                         anyOf {
                          branch 'master'
                          branch 'PR-*'
                          }
@@ -152,7 +152,7 @@ pipeline {
             stage('Whitesource') {
                 agent { label 'slave' }
                        when {
-                         anyof {
+                         anyOf {
                          branch 'master'
                          branch 'PR-*'
                          }
@@ -187,7 +187,7 @@ pipeline {
             stage('Checkmarx') {
                agent { label 'slave' }
                        when {
-                         anyof {
+                         anyOf {
                          branch 'master'
                          branch 'PR-*'
                          }
@@ -206,7 +206,7 @@ pipeline {
             stage('PPMS Whitesource Compliance') {
                       agent { label 'slave' }
                        when {
-                         anyof {
+                         anyOf {
                          branch 'master'
                          branch 'PR-*'
                          }
@@ -225,7 +225,7 @@ pipeline {
             stage('Create traceability report') {
                agent { label 'slave' }
                        when {
-                         anyof {
+                         anyOf {
                          branch 'master'
                          branch 'PR-*'
                          }
@@ -241,7 +241,7 @@ pipeline {
             stage('Promote') {
                 agent { label 'slave' }
                        when {
-                         anyof {
+                         anyOf {
                          branch 'master'
                          }
                        }
