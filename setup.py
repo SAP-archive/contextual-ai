@@ -20,7 +20,7 @@ setuptools.setup(
     zip_safe=False,
     platforms='any',
     install_requires=['numpy==1.18.2',
-                      'pandas==0.25.0',
+                      'pandas==0.25.1',
                       'scikit-learn==0.22.2',
                       'scipy==1.3.1',
                       'tqdm==4.44.1',
