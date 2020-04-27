@@ -28,7 +28,7 @@
     {
       "class": "Pdf",
       "attr": {
-        "name": "housing-price-sample2",
+        "name": "feature-importance-housing-price-sample",
         "path": "{out_path}"
       }
     }

@@ -39,7 +39,7 @@
     {
       "class": "Pdf",
       "attr": {
-        "name": "housing-price-sample",
+        "name": "model-interpreter-housing-price-sample",
         "path": "{out_path}"
       }
     }

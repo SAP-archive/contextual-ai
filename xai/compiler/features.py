@@ -10,9 +10,11 @@ from __future__ import division
 from __future__ import print_function
 
 from pandas import DataFrame
+
 from xai.compiler.base import Dict2Obj
 from xai.formatter import Report
 from xai.model.interpreter import FeatureInterpreter
+from xai import ALG
 
 
 ################################################################################
@@ -119,12 +121,14 @@ class FeatureImportanceRanking(Dict2Obj):
         report.detail.add_feature_importance(
             importance_ranking=rank, importance_threshold=threshold)
 
-        # -- Get Feature Importance --
-        shap_values = fi.get_feature_shap_values(trained_model=model,
-                                                 train_x=train_data)
-        num_class = len(shap_values[0][1][0])
-        # -- Add Feature Importance --
-        for class_id in range(num_class):
-            report.detail.add_feature_shap_values(feature_shap_values=shap_values,
-                                                  class_id=class_id,
-                                                  train_data=train_data)
+        if method == ALG.SHAP:
+            # -- Get Feature Shap Values --
+            shap_values = fi.get_feature_shap_values(trained_model=model,
+                                                     train_x=train_data)
+
+            num_class = len(shap_values[0][1][0])
+            # -- Add Feature Importance --
+            for class_id in range(num_class):
+                report.detail.add_feature_shap_values(feature_shap_values=shap_values,
+                                                      class_id=class_id,
+                                                      train_data=train_data)
