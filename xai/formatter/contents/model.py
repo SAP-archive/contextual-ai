@@ -14,19 +14,20 @@ from xai.formatter.writer.base import Writer
 
 
 ################################################################################
-###  Model Interpreter By Class
+###  Model Interpreter for Classification and Regression
 ################################################################################
-class ModelInterpreterByClass(Content):
+class ModelInterpreter(Content):
     """
-    Model Interpreter By Class
+    Model Interpreter for Classification and Regression
     """
 
-    def __init__(self,class_stats: dict, total_count: int, stats_type: str,
-                 k:int, top: int=15, notes=None) -> None:
+    def __init__(self, mode: str, class_stats: dict, total_count: int,
+                 stats_type: str, k:int, top: int=15, notes=None) -> None:
         """
         Add model interpreter by class
 
         Args:
+            mode (str): Model Model - classification/regression model
             class_stats (dict): A dictionary maps the label to its aggregated statistics
             total_count (int): The total number of explanations to generate the statistics
             stats_type (str): The defined stats_type for statistical analysis
@@ -34,8 +35,9 @@ class ModelInterpreterByClass(Content):
             top (int): the number of top explanation to display
             notes(str): text to explain the block
         """
-        super(ModelInterpreterByClass, self).__init__(class_stats, total_count,
-                                                      stats_type, k, top, notes)
+        super(ModelInterpreter, self).__init__(mode, class_stats, total_count,
+                                               stats_type, k, top, notes)
+        self._mode = mode
         self._class_stats = class_stats
         self._total_count = total_count
         self._stats_type = stats_type
@@ -44,7 +46,12 @@ class ModelInterpreterByClass(Content):
         if not (notes is None):
             self._notes = notes
         else:
-            self._notes = "This section shows model interpreter by class."
+            self._notes = "This section shows {} model interpreter.".format(mode)
+
+    @property
+    def mode(self):
+        """Returns Mode."""
+        return self._mode
 
     @property
     def class_stats(self):
@@ -83,33 +90,35 @@ class ModelInterpreterByClass(Content):
         Args:
             writer (Writer): Report Writer
         """
-        writer.draw_model_interpreter_by_class(notes=self.notes,
-                                               class_stats=self.class_stats,
-                                               total_count=self.total_count,
-                                               stats_type=self.stats_type,
-                                               k=self.k, top=self.top)
+        writer.draw_model_interpreter(notes=self.notes, mode=self.mode,
+                                      class_stats=self.class_stats,
+                                      total_count=self.total_count,
+                                      stats_type=self.stats_type,
+                                      k=self.k, top=self.top)
 
 ################################################################################
-###  Error Analysis By Class
+###  Error Analysis for Classification and Regression
 ################################################################################
-class ErrorAnalysisByClass(Content):
+class ErrorAnalysis(Content):
     """
-    Error Analysis By Class
+    Error Analysis for Classification and Regression
     """
 
-    def __init__(self,error_stats: dict, stats_type: str, k:int, top: int=15,
-                 notes=None) -> None:
+    def __init__(self, mode: str, error_stats: dict, stats_type: str,
+                 k:int, top: int=15, notes=None) -> None:
         """
         Add error analysis by class
 
         Args:
+            mode (str): Model Model - classification/regression model
             error_stats (dict): A dictionary maps the label to its aggregated statistics
             stats_type (str): The defined stats_type for statistical analysis
             k (int): The k value of the defined stats_type
             top (int): the number of top explanation to display
             notes(str): text to explain the block
         """
-        super(ErrorAnalysisByClass, self).__init__(error_stats, top, notes)
+        super(ErrorAnalysis, self).__init__(mode, error_stats, top, notes)
+        self._mode = mode
         self._error_stats = error_stats
         self._stats_type = stats_type
         self._k = k
@@ -117,7 +126,12 @@ class ErrorAnalysisByClass(Content):
         if not (notes is None):
             self._notes = notes
         else:
-            self._notes = "This section shows error analysis by class."
+            self._notes = "This section shows {} error analysis.".format(mode)
+
+    @property
+    def mode(self):
+        """Returns Mode."""
+        return self._mode
 
     @property
     def error_stats(self):
@@ -151,7 +165,7 @@ class ErrorAnalysisByClass(Content):
         Args:
             writer (Writer): Report Writer
         """
-        writer.draw_error_analysis_by_class(notes=self.notes,
-                                            error_stats=self.error_stats,
-                                            stats_type=self.stats_type,
-                                            k=self.k, top=self.top)
+        writer.draw_error_analysis(notes=self.notes, mode=self.mode,
+                                   error_stats=self.error_stats,
+                                   stats_type=self.stats_type,
+                                   k=self.k, top=self.top)

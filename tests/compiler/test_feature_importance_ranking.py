@@ -44,7 +44,7 @@ class TestFeatureImportanceRanking(unittest.TestCase):
                 self.json_writer_pdf_name = writer["attr"]["name"]
             if writer["class"] == "Html":
                 self.json_writer_html_name = writer["attr"]["name"]
-        self.json_writer_pdf_page_number = 5
+        self.json_writer_pdf_page_number = 7
         self.json_writer_html_tag_number = 1
 
         self.yaml = prepare_template(filename='feature-importance-ranking.yml')
@@ -56,7 +56,7 @@ class TestFeatureImportanceRanking(unittest.TestCase):
                 self.yaml_writer_pdf_name = writer["attr"]["name"]
             if writer["class"] == "Html":
                 self.yaml_writer_html_name = writer["attr"]["name"]
-        self.yaml_writer_pdf_page_number = 5
+        self.yaml_writer_pdf_page_number = 7
         self.yaml_writer_html_tag_number = 1
 
         self.out_path = prepare_output_path(working_path='sample_output')

@@ -13,6 +13,9 @@ import numpy
 from typing import Tuple, Dict, List
 
 from xai.data import explorer
+from xai import (
+ MODE
+)
 
 ################################################################################
 ### Section Strategy
@@ -422,12 +425,13 @@ class Section:
             importance_threshold=importance_threshold,
             maximum_number_feature=maximum_number_feature, notes=notes))
 
-    def add_feature_shap_values(self, feature_shap_values: List[Tuple[str,List]], class_id: int,
-                               train_data: numpy.ndarray, notes=None):
+    def add_feature_shap_values(self, mode: str, feature_shap_values: List[Tuple[str,List]],
+                                class_id: int, train_data: numpy.ndarray, notes=None):
         """
         add information of feature importance to the report.
 
         Args:
+            mode (str): Model Model - classification/regression model
             feature_shap_values(:list of :tuple): a list of 2-item tuple,
                                                   item[0]: feature name, item[1] shap values on each training samples
             class_id(int): the class id for visualization.
@@ -435,7 +439,8 @@ class Section:
             notes(str): text to explain the block
         """
         from xai.formatter.contents import FeatureShapValues
-        self.contents.append(FeatureShapValues(feature_shap_values=feature_shap_values,
+        self.contents.append(FeatureShapValues(mode=mode,
+                                               feature_shap_values=feature_shap_values,
                                                class_id=class_id,
                                                train_data=train_data,
                                                notes=notes))
@@ -505,14 +510,14 @@ class Section:
     ################################################################################
     ###  Content Interpreter Section
     ################################################################################
-    def add_model_interpreter_by_class(self, *,
-                                       class_stats: dict, total_count: int,
-                                       stats_type: str, k:int, top: int=15,
-                                       notes=None):
+    def add_model_interpreter(self, *, mode: str, class_stats: dict,
+                              total_count: int, stats_type: str, k:int,
+                              top: int=15, notes=None):
         """
-        add model interpreter by class
+        add model interpreter for classification
 
         Args:
+            mode (str): Model Model - classification/regression model
             class_stats (dict): A dictionary maps the label to its aggregated statistics
             total_count (int): The total number of explanations to generate the statistics
             stats_type (str): The defined stats_type for statistical analysis
@@ -520,27 +525,28 @@ class Section:
             top (int): the number of top explanation to display
             notes(str): text to explain the block
         """
-        from xai.formatter.contents import ModelInterpreterByClass
-        self.contents.append(ModelInterpreterByClass(
-            class_stats=class_stats, total_count=total_count,
-            stats_type=stats_type, k=k, top=top, notes=notes))
+        from xai.formatter.contents import ModelInterpreter
+        self.contents.append(ModelInterpreter(mode=mode,
+                                              class_stats=class_stats, total_count=total_count,
+                                              stats_type=stats_type, k=k, top=top, notes=notes))
 
-    def add_error_analysis_by_class(self, *, error_stats: dict, stats_type: str,
-                                    k:int, top: int=15, notes=None):
+    def add_error_analysis(self, *, mode: str, error_stats: dict, stats_type: str,
+                                              k:int, top: int=15, notes=None):
         """
         add error analysis by class
 
         Args:
+            mode (str): Model Model - classification/regression model
             error_stats (dict): A dictionary maps the label to its aggregated statistics
             stats_type (str): The defined stats_type for statistical analysis
             k (int): The k value of the defined stats_type
             top (int): the number of top explanation to display
             notes(str): text to explain the block
         """
-        from xai.formatter.contents import ErrorAnalysisByClass
-        self.contents.append(ErrorAnalysisByClass(
-            error_stats=error_stats, stats_type=stats_type, k=k,
-            top=top, notes=notes))
+        from xai.formatter.contents import ErrorAnalysis
+        self.contents.append(ErrorAnalysis(mode=mode, error_stats=error_stats,
+                                           stats_type=stats_type, k=k,
+                                           top=top, notes=notes))
 
     ################################################################################
     ###  Content Evaluation Section

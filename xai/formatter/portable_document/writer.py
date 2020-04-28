@@ -14,10 +14,13 @@ import os
 import tempfile
 import warnings
 
+import numpy
 import shutil
-import numpy as np
 from typing import Tuple, Dict, List
 
+from xai import (
+    MODE
+)
 from xai.data.constants import DatetimeResolution
 from xai.data.explorer import (
     CategoricalStats,
@@ -808,17 +811,18 @@ class PdfWriter(Writer):
         self.pdf.add_table(header=table_header, data=table_data,
                            col_width=[140, 30])
 
-    def draw_feature_shap_values(self, notes: str, *,
+    def draw_feature_shap_values(self, notes: str, *, mode: str,
                                  feature_shap_values: List[Tuple[str, List]],
                                  class_id: int,
-                                 train_data: np.ndarray = None):
+                                 train_data: numpy.ndarray = None):
         """
-        Add information of feature importance to the report.
+        Add information of feature shap values to the report.
 
         Args:
             notes(str): Explain the block
+            mode (str): Model Model - classification/regression model
             feature_shap_values(:list of :tuple): a list of 2-item tuple,
-                                                  item[0]: feature name, item[1] shap values on each training samples
+                                        item[0]: feature name, item[1] shap values on each training samples
             class_id(int): the class id for visualization.
             train_data(numpy.dnarray): Optional, training data, row is for samples, column is for features.
         """
@@ -833,8 +837,12 @@ class PdfWriter(Writer):
         # -- Draw Content --
         if not (notes is None):
             self.pdf.add_new_line(notes)
-        self.pdf.add_new_line("The figure below shows an overview of which features are most important class %s,"
-                              " by plotting SHAP values of every feature for every sample." % class_id)
+        if mode == MODE.CLASSIFICATION:
+            self.pdf.add_new_line("The figure below shows an overview of which features are most important class %s,"
+                                  " by plotting SHAP values of every feature for every sample." % class_id)
+        else:
+            self.pdf.add_new_line("The figure below shows an overview of which features are most important in regression model,"
+                                  " by plotting SHAP values of every feature for every sample.")
         self.pdf.add_large_image(image_path)
 
         self.pdf.ln()
@@ -1047,13 +1055,15 @@ class PdfWriter(Writer):
     ################################################################################
     ###  Interpreter Section
     ################################################################################
-    def draw_model_interpreter_by_class(self, notes: str, *, class_stats: dict,
-                                        total_count: int, stats_type: str,
-                                        k:int, top: int=15):
+    def draw_model_interpreter(self, notes: str, *,
+                               mode: str, class_stats: dict,
+                               total_count: int, stats_type: str,
+                               k:int, top: int=15):
         """
-        Add model interpreter by class
+        Add model interpreter for classification
 
         Args:
+            mode (str): Model Model - classification/regression model
             class_stats (dict): A dictionary maps the label to its aggregated statistics
             total_count (int): The total number of explanations to generate the statistics
             stats_type (str): The defined stats_type for statistical analysis
@@ -1068,9 +1078,12 @@ class PdfWriter(Writer):
         self.pdf.add_new_line("Statistical type: %s with K value: %d" % (
             stats_type, k), style='I')
         for _class, _explanation_ranking in class_stats.items():
-            title = 'Interpretation for Class %s' % _class
+            if mode == MODE.CLASSIFICATION:
+                title = 'Interpretation for Class %s' % _class
+            else:
+                title = 'Interpretation for Regression'
             self.pdf.add_new_line(title)
-            image_path = '%s/feature_importance_%s.png' % (self.figure_path, _class)
+            image_path = '%s/model_interpreter_%s.png' % (self.figure_path, _class)
             importance_ranking = [(key, value) for key, value in _explanation_ranking.items()][: top]
             image_path = graph_generator.FeatureImportance(
                 figure_path=image_path,
@@ -1080,12 +1093,13 @@ class PdfWriter(Writer):
 
         self.pdf.ln()
 
-    def draw_error_analysis_by_class(self, notes: str, *, error_stats: dict,
-                                     stats_type: str, k: int, top: int=15):
+    def draw_error_analysis(self, notes: str, *, mode: str, error_stats: dict,
+                            stats_type: str, k: int, top: int=15):
         """
-        Add error analysis by class
+        Add error analysis for classification
 
         Args:
+            mode (str): Model Model - classification/regression model
             error_stats (dict): A dictionary maps the label to its aggregated statistics
             stats_type (str): The defined stats_type for statistical analysis
             k (int): The k value of the defined stats_type
@@ -1099,9 +1113,14 @@ class PdfWriter(Writer):
         self.pdf.add_new_line("Statistical type: %s with K value: %d" % (
             stats_type, k), style='I')
         for (gt_class, predict_class),(_explanation_dict, num_sample) in error_stats.items():
-            title = '%s sample from class [%s] is wrongly classified as class[%s]' % (num_sample, gt_class, predict_class)
-            self.pdf.add_new_line(title)
-            self.pdf.add_new_line(' - Top reasons that they are predicted as class[%s]' % predict_class)
+            if mode == MODE.CLASSIFICATION:
+                title = '%s sample from class [%s] is wrongly classified as class[%s]' % (num_sample, gt_class, predict_class)
+                self.pdf.add_new_line(title)
+                self.pdf.add_new_line(' - Top reasons that they are predicted as class[%s]' % predict_class)
+            else:
+                title = 'sample for regression model'
+                self.pdf.add_new_line(title)
+                self.pdf.add_new_line(' - Top reasons in regression prediction')
             image_path = '%s/feature_importance_%s.png' % (self.figure_path, predict_class)
             importance_ranking = [(key,value) for key,value in _explanation_dict[predict_class].items()][:top]
             image_path = graph_generator.FeatureImportance(

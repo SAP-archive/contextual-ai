@@ -44,8 +44,8 @@ from xai.formatter.contents.feature import (
     FeatureShapValues
 )
 from xai.formatter.contents.model import (
-    ModelInterpreterByClass,
-    ErrorAnalysisByClass
+    ModelInterpreter,
+    ErrorAnalysis
 )
 from xai.formatter.contents.summary import (
     TrainingTiming,

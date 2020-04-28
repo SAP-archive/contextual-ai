@@ -94,7 +94,7 @@ class ModelInterpreter:
         class X and be predicted as class Y
 
         Args:
-            class_num: int, number of classes
+            class_num: int, number of classes (zero 0 for regression)
             valid_x: A list of 1D ndarray. Validation data.
             valid_y: A list of int or a list of str. Validation ground truth class label (str) or (index).
                      The type should be consistent to the classes label passed in when building the model interpreter.

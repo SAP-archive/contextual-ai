@@ -40,7 +40,7 @@ class TestModelInterpreter(unittest.TestCase):
     def setUp(self) -> None:
         warnings.simplefilter("ignore", ResourceWarning)
         """ Specify Config Files """
-        self.json = prepare_template(filename='model-interpreter.json')
+        self.json = prepare_template(filename='model-interpreter-rf-classification.json')
         json_obj = read_json_source(self.json)
         self.json_report_name = json_obj["name"]
         json_writers = json_obj["writers"]
@@ -52,7 +52,7 @@ class TestModelInterpreter(unittest.TestCase):
         self.json_writer_pdf_page_number = 4
         self.json_writer_html_tag_number = 1
 
-        self.yaml = prepare_template(filename='model-interpreter.yml')
+        self.yaml = prepare_template(filename='model-interpreter-rf-classification.yml')
         yaml_obj = read_yaml_source(self.yaml)
         self.yaml_report_name = yaml_obj["name"]
         yaml_writers = yaml_obj["writers"]
