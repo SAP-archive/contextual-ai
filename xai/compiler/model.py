@@ -12,6 +12,8 @@ from __future__ import print_function
 import json
 from pandas import DataFrame
 
+from scipy.sparse.csr import csr_matrix
+
 from xai.compiler.base import Dict2Obj
 from xai.formatter import Report
 from xai.model.interpreter import ModelInterpreter as MI
@@ -186,6 +188,9 @@ class ModelInterpreter(Dict2Obj):
             train_data = self.load_data(data_var, header=True)
         if isinstance(train_data, DataFrame):
             train_data = train_data.values
+        if isinstance(train_data, csr_matrix):
+            train_data = train_data.toarray()
+
         # -- Load Labels --
         labels = None
         if mode == MODE.CLASSIFICATION:

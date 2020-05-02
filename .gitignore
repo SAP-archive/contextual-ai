@@ -38,6 +38,7 @@ tutorials/compiler/automobile/model.pkl
 tutorials/compiler/automobile/train_data.csv
 
 tutorials/compiler/germancredit/__MACOSX/
+tests/compiler/sample_input/20news/*.pkz
 
 doc/build
 doc/source/data
