@@ -10,6 +10,7 @@ sys.path.append('../')
 
 import warnings
 
+import shap
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -40,7 +41,7 @@ class TestModelInterpreter(unittest.TestCase):
     def setUp(self) -> None:
         warnings.simplefilter("ignore", ResourceWarning)
         """ Specify Config Files """
-        self.json = prepare_template(filename='feature-importance-racking-gb-regression.json')
+        self.json = prepare_template(filename='feature-importance-ranking-gb-regression.json')
         json_obj = read_json_source(self.json)
         self.json_report_name = json_obj["name"]
         json_writers = json_obj["writers"]
@@ -83,6 +84,7 @@ class TestModelInterpreter(unittest.TestCase):
 
         X.columns.tolist()
         train_X_df = pd.DataFrame(data=train_X, columns=X.columns.tolist())
+        train_X_km =  shap.kmeans(train_X_df, 10)
         clf = my_model
         clf_fn = my_model.predict
         y_train = []
