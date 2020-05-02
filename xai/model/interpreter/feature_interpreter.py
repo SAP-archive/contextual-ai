@@ -13,10 +13,13 @@ from scipy import stats
 from typing import List, Dict, Tuple
 import warnings
 
+from xai import ALG
 from xai.data.constants import DATATYPE
 from xai.data.explorer.data_analyzer_suite import DataAnalyzerSuite
-from xai.model.interpreter.exceptions import InconsistentSize, \
+from xai.model.interpreter.exceptions import (
+    InconsistentSize,
     TrainingDataNotProvided
+)
 from xai.model.interpreter.exceptions import UnsupportedMethodType
 
 
@@ -33,7 +36,7 @@ class FeatureInterpreter:
         - feature importance ranking for a trained model
 
     """
-    SUPPORTED_FEATURE_IMPORTANCE_TYPES = ['shap']
+    SUPPORTED_FEATURE_IMPORTANCE_TYPES = [ALG.SHAP]
 
     def __init__(self, feature_names: List[str]):
         """
@@ -260,7 +263,7 @@ class FeatureInterpreter:
             if train_x is None:
                 raise TrainingDataNotProvided
 
-            if method == 'shap':
+            if method == ALG.SHAP:
                 return self._get_ranking_by_shap(trained_model, train_x)
 
     def get_feature_shap_values(self, trained_model, train_x: numpy.ndarray) -> List[Tuple[str,List[float]]]:

@@ -93,7 +93,7 @@ class FeatureImportanceRanking(Dict2Obj):
         """
         super(FeatureImportanceRanking, self).__call__(report=report,
                                                        level=level)
-        mode = self.assert_attr(key='mode', default='classification')
+        mode = self.assert_attr(key='mode', default=MODE.CLASSIFICATION)
         threshold = self.assert_attr(key='threshold', default=0.005)
         method = self.assert_attr(key='method', default='default')
         # -- Load Model --
@@ -108,7 +108,7 @@ class FeatureImportanceRanking(Dict2Obj):
             header = False
         # -- Load Training Data for default method --
         data_var = self.assert_attr(key='train_data',
-                                    optional=(method == 'default'))
+                                    optional=(method=='default'))
         train_data = None
         if data_var is not None:
             train_data = self.load_data(data_var, header=header)
