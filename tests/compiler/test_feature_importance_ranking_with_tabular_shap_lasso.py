@@ -6,6 +6,7 @@
 """  Model Interpreter Generator with Random Forest Regression """
 
 import sys
+
 sys.path.append('../')
 
 import warnings
@@ -14,6 +15,8 @@ import pandas as pd
 from PyPDF2 import PdfFileReader
 from datetime import datetime
 import shap
+from sklearn.model_selection import train_test_split
+
 
 import unittest
 from xai.compiler import Configuration, Controller
@@ -45,7 +48,7 @@ class TestModelInterpreter(unittest.TestCase):
             if writer["class"] == "Pdf":
                 self.json_writer_pdf_name = writer["attr"]["name"]
         self.json_writer_pdf_page_number = 3
-
+        self.limit_size = 50
         self.out_path = prepare_output_path(working_path='sample_output')
 
     def tearDown(self) -> None:
@@ -60,49 +63,35 @@ class TestModelInterpreter(unittest.TestCase):
 
         df_data = pd.read_csv(train_file, header=0, nrows=300)
         # Get predictor and target
-        x = df_data.drop("Prices", axis=1)
-        y_true = df_data["Prices"]
-        x = x.fillna(value=0)
-        y_true = y_true.fillna(value=0)
+        X = df_data.drop("Prices", axis=1).fillna(value=0)
+        y = df_data["Prices"].fillna(value=0)
+
+        train_X, test_X, train_y, test_y = train_test_split(X.values, y.values,
+                                                            test_size=0.25)
         # Train regression
         from sklearn.linear_model import Lasso
-        import numpy as np
-        # alpha_list = [0.01,0.1,1,2,5,10]
-        alpha_list = [1]
+        alpha_list = [0.01, 0.1, 1, 2, 5, 10]
         model_list = []
-        rmse_list = []
         r2_list = []
         for alpha in alpha_list:
             lm = Lasso(alpha)
-            lm.fit(x, y_true)
+            lm.fit(train_X, train_y)
             model_list.append(lm)
             # model quality
-            y_pred = lm.predict(x)
-            mse = np.mean((y_pred - y_true) ** 2)
-            rmse = np.sqrt(mse)
-            r2 = lm.score(x, y_true)
-            rmse_list.append(rmse)
+            y_pred = lm.predict(test_X)
+            r2 = lm.score(test_X, test_y)
             r2_list.append(r2)
-        # to send metrics to the Submit Metrics operator, create a Python dictionary of key-value pairs
-        metrics_dict = {}
-        for i in range(len(alpha_list)):
-            metrics_dict.update(
-                {(''.join(['alpha', str(i)])): str(alpha_list[i])})
-            metrics_dict.update(
-                {(''.join(['RMSE', str(i)])): str(rmse_list[i])})
-            metrics_dict.update(
-                {(''.join(['RSquare', str(i)])): str(r2_list[i])})
+            print('Alpha: %s. R2: %s' % (alpha,r2))
+
         index = r2_list.index(max(r2_list))
         lm = model_list[index]
-        print(metrics_dict)
 
-        feature_names = x.columns.tolist()
-        X_train = shap.kmeans(x, 10)
+        feature_names = X.columns.tolist()
         clf = lm
         clf_fn = lm.predict
-        y_train = y_true
-        target_names_list = []
 
+        print('Subsetting training data to %s to speed up. ' % self.limit_size)
+        train_X = train_X[:self.limit_size]
         start_time = datetime.now().replace(microsecond=0)
         controller = Controller(config=Configuration(self.json, locals()))
         controller.render()

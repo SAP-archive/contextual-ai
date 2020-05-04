@@ -15,9 +15,10 @@
             "class": "FeatureImportanceRanking",
             "attr": {
               "trained_model": "var:clf",
-              "train_data": "var:X_train",
+              "train_data": "var:train_X",
               "feature_names": "var:feature_names",
-              "method": "shap"
+              "method": "shap",
+              "mode": "regression"
             }
           }
         }
