@@ -14,7 +14,6 @@ import warnings
 import pandas as pd
 from PyPDF2 import PdfFileReader
 from datetime import datetime
-import shap
 from sklearn.model_selection import train_test_split
 
 

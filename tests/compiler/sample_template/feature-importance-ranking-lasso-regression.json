@@ -29,7 +29,7 @@
     {
       "class": "Pdf",
       "attr": {
-        "name": "feature-importance-lasso-housing-price-sample",
+        "name": "feature-importance-lasso-housing-price-lasso-sample",
         "path": "{out_path}"
       }
     }

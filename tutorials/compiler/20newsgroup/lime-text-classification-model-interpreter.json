@@ -9,7 +9,7 @@
       "sections": [
         {
           "title": "Model Interpreter Analysis ",
-          "desc": "Model and train data from Breast Cancer",
+          "desc": "Model and train data from 20 News Group",
           "component": {
             "_comment": "refer to document section xxxx",
             "class": "ModelInterpreter",
