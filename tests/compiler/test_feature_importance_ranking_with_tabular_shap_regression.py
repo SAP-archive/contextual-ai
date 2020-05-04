@@ -49,7 +49,7 @@ class TestModelInterpreter(unittest.TestCase):
             if writer["class"] == "Pdf":
                 self.json_writer_pdf_name = writer["attr"]["name"]
         self.json_writer_pdf_page_number = 3
-
+        self.limit_size = 50
         self.out_path = prepare_output_path(working_path='sample_output')
 
     def tearDown(self) -> None:
@@ -84,13 +84,15 @@ class TestModelInterpreter(unittest.TestCase):
 
         X.columns.tolist()
         train_X_df = pd.DataFrame(data=train_X, columns=X.columns.tolist())
-        train_X_km =  shap.kmeans(train_X_df, 10)
+        train_X_km = shap.kmeans(train_X_df, 10)
         clf = my_model
         clf_fn = my_model.predict
         y_train = []
         feature_names = X.columns.tolist()
         target_names_list = ['SalePrice']
 
+        print('Subseting training data to %s speed up...'%self.limit_size)
+        train_X_df = train_X_df[:self.limit_size]
         start_time = datetime.now().replace(microsecond=0)
         controller = Controller(config=Configuration(self.json, locals()))
         controller.render()

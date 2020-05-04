@@ -122,7 +122,8 @@ class FeatureImportanceRanking(Dict2Obj):
         # -- Get Feature Importance --
         rank = fi.get_feature_importance_ranking(trained_model=model,
                                                  train_x=train_data,
-                                                 method=method)
+                                                 method=method,
+                                                 mode=mode)
         # -- Add Feature Importance --
         report.detail.add_feature_importance(
             importance_ranking=rank, importance_threshold=threshold)
@@ -130,10 +131,8 @@ class FeatureImportanceRanking(Dict2Obj):
         if method == ALG.SHAP:
             # -- Get Feature Shap Values --
             shap_values = fi.get_feature_shap_values(trained_model=model,
-                                                     train_x=train_data)
-            if mode == MODE.REGRESSION:
-                shap_values = [(feature_name, [[x] for x in feature_value]) for feature_name, feature_value in
-                               shap_values]
+                                                     train_x=train_data,
+                                                     mode=mode)
 
             num_class = len(shap_values[0][1][0])
             # -- Add Feature Importance --
@@ -142,3 +141,4 @@ class FeatureImportanceRanking(Dict2Obj):
                                                       feature_shap_values=shap_values,
                                                       class_id=class_id,
                                                       train_data=train_data)
+
