@@ -6,13 +6,13 @@
 """  Model Interpreter Generator """
 
 import sys
+
 sys.path.append('../')
 
 import warnings
 
 import numpy as np
 from sklearn import datasets
-from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -45,7 +45,10 @@ class TestModelInterpreter(unittest.TestCase):
     """
 
     def setUp(self) -> None:
+
         warnings.simplefilter("ignore", ResourceWarning)
+        warnings.simplefilter("ignore", FutureWarning)
+
         """ Specify Config Files """
         self.json = prepare_template(filename='model-interpreter-nb-classification.json')
         json_obj = read_json_source(self.json)
@@ -54,7 +57,8 @@ class TestModelInterpreter(unittest.TestCase):
         for writer in json_writers:
             if writer["class"] == "Pdf":
                 self.json_writer_pdf_name = writer["attr"]["name"]
-        self.json_writer_pdf_page_number = 4
+        self.json_writer_pdf_page_number = 3
+        self.limit_size = 200
 
         self.out_path = prepare_output_path(working_path='sample_output')
 
@@ -76,31 +80,45 @@ class TestModelInterpreter(unittest.TestCase):
         raw_train = datasets.fetch_20newsgroups(data_home=prepare_input_path(working_path='sample_input/20news'),
                                                 subset='train',
                                                 categories=categories)
-        print(list(raw_train.keys()))
-        print(raw_train.target_names)
-        print(raw_train.target[:10])
+        print('Training dataset keys:', list(raw_train.keys()))
+        print('Training class name:', raw_train.target_names)
+        print('Training sample target:', raw_train.target[:10])
+
         raw_test = datasets.fetch_20newsgroups(subset='test',
                                                categories=categories)
 
+        X_train = raw_train.data
         vectorizer = TfidfVectorizer()
-        X_train = vectorizer.fit_transform(raw_train.data)
+        X_train_vec = vectorizer.fit_transform(X_train)
         y_train = raw_train.target
 
-        X_test = vectorizer.transform(raw_test.data)
+        X_test_vec = vectorizer.transform(raw_test.data)
         y_test = raw_test.target
 
+        print('Training sample:', len(X_train))
+        print('--------------------')
+        print(X_train[0])
+        print('--------------------')
+
         clf = MultinomialNB(alpha=0.1)
-        clf.fit(X_train, y_train)
-        clf.score(X_test, y_test)
-        print(clf.predict_proba)
+        clf.fit(X_train_vec, y_train)
+
+        print('Subsetting training sample to %s to speed up.' % self.limit_size)
+
+        X_train = X_train[:self.limit_size]
+        print('Classifier score:', clf.score(X_test_vec, y_test))
+        print('Classifier predict func:', clf.predict_proba)
 
         def predict_fn(instance):
             vec = vectorizer.transform(instance)
             return clf.predict_proba(vec)
 
+        print('Testing sample prob:', predict_fn(raw_test.data[:10]))
+
         # -- Instantiate the explainer --
         explainer = ExplainerFactory.get_explainer(domain=xai.DOMAIN.TEXT)
         explainer.build_explainer(predict_fn)
+        print('Testing sample explanation:', explainer.explain_instance(raw_test.data[0]))
 
         feature_names = []
         clf_fn = predict_fn
