@@ -8,7 +8,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 .ipynb_checkpoints
-	
+
+release/**
 build/
 dist/
 sap_explainable_ai.egg-info/
@@ -37,6 +38,7 @@ tutorials/compiler/automobile/model.pkl
 tutorials/compiler/automobile/train_data.csv
 
 tutorials/compiler/germancredit/__MACOSX/
+tests/compiler/sample_input/20news/*.pkz
 
 doc/build
 doc/source/data

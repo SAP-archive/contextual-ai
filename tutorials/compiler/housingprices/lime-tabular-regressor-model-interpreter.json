@@ -1,0 +1,62 @@
+{
+  "name": "Report for Advanced Housing Price Regression",
+  "overview": true,
+  "content_table": true,
+  "contents": [
+    {
+      "title": "Model Interpreter ",
+      "desc": "This section provides the Interpretation of model",
+      "sections": [
+        {
+          "title": "Model Interpreter Analysis ",
+          "desc": "Model and train data from Housing Prices",
+          "component": {
+            "_comment": "refer to document section xxxx",
+            "class": "ModelInterpreter",
+            "attr": {
+              "domain": "tabular",
+              "method": "lime",
+              "mode": "regression",
+              "train_data": "var:X_train",
+              "predict_func": "var:clf_fn",
+              "feature_names": "var:feature_names",
+              "target_names": "var:target_names_list",
+              "model_interpret_stats_type": "top_k",
+              "model_interpret_k_value": 5,
+              "model_interpret_top_value": 15,
+              "valid_x": "var:X_test",
+              "valid_y": "var:y_test",
+              "error_analysis_stats_type": "average_score",
+              "error_analysis_k_value": 5,
+              "error_analysis_top_value": 15
+            }
+          }
+        },
+		{
+          "title": "Feature Importance Analysis",
+          "desc": "This section provides the analysis on feature",
+          "component": {
+            "_comment": "refer to document section xxxx",
+            "class": "FeatureImportanceRanking",
+            "attr": {
+              "mode": "regression",
+              "trained_model": "var:clf",
+              "train_data": "var:X_train",
+              "feature_names": "var:feature_names",
+              "method": "shap"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "writers": [
+    {
+      "class": "Pdf",
+      "attr": {
+        "name": "housingprices-regression-model-interpreter-report"
+      }
+    }
+  ]
+}
+

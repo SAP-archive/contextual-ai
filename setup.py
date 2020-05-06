@@ -8,7 +8,7 @@ with open("README.md", "r", encoding='utf-8') as fh:
 
 setuptools.setup(
     name='sap_explainable_ai',
-    version='0.1.1',
+    version='0.1.2',
     packages=setuptools.find_packages(include=['xai*']),
     author="SAP",
     url="https://github.wdf.sap.corp/ML-Leonardo/Explainable_AI",
@@ -35,6 +35,7 @@ setuptools.setup(
                       'shap>=0.35.0',
                       'yattag==1.12.2',
                       'pyyaml==5.3.1',
+                      'pillow==5.4.1',
                       'jsonschema==3.0.2',
                       'PyPDF2 == 1.26.0'
                       ],

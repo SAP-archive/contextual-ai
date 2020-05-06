@@ -93,7 +93,7 @@ class FeatureImportanceRanking(Dict2Obj):
         """
         super(FeatureImportanceRanking, self).__call__(report=report,
                                                        level=level)
-        mode = self.assert_attr(key='mode', default='classification')
+        mode = self.assert_attr(key='mode', default=MODE.CLASSIFICATION)
         threshold = self.assert_attr(key='threshold', default=0.005)
         method = self.assert_attr(key='method', default='default')
         # -- Load Model --
@@ -108,7 +108,7 @@ class FeatureImportanceRanking(Dict2Obj):
             header = False
         # -- Load Training Data for default method --
         data_var = self.assert_attr(key='train_data',
-                                    optional=(method == 'default'))
+                                    optional=(method=='default'))
         train_data = None
         if data_var is not None:
             train_data = self.load_data(data_var, header=header)
@@ -122,7 +122,8 @@ class FeatureImportanceRanking(Dict2Obj):
         # -- Get Feature Importance --
         rank = fi.get_feature_importance_ranking(trained_model=model,
                                                  train_x=train_data,
-                                                 method=method)
+                                                 method=method,
+                                                 mode=mode)
         # -- Add Feature Importance --
         report.detail.add_feature_importance(
             importance_ranking=rank, importance_threshold=threshold)
@@ -130,10 +131,8 @@ class FeatureImportanceRanking(Dict2Obj):
         if method == ALG.SHAP:
             # -- Get Feature Shap Values --
             shap_values = fi.get_feature_shap_values(trained_model=model,
-                                                     train_x=train_data)
-            if mode == MODE.REGRESSION:
-                shap_values = [(feature_name, [[x] for x in feature_value]) for feature_name, feature_value in
-                               shap_values]
+                                                     train_x=train_data,
+                                                     mode=mode)
 
             num_class = len(shap_values[0][1][0])
             # -- Add Feature Importance --
@@ -142,3 +141,4 @@ class FeatureImportanceRanking(Dict2Obj):
                                                       feature_shap_values=shap_values,
                                                       class_id=class_id,
                                                       train_data=train_data)
+
