@@ -64,12 +64,7 @@ pipeline {
 
         stage('Central Build') {
              agent { label 'slave' }
-                       when {
-                         anyOf {
-                         branch 'master'
-                         branch 'PR-*'
-                         }
-                       }
+                  when { branch 'master' }
                     steps {
                        script{
                              lock(resource: "${env.JOB_NAME}/10", inversePrecedence: true) {
