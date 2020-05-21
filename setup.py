@@ -35,7 +35,7 @@ setuptools.setup(
                       'shap>=0.35.0',
                       'yattag==1.12.2',
                       'pyyaml==5.3.1',
-                      'pillow==5.4.1',
+                      'pillow==7.0.0',
                       'jsonschema==3.0.2',
                       'PyPDF2 == 1.26.0'
                       ],
