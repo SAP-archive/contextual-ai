@@ -76,13 +76,12 @@ pipeline {
                                   measureDuration(script: this, measurementName: 'build_duration') {
                                   if ("${params.PROMOTE}" == "true"){
                                             setVersion script:this, versioningTemplate: "${env.VERSION}",commitVersion: false
+                                         stashFiles(script: this) {
+                                                 executeBuild script: this, buildType: 'xMakeStage', xMakeBuildQuality: 'Release'
+                                         }
                                         } else {
                                             setVersion script:this
                                    }
-                                  stashFiles(script: this) {
-                                          executeBuild script: this, buildType: 'xMakeStage', xMakeBuildQuality: 'Release'
-                                  }
-
 
                                // publishTestResults cobertura: [archive: true, pattern: 'coverage.xml']
                              }
