@@ -21,7 +21,12 @@ $ pip install dist/*.whl
 
 ### Installing from Nexus
 
-_Coming soon_
+XAI is now packaged and distributed in SAP's internal Nexus repository! You can install the latest release via the following command:
+
+```
+$ pip install --index-url=http://nexus.wdf.sap.corp:8081/nexus/content/groups/build.releases.pypi/simple/ --trusted-host=nexus.wdf.sap.corp sap-explainable-ai 
+
+```
 
 ## ⚡️ Quickstart
 
