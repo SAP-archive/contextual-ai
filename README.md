@@ -1,10 +1,10 @@
-Explainable AI (XAI)
+Contextual AI
 ==============
 
 [![Build Status](https://jenkins.ml.only.sap/buildStatus/icon?job=Explainable_AI%2Fmaster)](https://jenkins.ml.only.sap/job/Explainable_AI/job/master/)
 [![Generic badge](https://img.shields.io/badge/docs-passing-<GREEN>.svg)](https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/)
 
-XAI is a Python package that addresses the trust gap between machine learning systems and their developers and users.
+Contextual AI adds explainability to different stages of machine learning pipelines - data, training, and inference - thereby addressing the trust gap between such ML systems and their users.
 
 ## 🖥 Installation
 
