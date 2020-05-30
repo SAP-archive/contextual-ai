@@ -1,0 +1,3 @@
+{
+    "path": "../../../../tutorials/compiler/titanic2/sample.ipynb"
+}
