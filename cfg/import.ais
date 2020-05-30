@@ -1,0 +1,7 @@
+imports dslVersion:"1.2", {
+  targetRootDir id: "default", {
+    untar {
+        artifactFile "com.sap.external.org.python.${buildRuntime}:python:tar.gz:${buildRuntime}:3.6.1-sap3"
+    }
+  }
+}

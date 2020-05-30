@@ -1,0 +1,6 @@
+sphinx==2.2.0
+sphinx-rtd-theme==0.4.3
+m2r==0.2.1
+nbsphinx==0.4.2
+ipykernel==5.1.2
+nbsphinx-link==1.2.0

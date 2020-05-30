@@ -1,0 +1,12 @@
+branches:
+  - Branch: master
+    type: GITHUB_REL
+attributes:
+    NoEmailToTeam: true
+    prepareDeployPackage: true
+    finalAssembly_restrictedPromotion: false
+    finalAssembly_customerRelease: true
+    finalAssembly_internalRelease: false
+    releasestaging: true
+    UpdateGitSubmodules: true
+    milestonestaging: true

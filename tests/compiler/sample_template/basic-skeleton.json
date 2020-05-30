@@ -1,0 +1,72 @@
+{
+  "name": "Sample Report",
+  "overview": true,
+  "content_table": true,
+  "contents": [
+    {
+      "title": "Example of Section One",
+      "desc": "This is section one info",
+      "sections": [
+        {
+          "title": "Example of Header 1 (S1)",
+          "desc": "This is header 1 info",
+          "sections": [
+            {
+              "title": "Example of Paragraph Title (S1H1)",
+              "desc": "This is paragraph content, place holder"
+            },
+            {
+              "title": "Example of Header 2 (S1)",
+              "desc": "This is header 2 info",
+              "sections": [
+                {
+                  "title": "Example of Header 3 (S1)",
+                  "desc": "This is header 3 info"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }, {
+      "title": "Example of Section Two",
+      "desc": "This is section two info",
+      "sections": [
+        {
+          "title": "Example of Header 1 (S2)",
+          "desc": "This is header 1 info",
+          "sections": [
+            {
+              "title": "Example of Header 2 (S2)",
+              "desc": "This is header 2 info",
+              "sections": [
+                {
+                  "title": "Example of Header 3 (S2)",
+                  "desc": "This is header 3 info"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "writers": [
+    {
+      "class": "Pdf",
+      "attr": {
+        "name": "basic-json-report",
+        "path": "{out_path}"
+      }
+    },
+    {
+      "class": "Html",
+      "attr": {
+        "name": "basic-json-report",
+        "path": "{out_path}",
+        "style": "{out_path}/simple.css",
+        "script": "{out_path}/simple.js"
+      }
+    }
+  ]
+}

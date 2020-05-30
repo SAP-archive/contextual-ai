@@ -1,0 +1,27 @@
+{
+	"sequence": {
+		"IA_0/IA_TYPE": {
+			"type": "categorical"
+		},
+		"IA_0/IA_INTERVAL": {
+			"type": "numerical"
+		},
+		"IA_0/COMM_MEDIUM": {
+			"type": "categorical"
+		},
+		"IA_0/IA_REASON": {
+			"type": "categorical"
+		}
+	},
+	"non_sequence": {
+		"IC_0/COUNTRY": {
+			"type": "categorical"
+		},
+		"IC_0/REGION": {
+			"type": "categorical"
+		},
+		"IC_0/SEX": {
+			"type": "categorical"
+		}
+	}
+}
