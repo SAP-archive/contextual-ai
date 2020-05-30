@@ -1,0 +1,441 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>compiler.validator module &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="compiler.writer module" href="compiler.writer.html" />
+    <link rel="prev" title="compiler.model module" href="compiler.model.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../compiler_module.html">Compiler Module</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../compiler_module_tutorial.html">Tutorial</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="compiler.html">API Documentation</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="compiler.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="compiler.base.html">compiler.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="compiler.data.html">compiler.data module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="compiler.evaluation.html">compiler.evaluation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="compiler.explainer.html">compiler.explainer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="compiler.features.html">compiler.features module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="compiler.model.html">compiler.model module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">compiler.validator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="compiler.writer.html">compiler.writer module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../compiler_module.html">Compiler Module</a> &raquo;</li>
+        
+          <li><a href="compiler.html">compiler package</a> &raquo;</li>
+        
+      <li>compiler.validator module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/compiler/compiler.validator.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-compiler.validator">
+<span id="compiler-validator-module"></span><h1>compiler.validator module<a class="headerlink" href="#module-compiler.validator" title="Permalink to this headline">¶</a></h1>
+<p>Compiler - Explainer</p>
+<dl class="class">
+<dt id="compiler.validator.CompleteMatchCheck">
+<em class="property">class </em><code class="sig-name descname">CompleteMatchCheck</code><span class="sig-paren">(</span><em class="sig-param">dictionary</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/compiler/validator.html#CompleteMatchCheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compiler.validator.CompleteMatchCheck" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xai.compiler.base.Dict2Obj</span></code></p>
+<p>Compiler for Complete Match Check</p>
+<dl>
+<dt>Param:</dt><dd><p>package (str, Optional): component package name
+module (str, Optional): component module name
+class (str): component class name</p>
+</dd>
+<dt>Attr:</dt><dd><p>data (str): path to dataframe file
+entity_a_column(str): the index column in entity A
+entity_b_column(str): the index column in entity B
+relational_a_columns(dict): a config dict represents the distributions to be shown in the entity A,</p>
+<blockquote>
+<div><p>it has the following keys:
+- columns(list of str): a list of columns that require visualization for columns
+- foreign_file(str): file path to data file for entity.</p>
+<blockquote>
+<div><p>Default is None if the columns are in the same data frame.</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>foreign_index(str): the index column in foreign data mapped to <cite>entity_a_column</cite>.</dt><dd><p>Default is <cite>entity_a_column</cite> and will be ignored if foreign_file is None.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt>relational_b_columns(dict): a config dict represents the distributions to be shown in the entity B.</dt><dd><p>Details see above for <cite>relational_a_columns</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<dl>
+<dt>“component”: {</dt><dd><blockquote>
+<div><p>“package”: “xai”,
+“module”: “compiler”,
+“class”: “CompleteMatchCheck”,
+“attr”: {</p>
+<blockquote>
+<div><p>“data”: “matching.csv”,
+“entity_a_column”: “STUDENT_ID”,
+“entity_b_column”: “COURSE_ID”,
+“relational_a_columns”: {</p>
+<blockquote>
+<div><p>“foreign_file”: “student.csv”,
+“foreign_index”: “STUDENT_ID”,
+“columns”: [</p>
+<blockquote>
+<div><p>{“name”: “GENDER”, “type”: “categorical},
+{“name”: “AGE”, “type”: “numerical}</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+“relational_b_columns”: {</p>
+<blockquote>
+<div><p>“foreign_file”: “course.csv”,
+“foreign_index”: “COURSE_ID”,
+“columns”: [</p>
+<blockquote>
+<div><p>{“name”: “DEPARTMENT”, “type”: “categorical”},
+{“name”: “DURATION”, “type”: “numerical”}</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>}</p>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="compiler.validator.CompleteMatchCheck.schema">
+<code class="sig-name descname">schema</code><em class="property"> = {'definitions': {'relational_columns': {'properties': {'columns': {'items': {'property': {'name': {'type': 'string'}, 'type': {'enum': ['categorical', 'numerical', 'text', 'datetime']}}, 'type': 'object'}, 'type': 'array'}, 'foreign_file': {'type': ['string', 'object']}, 'foreign_index': {'type': 'string'}}, 'required': ['columns'], 'type': 'object'}}, 'properties': {'data': {'type': ['string', 'object']}, 'entity_a_column': {'type': 'string'}, 'entity_b_column': {'type': 'string'}, 'relational_a_columns': {'$ref': '#/definitions/relational_columns'}, 'relational_b_columns': {'$ref': '#/definitions/relational_columns'}}, 'required': ['data', 'entity_a_column', 'entity_b_column'], 'type': 'object'}</em><a class="headerlink" href="#compiler.validator.CompleteMatchCheck.schema" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="compiler.validator.DuplicationOrphanCheck">
+<em class="property">class </em><code class="sig-name descname">DuplicationOrphanCheck</code><span class="sig-paren">(</span><em class="sig-param">dictionary</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/compiler/validator.html#DuplicationOrphanCheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compiler.validator.DuplicationOrphanCheck" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xai.compiler.base.Dict2Obj</span></code></p>
+<p>Compiler for Duplication Orphan Check</p>
+<dl>
+<dt>Param:</dt><dd><p>package (str, Optional): component package name
+module (str, Optional): component module name
+class (str): component class name</p>
+</dd>
+<dt>Attr:</dt><dd><p>data (str): path to dataframe file
+duplication_rule (dict): a dict which represents the rule, of which there are following keys:</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>keys (list of str): the list of columns that the duplication is checked on.</dt><dd><p>Default is None and duplication is checking on all columns.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>to_file (str): the filepath that duplicate-removed dataframe dumps to.</dt><dd><p>Default is None and no save back,</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt>orphan_rules (dict): a dict which represents the rule, of which there are following keys:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>rules: a list of dict object, which of each object is a rule and has following keys:</dt><dd><ul>
+<li><p>local_key (str): column name in current data frame</p></li>
+<li><p>foreign_data (str): foreign file path</p></li>
+<li><p>foreign_key (str): column name in the foreign file</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>to_file (str): filepath to dump the orphan-droped data frame.</dt><dd><p>Default is None and no save back.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<dl>
+<dt>“component”: {</dt><dd><blockquote>
+<div><p>“package”: “xai”,
+“module”: “compiler”,
+“class”: “DuplicationOrphanCheck”,
+“attr”: {</p>
+<blockquote>
+<div><p>“data”: “./student.csv”,
+“duplication_rule”: {</p>
+<blockquote>
+<div><dl class="simple">
+<dt>“keys”: [</dt><dd><p>“STUDENT_ID”</p>
+</dd>
+</dl>
+<p>],
+“to_file”: “./data/drop_student.csv”</p>
+</div></blockquote>
+<p>},
+“orphan_rules”: {</p>
+<blockquote>
+<div><dl>
+<dt>“rules”:[</dt><dd><dl class="simple">
+<dt>{</dt><dd><p>“local_key”: “STUDENT_ID”,
+“foreign_data”: “./course.csv”,
+“foreign_key”: “STUDENT_ID”</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<p>],
+“to_file”: “./data/drop_student_2.csv”</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>}</p>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="compiler.validator.DuplicationOrphanCheck.schema">
+<code class="sig-name descname">schema</code><em class="property"> = {'definitions': {'orphan_rule': {'properties': {'foreign_data': {'type': ['string', 'object']}, 'foreign_key': {'type': 'string'}, 'local_key': {'type': 'string'}}, 'required': ['local_key', 'foreign_data', 'foreign_key'], 'type': 'object'}}, 'properties': {'data': {'type': ['string', 'object']}, 'duplication_rule': {'properties': {'keys': {'default': None, 'items': {'type': 'string'}, 'type': 'array'}, 'to_file': {'default': None, 'type': 'string'}}, 'type': 'object'}, 'orphan_rules': {'properties': {'rules': {'items': {'$ref': '#/definitions/orphan_rule'}, 'type': 'array'}, 'to_file': {'default': None, 'type': 'string'}}, 'type': 'object'}}, 'required': ['data'], 'type': 'object'}</em><a class="headerlink" href="#compiler.validator.DuplicationOrphanCheck.schema" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="compiler.writer.html" class="btn btn-neutral float-right" title="compiler.writer module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="compiler.model.html" class="btn btn-neutral float-left" title="compiler.model module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

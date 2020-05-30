@@ -1,0 +1,324 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>explainer.utils &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>explainer.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for explainer.utils</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved</span>
+<span class="c1"># ============================================================================</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">lime.explanation</span> <span class="kn">import</span> <span class="n">Explanation</span>
+
+<span class="kn">from</span> <span class="nn">xai.explainer.constants</span> <span class="kn">import</span> <span class="n">MODE</span><span class="p">,</span> <span class="n">OUTPUT</span>
+
+
+<div class="viewcode-block" id="explanation_to_json"><a class="viewcode-back" href="../../explainer/explainer.utils.html#explainer.utils.explanation_to_json">[docs]</a><span class="k">def</span> <span class="nf">explanation_to_json</span><span class="p">(</span><span class="n">explanation</span><span class="p">:</span> <span class="n">Explanation</span><span class="p">,</span>
+                        <span class="n">labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+                        <span class="n">predictions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parses LIME explanation to produce JSON-parseable output format.</span>
+
+<span class="sd">    ### Schema for classification:</span>
+<span class="sd">    {</span>
+<span class="sd">        class_idx: {OUTPUT.EXPLANATION: [</span>
+<span class="sd">                    {</span>
+<span class="sd">                    OUTPUT.FEATURE: str,</span>
+<span class="sd">                    OUTPUT.SCORE: float</span>
+<span class="sd">                    },</span>
+<span class="sd">                      ...</span>
+<span class="sd">                    ],</span>
+<span class="sd">        OUTPUT.PREDICTION: float},</span>
+<span class="sd">        ...</span>
+<span class="sd">    }</span>
+
+<span class="sd">    ### Schema for regression:</span>
+<span class="sd">    {</span>
+<span class="sd">        OUTPUT.EXPLANATION: [</span>
+<span class="sd">            {</span>
+<span class="sd">                OUTPUT.FEATURE: str,</span>
+<span class="sd">                OUTPUT.SCORE: float</span>
+<span class="sd">            }</span>
+<span class="sd">            ...</span>
+<span class="sd">        ],</span>
+<span class="sd">        &#39;predictions&#39;: float</span>
+<span class="sd">    }</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        explanation (lime.explanation.Explanation): The explanation output from LIME</span>
+<span class="sd">        labels (list): List of labels for which to get explanations</span>
+<span class="sd">        predictions (np.ndarray): Model output for a particular instance, which should be a list</span>
+<span class="sd">        of confidences that sum to one (if classification)</span>
+<span class="sd">        mode (str): Regression or classification</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (dict) Explanations in JSON format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dict_explanation</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">MODE</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="n">list_explanations</span> <span class="o">=</span> <span class="n">explanation</span><span class="o">.</span><span class="n">as_list</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">exp</span> <span class="ow">in</span> <span class="n">list_explanations</span><span class="p">:</span>
+                <span class="n">tmp</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">OUTPUT</span><span class="o">.</span><span class="n">FEATURE</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">exp</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">SCORE</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">exp</span><span class="p">[</span><span class="mi">1</span><span class="p">])})</span>
+            <span class="n">dict_explanation</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">OUTPUT</span><span class="o">.</span><span class="n">PREDICTION</span><span class="p">:</span> <span class="n">predictions</span><span class="p">[</span><span class="n">label</span><span class="p">],</span>
+                <span class="n">OUTPUT</span><span class="o">.</span><span class="n">EXPLANATION</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="n">OUTPUT</span><span class="o">.</span><span class="n">SCORE</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">list_explanations</span> <span class="o">=</span> <span class="n">explanation</span><span class="o">.</span><span class="n">as_list</span><span class="p">()</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">exp</span> <span class="ow">in</span> <span class="n">list_explanations</span><span class="p">:</span>
+            <span class="n">tmp</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">OUTPUT</span><span class="o">.</span><span class="n">FEATURE</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">exp</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">SCORE</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">exp</span><span class="p">[</span><span class="mi">1</span><span class="p">])})</span>
+        <span class="n">dict_explanation</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">OUTPUT</span><span class="o">.</span><span class="n">PREDICTION</span><span class="p">:</span> <span class="n">predictions</span><span class="p">,</span>
+            <span class="n">OUTPUT</span><span class="o">.</span><span class="n">EXPLANATION</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="n">OUTPUT</span><span class="o">.</span><span class="n">SCORE</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">dict_explanation</span></div>
+
+
+<div class="viewcode-block" id="parse_shap_values"><a class="viewcode-back" href="../../explainer/explainer.utils.html#explainer.utils.parse_shap_values">[docs]</a><span class="k">def</span> <span class="nf">parse_shap_values</span><span class="p">(</span><span class="n">shap_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">confidences</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+                      <span class="n">feature_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="n">feature_values</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse SHAP values to fit XAI output format</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        shap_values (list): A list of shap values, a set for each class</span>
+<span class="sd">        confidences (list): Confidences for each class</span>
+<span class="sd">        feature_names (list): List of feature names</span>
+<span class="sd">        feature_values (list): List of values corresponding to feature_names</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (dict) A mapping of class to explanations</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">shap_values</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">confidences</span><span class="p">),</span> <span class="s1">&#39;Number of SHAP values should be equal to &#39;</span> \
+                                                 <span class="s1">&#39;number of classes!&#39;</span>
+
+    <span class="n">dict_explanation</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">confidence</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">confidences</span><span class="p">):</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">shap_value_class</span> <span class="o">=</span> <span class="n">shap_values</span><span class="p">[</span><span class="n">label</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">feature_idx</span><span class="p">,</span> <span class="n">shap_value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">shap_value_class</span><span class="p">):</span>
+            <span class="c1"># We ignore features which SHAP values are 0, which indicate that they had no</span>
+            <span class="c1"># impact on the model&#39;s decision</span>
+            <span class="k">if</span> <span class="n">shap_value</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">feature_names</span> <span class="ow">and</span> <span class="n">feature_values</span><span class="p">:</span>
+                    <span class="n">feature</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">feature_names</span><span class="p">[</span><span class="n">feature_idx</span><span class="p">],</span> <span class="n">feature_values</span><span class="p">[</span><span class="n">feature_idx</span><span class="p">])</span>
+                    <span class="n">tmp</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">OUTPUT</span><span class="o">.</span><span class="n">FEATURE</span><span class="p">:</span> <span class="n">feature</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">SCORE</span><span class="p">:</span> <span class="n">shap_value</span><span class="p">})</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tmp</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">OUTPUT</span><span class="o">.</span><span class="n">FEATURE</span><span class="p">:</span> <span class="n">feature_idx</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">SCORE</span><span class="p">:</span> <span class="n">shap_value</span><span class="p">})</span>
+
+        <span class="n">dict_explanation</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">OUTPUT</span><span class="o">.</span><span class="n">PREDICTION</span><span class="p">:</span> <span class="n">confidence</span><span class="p">,</span>
+            <span class="n">OUTPUT</span><span class="o">.</span><span class="n">EXPLANATION</span><span class="p">:</span> <span class="n">tmp</span>
+        <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">dict_explanation</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

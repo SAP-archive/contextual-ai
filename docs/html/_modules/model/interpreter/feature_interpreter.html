@@ -1,0 +1,537 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>model.interpreter.feature_interpreter &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>model.interpreter.feature_interpreter</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for model.interpreter.feature_interpreter</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved</span>
+<span class="c1"># ============================================================================</span>
+
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">shap</span>
+<span class="kn">from</span> <span class="nn">xai</span> <span class="kn">import</span> <span class="n">ALG</span><span class="p">,</span> <span class="n">MODE</span>
+<span class="kn">from</span> <span class="nn">xai.data.constants</span> <span class="kn">import</span> <span class="n">DATATYPE</span>
+<span class="kn">from</span> <span class="nn">xai.data.explorer.data_analyzer_suite</span> <span class="kn">import</span> <span class="n">DataAnalyzerSuite</span>
+<span class="kn">from</span> <span class="nn">xai.model.interpreter.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">InconsistentSize</span><span class="p">,</span>
+    <span class="n">TrainingDataNotProvided</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">xai.model.interpreter.exceptions</span> <span class="kn">import</span> <span class="n">UnsupportedMethodType</span>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1">### Feature Interpreter</span>
+<span class="c1">################################################################################</span>
+<div class="viewcode-block" id="FeatureInterpreter"><a class="viewcode-back" href="../../../model/model.interpreter.feature_interpreter.html#model.interpreter.feature_interpreter.FeatureInterpreter">[docs]</a><span class="k">class</span> <span class="nc">FeatureInterpreter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class Feature Interpreter.</span>
+
+<span class="sd">    The class is used to generate the following information:</span>
+<span class="sd">        - feature distribution</span>
+<span class="sd">        - feature correlation</span>
+<span class="sd">        - feature importance ranking for a trained model</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">SUPPORTED_FEATURE_IMPORTANCE_TYPES</span> <span class="o">=</span> <span class="p">[</span><span class="n">ALG</span><span class="o">.</span><span class="n">SHAP</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize feature interpreter with feature names</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            feature_names: list, the list of feature names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span> <span class="o">=</span> <span class="n">feature_names</span>
+
+<div class="viewcode-block" id="FeatureInterpreter.get_feature_distribution"><a class="viewcode-back" href="../../../model/model.interpreter.feature_interpreter.html#model.interpreter.feature_interpreter.FeatureInterpreter.get_feature_distribution">[docs]</a>    <span class="k">def</span> <span class="nf">get_feature_distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">train_x</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get feature distribution analysis based on feature types</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            feature_types: list, a list of pre-defined data type for feature</span>
+<span class="sd">            train_x: numpy.ndarray, training data of which each row is a training sample.</span>
+<span class="sd">                     A training data set with M samples of each of which has N features should have a shape (M,N).</span>
+<span class="sd">            labels: list,</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary maps each feature name to the stats object based on its data type.</span>
+<span class="sd">            For stats class implement, details can be found in `xai.data.explorer`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature_types</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InconsistentSize</span><span class="p">(</span><span class="s1">&#39;feature_types&#39;</span><span class="p">,</span> <span class="s1">&#39;feature_names&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature_types</span><span class="p">),</span>
+                                   <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">))</span>
+
+        <span class="n">data_analyzer_suite</span> <span class="o">=</span> <span class="n">DataAnalyzerSuite</span><span class="p">(</span><span class="n">data_type_list</span><span class="o">=</span><span class="n">feature_types</span><span class="p">,</span> <span class="n">column_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">train_x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature_types</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InconsistentSize</span><span class="p">(</span><span class="s1">&#39;train_x.shape[1]&#39;</span><span class="p">,</span> <span class="s1">&#39;feature_types&#39;</span><span class="p">,</span> <span class="n">train_x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                   <span class="nb">len</span><span class="p">(</span><span class="n">feature_types</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">col_idx</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">):</span>
+            <span class="n">data_analyzer_suite</span><span class="o">.</span><span class="n">feed_column</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="n">column</span><span class="p">,</span>
+                                            <span class="n">column_data</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">train_x</span><span class="p">[:,</span> <span class="n">col_idx</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                                            <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data_analyzer_suite</span><span class="o">.</span><span class="n">get_statistics</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="FeatureInterpreter.get_feature_correlation"><a class="viewcode-back" href="../../../model/model.interpreter.feature_interpreter.html#model.interpreter.feature_interpreter.FeatureInterpreter.get_feature_correlation">[docs]</a>    <span class="k">def</span> <span class="nf">get_feature_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                                <span class="n">train_x</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                                <span class="n">categorical_corr_type</span><span class="o">=</span><span class="s1">&#39;lambda&#39;</span><span class="p">,</span>
+                                <span class="n">numerical_corr_type</span><span class="o">=</span><span class="s1">&#39;pearson&#39;</span><span class="p">,</span>
+                                <span class="n">text_corr_type</span><span class="o">=</span><span class="s1">&#39;tf&#39;</span><span class="p">,</span>
+                                <span class="n">categorical_vs_numerical_corr_type</span><span class="o">=</span><span class="s1">&#39;anova&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get feature correlation</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            feature_types: list, the pre-defined data type for each feature</span>
+<span class="sd">            train_x: numpy.ndarray, training data</span>
+<span class="sd">            categorical_corr_type: str, pre-defined correlation type for correlation among categorical features.</span>
+<span class="sd">            numerical_corr_type: str, pre-defined correlation type for correlation among numerical features.</span>
+<span class="sd">            text_corr_type: str, pre-defined correlation type for correlation among text features.</span>
+<span class="sd">            categorical_vs_numerical_corr_type: str, pre-defined correlation type for correlation between categorical</span>
+<span class="sd">                                                features and numerical features.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dataframe of correlation type mask,</span>
+<span class="sd">            Dataframe of correlation values</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature_types</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InconsistentSize</span><span class="p">(</span><span class="s1">&#39;feature_types&#39;</span><span class="p">,</span> <span class="s1">&#39;feature_names&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature_types</span><span class="p">),</span>
+                                   <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">train_x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InconsistentSize</span><span class="p">(</span><span class="s1">&#39;train_x.shape[1]&#39;</span><span class="p">,</span> <span class="s1">&#39;feature_types&#39;</span><span class="p">,</span> <span class="n">train_x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                   <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">))</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">train_x</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">)</span>
+
+        <span class="n">feature_name_to_type</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">,</span> <span class="n">feature_types</span><span class="p">))}</span>
+        <span class="n">categorical_feature</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="nb">type</span> <span class="ow">in</span> <span class="n">feature_name_to_type</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">CATEGORY</span><span class="p">]</span>
+        <span class="n">numeric_feature</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="nb">type</span> <span class="ow">in</span> <span class="n">feature_name_to_type</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">NUMBER</span><span class="p">]</span>
+        <span class="n">text_feature</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="nb">type</span> <span class="ow">in</span> <span class="n">feature_name_to_type</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">FREETEXT</span><span class="p">]</span>
+
+        <span class="n">overall_corr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="n">corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_categorical_correlation</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">categorical_feature</span><span class="p">,</span> <span class="n">correlation_type</span><span class="o">=</span><span class="n">categorical_corr_type</span><span class="p">)</span>
+        <span class="n">overall_corr</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">corr</span><span class="p">)</span>
+
+        <span class="n">corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_numerical_correlation</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">numeric_feature</span><span class="p">,</span> <span class="n">correlation_type</span><span class="o">=</span><span class="n">numerical_corr_type</span><span class="p">)</span>
+        <span class="n">overall_corr</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">corr</span><span class="p">)</span>
+
+        <span class="n">corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_text_correlation</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">text_feature</span><span class="p">,</span> <span class="n">correlation_type</span><span class="o">=</span><span class="n">text_corr_type</span><span class="p">)</span>
+        <span class="n">overall_corr</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">corr</span><span class="p">)</span>
+
+        <span class="n">corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_categorical_vs_numerical_correlation</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">categorical_feature</span><span class="p">,</span> <span class="n">numeric_feature</span><span class="p">,</span>
+                                                              <span class="n">correlation_type</span><span class="o">=</span><span class="n">categorical_vs_numerical_corr_type</span><span class="p">)</span>
+        <span class="n">overall_corr</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">corr</span><span class="p">)</span>
+
+        <span class="n">correlation_values</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">feature_types</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature_types</span><span class="p">))),</span>
+                                          <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">,</span>
+                                          <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">)</span>
+        <span class="n">correlation_types</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">feature_types</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature_types</span><span class="p">))),</span>
+                                         <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">,</span>
+                                         <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">),</span> <span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="n">overall_corr</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">correlation_values</span><span class="p">[</span><span class="n">col1</span><span class="p">][</span><span class="n">col2</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="n">correlation_types</span><span class="p">[</span><span class="n">col1</span><span class="p">][</span><span class="n">col2</span><span class="p">]</span> <span class="o">=</span> <span class="n">method</span>
+
+        <span class="k">return</span> <span class="n">correlation_types</span><span class="p">,</span> <span class="n">correlation_values</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_categorical_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">categorical_cols</span><span class="p">,</span> <span class="n">correlation_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span>
+        <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal function to calculate correlation among categorical features</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df: Dataframe</span>
+<span class="sd">            categorical_cols: list, list of categorical columns</span>
+<span class="sd">            correlation_type: str, pre-defined correlation type</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary maps two column names to correlation type and value</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">corr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">corr</span>
+
+    <span class="k">def</span> <span class="nf">_get_numerical_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">numerical_cols</span><span class="p">,</span> <span class="n">correlation_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span>
+        <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal function to calculate correlation among numerical features</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df: Dataframe</span>
+<span class="sd">            numerical_cols: list, list of numerical columns</span>
+<span class="sd">            correlation_type: str, pre-defined correlation type</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary maps two column names to correlation type and value</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">correlation_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pearson&#39;</span><span class="p">,</span> <span class="s1">&#39;kendall&#39;</span><span class="p">,</span> <span class="s1">&#39;spearman&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">UnsupportedMethodType</span><span class="p">(</span><span class="n">correlation_type</span><span class="p">)</span>
+        <span class="n">corr</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">numerical_cols</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">correlation_type</span><span class="p">)</span>
+        <span class="n">correlations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">col_a</span> <span class="ow">in</span> <span class="n">numerical_cols</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">col_b</span> <span class="ow">in</span> <span class="n">numerical_cols</span><span class="p">:</span>
+                <span class="n">correlations</span><span class="p">[(</span><span class="n">col_a</span><span class="p">,</span> <span class="n">col_b</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">correlation_type</span><span class="p">,</span> <span class="n">corr</span><span class="p">[</span><span class="n">col_a</span><span class="p">][</span><span class="n">col_b</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">correlations</span>
+
+    <span class="k">def</span> <span class="nf">_get_text_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">text_cols</span><span class="p">,</span> <span class="n">correlation_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal function to calculate correlation among text features</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df: Dataframe</span>
+<span class="sd">            text_cols: list, list of text columns</span>
+<span class="sd">            correlation_type: str, pre-defined correlation type</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary maps two column names to correlation type and value</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">corr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">corr</span>
+
+    <span class="k">def</span> <span class="nf">_get_categorical_vs_numerical_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">categorical_cols</span><span class="p">,</span> <span class="n">numerical_cols</span><span class="p">,</span> <span class="n">correlation_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span>
+        <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal function to calculate correlation between categorical feature and numerical feature</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df: Dataframe</span>
+<span class="sd">            categorical_cols: list, list of categorical columns</span>
+<span class="sd">            numerical_cols: list of numerical columns</span>
+<span class="sd">            correlation_type:</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary maps two column names to correlation type and value</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">cat_vs_num</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">cat_col_name</span><span class="p">,</span> <span class="n">num_col_name</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">correlation_type</span> <span class="o">==</span> <span class="s1">&#39;anova&#39;</span><span class="p">:</span>
+                <span class="n">group_series</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">enums</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">cat_col_name</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">enum</span> <span class="ow">in</span> <span class="n">enums</span><span class="p">:</span>
+                    <span class="n">group_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">cat_col_name</span><span class="p">]</span> <span class="o">==</span> <span class="n">enum</span><span class="p">][</span><span class="n">num_col_name</span><span class="p">])</span>
+                <span class="n">f_score</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">f_oneway</span><span class="p">(</span><span class="o">*</span><span class="n">group_series</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">f_score</span>
+
+        <span class="n">correlations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">categorical_col</span> <span class="ow">in</span> <span class="n">categorical_cols</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">numerical_col</span> <span class="ow">in</span> <span class="n">numerical_cols</span><span class="p">:</span>
+                <span class="n">correlations</span><span class="p">[(</span><span class="n">categorical_col</span><span class="p">,</span> <span class="n">numerical_col</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">correlation_type</span><span class="p">,</span>
+                                                                  <span class="n">cat_vs_num</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">categorical_col</span><span class="p">,</span> <span class="n">numerical_col</span><span class="p">,</span>
+                                                                             <span class="n">correlation_type</span><span class="p">))</span>
+                <span class="n">correlations</span><span class="p">[(</span><span class="n">numerical_col</span><span class="p">,</span> <span class="n">categorical_col</span><span class="p">)]</span> <span class="o">=</span> <span class="n">correlations</span><span class="p">[(</span><span class="n">categorical_col</span><span class="p">,</span> <span class="n">numerical_col</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">correlations</span>
+
+<div class="viewcode-block" id="FeatureInterpreter.get_feature_importance_ranking"><a class="viewcode-back" href="../../../model/model.interpreter.feature_interpreter.html#model.interpreter.feature_interpreter.FeatureInterpreter.get_feature_importance_ranking">[docs]</a>    <span class="k">def</span> <span class="nf">get_feature_importance_ranking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trained_model</span><span class="p">,</span> <span class="n">train_x</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span>
+                                       <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MODE</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span>
+        <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get feature importance ranking</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            trained_model: model obj, the trained model object</span>
+<span class="sd">            train_x: numpy.dnarray, training data</span>
+<span class="sd">            method: str, pre-defined method for feature importance</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of tuple (feature name, feature importance score) in descending order</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="n">trained_model</span><span class="o">.</span><span class="n">feature_importances_</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">InconsistentSize</span><span class="p">(</span><span class="s1">&#39;scores&#39;</span><span class="p">,</span> <span class="s1">&#39;feature_names&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">),</span>
+                                       <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">feature_importance</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">,</span> <span class="n">scores</span><span class="p">))}</span>
+                <span class="n">feature_importance</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">feature_importance</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">feature_importance</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">FeatureInterpreter</span><span class="o">.</span><span class="n">SUPPORTED_FEATURE_IMPORTANCE_TYPES</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">UnsupportedMethodType</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">train_x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">TrainingDataNotProvided</span>
+
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">ALG</span><span class="o">.</span><span class="n">SHAP</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ranking_by_shap</span><span class="p">(</span><span class="n">trained_model</span><span class="p">,</span> <span class="n">train_x</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FeatureInterpreter.get_feature_shap_values"><a class="viewcode-back" href="../../../model/model.interpreter.feature_interpreter.html#model.interpreter.feature_interpreter.FeatureInterpreter.get_feature_shap_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_feature_shap_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trained_model</span><span class="p">,</span> <span class="n">train_x</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MODE</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span>
+        <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get shap values for all samples group by features</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            trained_model: model obj, the trained model object</span>
+<span class="sd">            train_x: numpy.dnarray, training data</span>
+<span class="sd">            mode: str, regression or classification (default)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of tuple (feature name, shap values for each sample) if aggregation is False</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">enable_kernel_explainer</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">TreeExplainer</span><span class="p">(</span><span class="n">trained_model</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;Model type not yet supported by TreeExplainer&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                <span class="n">enable_kernel_explainer</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="n">message</span><span class="o">=</span><span class="s1">&#39;Warning: the current model type (</span><span class="si">%s</span><span class="s1">) is not supported by TreeExplainer in shap. &#39;</span> \
+                            <span class="s1">&#39;Will call KernelExplainer and may take longer to generate the feature importance.&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span>
+                        <span class="n">trained_model</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span>
+        <span class="k">if</span> <span class="n">enable_kernel_explainer</span><span class="p">:</span>
+            <span class="n">predict_call</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">trained_model</span><span class="p">,</span> <span class="s2">&quot;predict_proba&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">predict_call</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">predict_call</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">trained_model</span><span class="p">,</span> <span class="s1">&#39;predict&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                        <span class="s1">&#39;Fail to initialize explainer as model does not have the function call &lt;predict_proba&gt; and &lt;predict&gt;&#39;</span><span class="p">)</span>
+                <span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">KernelExplainer</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">trained_model</span><span class="o">.</span><span class="n">predict</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">train_x</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">KernelExplainer</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">trained_model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">train_x</span><span class="p">)</span>
+
+        <span class="n">shap_values</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">shap_values</span><span class="p">(</span><span class="n">train_x</span><span class="p">)</span>
+        <span class="n">feature_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shap_values</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">MODE</span><span class="o">.</span><span class="n">REGRESSION</span><span class="p">:</span>
+            <span class="n">feature_values</span> <span class="o">=</span> <span class="p">[(</span><span class="n">feature_name</span><span class="p">,</span> <span class="p">[[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">feature_value</span><span class="p">])</span> <span class="k">for</span> <span class="n">feature_name</span><span class="p">,</span> <span class="n">feature_value</span> <span class="ow">in</span>
+                              <span class="n">feature_values</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">feature_values</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_ranking_by_shap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trained_model</span><span class="p">,</span> <span class="n">train_x</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MODE</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal function to generate feature ranking using shap value</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            trained_model: model obj, the trained model object</span>
+<span class="sd">            train_x: numpy.dnarray, training data</span>
+<span class="sd">            mode: str, classification (default) or regression</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of tuple (feature name, feature importance score) in descending order</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">feature_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_feature_shap_values</span><span class="p">(</span><span class="n">trained_model</span><span class="o">=</span><span class="n">trained_model</span><span class="p">,</span> <span class="n">train_x</span><span class="o">=</span><span class="n">train_x</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+        <span class="n">sum_importance</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">))</span>
+        <span class="n">shap_values</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">feature_values</span><span class="p">])</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">shap_values</span><span class="p">)):</span>
+            <span class="n">global_shap_values</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">shap_values</span><span class="p">[</span><span class="n">ind</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">sum_importance</span> <span class="o">+=</span> <span class="n">global_shap_values</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="n">sum_importance</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">shap_values</span><span class="p">)</span>
+        <span class="n">feature_importance</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">,</span> <span class="n">scores</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))}</span>
+        <span class="n">feature_importance</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">feature_importance</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">feature_importance</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

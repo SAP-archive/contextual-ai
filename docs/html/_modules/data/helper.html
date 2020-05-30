@@ -1,0 +1,535 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>data.helper &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>data.helper</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for data.helper</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved</span>
+<span class="c1"># ============================================================================</span>
+<span class="c1"># -- Data Helper --</span>
+
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+
+<span class="kn">from</span> <span class="nn">statistics</span> <span class="kn">import</span> <span class="n">median</span>
+
+<span class="kn">import</span> <span class="nn">dateutil</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="kn">from</span> <span class="nn">xai.data.constants</span> <span class="kn">import</span> <span class="n">DATATYPE</span><span class="p">,</span> <span class="n">THRESHOLD</span>
+<span class="kn">from</span> <span class="nn">xai.data.explorer</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CategoricalDataAnalyzer</span><span class="p">,</span>
+    <span class="n">DataAnalyzerSuite</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">xai.data.validator</span> <span class="kn">import</span> <span class="n">MissingValidator</span>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1">### Data Helper</span>
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="get_column_types"><a class="viewcode-back" href="../../data/data.helper.html#data.helper.get_column_types">[docs]</a><span class="k">def</span> <span class="nf">get_column_types</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve data with default data type, when metadata is not provided</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (pandas): sample data</span>
+<span class="sd">        threshold (float): data threshold</span>
+<span class="sd">        label (str, Optional): label column name</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        feature, valid_feature_names, valid_feature_types, meta</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">check_key</span><span class="p">(</span><span class="n">_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">_data</span><span class="o">.</span><span class="n">dtypes</span> <span class="ow">in</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">_data</span><span class="o">.</span><span class="n">is_monotonic</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">check_numerical</span><span class="p">(</span><span class="n">_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">_data</span><span class="o">.</span><span class="n">dtypes</span> <span class="ow">in</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">check_datetime</span><span class="p">(</span><span class="n">_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">_data</span><span class="o">.</span><span class="n">dtypes</span> <span class="ow">in</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">def</span> <span class="nf">parse_date</span><span class="p">(</span><span class="n">_date</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dateutil</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">_date</span><span class="p">))</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">1</span>
+            <span class="k">except</span> <span class="ne">OverflowError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">1</span>
+
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">_data</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">threshold</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">_data</span><span class="p">):</span>
+            <span class="n">invalid_count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">_data</span><span class="o">.</span><span class="n">tolist</span><span class="p">():</span>
+                <span class="n">invalid_count</span> <span class="o">+=</span> <span class="n">parse_date</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">invalid_count</span> <span class="o">&lt;</span> <span class="n">threshold</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">_data</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">check_categorical</span><span class="p">(</span><span class="n">_data</span><span class="p">):</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span> <span class="ow">and</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">_data</span><span class="o">.</span><span class="n">tolist</span><span class="p">()])</span>
+        <span class="k">if</span> <span class="n">_data</span><span class="o">.</span><span class="n">dtypes</span> <span class="ow">in</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]:</span>
+            <span class="n">_threshold</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">THRESHOLD</span><span class="o">.</span><span class="n">FLOAT_UNIQUE_ABS_THRESHOLD</span><span class="p">,</span>
+                             <span class="n">threshold</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">_data</span><span class="p">))</span>  <span class="c1">## for float type, strict the threshold</span>
+        <span class="k">elif</span> <span class="n">_data</span><span class="o">.</span><span class="n">dtypes</span> <span class="ow">in</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]:</span>
+            <span class="n">_threshold</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">THRESHOLD</span><span class="o">.</span><span class="n">INT_UNIQUE_ABS_THRESHOLD</span><span class="p">,</span>
+                             <span class="n">threshold</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">_data</span><span class="p">))</span>  <span class="c1">## for int type, strict the threshold</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_threshold</span> <span class="o">=</span> <span class="n">threshold</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">_data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">_threshold</span><span class="p">:</span>
+            <span class="n">_median</span> <span class="o">=</span> <span class="n">median</span><span class="p">(</span><span class="n">counter</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">_median</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">check_text</span><span class="p">(</span><span class="n">_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">_data</span><span class="o">.</span><span class="n">dtypes</span> <span class="o">!=</span> <span class="nb">object</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">def</span> <span class="nf">_get_token_number</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_data</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">_data</span><span class="p">)</span> <span class="o">*</span> <span class="n">threshold</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">median</span><span class="p">(</span><span class="n">col_data</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">_get_token_number</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">valid_feature_names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">valid_feature_types</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">feature</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">CATEGORY</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">NUMBER</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">FREETEXT</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">DATETIME</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">meta</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">column</span> <span class="o">==</span> <span class="n">label</span><span class="p">:</span>
+            <span class="n">meta</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">TYPE</span><span class="p">:</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">LABEL</span><span class="p">,</span>
+                            <span class="n">DATATYPE</span><span class="o">.</span><span class="n">USED</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                            <span class="n">DATATYPE</span><span class="o">.</span><span class="n">STRUCTURED</span><span class="p">:</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">ATTRIBUTE</span><span class="p">}</span>
+            <span class="k">continue</span>
+        <span class="n">col_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">check_datetime</span><span class="p">(</span><span class="n">_data</span><span class="o">=</span><span class="n">col_data</span><span class="p">):</span>
+            <span class="c1"># datetime data</span>
+            <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">DATETIME</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+            <span class="n">valid_feature_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+            <span class="n">valid_feature_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">DATETIME</span><span class="p">)</span>
+            <span class="n">meta</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">TYPE</span><span class="p">:</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">DATETIME</span><span class="p">,</span>
+                            <span class="n">DATATYPE</span><span class="o">.</span><span class="n">USED</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                            <span class="n">DATATYPE</span><span class="o">.</span><span class="n">STRUCTURED</span><span class="p">:</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">ATTRIBUTE</span><span class="p">}</span>
+
+        <span class="k">elif</span> <span class="n">check_categorical</span><span class="p">(</span><span class="n">_data</span><span class="o">=</span><span class="n">col_data</span><span class="p">):</span>
+            <span class="c1"># categorical data</span>
+            <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">CATEGORY</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+            <span class="n">valid_feature_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+            <span class="n">valid_feature_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">CATEGORY</span><span class="p">)</span>
+            <span class="n">meta</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">TYPE</span><span class="p">:</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">CATEGORY</span><span class="p">,</span>
+                            <span class="n">DATATYPE</span><span class="o">.</span><span class="n">USED</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                            <span class="n">DATATYPE</span><span class="o">.</span><span class="n">STRUCTURED</span><span class="p">:</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">ATTRIBUTE</span><span class="p">}</span>
+
+        <span class="k">elif</span> <span class="n">check_key</span><span class="p">(</span><span class="n">_data</span><span class="o">=</span><span class="n">col_data</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="s1">&#39;Warning: the feature [</span><span class="si">%s</span><span class="s1">] is suspected to be key feature as it is monotonic integer. </span><span class="se">\n</span><span class="s1">&#39;</span>
+                        <span class="s1">&#39;[Examples]: </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">col_data</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[:</span><span class="mi">5</span><span class="p">]))</span>
+            <span class="n">meta</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">TYPE</span><span class="p">:</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">KEY</span><span class="p">,</span>
+                            <span class="n">DATATYPE</span><span class="o">.</span><span class="n">USED</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                            <span class="n">DATATYPE</span><span class="o">.</span><span class="n">STRUCTURED</span><span class="p">:</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">ATTRIBUTE</span><span class="p">}</span>
+
+        <span class="k">elif</span> <span class="n">check_numerical</span><span class="p">(</span><span class="n">_data</span><span class="o">=</span><span class="n">col_data</span><span class="p">):</span>
+            <span class="c1"># numerical data</span>
+            <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">NUMBER</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+            <span class="n">valid_feature_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+            <span class="n">valid_feature_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">NUMBER</span><span class="p">)</span>
+            <span class="n">meta</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">TYPE</span><span class="p">:</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">NUMBER</span><span class="p">,</span>
+                            <span class="n">DATATYPE</span><span class="o">.</span><span class="n">USED</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                            <span class="n">DATATYPE</span><span class="o">.</span><span class="n">STRUCTURED</span><span class="p">:</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">ATTRIBUTE</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">check_text</span><span class="p">(</span><span class="n">_data</span><span class="o">=</span><span class="n">col_data</span><span class="p">):</span>
+            <span class="c1"># text data</span>
+            <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">FREETEXT</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+            <span class="n">valid_feature_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+            <span class="n">valid_feature_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">FREETEXT</span><span class="p">)</span>
+            <span class="n">meta</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">TYPE</span><span class="p">:</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">FREETEXT</span><span class="p">,</span>
+                            <span class="n">DATATYPE</span><span class="o">.</span><span class="n">USED</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                            <span class="n">DATATYPE</span><span class="o">.</span><span class="n">STRUCTURED</span><span class="p">:</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">ATTRIBUTE</span><span class="p">}</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="s1">&#39;Warning: the feature [</span><span class="si">%s</span><span class="s1">] is suspected to be identifiable feature. </span><span class="se">\n</span><span class="s1">&#39;</span>
+                        <span class="s1">&#39;[Examples]: </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">col_data</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[:</span><span class="mi">5</span><span class="p">]))</span>
+            <span class="n">meta</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">TYPE</span><span class="p">:</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">KEY</span><span class="p">,</span>
+                            <span class="n">DATATYPE</span><span class="o">.</span><span class="n">USED</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                            <span class="n">DATATYPE</span><span class="o">.</span><span class="n">STRUCTURED</span><span class="p">:</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">ATTRIBUTE</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">feature</span><span class="p">,</span> <span class="n">valid_feature_names</span><span class="p">,</span> <span class="n">valid_feature_types</span><span class="p">,</span> <span class="n">meta</span></div>
+
+<div class="viewcode-block" id="get_valid_datatypes_from_meta"><a class="viewcode-back" href="../../data/data.helper.html#data.helper.get_valid_datatypes_from_meta">[docs]</a><span class="k">def</span> <span class="nf">get_valid_datatypes_from_meta</span><span class="p">(</span><span class="n">meta</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse the meta data into valid input for data analyzers</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        meta: dict, data meta data</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        feature: dict, which maps to data type for feature names</span>
+<span class="sd">        valid_feature_names: list, which contains all valid feature names</span>
+<span class="sd">        valid_feature_types: list, which contains all valid feature types</span>
+<span class="sd">        sequence_features: list, which contains all sequence features</span>
+<span class="sd">        label: str, label column name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">sequence_features</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">valid_feature_names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">valid_feature_types</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">feature</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">CATEGORY</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">NUMBER</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">FREETEXT</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">DATETIME</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">feature_name</span><span class="p">,</span> <span class="n">feature_config</span> <span class="ow">in</span> <span class="n">meta</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">feature_type</span> <span class="o">=</span> <span class="n">feature_config</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">TYPE</span><span class="p">]</span>
+        <span class="n">structured</span> <span class="o">=</span> <span class="n">feature_config</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">STRUCTURED</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">structured</span> <span class="o">==</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">SEQUENCE</span><span class="p">:</span>
+            <span class="n">sequence_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature_name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">feature_type</span> <span class="o">==</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">LABEL</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">feature_name</span>
+        <span class="k">if</span> <span class="n">feature_type</span> <span class="o">==</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">CATEGORY</span><span class="p">:</span>
+            <span class="n">valid_feature_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">CATEGORY</span><span class="p">)</span>
+            <span class="n">valid_feature_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature_name</span><span class="p">)</span>
+            <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">CATEGORY</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature_name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">feature_type</span> <span class="o">==</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">NUMBER</span><span class="p">:</span>
+            <span class="n">valid_feature_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">NUMBER</span><span class="p">)</span>
+            <span class="n">valid_feature_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature_name</span><span class="p">)</span>
+            <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">NUMBER</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature_name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">feature_type</span> <span class="o">==</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">FREETEXT</span><span class="p">:</span>
+            <span class="n">valid_feature_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">FREETEXT</span><span class="p">)</span>
+            <span class="n">valid_feature_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature_name</span><span class="p">)</span>
+            <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">FREETEXT</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature_name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">feature_type</span> <span class="o">==</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">DATETIME</span><span class="p">:</span>
+            <span class="n">valid_feature_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">DATETIME</span><span class="p">)</span>
+            <span class="n">valid_feature_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature_name</span><span class="p">)</span>
+            <span class="n">feature</span><span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">DATETIME</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature_name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">feature</span><span class="p">,</span> <span class="n">valid_feature_names</span><span class="p">,</span> <span class="n">valid_feature_types</span><span class="p">,</span> \
+           <span class="n">sequence_features</span><span class="p">,</span> <span class="n">label</span></div>
+
+<div class="viewcode-block" id="cast_type_to_string"><a class="viewcode-back" href="../../data/data.helper.html#data.helper.cast_type_to_string">[docs]</a><span class="k">def</span> <span class="nf">cast_type_to_string</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cast non-str/int column to string</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (pandas): sample data</span>
+<span class="sd">        feature_names (list): feature names which not int or str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">cast_to_str</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">feature_name</span> <span class="ow">in</span> <span class="n">feature_names</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">feature_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">feature_name</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">cast_to_str</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_label_distribution"><a class="viewcode-back" href="../../data/data.helper.html#data.helper.get_label_distribution">[docs]</a><span class="k">def</span> <span class="nf">get_label_distribution</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve data label distribution</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (pandas): sample data</span>
+<span class="sd">        label (str): label column name</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        label_distributions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">label_analyzer</span> <span class="o">=</span> <span class="n">CategoricalDataAnalyzer</span><span class="p">()</span>
+    <span class="n">label_analyzer</span><span class="o">.</span><span class="n">feed_all</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+    <span class="n">label_stats</span> <span class="o">=</span> <span class="n">label_analyzer</span><span class="o">.</span><span class="n">get_statistics</span><span class="p">()</span>
+
+    <span class="n">label_distributions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">label_distributions</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">label_stats</span><span class="o">.</span><span class="n">frequency_count</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">label_distributions</span></div>
+
+
+<div class="viewcode-block" id="get_missing_value_count"><a class="viewcode-back" href="../../data/data.helper.html#data.helper.get_missing_value_count">[docs]</a><span class="k">def</span> <span class="nf">get_missing_value_count</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">,</span> <span class="n">feature_types</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve missing value count</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (pandas): sample data</span>
+<span class="sd">        feature_names (list): valid feature names</span>
+<span class="sd">        feature_types (list): valid feature types</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        missing_value_count, total_count</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">generate_missing_value_schema</span><span class="p">():</span>
+        <span class="n">missing_value_schema</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">column_type</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">feature_names</span><span class="p">,</span> <span class="n">feature_types</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">column_type</span> <span class="ow">in</span> <span class="p">[</span><span class="n">DATATYPE</span><span class="o">.</span><span class="n">CATEGORY</span><span class="p">,</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">DATETIME</span><span class="p">,</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">FREETEXT</span><span class="p">]:</span>
+                <span class="n">missing_value_schema</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">missing_value_schema</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">missing_value_schema</span>
+
+    <span class="n">schema</span> <span class="o">=</span> <span class="n">generate_missing_value_schema</span><span class="p">()</span>
+    <span class="n">json_line</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;records&#39;</span><span class="p">))</span>
+    <span class="n">missing_validator</span> <span class="o">=</span> <span class="n">MissingValidator</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
+    <span class="n">missing_validator</span><span class="o">.</span><span class="n">validate_all</span><span class="p">(</span><span class="n">sample_list</span><span class="o">=</span><span class="n">json_line</span><span class="p">)</span>
+    <span class="n">stats</span> <span class="o">=</span> <span class="n">missing_validator</span><span class="o">.</span><span class="n">get_statistics</span><span class="p">()</span>
+    <span class="n">missing_count</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">column_stats</span><span class="p">)</span>
+    <span class="n">total_count</span> <span class="o">=</span> <span class="p">{</span><span class="n">feature_name</span><span class="p">:</span> <span class="n">stats</span><span class="o">.</span><span class="n">total_count</span> <span class="k">for</span> <span class="n">feature_name</span> <span class="ow">in</span>
+                   <span class="n">schema</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+    <span class="k">return</span> <span class="n">missing_count</span><span class="p">,</span> <span class="n">total_count</span></div>
+
+
+<div class="viewcode-block" id="get_data_statistics"><a class="viewcode-back" href="../../data/data.helper.html#data.helper.get_data_statistics">[docs]</a><span class="k">def</span> <span class="nf">get_data_statistics</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">,</span> <span class="n">feature_types</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve missing value count</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (pandas): sample data</span>
+<span class="sd">        feature_names (list): valid feature names</span>
+<span class="sd">        feature_types (list): valid feature types</span>
+<span class="sd">        label (str, Optional): label column name</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        data_stats</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data_analyzer_suite</span> <span class="o">=</span> <span class="n">DataAnalyzerSuite</span><span class="p">(</span><span class="n">data_type_list</span><span class="o">=</span><span class="n">feature_types</span><span class="p">,</span>
+                                            <span class="n">column_names</span><span class="o">=</span><span class="n">feature_names</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">column</span><span class="p">,</span> <span class="n">column_type</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">feature_names</span><span class="p">,</span> <span class="n">feature_types</span><span class="p">):</span>
+        <span class="n">data_analyzer_suite</span><span class="o">.</span><span class="n">feed_column</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="n">column</span><span class="p">,</span>
+                                        <span class="n">column_data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                                        <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+
+    <span class="n">stats</span> <span class="o">=</span> <span class="n">data_analyzer_suite</span><span class="o">.</span><span class="n">get_statistics</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">stats</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

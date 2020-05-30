@@ -1,0 +1,353 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>formatter.contents.feature &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>formatter.contents.feature</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for formatter.contents.feature</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved</span>
+<span class="c1"># ============================================================================</span>
+<span class="sd">&quot;&quot;&quot; Feature Content &quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="kn">from</span> <span class="nn">xai.formatter.contents.base</span> <span class="kn">import</span> <span class="n">Content</span>
+<span class="kn">from</span> <span class="nn">xai.formatter.writer.base</span> <span class="kn">import</span> <span class="n">Writer</span>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1">###  Feature Important Content</span>
+<span class="c1">################################################################################</span>
+<div class="viewcode-block" id="FeatureImportance"><a class="viewcode-back" href="../../../formatter/formatter.contents.feature.html#formatter.contents.feature.FeatureImportance">[docs]</a><span class="k">class</span> <span class="nc">FeatureImportance</span><span class="p">(</span><span class="n">Content</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Feature Importance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">importance_ranking</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">],</span> <span class="n">importance_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                 <span class="n">maximum_number_feature</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">notes</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add information of feature importance to the report.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            importance_ranking(:list of :list): a list of 2-item lists,</span>
+<span class="sd">                                    item[0]: score, item[1] feature_name</span>
+<span class="sd">            importance_threshold(float): threshold for displaying the</span>
+<span class="sd">                                        feature name and score in tables</span>
+<span class="sd">            maximum_number_feature(int): maximum number of features shown in bar-chart diagram</span>
+<span class="sd">            notes(str): text to explain the block</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FeatureImportance</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">importance_ranking</span><span class="p">,</span>
+                                                <span class="n">importance_threshold</span><span class="p">,</span>
+                                                <span class="n">maximum_number_feature</span><span class="p">,</span> <span class="n">notes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_importance_ranking</span> <span class="o">=</span> <span class="n">importance_ranking</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_importance_threshold</span> <span class="o">=</span> <span class="n">importance_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maximum_number_feature</span> <span class="o">=</span> <span class="n">maximum_number_feature</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_notes</span> <span class="o">=</span> <span class="n">notes</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">importance_ranking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns feature importance ranking.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_importance_ranking</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">importance_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns feature importance threshold .&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_importance_threshold</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">maximum_number_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns maximum number of features.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maximum_number_feature</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns feature importance info.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_notes</span>
+
+<div class="viewcode-block" id="FeatureImportance.draw"><a class="viewcode-back" href="../../../formatter/formatter.contents.feature.html#formatter.contents.feature.FeatureImportance.draw">[docs]</a>    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">writer</span><span class="p">:</span> <span class="n">Writer</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw Feature Importance</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            writer (Writer): Report Writer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">draw_feature_importance</span><span class="p">(</span><span class="n">notes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">,</span>
+                                       <span class="n">importance_ranking</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importance_ranking</span><span class="p">,</span>
+                                       <span class="n">importance_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importance_threshold</span><span class="p">,</span>
+                                       <span class="n">maximum_number_feature</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum_number_feature</span><span class="p">)</span></div></div>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1">###  Feature Shap Values Content</span>
+<span class="c1">################################################################################</span>
+<div class="viewcode-block" id="FeatureShapValues"><a class="viewcode-back" href="../../../formatter/formatter.contents.feature.html#formatter.contents.feature.FeatureShapValues">[docs]</a><span class="k">class</span> <span class="nc">FeatureShapValues</span><span class="p">(</span><span class="n">Content</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Feature Importance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">feature_shap_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]],</span>
+                 <span class="n">class_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">train_data</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                 <span class="n">notes</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add information of feature shap values to the report.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mode (str): Model Model - classification/regression model</span>
+<span class="sd">            feature_shap_values(:list of :tuple): a list of 2-item tuple,</span>
+<span class="sd">                                                  item[0]: feature name, item[1] shap values on each training samples</span>
+<span class="sd">            class_id(int): the class id for visualization.</span>
+<span class="sd">            train_data(numpy.dnarray): Optional, training data, row is for samples, column is for features.</span>
+<span class="sd">            notes(str): text to explain the block</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FeatureShapValues</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">feature_shap_values</span><span class="p">,</span>
+                                                <span class="n">class_id</span><span class="p">,</span>
+                                                <span class="n">train_data</span><span class="p">,</span>
+                                                <span class="n">notes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature_shap_values</span> <span class="o">=</span> <span class="n">feature_shap_values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_class_id</span> <span class="o">=</span> <span class="n">class_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_train_data</span> <span class="o">=</span> <span class="n">train_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_notes</span> <span class="o">=</span> <span class="n">notes</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns Mode.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">feature_shap_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns feature shap values.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_shap_values</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">class_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns class id.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">train_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns train_data.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_data</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns feature importance info.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_notes</span>
+
+<div class="viewcode-block" id="FeatureShapValues.draw"><a class="viewcode-back" href="../../../formatter/formatter.contents.feature.html#formatter.contents.feature.FeatureShapValues.draw">[docs]</a>    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">writer</span><span class="p">:</span> <span class="n">Writer</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw Feature Importance</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            writer (Writer): Report Writer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">draw_feature_shap_values</span><span class="p">(</span><span class="n">notes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span>
+                                        <span class="n">feature_shap_values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">feature_shap_values</span><span class="p">,</span>
+                                        <span class="n">class_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">class_id</span><span class="p">,</span>
+                                        <span class="n">train_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">train_data</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

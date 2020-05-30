@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>model.evaluation.result_compiler &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>model.evaluation.result_compiler</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for model.evaluation.result_compiler</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved</span>
+<span class="c1"># ============================================================================</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">roc_auc_score</span><span class="p">,</span> <span class="n">accuracy_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics.classification</span> <span class="kn">import</span> <span class="n">precision_recall_fscore_support</span><span class="p">,</span> <span class="n">confusion_matrix</span>
+
+<span class="kn">from</span> <span class="nn">xai.constants</span> <span class="kn">import</span> <span class="n">METRIC_CM</span><span class="p">,</span> <span class="n">METRIC_ACCURACY</span><span class="p">,</span> <span class="n">METRIC_AUC</span><span class="p">,</span> <span class="n">METRIC_F1</span><span class="p">,</span> <span class="n">METRIC_RECALL</span><span class="p">,</span> <span class="n">METRIC_PRECISION</span>
+<span class="kn">from</span> <span class="nn">xai.model.evaluation.binary_classification_result</span> <span class="kn">import</span> <span class="n">BinaryClassificationResult</span>
+<span class="kn">from</span> <span class="nn">xai.model.evaluation.multi_classification_result</span> <span class="kn">import</span> <span class="n">MultiClassificationResult</span>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1">### ResultCompiler</span>
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="ResultCompiler"><a class="viewcode-back" href="../../../model/model.evaluation.result_compiler.html#model.evaluation.result_compiler.ResultCompiler">[docs]</a><span class="k">class</span> <span class="nc">ResultCompiler</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for ResultCompiler</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">metric_list</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class for result</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            labels: list of str, list of labels</span>
+<span class="sd">            metric_list: list of enum, list of required metric</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span>
+        <span class="k">if</span> <span class="n">metric_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metric_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">METRIC_ACCURACY</span><span class="p">,</span> <span class="n">METRIC_PRECISION</span><span class="p">,</span> <span class="n">METRIC_RECALL</span><span class="p">,</span> <span class="n">METRIC_F1</span><span class="p">,</span> <span class="n">METRIC_CM</span><span class="p">,</span> <span class="n">METRIC_AUC</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metric_list</span> <span class="o">=</span> <span class="n">metric_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metric_scores_</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="ResultCompiler.load_results_from_raw_labels"><a class="viewcode-back" href="../../../model/model.evaluation.result_compiler.html#model.evaluation.result_compiler.ResultCompiler.load_results_from_raw_labels">[docs]</a>    <span class="k">def</span> <span class="nf">load_results_from_raw_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_true</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">conf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load results from true labels and predicted labels</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            y_true: numpy array, true labels</span>
+<span class="sd">            y_pred: numpy array, predicted labels</span>
+<span class="sd">            conf: numpy array, confidence scores of predicted labels</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">accuracy</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">)</span>
+        <span class="n">auc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="n">conf</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">precision</span><span class="p">,</span> <span class="n">recall</span><span class="p">,</span> <span class="n">f_score</span><span class="p">,</span> <span class="n">true_sum</span> <span class="o">=</span> <span class="n">precision_recall_fscore_support</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span>
+                                                                                   <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span>
+                                                                                   <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">auc</span> <span class="o">=</span> <span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_score</span><span class="o">=</span><span class="n">conf</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_precision</span><span class="p">,</span> <span class="n">_recall</span><span class="p">,</span> <span class="n">_f_score</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">precision_recall_fscore_support</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span>
+                                                                               <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span>
+                                                                               <span class="n">labels</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">))))</span>
+            <span class="n">class_precision</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">_precision</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))}</span>
+            <span class="n">precision</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="n">class_precision</span><span class="p">,</span> <span class="s1">&#39;average&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">_precision</span><span class="p">)}</span>
+
+            <span class="n">class_recall</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">_recall</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))}</span>
+            <span class="n">recall</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="n">class_recall</span><span class="p">,</span> <span class="s1">&#39;average&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">_recall</span><span class="p">)}</span>
+
+            <span class="n">class_f_score</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">_f_score</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))}</span>
+            <span class="n">f_score</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="n">class_f_score</span><span class="p">,</span> <span class="s1">&#39;average&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">_f_score</span><span class="p">)}</span>
+
+            <span class="n">class_accuracy</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="s1">&#39;-&#39;</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">}</span>
+            <span class="n">accuracy</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="n">class_accuracy</span><span class="p">,</span> <span class="s1">&#39;average&#39;</span><span class="p">:</span> <span class="n">accuracy</span><span class="p">}</span>
+
+            <span class="n">class_auc</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="s1">&#39;-&#39;</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">}</span>
+            <span class="n">auc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="n">class_auc</span><span class="p">,</span> <span class="s1">&#39;average&#39;</span><span class="p">:</span> <span class="s1">&#39;N.A.&#39;</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">METRIC_PRECISION</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metric_scores_</span><span class="p">[</span><span class="n">METRIC_PRECISION</span><span class="p">]</span> <span class="o">=</span> <span class="n">precision</span>
+        <span class="k">if</span> <span class="n">METRIC_RECALL</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metric_scores_</span><span class="p">[</span><span class="n">METRIC_RECALL</span><span class="p">]</span> <span class="o">=</span> <span class="n">recall</span>
+        <span class="k">if</span> <span class="n">METRIC_F1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metric_scores_</span><span class="p">[</span><span class="n">METRIC_F1</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_score</span>
+        <span class="k">if</span> <span class="n">METRIC_ACCURACY</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metric_scores_</span><span class="p">[</span><span class="n">METRIC_ACCURACY</span><span class="p">]</span> <span class="o">=</span> <span class="n">accuracy</span>
+        <span class="k">if</span> <span class="n">METRIC_CM</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metric_scores_</span><span class="p">[</span><span class="n">METRIC_CM</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;labels&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+                                              <span class="s1">&#39;values&#39;</span><span class="p">:</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">)}</span>
+        <span class="k">if</span> <span class="n">METRIC_AUC</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metric_scores_</span><span class="p">[</span><span class="n">METRIC_AUC</span><span class="p">]</span> <span class="o">=</span> <span class="n">auc</span></div>
+
+<div class="viewcode-block" id="ResultCompiler.load_results_from_raw_prediction"><a class="viewcode-back" href="../../../model/model.evaluation.result_compiler.html#model.evaluation.result_compiler.ResultCompiler.load_results_from_raw_prediction">[docs]</a>    <span class="k">def</span> <span class="nf">load_results_from_raw_prediction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_true</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y_prob</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load results from true labels and predicted probability</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            y_true: numpy array, true labels</span>
+<span class="sd">            y_prob: numpy array, predicted probability</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;y_prob should be a shape dimension of 2.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">y_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;y_prob should have a dimension of (?, </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">y_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_results_from_raw_labels</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span>
+                                              <span class="n">y_pred</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">y_prob</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                                              <span class="n">conf</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">y_prob</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ResultCompiler.get_result_instance"><a class="viewcode-back" href="../../../model/model.evaluation.result_compiler.html#model.evaluation.result_compiler.ResultCompiler.get_result_instance">[docs]</a>    <span class="k">def</span> <span class="nf">get_result_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get result object for formatter</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ClassificationResult object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">BinaryClassificationResult</span><span class="p">()</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">load_results_from_meta</span><span class="p">(</span><span class="n">evaluation_result</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric_scores_</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">MultiClassificationResult</span><span class="p">()</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">load_results_from_meta</span><span class="p">(</span><span class="n">evaluation_result</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric_scores_</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

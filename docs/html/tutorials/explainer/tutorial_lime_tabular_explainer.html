@@ -1,0 +1,699 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>LIME Tabular Explainer via XAI &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="LIME Text Explainer via XAI" href="tutorial_lime_text_explainer.html" />
+    <link rel="prev" title="XAI Explainer tutorials" href="../../inference_module_tutorial.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../training_module.html">Model Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../inference_module.html">Explainer Module</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../inference_module_tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../inference_module_tutorial.html#tutorial">Tutorial</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">LIME Tabular Explainer via XAI</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial_lime_text_explainer.html">LIME Text Explainer via XAI</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial_lime_text_explainer_with_keras.html">XAI LIME Text ExplainerFactory with Keras</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial_shap_tabular_explainer.html">SHAP Kernel Explainer for Tabular Data via XAI</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../explainer/explainer.html">API Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../inference_module.html">Explainer Module</a> &raquo;</li>
+        
+          <li><a href="../../inference_module_tutorial.html">XAI Explainer tutorials</a> &raquo;</li>
+        
+      <li>LIME Tabular Explainer via XAI</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/tutorials/explainer/tutorial_lime_tabular_explainer.nblink.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput,
+div.nbinput div.prompt,
+div.nbinput div.input_area,
+div.nbinput div[class*=highlight],
+div.nbinput div[class*=highlight] pre,
+div.nboutput,
+div.nbinput div.prompt,
+div.nbinput div.output_area,
+div.nboutput div[class*=highlight],
+div.nboutput div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput,
+div.nboutput {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput,
+    div.nboutput {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput div.prompt,
+div.nboutput div.prompt {
+    min-width: 5ex;
+    padding-top: 0.4em;
+    padding-right: 0.4em;
+    text-align: right;
+    flex: 0;
+}
+@media (max-width: 540px) {
+    div.nbinput div.prompt,
+    div.nboutput div.prompt {
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput div.prompt.empty {
+        padding: 0;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput div.prompt pre,
+div.nboutput div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput div.input_area,
+div.nboutput div.output_area {
+    padding: 0.4em;
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput div.input_area,
+    div.nboutput div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background: #f5f5f5;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="LIME-Tabular-Explainer-via-XAI">
+<h1>LIME Tabular Explainer via XAI<a class="headerlink" href="#LIME-Tabular-Explainer-via-XAI" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial demonstrates how to generate explanations using LIME’s tabular explainer implemented by the XAI library.</p>
+<p>At a high level, explanations can be obtained from any XAI explanation algorithm in 3 steps:</p>
+<ol class="arabic simple">
+<li><p>Create an explainer via the <code class="docutils literal notranslate"><span class="pre">ExplainerFactory</span></code> class, which serves as the primary interface between the user and all XAI-supported explanation algorithms</p></li>
+<li><p>Build the explainer by calling the <code class="docutils literal notranslate"><span class="pre">build_explainer</span></code> method (which is implemented by any XAI explanation algorithm) and providing arguments that are specific to that algorithm</p></li>
+<li><p>Get explanations for some data instance by calling the <code class="docutils literal notranslate"><span class="pre">explain_instance</span></code> method (which is also common among all algorithms) and provoding arguments that are specific to that algorithm</p></li>
+</ol>
+<div class="section" id="Step-1:-Import-libraries">
+<h2>Step 1: Import libraries<a class="headerlink" href="#Step-1:-Import-libraries" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">xai.explainer.ExplainerFactory</span></code> is the main class that users of XAI interact with. <code class="docutils literal notranslate"><span class="pre">xai</span></code> contains some constants that are used to instantiate an <code class="docutils literal notranslate"><span class="pre">AbstractExplainer</span></code> object.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Some auxiliary imports for the tutorial</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+
+<span class="c1"># Set seed for reproducibility</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123456</span><span class="p">)</span>
+
+<span class="c1"># Set the path so that we can import ExplainerFactory</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../../&#39;</span><span class="p">)</span>
+
+<span class="c1"># Main XAI imports</span>
+<span class="kn">import</span> <span class="nn">xai</span>
+<span class="kn">from</span> <span class="nn">xai.explainer</span> <span class="kn">import</span> <span class="n">ExplainerFactory</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Step-2:-Train-a-model-on-a-sample-dataset">
+<h2>Step 2: Train a model on a sample dataset<a class="headerlink" href="#Step-2:-Train-a-model-on-a-sample-dataset" title="Permalink to this headline">¶</a></h2>
+<p>We train a sample <code class="docutils literal notranslate"><span class="pre">RandomForestClassifier</span></code> model on the Wisconsin breast cancer dataset, a sample binary classification problem that is provided by scikit-learn (details can be found <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html#sklearn.datasets.load_breast_cancer">here</a>).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Load the dataset and prepare training and test sets</span>
+<span class="n">raw_data</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_breast_cancer</span><span class="p">()</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">raw_data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">],</span> <span class="n">raw_data</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+
+<span class="c1"># Instantiate a classifier, train, and evaluate on test set</span>
+<span class="n">clf</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">()</span>
+<span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/i330688/venv_xai/lib/python3.6/site-packages/sklearn/ensemble/forest.py:245: FutureWarning: The default value of n_estimators will change from 10 in version 0.20 to 100 in 0.22.
+  &#34;10 in version 0.20 to 100 in 0.22.&#34;, FutureWarning)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>0.956140350877193
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Step-3:-Instantiate-the-explainer">
+<h2>Step 3: Instantiate the explainer<a class="headerlink" href="#Step-3:-Instantiate-the-explainer" title="Permalink to this headline">¶</a></h2>
+<p>This is where we instantiate the XAI explainer. This <code class="docutils literal notranslate"><span class="pre">ExplainerFactory</span></code> class is in charge of loading a particular explanation algorithm. The user is required to provide one argument - the <code class="docutils literal notranslate"><span class="pre">domain</span></code>, which indicates the domain of the training data (e.g. <code class="docutils literal notranslate"><span class="pre">tabular</span></code> or <code class="docutils literal notranslate"><span class="pre">text</span></code>). The available domains can be found in <code class="docutils literal notranslate"><span class="pre">xai.DOMAIN</span></code>. Users can also select a particular explainer algorithm by providing the algorithm’s name (registered in <code class="docutils literal notranslate"><span class="pre">xai.ALG</span></code>) to the <code class="docutils literal notranslate"><span class="pre">algorithm</span></code> parameter. If this
+argument is not provided, the <code class="docutils literal notranslate"><span class="pre">ExplainerFactory.get_explainer</span></code> method defaults to a pre-set algorithm for that domain which can be found in <code class="docutils literal notranslate"><span class="pre">xai/explainer/config.py</span></code>.</p>
+<p>We want to load the <code class="docutils literal notranslate"><span class="pre">LimeTabularExplainer</span></code>, so we provide <code class="docutils literal notranslate"><span class="pre">xai.DOMAIN.TABULAR</span></code> as the argument to <code class="docutils literal notranslate"><span class="pre">domain</span></code> and <code class="docutils literal notranslate"><span class="pre">xai.ALG.LIME</span></code> as the argument to <code class="docutils literal notranslate"><span class="pre">algorithm</span></code>. Note that <code class="docutils literal notranslate"><span class="pre">xai.ALG.LIME</span></code> is the default tabular explanation algorithm; hence this also works:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">explainer</span> <span class="o">=</span> <span class="n">ExplainerFactory</span><span class="o">.</span><span class="n">get_explainer</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">xai</span><span class="o">.</span><span class="n">DOMAIN</span><span class="o">.</span><span class="n">TABULAR</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Instantiate LimeTabularExplainer via the Explainer interface</span>
+<span class="n">explainer</span> <span class="o">=</span> <span class="n">ExplainerFactory</span><span class="o">.</span><span class="n">get_explainer</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">xai</span><span class="o">.</span><span class="n">DOMAIN</span><span class="o">.</span><span class="n">TABULAR</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="n">xai</span><span class="o">.</span><span class="n">ALG</span><span class="o">.</span><span class="n">LIME</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Step-4:-Build-the-explainer">
+<h2>Step 4: Build the explainer<a class="headerlink" href="#Step-4:-Build-the-explainer" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">build_explainer</span></code> calls the explanation algorithms initialization routine, which can include things like setting parameters or a pre-training loop. The <code class="docutils literal notranslate"><span class="pre">LimeTabularExplainer</span></code> requires the following parameters:</p>
+<ul class="simple">
+<li><p>training_data (np.ndarray): 2d Numpy array representing the training data (or some representative subset) (<strong>required</strong>)</p></li>
+<li><p>mode (str): Whether the problem is ‘classification’ or ‘regression’ (<strong>required</strong>)</p></li>
+<li><p>predict_fn (function): A function that wraps the target model’s prediction function - it takes in a 1D numpy array and outputs a vector of probabilities which should sum to 1 (<strong>required</strong>)</p></li>
+</ul>
+<p>Here are some other optional parameters: * training_labels (list): Training labels, which can be used by the continuous feature discretizer * feature_names (list): The names of the columns of the training data * categorical_features (list): Integer list indicating the indices of categorical features * dict_categorical_mapping (dict): Mapping of integer index of categorical feature (same as from categorical_features) to a list of values for that column. So dict_categorical_mapping[x][y] is
+the yth value of column x. * kernel_width (float): Width of the exponential kernel used in the LIME loss function * verbose (bool): Control verbosity. If true, local prediction values of the LIME model are printed * class_names (list): Class names (positional index corresponding to class index) * feature_selection (str): Feature selection method. See original docs for more details * discretize_continuous (True): Whether to discretize non-categorical features * discretizer (str): Type of
+discretization. See original docs for more details * sample_around_instance (True): if True, will sample continuous features in perturbed samples from a normal centered at the instance being explained. Otherwise, the normal is centered on the mean of the feature data. * random_state (int): The random seed to generate random numbers during training</p>
+<p>In this particular example, we pass the <code class="docutils literal notranslate"><span class="pre">RandomForestClassifier</span></code>’s <code class="docutils literal notranslate"><span class="pre">predict_proba</span></code> function to <code class="docutils literal notranslate"><span class="pre">predict_fn</span></code> and get explanations for the two classes.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">explainer</span><span class="o">.</span><span class="n">build_explainer</span><span class="p">(</span>
+    <span class="n">training_data</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span>
+    <span class="n">training_labels</span><span class="o">=</span><span class="n">y_train</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="n">xai</span><span class="o">.</span><span class="n">MODE</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="p">,</span>
+    <span class="n">predict_fn</span><span class="o">=</span><span class="n">clf</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">,</span>
+    <span class="n">feature_names</span><span class="o">=</span><span class="n">raw_data</span><span class="p">[</span><span class="s1">&#39;feature_names&#39;</span><span class="p">],</span>
+    <span class="n">class_names</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">raw_data</span><span class="p">[</span><span class="s1">&#39;target_names&#39;</span><span class="p">])</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Step-5:-Generate-some-explanations">
+<h2>Step 5: Generate some explanations<a class="headerlink" href="#Step-5:-Generate-some-explanations" title="Permalink to this headline">¶</a></h2>
+<p>Once we build the explainer, we can start generating some explanations via the <code class="docutils literal notranslate"><span class="pre">explain_instance</span></code> method. The <code class="docutils literal notranslate"><span class="pre">LimeTabularExplainer</span></code> expects several things, like: * instance (np.ndarray): A 1D numpy array corresponding to a row/single example (<strong>required</strong>)</p>
+<p>You can also pass the following:</p>
+<ul class="simple">
+<li><p>labels (list): The list of class indexes to produce explanations for</p></li>
+<li><p>top_labels (int): If not None, this overwrites labels and the explainer instead produces explanations for the top k classes</p></li>
+<li><p>num_features (int): Number of features to include in an explanation</p></li>
+<li><p>num_samples (int): The number of perturbed samples to train the LIME model with</p></li>
+<li><p>distance_metric (str): The distance metric to use for weighting the loss function</p></li>
+</ul>
+<p>We restrict explanations to 10 features (meaning only 10 features will have scores attached to them). The output of <code class="docutils literal notranslate"><span class="pre">explain_instance</span></code> is a dictionary that maps each class to two things - the confidence of model and a list of explanations.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">exp</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">explain_instance</span><span class="p">(</span>
+    <span class="n">instance</span><span class="o">=</span><span class="n">X_test</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">top_labels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">num_features</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">pprint</span><span class="p">(</span><span class="n">exp</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{0: {&#39;explanation&#39;: [{&#39;feature&#39;: &#39;worst perimeter &lt;= 83.79&#39;,
+                      &#39;score&#39;: -0.10193695487658752},
+                     {&#39;feature&#39;: &#39;worst area &lt;= 509.25&#39;,
+                      &#39;score&#39;: -0.09601666088375639},
+                     {&#39;feature&#39;: &#39;worst radius &lt;= 12.93&#39;,
+                      &#39;score&#39;: -0.06025582708518221},
+                     {&#39;feature&#39;: &#39;mean area &lt;= 419.25&#39;,
+                      &#39;score&#39;: -0.056302517885391166},
+                     {&#39;feature&#39;: &#39;worst texture &lt;= 21.41&#39;,
+                      &#39;score&#39;: -0.05509499962470648}],
+     &#39;prediction&#39;: 0.0},
+ 1: {&#39;explanation&#39;: [{&#39;feature&#39;: &#39;worst perimeter &lt;= 83.79&#39;,
+                      &#39;score&#39;: 0.10193695487658752},
+                     {&#39;feature&#39;: &#39;worst area &lt;= 509.25&#39;,
+                      &#39;score&#39;: 0.0960166608837564},
+                     {&#39;feature&#39;: &#39;worst radius &lt;= 12.93&#39;,
+                      &#39;score&#39;: 0.06025582708518222},
+                     {&#39;feature&#39;: &#39;mean area &lt;= 419.25&#39;,
+                      &#39;score&#39;: 0.05630251788539119},
+                     {&#39;feature&#39;: &#39;worst texture &lt;= 21.41&#39;,
+                      &#39;score&#39;: 0.05509499962470641}],
+     &#39;prediction&#39;: 1.0}}
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Step-6:-Save-and-load-the-explainer">
+<h2>Step 6: Save and load the explainer<a class="headerlink" href="#Step-6:-Save-and-load-the-explainer" title="Permalink to this headline">¶</a></h2>
+<p>Finally, every XAI explainer supports saving and loading functions.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Save the explainer somewhere</span>
+
+<span class="n">explainer</span><span class="o">.</span><span class="n">save_explainer</span><span class="p">(</span><span class="s1">&#39;artefacts/lime_tabular.pkl&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Load the saved explainer in a new Explainer instance</span>
+
+<span class="n">new_explainer</span> <span class="o">=</span> <span class="n">ExplainerFactory</span><span class="o">.</span><span class="n">get_explainer</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">xai</span><span class="o">.</span><span class="n">DOMAIN</span><span class="o">.</span><span class="n">TABULAR</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="n">xai</span><span class="o">.</span><span class="n">ALG</span><span class="o">.</span><span class="n">LIME</span><span class="p">)</span>
+<span class="n">new_explainer</span><span class="o">.</span><span class="n">load_explainer</span><span class="p">(</span><span class="s1">&#39;artefacts/lime_tabular.pkl&#39;</span><span class="p">)</span>
+
+<span class="n">exp</span> <span class="o">=</span> <span class="n">new_explainer</span><span class="o">.</span><span class="n">explain_instance</span><span class="p">(</span>
+    <span class="n">instance</span><span class="o">=</span><span class="n">X_test</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">top_labels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">num_features</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">pprint</span><span class="p">(</span><span class="n">exp</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{0: {&#39;explanation&#39;: [{&#39;feature&#39;: &#39;worst perimeter &lt;= 83.79&#39;,
+                      &#39;score&#39;: -0.09985606175737251},
+                     {&#39;feature&#39;: &#39;worst area &lt;= 509.25&#39;,
+                      &#39;score&#39;: -0.08623375147255567},
+                     {&#39;feature&#39;: &#39;mean area &lt;= 419.25&#39;,
+                      &#39;score&#39;: -0.07671371631709668},
+                     {&#39;feature&#39;: &#39;worst radius &lt;= 12.93&#39;,
+                      &#39;score&#39;: -0.06861610584095608},
+                     {&#39;feature&#39;: &#39;worst texture &lt;= 21.41&#39;,
+                      &#39;score&#39;: -0.05078617133441289}],
+     &#39;prediction&#39;: 0.0},
+ 1: {&#39;explanation&#39;: [{&#39;feature&#39;: &#39;worst perimeter &lt;= 83.79&#39;,
+                      &#39;score&#39;: 0.09985606175737251},
+                     {&#39;feature&#39;: &#39;worst area &lt;= 509.25&#39;,
+                      &#39;score&#39;: 0.08623375147255567},
+                     {&#39;feature&#39;: &#39;mean area &lt;= 419.25&#39;,
+                      &#39;score&#39;: 0.0767137163170967},
+                     {&#39;feature&#39;: &#39;worst radius &lt;= 12.93&#39;,
+                      &#39;score&#39;: 0.0686161058409561},
+                     {&#39;feature&#39;: &#39;worst texture &lt;= 21.41&#39;,
+                      &#39;score&#39;: 0.05078617133441288}],
+     &#39;prediction&#39;: 1.0}}
+</pre></div></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tutorial_lime_text_explainer.html" class="btn btn-neutral float-right" title="LIME Text Explainer via XAI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../../inference_module_tutorial.html" class="btn btn-neutral float-left" title="XAI Explainer tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,620 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>formatter.hypertext_markup.publisher module &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="formatter.hypertext_markup.writer module" href="formatter.hypertext_markup.writer.html" />
+    <link rel="prev" title="formatter.hypertext_markup package" href="formatter.hypertext_markup.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../formatter_module.html">Formatter Module</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../formatter_module_tutorial.html">Tutorial</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="formatter.html">API Documentation</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="formatter.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="formatter.contents.html">formatter.contents package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="formatter.hypertext_markup.html">formatter.hypertext_markup package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="formatter.portable_document.html">formatter.portable_document package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="formatter.report.html">formatter.report package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="formatter.writer.html">formatter.writer package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../formatter_module.html">Formatter Module</a> &raquo;</li>
+        
+          <li><a href="formatter.html">formatter package</a> &raquo;</li>
+        
+          <li><a href="formatter.hypertext_markup.html">formatter.hypertext_markup package</a> &raquo;</li>
+        
+      <li>formatter.hypertext_markup.publisher module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/formatter/formatter.hypertext_markup.publisher.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-formatter.hypertext_markup.publisher">
+<span id="formatter-hypertext-markup-publisher-module"></span><h1>formatter.hypertext_markup.publisher module<a class="headerlink" href="#module-formatter.hypertext_markup.publisher" title="Permalink to this headline">¶</a></h1>
+<p>HTML Report Formatter - Publisher</p>
+<dl class="class">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml">
+<em class="property">class </em><code class="sig-name descname">CustomHtml</code><span class="sig-paren">(</span><em class="sig-param">name='html_report'</em>, <em class="sig-param">*</em>, <em class="sig-param">path='./'</em>, <em class="sig-param">style=None</em>, <em class="sig-param">script=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.COPY_RIGHT">
+<code class="sig-name descname">COPY_RIGHT</code><em class="property"> = 'Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved'</em><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.COPY_RIGHT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.add_anchor">
+<em class="property">static </em><code class="sig-name descname">add_anchor</code><span class="sig-paren">(</span><em class="sig-param">text: str</em>, <em class="sig-param">link=None</em>, <em class="sig-param">on_click=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.add_anchor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.add_anchor" title="Permalink to this definition">¶</a></dt>
+<dd><p>add link idx as anchor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – text string written to pdf, with current
+global indent level</p></li>
+<li><p><strong>link</strong> (<em>str</em>) – link idx created earlier for internal anchor</p></li>
+<li><p><strong>on_click</strong> (<em>bool</em>) – indicate if the list item (menu) click-able,
+default False</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.add_basic_nested_info">
+<em class="property">static </em><code class="sig-name descname">add_basic_nested_info</code><span class="sig-paren">(</span><em class="sig-param">data: list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.add_basic_nested_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.add_basic_nested_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>add basic nested info</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>list</em>) – list of tuple / list of (list of tuple))
+multi-level rendering, e.g. to display <cite>model_info</cite></p>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.add_grid_image">
+<em class="property">static </em><code class="sig-name descname">add_grid_image</code><span class="sig-paren">(</span><em class="sig-param">srcs: dict</em>, <em class="sig-param">*</em>, <em class="sig-param">width=None</em>, <em class="sig-param">height=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.add_grid_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.add_grid_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>add an block of images formatted with grid specification</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Args:</dt><dd><p>srcs (dict): image paths with attribute as key
+width (int): width of image
+height (int): height of image</p>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.add_header">
+<em class="property">static </em><code class="sig-name descname">add_header</code><span class="sig-paren">(</span><em class="sig-param">text: str</em>, <em class="sig-param">heading: str</em>, <em class="sig-param">link=None</em>, <em class="sig-param">style=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.add_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.add_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>add text string as header</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – text string written to pdf, with current
+global indent level</p></li>
+<li><p><strong>heading</strong> (<em>str</em>) – heading elements of the text (h1 - h6)</p></li>
+<li><p><strong>link</strong> (<em>str</em>) – link idx created earlier for internal anchor</p></li>
+<li><p><strong>style</strong> (<em>bool</em>) – css style class</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.add_image">
+<em class="property">static </em><code class="sig-name descname">add_image</code><span class="sig-paren">(</span><em class="sig-param">src: str</em>, <em class="sig-param">alt: str</em>, <em class="sig-param">*</em>, <em class="sig-param">width=None</em>, <em class="sig-param">height=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.add_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.add_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>add an image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>str</em>) – image path</p></li>
+<li><p><strong>alt</strong> (<em>str</em>) – image attribute</p></li>
+<li><p><strong>width</strong> (<em>int</em>) – width of image</p></li>
+<li><p><strong>height</strong> (<em>int</em>) – height of image</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.add_overview_table">
+<em class="property">static </em><code class="sig-name descname">add_overview_table</code><span class="sig-paren">(</span><em class="sig-param">data: list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.add_overview_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.add_overview_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>add overview table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>list</em>) – list of key:value pairs to add to table row</p>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.add_overview_table_with_dict">
+<em class="property">static </em><code class="sig-name descname">add_overview_table_with_dict</code><span class="sig-paren">(</span><em class="sig-param">data: dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.add_overview_table_with_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.add_overview_table_with_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>add overview table with dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – list of key:value pairs to add to table row</p>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.add_paragraph">
+<em class="property">static </em><code class="sig-name descname">add_paragraph</code><span class="sig-paren">(</span><em class="sig-param">text: str</em>, <em class="sig-param">link=None</em>, <em class="sig-param">style=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.add_paragraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.add_paragraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>add a new paragraph with text string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – text string written to html,
+with current global indent level</p></li>
+<li><p><strong>link</strong> (<em>int</em>) – link idx created earlier for internal anchor</p></li>
+<li><p><strong>style</strong> (<em>str</em>) – styles applied to the text
+‘B’: bold,
+‘I’: italic,
+‘U’: underline,
+or any combination of above</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.add_table">
+<em class="property">static </em><code class="sig-name descname">add_table</code><span class="sig-paren">(</span><em class="sig-param">header: list</em>, <em class="sig-param">data: list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.add_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.add_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>add table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>header</strong> (<em>list</em>) – list of header</p></li>
+<li><p><strong>data</strong> (<em>list</em>) – list of rows (list)</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.add_table_image_group">
+<em class="property">static </em><code class="sig-name descname">add_table_image_group</code><span class="sig-paren">(</span><em class="sig-param">header: list</em>, <em class="sig-param">data: list</em>, <em class="sig-param">src: str</em>, <em class="sig-param">alt: str</em>, <em class="sig-param">*</em>, <em class="sig-param">width=None</em>, <em class="sig-param">height=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.add_table_image_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.add_table_image_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>add a block of image with table (table on the left, image on the right)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>header</strong> (<em>list</em><em>(</em><em>str</em><em>)</em>) – table header</p></li>
+<li><p><strong>data</strong> – list(list(string)), 2D nested list with table content</p></li>
+<li><p><strong>src</strong> (<em>str</em>) – image path</p></li>
+<li><p><strong>alt</strong> (<em>str</em>) – image attribute</p></li>
+<li><p><strong>width</strong> (<em>int</em>) – width of image</p></li>
+<li><p><strong>height</strong> (<em>int</em>) – height of image</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.add_table_with_dict">
+<em class="property">static </em><code class="sig-name descname">add_table_with_dict</code><span class="sig-paren">(</span><em class="sig-param">data: dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.add_table_with_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.add_table_with_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>add table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – list of key:value pairs to add to table row</p>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.add_unordered_kay_value_pair_list">
+<em class="property">static </em><code class="sig-name descname">add_unordered_kay_value_pair_list</code><span class="sig-paren">(</span><em class="sig-param">items: list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.add_unordered_kay_value_pair_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.add_unordered_kay_value_pair_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>add unordered list Key:Value pair list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>list</em>) – list of key:value pairs to add to unordered list</p>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.add_unordered_list">
+<em class="property">static </em><code class="sig-name descname">add_unordered_list</code><span class="sig-paren">(</span><em class="sig-param">items: list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.add_unordered_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.add_unordered_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>add unordered list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>list</em>) – list of section title to add to unordered list</p>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.article">
+<em class="property">property </em><code class="sig-name descname">article</code><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.article" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns HTML Body Section Article</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.create_body_footer">
+<em class="property">static </em><code class="sig-name descname">create_body_footer</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.create_body_footer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.create_body_footer" title="Permalink to this definition">¶</a></dt>
+<dd><p>create HTML Body Footer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Footer Text</p>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.create_body_header">
+<em class="property">static </em><code class="sig-name descname">create_body_header</code><span class="sig-paren">(</span><em class="sig-param">header: list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.create_body_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.create_body_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>create HTML Body Header</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>header</strong> (<em>list</em>) – Header Content</p>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.create_body_nav">
+<em class="property">static </em><code class="sig-name descname">create_body_nav</code><span class="sig-paren">(</span><em class="sig-param">nav: list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.create_body_nav"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.create_body_nav" title="Permalink to this definition">¶</a></dt>
+<dd><p>create HTML Body Navigator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nav</strong> (<em>list</em>) – Nav Content</p>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.create_body_section">
+<em class="property">static </em><code class="sig-name descname">create_body_section</code><span class="sig-paren">(</span><em class="sig-param">articles: list</em>, <em class="sig-param">create_date: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.create_body_section"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.create_body_section" title="Permalink to this definition">¶</a></dt>
+<dd><p>create HTML Body Section</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>articles</strong> (<em>list</em>) – Article Content</p></li>
+<li><p><strong>create_date</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.create_div">
+<em class="property">static </em><code class="sig-name descname">create_div</code><span class="sig-paren">(</span><em class="sig-param">contents: list</em>, <em class="sig-param">*</em>, <em class="sig-param">link=None</em>, <em class="sig-param">tab=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.create_div"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.create_div" title="Permalink to this definition">¶</a></dt>
+<dd><p>create div</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contents</strong> (<em>list</em>) – Division Content</p></li>
+<li><p><strong>link</strong> (<em>str</em>) – link idx created earlier for internal anchor</p></li>
+<li><p><strong>tab</strong> (<em>bool</em>) – Content tab indicator</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.create_head">
+<em class="property">static </em><code class="sig-name descname">create_head</code><span class="sig-paren">(</span><em class="sig-param">style: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.create_head"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.create_head" title="Permalink to this definition">¶</a></dt>
+<dd><p>create HTML Head</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>style</strong> (<em>str</em>) – CSS Style</p>
+</dd>
+</dl>
+<p>Returns: HTML String</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.extension">
+<em class="property">property </em><code class="sig-name descname">extension</code><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.extension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns file extension.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.generate">
+<code class="sig-name descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate HTML</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.header">
+<em class="property">property </em><code class="sig-name descname">header</code><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns HTML Body Section Header</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.name">
+<em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns file name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.path">
+<em class="property">property </em><code class="sig-name descname">path</code><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns file output path</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.script">
+<em class="property">property </em><code class="sig-name descname">script</code><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns jsp file path</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.style">
+<em class="property">property </em><code class="sig-name descname">style</code><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.style" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns css file path</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.CustomHtml.to_file">
+<code class="sig-name descname">to_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#CustomHtml.to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.CustomHtml.to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output HTML to some destination</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="formatter.hypertext_markup.publisher.Div">
+<em class="property">class </em><code class="sig-name descname">Div</code><a class="reference internal" href="../_modules/formatter/hypertext_markup/publisher.html#Div"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.hypertext_markup.publisher.Div" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.Div.items">
+<em class="property">property </em><code class="sig-name descname">items</code><a class="headerlink" href="#formatter.hypertext_markup.publisher.Div.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns division item list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.hypertext_markup.publisher.Div.title">
+<em class="property">property </em><code class="sig-name descname">title</code><a class="headerlink" href="#formatter.hypertext_markup.publisher.Div.title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns division title.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="formatter.hypertext_markup.writer.html" class="btn btn-neutral float-right" title="formatter.hypertext_markup.writer module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="formatter.hypertext_markup.html" class="btn btn-neutral float-left" title="formatter.hypertext_markup package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

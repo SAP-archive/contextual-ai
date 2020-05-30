@@ -1,0 +1,339 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>explainer.constants module &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="explainer.explainer_exceptions module" href="explainer.explainer_exceptions.html" />
+    <link rel="prev" title="explainer.config module" href="explainer.config.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training_module.html">Model Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../inference_module.html">Explainer Module</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../inference_module_tutorial.html">Tutorial</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="explainer.html">API Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="explainer.html#subpackages">Subpackages</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="explainer.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="explainer.abstract_explainer.html">explainer.abstract_explainer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="explainer.config.html">explainer.config module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">explainer.constants module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="explainer.explainer_exceptions.html">explainer.explainer_exceptions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="explainer.explainer_factory.html">explainer.explainer_factory module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="explainer.helper.html">explainer.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="explainer.utils.html">explainer.utils module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../inference_module.html">Explainer Module</a> &raquo;</li>
+        
+          <li><a href="explainer.html">explainer package</a> &raquo;</li>
+        
+      <li>explainer.constants module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/explainer/explainer.constants.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-explainer.constants">
+<span id="explainer-constants-module"></span><h1>explainer.constants module<a class="headerlink" href="#module-explainer.constants" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="explainer.constants.ALG">
+<em class="property">class </em><code class="sig-name descname">ALG</code><a class="reference internal" href="../_modules/explainer/constants.html#ALG"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#explainer.constants.ALG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Code name for algorithms</p>
+<dl class="attribute">
+<dt id="explainer.constants.ALG.LIME">
+<code class="sig-name descname">LIME</code><em class="property"> = 'lime'</em><a class="headerlink" href="#explainer.constants.ALG.LIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="explainer.constants.ALG.SHAP">
+<code class="sig-name descname">SHAP</code><em class="property"> = 'shap'</em><a class="headerlink" href="#explainer.constants.ALG.SHAP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="explainer.constants.DOMAIN">
+<em class="property">class </em><code class="sig-name descname">DOMAIN</code><a class="reference internal" href="../_modules/explainer/constants.html#DOMAIN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#explainer.constants.DOMAIN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Domain of the data</p>
+<dl class="attribute">
+<dt id="explainer.constants.DOMAIN.TABULAR">
+<code class="sig-name descname">TABULAR</code><em class="property"> = 'tabular'</em><a class="headerlink" href="#explainer.constants.DOMAIN.TABULAR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="explainer.constants.DOMAIN.TEXT">
+<code class="sig-name descname">TEXT</code><em class="property"> = 'text'</em><a class="headerlink" href="#explainer.constants.DOMAIN.TEXT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="explainer.constants.MODE">
+<em class="property">class </em><code class="sig-name descname">MODE</code><a class="reference internal" href="../_modules/explainer/constants.html#MODE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#explainer.constants.MODE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Problem types for the explainer</p>
+<dl class="attribute">
+<dt id="explainer.constants.MODE.CLASSIFICATION">
+<code class="sig-name descname">CLASSIFICATION</code><em class="property"> = 'classification'</em><a class="headerlink" href="#explainer.constants.MODE.CLASSIFICATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="explainer.constants.MODE.REGRESSION">
+<code class="sig-name descname">REGRESSION</code><em class="property"> = 'regression'</em><a class="headerlink" href="#explainer.constants.MODE.REGRESSION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="explainer.constants.OUTPUT">
+<em class="property">class </em><code class="sig-name descname">OUTPUT</code><a class="reference internal" href="../_modules/explainer/constants.html#OUTPUT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#explainer.constants.OUTPUT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="explainer.constants.OUTPUT.EXPLANATION">
+<code class="sig-name descname">EXPLANATION</code><em class="property"> = 'explanation'</em><a class="headerlink" href="#explainer.constants.OUTPUT.EXPLANATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="explainer.constants.OUTPUT.FEATURE">
+<code class="sig-name descname">FEATURE</code><em class="property"> = 'feature'</em><a class="headerlink" href="#explainer.constants.OUTPUT.FEATURE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="explainer.constants.OUTPUT.PREDICTION">
+<code class="sig-name descname">PREDICTION</code><em class="property"> = 'prediction'</em><a class="headerlink" href="#explainer.constants.OUTPUT.PREDICTION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="explainer.constants.OUTPUT.SCORE">
+<code class="sig-name descname">SCORE</code><em class="property"> = 'score'</em><a class="headerlink" href="#explainer.constants.OUTPUT.SCORE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="explainer.explainer_exceptions.html" class="btn btn-neutral float-right" title="explainer.explainer_exceptions module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="explainer.config.html" class="btn btn-neutral float-left" title="explainer.config module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

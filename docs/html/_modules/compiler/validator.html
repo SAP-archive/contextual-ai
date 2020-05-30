@@ -1,0 +1,689 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>compiler.validator &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>compiler.validator</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for compiler.validator</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved</span>
+<span class="c1"># ============================================================================</span>
+<span class="sd">&quot;&quot;&quot; Compiler - Explainer &quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">from</span> <span class="nn">xai.compiler.base</span> <span class="kn">import</span> <span class="n">Dict2Obj</span>
+<span class="kn">from</span> <span class="nn">xai.data.constants</span> <span class="kn">import</span> <span class="n">DATATYPE</span>
+<span class="kn">from</span> <span class="nn">xai.data.exceptions</span> <span class="kn">import</span> <span class="n">AnalyzerDataTypeNotSupported</span>
+<span class="kn">from</span> <span class="nn">xai.data.explorer</span> <span class="kn">import</span> <span class="n">CategoricalDataAnalyzer</span><span class="p">,</span> <span class="n">NumericDataAnalyzer</span><span class="p">,</span> \
+    <span class="n">TextDataAnalyzer</span><span class="p">,</span> <span class="n">DatetimeDataAnalyzer</span>
+<span class="kn">from</span> <span class="nn">xai.data.explorer</span> <span class="kn">import</span> <span class="n">CategoricalStats</span><span class="p">,</span> <span class="n">NumericalStats</span><span class="p">,</span> <span class="n">TextStats</span><span class="p">,</span> \
+    <span class="n">DatetimeStats</span>
+<span class="kn">from</span> <span class="nn">xai.data.validator.dataframe_validator</span> <span class="kn">import</span> <span class="n">DataframeValidator</span>
+<span class="kn">from</span> <span class="nn">xai.formatter</span> <span class="kn">import</span> <span class="n">Report</span>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1">### DuplicationOrphanCheck</span>
+<span class="c1">################################################################################</span>
+<div class="viewcode-block" id="DuplicationOrphanCheck"><a class="viewcode-back" href="../../compiler/compiler.validator.html#compiler.validator.DuplicationOrphanCheck">[docs]</a><span class="k">class</span> <span class="nc">DuplicationOrphanCheck</span><span class="p">(</span><span class="n">Dict2Obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compiler for Duplication Orphan Check</span>
+
+<span class="sd">    Param:</span>
+<span class="sd">        package (str, Optional): component package name</span>
+<span class="sd">        module (str, Optional): component module name</span>
+<span class="sd">        class (str): component class name</span>
+
+<span class="sd">    Attr:</span>
+<span class="sd">        data (str): path to dataframe file</span>
+<span class="sd">        duplication_rule (dict): a dict which represents the rule, of which there are following keys:</span>
+<span class="sd">                                - keys (list of str): the list of columns that the duplication is checked on.</span>
+<span class="sd">                                                 Default is None and duplication is checking on all columns.</span>
+<span class="sd">                                - to_file (str): the filepath that duplicate-removed dataframe dumps to.</span>
+<span class="sd">                                                 Default is None and no save back,</span>
+<span class="sd">        orphan_rules (dict): a dict which represents the rule, of which there are following keys:</span>
+<span class="sd">                                - rules: a list of dict object, which of each object is a rule and has following keys:</span>
+<span class="sd">                                        - local_key (str): column name in current data frame</span>
+<span class="sd">                                        - foreign_data (str): foreign file path</span>
+<span class="sd">                                        - foreign_key (str): column name in the foreign file</span>
+<span class="sd">                                - to_file (str): filepath to dump the orphan-droped data frame.</span>
+<span class="sd">                                                 Default is None and no save back.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &quot;component&quot;: {</span>
+<span class="sd">            &quot;package&quot;: &quot;xai&quot;,</span>
+<span class="sd">            &quot;module&quot;: &quot;compiler&quot;,</span>
+<span class="sd">            &quot;class&quot;: &quot;DuplicationOrphanCheck&quot;,</span>
+<span class="sd">            &quot;attr&quot;: {</span>
+<span class="sd">              &quot;data&quot;: &quot;./student.csv&quot;,</span>
+<span class="sd">              &quot;duplication_rule&quot;: {</span>
+<span class="sd">                &quot;keys&quot;: [</span>
+<span class="sd">                  &quot;STUDENT_ID&quot;</span>
+<span class="sd">                ],</span>
+<span class="sd">                &quot;to_file&quot;: &quot;./data/drop_student.csv&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              &quot;orphan_rules&quot;: {</span>
+<span class="sd">                  &quot;rules&quot;:[</span>
+<span class="sd">                    {</span>
+<span class="sd">                      &quot;local_key&quot;: &quot;STUDENT_ID&quot;,</span>
+<span class="sd">                      &quot;foreign_data&quot;: &quot;./course.csv&quot;,</span>
+<span class="sd">                      &quot;foreign_key&quot;: &quot;STUDENT_ID&quot;</span>
+<span class="sd">                    }</span>
+<span class="sd">                  ],</span>
+<span class="sd">                  &quot;to_file&quot;: &quot;./data/drop_student_2.csv&quot;</span>
+<span class="sd">              }</span>
+<span class="sd">            }</span>
+<span class="sd">          }</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;definitions&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;orphan_rule&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;local_key&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+                    <span class="s2">&quot;foreign_data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">]},</span>
+                    <span class="s2">&quot;foreign_key&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;local_key&quot;</span><span class="p">,</span> <span class="s2">&quot;foreign_data&quot;</span><span class="p">,</span> <span class="s2">&quot;foreign_key&quot;</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">]},</span>
+            <span class="s2">&quot;duplication_rule&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;keys&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+                        <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">None</span>
+                    <span class="p">},</span>
+                    <span class="s2">&quot;to_file&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">None</span>
+                    <span class="p">},</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;orphan_rules&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;rules&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s2">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/definitions/orphan_rule&quot;</span>
+                        <span class="p">}</span>
+                    <span class="p">},</span>
+                    <span class="s2">&quot;to_file&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+        <span class="p">},</span>
+        <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Init</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dictionary (dict): attribute to set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DuplicationOrphanCheck</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span>
+                                                     <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">:</span> <span class="n">Report</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execution</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            report (Report): report object</span>
+<span class="sd">            level (int): content level</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DuplicationOrphanCheck</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span>
+                                                     <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">)</span>
+        <span class="c1"># -- Load Parameters --</span>
+        <span class="n">data_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+        <span class="n">duplication_rule</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;duplication_rule&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">orphan_rules</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;orphan_rules&#39;</span><span class="p">)</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># -- Load Data --</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">data_var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">data_var</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># -- Information about Raw Dataframe --</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_key_value_pairs</span><span class="p">(</span><span class="n">info_list</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;Total number of raw samples&#39;</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
+                                               <span class="n">notes</span><span class="o">=</span><span class="s1">&#39;Raw Data Quantity&#39;</span><span class="p">)</span>
+
+        <span class="c1"># -- Initialize DataframeValidator --</span>
+        <span class="n">dv_processor</span> <span class="o">=</span> <span class="n">DataframeValidator</span><span class="p">()</span>
+
+        <span class="c1"># -- Duplication Check about Raw Dataframe --</span>
+        <span class="k">if</span> <span class="s1">&#39;keys&#39;</span> <span class="ow">in</span> <span class="n">duplication_rule</span><span class="p">:</span>
+            <span class="n">duplication_keys</span> <span class="o">=</span> <span class="n">duplication_rule</span><span class="p">[</span><span class="s1">&#39;keys&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">duplication_keys</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s1">&#39;to_file&#39;</span> <span class="ow">in</span> <span class="n">duplication_rule</span><span class="p">:</span>
+            <span class="n">duplication_to_file</span> <span class="o">=</span> <span class="n">duplication_rule</span><span class="p">[</span><span class="s1">&#39;to_file&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">duplication_to_file</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">duplicated_indices</span> <span class="o">=</span> <span class="n">dv_processor</span><span class="o">.</span><span class="n">duplication_check</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">duplication_keys</span><span class="p">)</span>
+        <span class="n">drop_indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">([</span><span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">duplicated_indices</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_key_value_pairs</span><span class="p">(</span><span class="n">info_list</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;Total number of samples after duplication check on </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">duplication_keys</span> <span class="k">if</span> <span class="n">duplication_keys</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;all columns&quot;</span><span class="p">),</span>
+                                                           <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">drop_indices</span><span class="p">))],</span>
+                                               <span class="n">notes</span><span class="o">=</span><span class="s1">&#39;Duplication Check&#39;</span><span class="p">)</span>
+        <span class="n">duplicate_dropped_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">drop_indices</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">duplication_to_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">duplicate_dropped_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">duplication_to_file</span><span class="p">)</span>
+
+        <span class="c1"># -- Orphan Relation Check about Duplicated Data --</span>
+        <span class="n">orphan_check_info</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="s2">&quot;rules&quot;</span> <span class="ow">in</span> <span class="n">orphan_rules</span><span class="p">:</span>
+            <span class="n">rules</span> <span class="o">=</span> <span class="n">orphan_rules</span><span class="p">[</span><span class="s2">&quot;rules&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rules</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;to_file&quot;</span> <span class="ow">in</span> <span class="n">orphan_rules</span><span class="p">:</span>
+            <span class="n">orphan_to_filepath</span> <span class="o">=</span> <span class="n">orphan_rules</span><span class="p">[</span><span class="s2">&quot;to_file&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">orphan_to_filepath</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">all_orphaned_index</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">:</span>
+            <span class="n">local_key</span> <span class="o">=</span> <span class="n">rule</span><span class="p">[</span><span class="s1">&#39;local_key&#39;</span><span class="p">]</span>
+            <span class="n">foreign_var</span> <span class="o">=</span> <span class="n">rule</span><span class="p">[</span><span class="s1">&#39;foreign_data&#39;</span><span class="p">]</span>
+            <span class="n">foreign_key</span> <span class="o">=</span> <span class="n">rule</span><span class="p">[</span><span class="s1">&#39;foreign_key&#39;</span><span class="p">]</span>
+
+            <span class="n">foreign_df</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">foreign_var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="n">foreign_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">foreign_var</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">orphan_indices</span> <span class="o">=</span> <span class="n">dv_processor</span><span class="o">.</span><span class="n">orphaned_relation_check</span><span class="p">(</span><span class="n">df_a</span><span class="o">=</span><span class="n">duplicate_dropped_df</span><span class="p">,</span>
+                                                                  <span class="n">df_b</span><span class="o">=</span><span class="n">foreign_df</span><span class="p">,</span>
+                                                                  <span class="n">col_a</span><span class="o">=</span><span class="n">local_key</span><span class="p">,</span>
+                                                                  <span class="n">col_b</span><span class="o">=</span><span class="n">foreign_key</span><span class="p">)</span>
+
+            <span class="n">all_orphaned_index</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">orphan_indices</span><span class="p">))</span>
+
+            <span class="n">orphan_check_info</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">] not in [</span><span class="si">%s</span><span class="s2"> of </span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">local_key</span><span class="p">,</span> <span class="n">foreign_key</span><span class="p">,</span> <span class="n">foreign_var</span><span class="p">),</span>
+                                      <span class="nb">len</span><span class="p">(</span><span class="n">orphan_indices</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">orphan_check_info</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_key_value_pairs</span><span class="p">(</span><span class="n">info_list</span><span class="o">=</span><span class="n">orphan_check_info</span><span class="p">,</span> <span class="n">notes</span><span class="o">=</span><span class="s1">&#39;Orphaned Relation Check&#39;</span><span class="p">)</span>
+
+        <span class="n">orphan_dropped_df</span> <span class="o">=</span> <span class="n">duplicate_dropped_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">all_orphaned_index</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">orphan_to_filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">orphan_dropped_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">orphan_to_filepath</span><span class="p">)</span></div>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1">### Complete Match Check</span>
+<span class="c1">################################################################################</span>
+<div class="viewcode-block" id="CompleteMatchCheck"><a class="viewcode-back" href="../../compiler/compiler.validator.html#compiler.validator.CompleteMatchCheck">[docs]</a><span class="k">class</span> <span class="nc">CompleteMatchCheck</span><span class="p">(</span><span class="n">Dict2Obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compiler for Complete Match Check</span>
+
+<span class="sd">    Param:</span>
+<span class="sd">        package (str, Optional): component package name</span>
+<span class="sd">        module (str, Optional): component module name</span>
+<span class="sd">        class (str): component class name</span>
+
+<span class="sd">    Attr:</span>
+<span class="sd">        data (str): path to dataframe file</span>
+<span class="sd">        entity_a_column(str): the index column in entity A</span>
+<span class="sd">        entity_b_column(str): the index column in entity B</span>
+<span class="sd">        relational_a_columns(dict): a config dict represents the distributions to be shown in the entity A,</span>
+<span class="sd">                                    it has the following keys:</span>
+<span class="sd">                                    - columns(list of str): a list of columns that require visualization for columns</span>
+<span class="sd">                                    - foreign_file(str): file path to data file for entity.</span>
+<span class="sd">                                                         Default is None if the columns are in the same data frame.</span>
+<span class="sd">                                    - foreign_index(str): the index column in foreign data mapped to `entity_a_column`.</span>
+<span class="sd">                                             Default is `entity_a_column` and will be ignored if foreign_file is None.</span>
+<span class="sd">        relational_b_columns(dict): a config dict represents the distributions to be shown in the entity B.</span>
+<span class="sd">                                    Details see above for `relational_a_columns`.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &quot;component&quot;: {</span>
+<span class="sd">            &quot;package&quot;: &quot;xai&quot;,</span>
+<span class="sd">            &quot;module&quot;: &quot;compiler&quot;,</span>
+<span class="sd">            &quot;class&quot;: &quot;CompleteMatchCheck&quot;,</span>
+<span class="sd">            &quot;attr&quot;: {</span>
+<span class="sd">              &quot;data&quot;: &quot;matching.csv&quot;,</span>
+<span class="sd">              &quot;entity_a_column&quot;: &quot;STUDENT_ID&quot;,</span>
+<span class="sd">              &quot;entity_b_column&quot;: &quot;COURSE_ID&quot;,</span>
+<span class="sd">              &quot;relational_a_columns&quot;: {</span>
+<span class="sd">                    &quot;foreign_file&quot;: &quot;student.csv&quot;,</span>
+<span class="sd">                    &quot;foreign_index&quot;: &quot;STUDENT_ID&quot;,</span>
+<span class="sd">                    &quot;columns&quot;: [</span>
+<span class="sd">                        {&quot;name&quot;: &quot;GENDER&quot;, &quot;type&quot;: &quot;categorical},</span>
+<span class="sd">                        {&quot;name&quot;: &quot;AGE&quot;, &quot;type&quot;: &quot;numerical}</span>
+<span class="sd">                    ]</span>
+<span class="sd">              },</span>
+<span class="sd">              &quot;relational_b_columns&quot;: {</span>
+<span class="sd">                    &quot;foreign_file&quot;: &quot;course.csv&quot;,</span>
+<span class="sd">                    &quot;foreign_index&quot;: &quot;COURSE_ID&quot;,</span>
+<span class="sd">                    &quot;columns&quot;: [</span>
+<span class="sd">                        {&quot;name&quot;: &quot;DEPARTMENT&quot;, &quot;type&quot;: &quot;categorical&quot;},</span>
+<span class="sd">                        {&quot;name&quot;: &quot;DURATION&quot;, &quot;type&quot;: &quot;numerical&quot;}</span>
+<span class="sd">                    ]</span>
+<span class="sd">              }</span>
+<span class="sd">            }</span>
+<span class="sd">          }</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;definitions&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;relational_columns&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;foreign_file&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">]},</span>
+                    <span class="s2">&quot;foreign_index&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+                    <span class="s2">&quot;columns&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;property&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+                                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;enum&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;categorical&quot;</span><span class="p">,</span> <span class="s2">&quot;numerical&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;datetime&quot;</span><span class="p">]}</span>
+                            <span class="p">}</span>
+                        <span class="p">}</span>
+                    <span class="p">},</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;columns&quot;</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">]},</span>
+            <span class="s2">&quot;entity_a_column&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;entity_b_column&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;relational_a_columns&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/definitions/relational_columns&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;relational_b_columns&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/definitions/relational_columns&quot;</span><span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;entity_a_column&quot;</span><span class="p">,</span> <span class="s2">&quot;entity_b_column&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Init</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dictionary (dict): attribute to set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CompleteMatchCheck</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span>
+                                                 <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">:</span> <span class="n">Report</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execution</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            report (Report): report object</span>
+<span class="sd">            level (int): content level</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CompleteMatchCheck</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span>
+                                                 <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">)</span>
+
+        <span class="c1"># -- Load Parameters --</span>
+        <span class="n">data_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+        <span class="n">entity_a_column</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;entity_a_column&#39;</span><span class="p">)</span>
+        <span class="n">entity_b_column</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;entity_b_column&#39;</span><span class="p">)</span>
+
+        <span class="n">relational_a_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;relational_a_columns&#39;</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">relational_b_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;relational_b_columns&#39;</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># -- Load Data --</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">data_var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">data_var</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">get_relational_column_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">default_entity_key</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            helper method to retrieve valid information from relational column config json</span>
+<span class="sd">            Args:</span>
+<span class="sd">                config (dict): same format as `relational_a_columns` and `relational_b_columns`</span>
+<span class="sd">                default_entity_key(str): default index key for the entity to search for distribution</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                entity_df: pandas.DataFrame, the data frame for entity</span>
+<span class="sd">                entity_key: str, the index search for mapping with `entity_a_column` or `entity_b_column`</span>
+<span class="sd">                entity_unit_stats: dict, the basic unit dict to capture the distribution.</span>
+<span class="sd">                                    - key: column name</span>
+<span class="sd">                                    - value: corresponding analyzer based on data type</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="n">entity_df</span> <span class="o">=</span> <span class="n">df</span>
+            <span class="n">entity_unit_stats</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">entity_key</span> <span class="o">=</span> <span class="n">default_entity_key</span>
+
+            <span class="k">if</span> <span class="s2">&quot;foreign_file&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                <span class="n">foreign_var</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;foreign_file&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">foreign_var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+                    <span class="n">entity_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">foreign_var</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;foreign_index&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                    <span class="n">entity_key</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;foreign_index&quot;</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;columns&#39;</span><span class="p">]:</span>
+                <span class="n">col_name</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                <span class="n">col_type</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">col_type</span> <span class="o">==</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">CATEGORY</span><span class="p">:</span>
+                    <span class="n">entity_unit_stats</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">CategoricalDataAnalyzer</span><span class="p">()</span>
+                    <span class="n">entity_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">entity_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">col_type</span> <span class="o">==</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">NUMBER</span><span class="p">:</span>
+                    <span class="n">entity_unit_stats</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">NumericDataAnalyzer</span><span class="p">()</span>
+                    <span class="n">entity_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">entity_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">col_type</span> <span class="o">==</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">FREETEXT</span><span class="p">:</span>
+                    <span class="n">entity_unit_stats</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">TextDataAnalyzer</span><span class="p">()</span>
+                    <span class="n">entity_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">entity_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">col_type</span> <span class="o">==</span> <span class="n">DATATYPE</span><span class="o">.</span><span class="n">DATETIME</span><span class="p">:</span>
+                    <span class="n">entity_unit_stats</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">DatetimeDataAnalyzer</span><span class="p">()</span>
+                    <span class="n">entity_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">entity_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">AnalyzerDataTypeNotSupported</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">col_type</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">entity_df</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">,</span> <span class="n">entity_unit_stats</span>
+
+        <span class="c1"># -- Initialize the stats default dict --</span>
+        <span class="n">entity_a_stats</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">entity_b_stats</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">relational_a_columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">entity_a_df</span><span class="p">,</span> <span class="n">entity_a_key</span><span class="p">,</span> <span class="n">entity_a_unit_stats</span> <span class="o">=</span> \
+                <span class="n">get_relational_column_config</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">relational_a_columns</span><span class="p">,</span>
+                                             <span class="n">default_entity_key</span><span class="o">=</span><span class="n">entity_a_column</span><span class="p">)</span>
+            <span class="n">entity_a_stats</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">entity_a_unit_stats</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">relational_b_columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">entity_b_df</span><span class="p">,</span> <span class="n">entity_b_key</span><span class="p">,</span> <span class="n">entity_b_unit_stats</span> <span class="o">=</span> \
+                <span class="n">get_relational_column_config</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">relational_b_columns</span><span class="p">,</span>
+                                             <span class="n">default_entity_key</span><span class="o">=</span><span class="n">entity_b_column</span><span class="p">)</span>
+            <span class="n">entity_b_stats</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">entity_b_unit_stats</span><span class="p">))</span>
+
+        <span class="c1"># -- Check Complete Match --</span>
+        <span class="n">dv</span> <span class="o">=</span> <span class="n">DataframeValidator</span><span class="p">()</span>
+        <span class="n">complete_matches</span> <span class="o">=</span> <span class="n">dv</span><span class="o">.</span><span class="n">find_m_to_n_complete_matches</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">col_a</span><span class="o">=</span><span class="n">entity_a_column</span><span class="p">,</span> <span class="n">col_b</span><span class="o">=</span><span class="n">entity_b_column</span><span class="p">)</span>
+        <span class="c1"># -- Process complete match result and update visualization columns stats --</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;number of complete matches:&quot;</span><span class="p">,</span> <span class="n">complete_matches</span><span class="p">)</span>
+        <span class="n">m2n_stats</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">col_a</span><span class="p">,</span> <span class="n">col_b</span> <span class="ow">in</span> <span class="n">complete_matches</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_a</span><span class="p">)</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_b</span><span class="p">)</span>
+            <span class="n">m2n_stats</span><span class="p">[(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">entity_a_stats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">sub_df</span> <span class="o">=</span> <span class="n">entity_a_df</span><span class="p">[</span><span class="n">entity_a_df</span><span class="p">[</span><span class="n">entity_a_key</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">col_a</span><span class="p">)]</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="n">entity_a_key</span><span class="p">],</span>
+                                                                                            <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">analyzer</span> <span class="ow">in</span> <span class="n">entity_a_stats</span><span class="p">[(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">values</span> <span class="o">=</span> <span class="n">sub_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                    <span class="n">analyzer</span><span class="o">.</span><span class="n">feed_all</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">entity_b_stats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">sub_df</span> <span class="o">=</span> <span class="n">entity_b_df</span><span class="p">[</span><span class="n">entity_b_df</span><span class="p">[</span><span class="n">entity_b_key</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">col_b</span><span class="p">)]</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="n">entity_b_key</span><span class="p">],</span>
+                                                                                            <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">analyzer</span> <span class="ow">in</span> <span class="n">entity_b_stats</span><span class="p">[(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">values</span> <span class="o">=</span> <span class="n">sub_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                    <span class="n">analyzer</span><span class="o">.</span><span class="n">feed_all</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="c1"># -- Process complete match result and update visualization columns stats --</span>
+        <span class="n">table_header</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="n">entity_a_column</span><span class="p">,</span> <span class="n">entity_b_column</span><span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">draw_distribution_for_stats</span><span class="p">(</span><span class="n">stats</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Internal function to draw stats</span>
+<span class="sd">            Args:</span>
+<span class="sd">                stats: stat object generated from data.explorer</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span> <span class="o">==</span> <span class="n">CategoricalStats</span><span class="p">:</span>
+                <span class="n">dist_header</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">,</span> <span class="s2">&quot;Percentage&quot;</span><span class="p">]</span>
+                <span class="n">dist_values</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">count_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">frequency_count</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">stats</span><span class="o">.</span><span class="n">frequency_count</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">dist_values</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%.2f%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">value</span> <span class="o">/</span> <span class="n">count_sum</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)])</span>
+                <span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_table</span><span class="p">(</span><span class="n">table_header</span><span class="o">=</span><span class="n">dist_header</span><span class="p">,</span> <span class="n">table_data</span><span class="o">=</span><span class="n">dist_values</span><span class="p">,</span>
+                                        <span class="n">col_width</span><span class="o">=</span><span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span> <span class="o">==</span> <span class="n">NumericalStats</span><span class="p">:</span>
+                <span class="n">dist_header</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Statistical Field&#39;</span><span class="p">,</span> <span class="s1">&#39;Value&#39;</span><span class="p">]</span>
+                <span class="n">dist_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+                <span class="n">dist_values</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Total valid count&#39;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">total_count</span><span class="p">)])</span>
+                <span class="n">dist_values</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Min&#39;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">float</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">min</span><span class="p">)])</span>
+                <span class="n">dist_values</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Max&#39;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">float</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">max</span><span class="p">)])</span>
+                <span class="n">dist_values</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Mean&#39;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">float</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">mean</span><span class="p">)])</span>
+                <span class="n">dist_values</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Median&#39;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">float</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">median</span><span class="p">)])</span>
+                <span class="n">dist_values</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Standard deviation&#39;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">float</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">sd</span><span class="p">)])</span>
+                <span class="n">dist_values</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;NAN count&#39;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">nan_count</span><span class="p">)])</span>
+                <span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_table</span><span class="p">(</span><span class="n">table_header</span><span class="o">=</span><span class="n">dist_header</span><span class="p">,</span> <span class="n">table_data</span><span class="o">=</span><span class="n">dist_values</span><span class="p">,</span>
+                                        <span class="n">col_width</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">60</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span> <span class="o">==</span> <span class="n">TextStats</span><span class="p">:</span>
+                <span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_text_field_distribution</span><span class="p">(</span><span class="n">col_name</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="n">stats</span><span class="p">})</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span> <span class="o">==</span> <span class="n">DatetimeStats</span><span class="p">:</span>
+                <span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_datetime_field_distribution</span><span class="p">(</span><span class="n">col_name</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="n">stats</span><span class="p">})</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">m2n_stats</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="n">m2n_stats</span><span class="p">[(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)]</span>
+            <span class="n">table_values</span> <span class="o">=</span> <span class="p">[[</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">count</span> <span class="o">*</span> <span class="n">m</span><span class="p">,</span> <span class="n">count</span> <span class="o">*</span> <span class="n">n</span><span class="p">]]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">count</span> <span class="o">*</span> <span class="n">m</span><span class="p">,</span> <span class="n">count</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span>
+            <span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_table</span><span class="p">(</span><span class="n">table_header</span><span class="o">=</span><span class="n">table_header</span><span class="p">,</span> <span class="n">table_data</span><span class="o">=</span><span class="n">table_values</span><span class="p">,</span> <span class="n">col_width</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">entity_a_stats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">analyzer</span> <span class="ow">in</span> <span class="n">entity_a_stats</span><span class="p">[(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_paragraph</span><span class="p">(</span><span class="s1">&#39;Distribution: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">col_name</span><span class="p">)</span>
+                    <span class="n">stats</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">get_statistics</span><span class="p">()</span>
+                    <span class="n">draw_distribution_for_stats</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">entity_b_stats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">analyzer</span> <span class="ow">in</span> <span class="n">entity_b_stats</span><span class="p">[(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_paragraph</span><span class="p">(</span><span class="s1">&#39;Distribution: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">col_name</span><span class="p">)</span>
+                    <span class="n">stats</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">get_statistics</span><span class="p">()</span>
+                    <span class="n">draw_distribution_for_stats</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

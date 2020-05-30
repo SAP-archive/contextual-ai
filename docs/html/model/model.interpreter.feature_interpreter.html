@@ -1,0 +1,357 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>model.interpreter.feature_interpreter module &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="model.interpreter.model_interpreter module" href="model.interpreter.model_interpreter.html" />
+    <link rel="prev" title="model.interpreter.explanation_aggregator module" href="model.interpreter.explanation_aggregator.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../data_module.html">Data Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../training_module.html">Model Module</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../training_module_tutorial.html">Tutorial</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="model.html">API Documentation</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="model.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="model.evaluation.html">model.evaluation package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="model.interpreter.html">model.interpreter package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../training_module.html">Model Module</a> &raquo;</li>
+        
+          <li><a href="model.html">model package</a> &raquo;</li>
+        
+          <li><a href="model.interpreter.html">model.interpreter package</a> &raquo;</li>
+        
+      <li>model.interpreter.feature_interpreter module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/model/model.interpreter.feature_interpreter.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-model.interpreter.feature_interpreter">
+<span id="model-interpreter-feature-interpreter-module"></span><h1>model.interpreter.feature_interpreter module<a class="headerlink" href="#module-model.interpreter.feature_interpreter" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="model.interpreter.feature_interpreter.FeatureInterpreter">
+<em class="property">class </em><code class="sig-name descname">FeatureInterpreter</code><span class="sig-paren">(</span><em class="sig-param">feature_names: List[str]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/model/interpreter/feature_interpreter.html#FeatureInterpreter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#model.interpreter.feature_interpreter.FeatureInterpreter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class Feature Interpreter.</p>
+<dl class="simple">
+<dt>The class is used to generate the following information:</dt><dd><ul class="simple">
+<li><p>feature distribution</p></li>
+<li><p>feature correlation</p></li>
+<li><p>feature importance ranking for a trained model</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="model.interpreter.feature_interpreter.FeatureInterpreter.SUPPORTED_FEATURE_IMPORTANCE_TYPES">
+<code class="sig-name descname">SUPPORTED_FEATURE_IMPORTANCE_TYPES</code><em class="property"> = ['shap']</em><a class="headerlink" href="#model.interpreter.feature_interpreter.FeatureInterpreter.SUPPORTED_FEATURE_IMPORTANCE_TYPES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="model.interpreter.feature_interpreter.FeatureInterpreter.get_feature_correlation">
+<code class="sig-name descname">get_feature_correlation</code><span class="sig-paren">(</span><em class="sig-param">feature_types: List[str], train_x: numpy.ndarray, categorical_corr_type='lambda', numerical_corr_type='pearson', text_corr_type='tf', categorical_vs_numerical_corr_type='anova') -&gt; (&lt;class 'pandas.core.frame.DataFrame'&gt;, &lt;class 'pandas.core.frame.DataFrame'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/model/interpreter/feature_interpreter.html#FeatureInterpreter.get_feature_correlation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#model.interpreter.feature_interpreter.FeatureInterpreter.get_feature_correlation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get feature correlation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_types</strong> – list, the pre-defined data type for each feature</p></li>
+<li><p><strong>train_x</strong> – numpy.ndarray, training data</p></li>
+<li><p><strong>categorical_corr_type</strong> – str, pre-defined correlation type for correlation among categorical features.</p></li>
+<li><p><strong>numerical_corr_type</strong> – str, pre-defined correlation type for correlation among numerical features.</p></li>
+<li><p><strong>text_corr_type</strong> – str, pre-defined correlation type for correlation among text features.</p></li>
+<li><p><strong>categorical_vs_numerical_corr_type</strong> – str, pre-defined correlation type for correlation between categorical
+features and numerical features.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dataframe of correlation type mask,
+Dataframe of correlation values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="model.interpreter.feature_interpreter.FeatureInterpreter.get_feature_distribution">
+<code class="sig-name descname">get_feature_distribution</code><span class="sig-paren">(</span><em class="sig-param">feature_types: List[str], train_x: numpy.ndarray, labels: List = None</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="../_modules/model/interpreter/feature_interpreter.html#FeatureInterpreter.get_feature_distribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#model.interpreter.feature_interpreter.FeatureInterpreter.get_feature_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get feature distribution analysis based on feature types</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_types</strong> – list, a list of pre-defined data type for feature</p></li>
+<li><p><strong>train_x</strong> – numpy.ndarray, training data of which each row is a training sample.
+A training data set with M samples of each of which has N features should have a shape (M,N).</p></li>
+<li><p><strong>labels</strong> – list,</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary maps each feature name to the stats object based on its data type.
+For stats class implement, details can be found in <cite>xai.data.explorer</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="model.interpreter.feature_interpreter.FeatureInterpreter.get_feature_importance_ranking">
+<code class="sig-name descname">get_feature_importance_ranking</code><span class="sig-paren">(</span><em class="sig-param">trained_model</em>, <em class="sig-param">train_x: numpy.ndarray = None</em>, <em class="sig-param">method='default'</em>, <em class="sig-param">mode: str = 'classification'</em><span class="sig-paren">)</span> &#x2192; List[Tuple[str, float]]<a class="reference internal" href="../_modules/model/interpreter/feature_interpreter.html#FeatureInterpreter.get_feature_importance_ranking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#model.interpreter.feature_interpreter.FeatureInterpreter.get_feature_importance_ranking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get feature importance ranking</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trained_model</strong> – model obj, the trained model object</p></li>
+<li><p><strong>train_x</strong> – numpy.dnarray, training data</p></li>
+<li><p><strong>method</strong> – str, pre-defined method for feature importance</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of tuple (feature name, feature importance score) in descending order</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="model.interpreter.feature_interpreter.FeatureInterpreter.get_feature_shap_values">
+<code class="sig-name descname">get_feature_shap_values</code><span class="sig-paren">(</span><em class="sig-param">trained_model</em>, <em class="sig-param">train_x: numpy.ndarray</em>, <em class="sig-param">mode: str = 'classification'</em><span class="sig-paren">)</span> &#x2192; List[Tuple[str, List[float]]]<a class="reference internal" href="../_modules/model/interpreter/feature_interpreter.html#FeatureInterpreter.get_feature_shap_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#model.interpreter.feature_interpreter.FeatureInterpreter.get_feature_shap_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get shap values for all samples group by features</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trained_model</strong> – model obj, the trained model object</p></li>
+<li><p><strong>train_x</strong> – numpy.dnarray, training data</p></li>
+<li><p><strong>mode</strong> – str, regression or classification (default)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of tuple (feature name, shap values for each sample) if aggregation is False</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="model.interpreter.model_interpreter.html" class="btn btn-neutral float-right" title="model.interpreter.model_interpreter module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="model.interpreter.explanation_aggregator.html" class="btn btn-neutral float-left" title="model.interpreter.explanation_aggregator module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

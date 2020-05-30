@@ -1,0 +1,383 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>data.explorer.text.text_stats &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>data.explorer.text.text_stats</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for data.explorer.text.text_stats</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python</span>
+<span class="c1">#</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved</span>
+<span class="c1"># ============================================================================</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">xai.data.abstract_stats</span> <span class="kn">import</span> <span class="n">AbstractStats</span>
+<span class="kn">from</span> <span class="nn">xai.data.constants</span> <span class="kn">import</span> <span class="n">STATSKEY</span>
+<span class="kn">from</span> <span class="nn">xai.data.exceptions</span> <span class="kn">import</span> <span class="n">InvalidTypeError</span><span class="p">,</span> <span class="n">InvalidSizeError</span>
+
+
+<div class="viewcode-block" id="TextStats"><a class="viewcode-back" href="../../../../data/data.explorer.text.text_stats.html#data.explorer.text.text_stats.TextStats">[docs]</a><span class="k">class</span> <span class="nc">TextStats</span><span class="p">(</span><span class="n">AbstractStats</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TextStats contains following basic information:</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total_count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+                 <span class="n">pattern_stats</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">word_count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">char_count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">term_frequency</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">document_frequency</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">tfidf</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            total_count: total number of documents</span>
+<span class="sd">            pattern_stats: a dict maps pattern to its frequency</span>
+<span class="sd">            word_count: a dict maps term count per doc to its frequency</span>
+<span class="sd">            char_count: a dict maps character count per doc to its frequency</span>
+<span class="sd">            term_frequency: a dict maps the term to the total frequency count in the entire document set</span>
+<span class="sd">            document_frequency: a dict maps the term to the number of documents that contains the term</span>
+<span class="sd">            tfidf: a dict maps to the term to the average tf-idf</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_count</span> <span class="o">=</span> <span class="n">total_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern_stats</span> <span class="o">=</span> <span class="n">pattern_stats</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">word_count</span> <span class="o">=</span> <span class="n">word_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char_count</span> <span class="o">=</span> <span class="n">char_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">term_frequency</span> <span class="o">=</span> <span class="n">term_frequency</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">document_frequency</span> <span class="o">=</span> <span class="n">document_frequency</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tfidf</span> <span class="o">=</span> <span class="n">tfidf</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">total_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_count</span>
+
+    <span class="nd">@total_count</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">total_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;total_count&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="s1">&#39;&lt;int&gt;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_total_count</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pattern_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pattern_stats</span>
+
+    <span class="nd">@pattern_stats</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">pattern_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;pattern_stats&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="s1">&#39;&lt;dict&gt;&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;pattern_stats: key&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="s1">&#39;&lt;str&gt;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">tuple</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;pattern_stats: count&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">),</span> <span class="s1">&#39;&lt;tuple&gt;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidSizeError</span><span class="p">(</span><span class="s1">&#39;pattern_stats: count&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">count</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;pattern_stats: count: term_count&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;&lt;int&gt;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;pattern_stats: count: document_count&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="s1">&#39;&lt;int&gt;&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pattern_stats</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">word_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_word_count</span>
+
+    <span class="nd">@word_count</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">word_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;word_count&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="s1">&#39;&lt;dict&gt;&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;word_count: key&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="s1">&#39;&lt;int&gt;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;word_count: count&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">),</span> <span class="s1">&#39;&lt;int&gt;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_word_count</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">char_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_count</span>
+
+    <span class="nd">@char_count</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">char_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;char_count&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="s1">&#39;&lt;dict&gt;&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;char_count: key&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="s1">&#39;&lt;int&gt;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;char_count: count&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">),</span> <span class="s1">&#39;&lt;int&gt;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_char_count</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">term_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_frequency</span>
+
+    <span class="nd">@term_frequency</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">term_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;term_frequency&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="s1">&#39;&lt;dict&gt;&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;term_frequency: key&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="s1">&#39;&lt;str&gt;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;term_frequency: count&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">),</span> <span class="s1">&#39;&lt;int&gt;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_term_frequency</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">document_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_document_frequency</span>
+
+    <span class="nd">@document_frequency</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">document_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;document_frequency&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="s1">&#39;&lt;dict&gt;&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;document_frequency: key&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="s1">&#39;&lt;str&gt;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;document_frequency: count&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">),</span> <span class="s1">&#39;&lt;int&gt;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_document_frequency</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tfidf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tfidf</span>
+
+    <span class="nd">@tfidf</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">tfidf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;tfidf&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="s1">&#39;&lt;dict&gt;&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;tfidf: key&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="s1">&#39;&lt;str&gt;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="n">InvalidTypeError</span><span class="p">(</span><span class="s1">&#39;tfidf: score&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">count</span><span class="p">),</span> <span class="s1">&#39;&lt;float&gt; or &lt;int&gt;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tfidf</span> <span class="o">=</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="TextStats.to_json"><a class="viewcode-back" href="../../../../data/data.explorer.text.text_stats.html#data.explorer.text.text_stats.TextStats.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Map stats information into a json object</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A json that represent frequency count and total count</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">json_obj</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">json_obj</span><span class="p">[</span><span class="n">STATSKEY</span><span class="o">.</span><span class="n">TOTAL_COUNT</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_count</span>
+        <span class="n">json_obj</span><span class="p">[</span><span class="n">STATSKEY</span><span class="o">.</span><span class="n">PATTERN</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">pattern_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pattern_stats</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">pattern_obj</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">pattern_obj</span><span class="p">[</span><span class="n">STATSKEY</span><span class="o">.</span><span class="n">PATTERN</span><span class="o">.</span><span class="n">PATTERN_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">pattern_name</span>
+            <span class="n">pattern_obj</span><span class="p">[</span><span class="n">STATSKEY</span><span class="o">.</span><span class="n">PATTERN</span><span class="o">.</span><span class="n">PATTERN_TF</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pattern_stats</span><span class="p">[</span><span class="n">pattern_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">pattern_obj</span><span class="p">[</span><span class="n">STATSKEY</span><span class="o">.</span><span class="n">PATTERN</span><span class="o">.</span><span class="n">PATTERN_DF</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pattern_stats</span><span class="p">[</span><span class="n">pattern_name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">json_obj</span><span class="p">[</span><span class="n">STATSKEY</span><span class="o">.</span><span class="n">PATTERN</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pattern_obj</span><span class="p">)</span>
+
+        <span class="n">json_obj</span><span class="p">[</span><span class="n">STATSKEY</span><span class="o">.</span><span class="n">TF</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_frequency</span>
+        <span class="n">json_obj</span><span class="p">[</span><span class="n">STATSKEY</span><span class="o">.</span><span class="n">DF</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_document_frequency</span>
+        <span class="n">json_obj</span><span class="p">[</span><span class="n">STATSKEY</span><span class="o">.</span><span class="n">TFIDF</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tfidf</span>
+
+        <span class="k">return</span> <span class="n">json_obj</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

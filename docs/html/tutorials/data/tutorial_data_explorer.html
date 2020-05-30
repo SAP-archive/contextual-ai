@@ -1,0 +1,1646 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Data Explorer via XAI &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="data package" href="../../data/data.html" />
+    <link rel="prev" title="XAI Data tutorials" href="../../data_module_tutorial.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../data_module.html">Data Module</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../data_module_tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../data_module_tutorial.html#data-explorer">Data explorer</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../../data_module_tutorial.html#tutorial">Tutorial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../data/data.html">API Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../data_module.html">Data Module</a> &raquo;</li>
+        
+          <li><a href="../../data_module_tutorial.html">XAI Data tutorials</a> &raquo;</li>
+        
+      <li>Data Explorer via XAI</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/tutorials/data/tutorial_data_explorer.nblink.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput,
+div.nbinput div.prompt,
+div.nbinput div.input_area,
+div.nbinput div[class*=highlight],
+div.nbinput div[class*=highlight] pre,
+div.nboutput,
+div.nbinput div.prompt,
+div.nbinput div.output_area,
+div.nboutput div[class*=highlight],
+div.nboutput div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput,
+div.nboutput {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput,
+    div.nboutput {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput div.prompt,
+div.nboutput div.prompt {
+    min-width: 5ex;
+    padding-top: 0.4em;
+    padding-right: 0.4em;
+    text-align: right;
+    flex: 0;
+}
+@media (max-width: 540px) {
+    div.nbinput div.prompt,
+    div.nboutput div.prompt {
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput div.prompt.empty {
+        padding: 0;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput div.prompt pre,
+div.nboutput div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput div.input_area,
+div.nboutput div.output_area {
+    padding: 0.4em;
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput div.input_area,
+    div.nboutput div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background: #f5f5f5;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="Data-Explorer-via-XAI">
+<h1>Data Explorer via XAI<a class="headerlink" href="#Data-Explorer-via-XAI" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial demonstrats how to explorer different types of data using <code class="docutils literal notranslate"><span class="pre">xai.data.explorer</span></code>.</p>
+<p>We have supported the following types of data: - Categorical - Numerical - Free Text - Datetime</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Some auxiliary imports for the tutorial</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../../&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">xai</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/i309943/.local/lib/python3.6/site-packages/sklearn/ensemble/weight_boosting.py:29: DeprecationWarning: numpy.core.umath_tests is an internal NumPy module and should not be imported. It will be removed in a future NumPy release.
+  from numpy.core.umath_tests import inner1d
+</pre></div></div>
+</div>
+<p>We use the following datasets as samples to demonstrate the above analyzers: - <a class="reference external" href="https://archive.ics.uci.edu/ml/datasets/Breast+Cancer">Breast cancer dataset</a>: demonstration for <code class="docutils literal notranslate"><span class="pre">xai.data.explorer.categorical</span></code> - <a class="reference external" href="https://scikit-learn.org/stable/datasets/index.html#iris-plants-dataset">Iris plants dataset</a>: demonstration for <code class="docutils literal notranslate"><span class="pre">xai.data.explorer.numerical</span></code> - <a class="reference external" href="https://scikit-learn.org/stable/datasets/index.html#the-20-newsgroups-text-dataset">The 20 newsgroups text dataset</a>:
+demonstration for <code class="docutils literal notranslate"><span class="pre">xai.data.explorer.text</span></code> - Self-generated dataset: demonstration for <code class="docutils literal notranslate"><span class="pre">xai.data.explorer.datetime</span></code></p>
+<div class="section" id="1.-Categorical">
+<h2>1. Categorical<a class="headerlink" href="#1.-Categorical" title="Permalink to this headline">¶</a></h2>
+<p>Package <code class="docutils literal notranslate"><span class="pre">xai.data.explorer.categorical</span></code> analyzes categorical datasets and produces a frequency count for each categorical value. <code class="docutils literal notranslate"><span class="pre">categorical_analyzer</span></code> can feed in categorical values and return a <code class="docutils literal notranslate"><span class="pre">categorical_stats</span></code> object, which contains frequency count for each unique value. <code class="docutils literal notranslate"><span class="pre">labelled_categorical_analyzer</span></code> takes an additional argument <em>class</em> when fed values, and it generates frequency counts by class type.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># load dataset</span>
+<span class="n">cols_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Class&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;menopause&#39;</span><span class="p">,</span> <span class="s1">&#39;tumor-size&#39;</span><span class="p">,</span> <span class="s1">&#39;inv-nodes&#39;</span><span class="p">,</span> <span class="s1">&#39;node-caps&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;deg-malig&#39;</span><span class="p">,</span> <span class="s1">&#39;breast&#39;</span><span class="p">,</span> <span class="s1">&#39;breast-quad&#39;</span><span class="p">,</span> <span class="s1">&#39;irradiat&#39;</span><span class="p">]</span>
+<span class="c1"># read the data</span>
+<span class="n">breast_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;sample_data/breast-cancer.data&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">names</span><span class="o">=</span><span class="n">cols_names</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="s1">&#39;?&#39;</span><span class="p">:</span> <span class="s1">&#39;unknown&#39;</span><span class="p">})</span>  <span class="c1"># NaN are represented by &#39;?&#39;</span>
+
+<span class="n">breast_data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Class</th>
+      <th>age</th>
+      <th>menopause</th>
+      <th>tumor-size</th>
+      <th>inv-nodes</th>
+      <th>node-caps</th>
+      <th>deg-malig</th>
+      <th>breast</th>
+      <th>breast-quad</th>
+      <th>irradiat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>no-recurrence-events</td>
+      <td>30-39</td>
+      <td>premeno</td>
+      <td>30-34</td>
+      <td>0-2</td>
+      <td>no</td>
+      <td>3</td>
+      <td>left</td>
+      <td>left_low</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>no-recurrence-events</td>
+      <td>40-49</td>
+      <td>premeno</td>
+      <td>20-24</td>
+      <td>0-2</td>
+      <td>no</td>
+      <td>2</td>
+      <td>right</td>
+      <td>right_up</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>no-recurrence-events</td>
+      <td>40-49</td>
+      <td>premeno</td>
+      <td>20-24</td>
+      <td>0-2</td>
+      <td>no</td>
+      <td>2</td>
+      <td>left</td>
+      <td>left_low</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>no-recurrence-events</td>
+      <td>60-69</td>
+      <td>ge40</td>
+      <td>15-19</td>
+      <td>0-2</td>
+      <td>no</td>
+      <td>2</td>
+      <td>right</td>
+      <td>left_up</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>no-recurrence-events</td>
+      <td>40-49</td>
+      <td>premeno</td>
+      <td>0-4</td>
+      <td>0-2</td>
+      <td>no</td>
+      <td>2</td>
+      <td>right</td>
+      <td>right_low</td>
+      <td>no</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">xai.data.explorer.categorical.labelled_categorical_analyzer</span> <span class="kn">import</span> <span class="n">LabelledCategoricalDataAnalyzer</span>
+</pre></div>
+</div>
+</div>
+<p>First, we analyze <em>breast-quad</em> column based on <em>Class</em>. The frequency count for each breast-quad is summarized per class type, as shown in the figure on the left. <code class="docutils literal notranslate"><span class="pre">labelled_categorical_analyzer</span></code> also generates a combined frequency counts across all classes, as shown in the figure on the right.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;Class&#39;</span>
+<span class="n">feature_column</span> <span class="o">=</span> <span class="s1">&#39;breast-quad&#39;</span>
+<span class="n">labelled_analyzer</span> <span class="o">=</span> <span class="n">LabelledCategoricalDataAnalyzer</span><span class="p">()</span>
+<span class="n">labelled_analyzer</span><span class="o">.</span><span class="n">feed_all</span><span class="p">(</span><span class="n">breast_data</span><span class="p">[</span><span class="n">feature_column</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span><span class="n">breast_data</span><span class="p">[</span><span class="n">label_column</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="n">labelled_stats</span><span class="p">,</span> <span class="n">all_stats</span> <span class="o">=</span> <span class="n">labelled_analyzer</span><span class="o">.</span><span class="n">get_statistics</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>We define a helper class <code class="docutils literal notranslate"><span class="pre">xai.plots.NotebookPlots</span></code> to help visualize generated statistics.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">xai.plots.data_stats_notebook_plots</span> <span class="kn">import</span> <span class="n">NotebookPlots</span>
+<span class="n">plotter</span> <span class="o">=</span> <span class="n">NotebookPlots</span><span class="p">()</span>
+<span class="n">plotter</span><span class="o">.</span><span class="n">plot_labelled_categorical_stats</span><span class="p">(</span><span class="n">labelled_stats</span><span class="p">,</span> <span class="n">all_stats</span><span class="p">,</span> <span class="n">label_column</span><span class="p">,</span> <span class="n">feature_column</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_9_0.png" src="../../_images/tutorials_data_tutorial_data_explorer_9_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_9_1.png" src="../../_images/tutorials_data_tutorial_data_explorer_9_1.png" />
+</div>
+</div>
+<p>Similarly, we can analyze <em>breast-quad</em> column but choose <em>menopause</em> as class. The frequency count for each breast-quad is summarized per menopause type.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;menopause&#39;</span>
+<span class="n">feature_column</span> <span class="o">=</span> <span class="s1">&#39;breast-quad&#39;</span>
+<span class="n">labelled_analyzer</span> <span class="o">=</span> <span class="n">LabelledCategoricalDataAnalyzer</span><span class="p">()</span>
+<span class="n">labelled_analyzer</span><span class="o">.</span><span class="n">feed_all</span><span class="p">(</span><span class="n">breast_data</span><span class="p">[</span><span class="n">feature_column</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span><span class="n">breast_data</span><span class="p">[</span><span class="n">label_column</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="n">labelled_stats</span><span class="p">,</span> <span class="n">all_stats</span> <span class="o">=</span> <span class="n">labelled_analyzer</span><span class="o">.</span><span class="n">get_statistics</span><span class="p">()</span>
+<span class="n">plotter</span><span class="o">.</span><span class="n">plot_labelled_categorical_stats</span><span class="p">(</span><span class="n">labelled_stats</span><span class="p">,</span> <span class="n">all_stats</span><span class="p">,</span> <span class="n">label_column</span><span class="p">,</span> <span class="n">feature_column</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_11_0.png" src="../../_images/tutorials_data_tutorial_data_explorer_11_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_11_1.png" src="../../_images/tutorials_data_tutorial_data_explorer_11_1.png" />
+</div>
+</div>
+</div>
+<div class="section" id="2.-Numerical">
+<h2>2. Numerical<a class="headerlink" href="#2.-Numerical" title="Permalink to this headline">¶</a></h2>
+<p>Package <code class="docutils literal notranslate"><span class="pre">xai.data.explorer.numerical</span></code> analyzes numerical datasets and produces statistics analysis including <em>min</em>, <em>max</em>, <em>mean</em>, <em>median</em>, <em>sd</em>, <em>histogram</em> and <em>kde</em>. <code class="docutils literal notranslate"><span class="pre">numerical_analyzer</span></code> takes all inputted numerical values and generates an overall analysis, while <code class="docutils literal notranslate"><span class="pre">labelled_numerical_analyzer</span></code> takes numerical values and class labels to generate analysis per class type.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># load dataset</span>
+<span class="n">iris</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_iris</span><span class="p">()</span>
+<span class="n">iris_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">iris</span><span class="o">.</span><span class="n">feature_names</span><span class="p">)</span>
+<span class="n">iris_data</span><span class="p">[</span><span class="s1">&#39;Class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">target</span>
+<span class="n">iris_data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>sepal length (cm)</th>
+      <th>sepal width (cm)</th>
+      <th>petal length (cm)</th>
+      <th>petal width (cm)</th>
+      <th>Class</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>5.1</td>
+      <td>3.5</td>
+      <td>1.4</td>
+      <td>0.2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>4.9</td>
+      <td>3.0</td>
+      <td>1.4</td>
+      <td>0.2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>4.7</td>
+      <td>3.2</td>
+      <td>1.3</td>
+      <td>0.2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4.6</td>
+      <td>3.1</td>
+      <td>1.5</td>
+      <td>0.2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5.0</td>
+      <td>3.6</td>
+      <td>1.4</td>
+      <td>0.2</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">xai.data.explorer.numerical.labelled_numerical_analyzer</span> <span class="kn">import</span> <span class="n">LabelledNumericalDataAnalyzer</span>
+</pre></div>
+</div>
+</div>
+<p>First, we show statistics of <em>sepal width (cm)</em> with respect to <em>Class</em>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;Class&#39;</span>
+<span class="n">feature_column</span> <span class="o">=</span> <span class="s1">&#39;sepal width (cm)&#39;</span>
+<span class="n">labelled_analyzer</span> <span class="o">=</span> <span class="n">LabelledNumericalDataAnalyzer</span><span class="p">()</span>
+<span class="n">labelled_analyzer</span><span class="o">.</span><span class="n">feed_all</span><span class="p">(</span><span class="n">iris_data</span><span class="p">[</span><span class="n">feature_column</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span><span class="n">iris_data</span><span class="p">[</span><span class="n">label_column</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="n">labelled_stats</span><span class="p">,</span> <span class="n">all_stats</span> <span class="o">=</span> <span class="n">labelled_analyzer</span><span class="o">.</span><span class="n">get_statistics</span><span class="p">(</span><span class="n">extreme_value_percentile</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">],</span><span class="n">num_of_bins</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+
+<span class="n">plotter</span><span class="o">.</span><span class="n">plot_labelled_numerical_stats</span><span class="p">(</span><span class="n">labelled_stats</span><span class="p">,</span><span class="n">all_stats</span><span class="p">,</span><span class="n">label_column</span><span class="p">,</span><span class="n">feature_column</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="section" id="sepal-width-(cm)">
+<h3>sepal width (cm)<a class="headerlink" href="#sepal-width-(cm)" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_16_1.png" src="../../_images/tutorials_data_tutorial_data_explorer_16_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>class</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>median</th>
+      <th>min</th>
+      <th>sd</th>
+      <th>total_count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>4.4</td>
+      <td>3.418</td>
+      <td>0.377195</td>
+      <td>2.3</td>
+      <td>4.4</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>3.4</td>
+      <td>2.770</td>
+      <td>0.310644</td>
+      <td>2.0</td>
+      <td>3.4</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>3.8</td>
+      <td>2.974</td>
+      <td>0.319255</td>
+      <td>2.2</td>
+      <td>3.8</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>all</td>
+      <td>4.4</td>
+      <td>3.054</td>
+      <td>0.432147</td>
+      <td>2.0</td>
+      <td>4.4</td>
+      <td>150</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Here is another example of statistics of <em>petal length (cm)</em> with respect to <em>Class</em>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;Class&#39;</span>
+<span class="n">feature_column</span> <span class="o">=</span> <span class="s1">&#39;petal length (cm)&#39;</span>
+<span class="n">labelled_analyzer</span> <span class="o">=</span> <span class="n">LabelledNumericalDataAnalyzer</span><span class="p">()</span>
+<span class="n">labelled_analyzer</span><span class="o">.</span><span class="n">feed_all</span><span class="p">(</span><span class="n">iris_data</span><span class="p">[</span><span class="n">feature_column</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span><span class="n">iris_data</span><span class="p">[</span><span class="n">label_column</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="n">labelled_stats</span><span class="p">,</span> <span class="n">all_stats</span> <span class="o">=</span> <span class="n">labelled_analyzer</span><span class="o">.</span><span class="n">get_statistics</span><span class="p">(</span><span class="n">extreme_value_percentile</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">],</span><span class="n">num_of_bins</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="n">plotter</span><span class="o">.</span><span class="n">plot_labelled_numerical_stats</span><span class="p">(</span><span class="n">labelled_stats</span><span class="p">,</span><span class="n">all_stats</span><span class="p">,</span><span class="n">label_column</span><span class="p">,</span><span class="n">feature_column</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="section" id="petal-length-(cm)">
+<h3>petal length (cm)<a class="headerlink" href="#petal-length-(cm)" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_18_1.png" src="../../_images/tutorials_data_tutorial_data_explorer_18_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>class</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>median</th>
+      <th>min</th>
+      <th>sd</th>
+      <th>total_count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>1.9</td>
+      <td>1.464000</td>
+      <td>0.171767</td>
+      <td>1.0</td>
+      <td>1.9</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>5.1</td>
+      <td>4.260000</td>
+      <td>0.465188</td>
+      <td>3.0</td>
+      <td>5.1</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>6.9</td>
+      <td>5.552000</td>
+      <td>0.546348</td>
+      <td>4.5</td>
+      <td>6.9</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>all</td>
+      <td>6.9</td>
+      <td>3.758667</td>
+      <td>1.758529</td>
+      <td>1.0</td>
+      <td>6.9</td>
+      <td>150</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+<div class="section" id="3.-Text">
+<h2>3. Text<a class="headerlink" href="#3.-Text" title="Permalink to this headline">¶</a></h2>
+<p>Package <code class="docutils literal notranslate"><span class="pre">xai.data.explorer.text</span></code> analyzes free text datasets and produces statistics analysis including <em>word count</em>, <em>character count</em>, <em>term frequency</em>, <em>document frequency</em> and <em>tfidf</em>. <code class="docutils literal notranslate"><span class="pre">text_analyzer</span></code> takes all inputted free text and generates an overall analysis, while <code class="docutils literal notranslate"><span class="pre">labelled_text_analyzer</span></code> takes free text and associated class labels to generate statistical analysis per class type.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">fetch_20newsgroups</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">fetch_20newsgroups</span><span class="p">()</span>
+<span class="n">sample_num</span> <span class="o">=</span> <span class="mi">2000</span>
+<span class="n">texts</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][:</span><span class="n">sample_num</span><span class="p">]</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;target_names&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]][:</span><span class="n">sample_num</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p>We allow user to define the preprocessing function and some predefined pattern.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">xai.data.explorer.text.labelled_text_analyzer</span> <span class="kn">import</span> <span class="n">LabelledTextDataAnalyzer</span>
+
+<span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">re</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[^\w\s]&#39;</span><span class="p">,</span><span class="s1">&#39; &#39;</span><span class="p">,</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span>
+
+<span class="n">predefined_pattern</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;point&#39;</span><span class="p">:</span><span class="sa">r</span><span class="s1">&#39;p\d&#39;</span><span class="p">,</span><span class="s1">&#39;number&#39;</span><span class="p">:</span><span class="sa">r</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span><span class="s1">&#39;singlar&#39;</span><span class="p">:</span><span class="sa">r</span><span class="s1">&#39;\s\w\s&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>First, we show tfidf and term frequency by class type. Then we show tfidf and term frequency across all classes.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">labelled_analyzer</span> <span class="o">=</span> <span class="n">LabelledTextDataAnalyzer</span><span class="p">(</span><span class="n">preprocess_fn</span><span class="o">=</span><span class="n">preprocess</span><span class="p">,</span><span class="n">stop_words_by_languages</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;english&#39;</span><span class="p">],</span>
+                                             <span class="n">predefined_pattern</span><span class="o">=</span><span class="n">predefined_pattern</span><span class="p">)</span>
+<span class="n">labelled_analyzer</span><span class="o">.</span><span class="n">feed_all</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span><span class="n">labels</span><span class="p">)</span>
+<span class="n">labelled_stats</span><span class="p">,</span> <span class="n">all_stats</span> <span class="o">=</span> <span class="n">labelled_analyzer</span><span class="o">.</span><span class="n">get_statistics</span><span class="p">()</span>
+<span class="n">plotter</span><span class="o">.</span><span class="n">plot_labelled_text_stats</span><span class="p">(</span><span class="n">labelled_stats</span><span class="p">,</span> <span class="n">all_stats</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_24_0.png" src="../../_images/tutorials_data_tutorial_data_explorer_24_0.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_24_1.png" src="../../_images/tutorials_data_tutorial_data_explorer_24_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_24_2.png" src="../../_images/tutorials_data_tutorial_data_explorer_24_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_24_3.png" src="../../_images/tutorials_data_tutorial_data_explorer_24_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_24_4.png" src="../../_images/tutorials_data_tutorial_data_explorer_24_4.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_24_5.png" src="../../_images/tutorials_data_tutorial_data_explorer_24_5.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>class</th>
+      <th>longest doc</th>
+      <th>number (doc count)</th>
+      <th>number (term count)</th>
+      <th>point (doc count)</th>
+      <th>point (term count)</th>
+      <th>singlar (doc count)</th>
+      <th>singlar (term count)</th>
+      <th>total count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>rec.autos</td>
+      <td>1963</td>
+      <td>109</td>
+      <td>1748</td>
+      <td>2</td>
+      <td>2</td>
+      <td>109</td>
+      <td>2019</td>
+      <td>109</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>comp.sys.mac.hardware</td>
+      <td>566</td>
+      <td>108</td>
+      <td>1132</td>
+      <td>4</td>
+      <td>5</td>
+      <td>108</td>
+      <td>1324</td>
+      <td>108</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>comp.graphics</td>
+      <td>1595</td>
+      <td>92</td>
+      <td>1277</td>
+      <td>4</td>
+      <td>207</td>
+      <td>92</td>
+      <td>1632</td>
+      <td>92</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>sci.space</td>
+      <td>3782</td>
+      <td>87</td>
+      <td>1799</td>
+      <td>0</td>
+      <td>0</td>
+      <td>87</td>
+      <td>1794</td>
+      <td>87</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>talk.politics.guns</td>
+      <td>2552</td>
+      <td>100</td>
+      <td>1022</td>
+      <td>4</td>
+      <td>4</td>
+      <td>100</td>
+      <td>1924</td>
+      <td>100</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>all</td>
+      <td>15769</td>
+      <td>2000</td>
+      <td>69203</td>
+      <td>46</td>
+      <td>264</td>
+      <td>1997</td>
+      <td>62943</td>
+      <td>2000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+<div class="section" id="4.-Datetime">
+<h2>4. Datetime<a class="headerlink" href="#4.-Datetime" title="Permalink to this headline">¶</a></h2>
+<p>Package <code class="docutils literal notranslate"><span class="pre">xai.data.explorer.datetime</span></code> analyzes date time datasets and produces frequency counts for a given resolution, which can be <em>year</em>, <em>month</em>, <em>day</em>, <em>weekday</em>, <em>hour</em>, <em>minute</em>, or <em>second</em>. <code class="docutils literal notranslate"><span class="pre">datetime_analyzer</span></code> takes all values and generates an overall analysis, while <code class="docutils literal notranslate"><span class="pre">labelled_datetime_analyzer</span></code> generates statistical analysis per class type.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;sample_data/date.csv&#39;</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>COMPANYCODE</th>
+      <th>POSTINGDATE</th>
+      <th>VALUEDATE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>13</td>
+      <td>20180309</td>
+      <td>20180309</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>13</td>
+      <td>20180223</td>
+      <td>20180223</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>13</td>
+      <td>20180223</td>
+      <td>20180223</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>13</td>
+      <td>20180223</td>
+      <td>20180223</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>13</td>
+      <td>20180227</td>
+      <td>20180227</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">xai.data.explorer.datetime.labelled_datetime_analyzer</span> <span class="kn">import</span> <span class="n">LabelledDatetimeDataAnalyzer</span>
+<span class="kn">from</span> <span class="nn">xai.data.constants</span> <span class="kn">import</span> <span class="n">DatetimeResolution</span>
+</pre></div>
+</div>
+</div>
+<p>We set the resolution to be <em>year</em> and <em>month</em>, so that input data will be grouped by their year and month.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">datetime_column</span> <span class="o">=</span> <span class="s1">&#39;POSTINGDATE&#39;</span>
+<span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;COMPANYCODE&#39;</span>
+<span class="n">datetimes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="n">datetime_column</span><span class="p">]]</span>
+<span class="n">labels</span> <span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="n">label_column</span><span class="p">]]</span>
+
+<span class="n">labelled_analyzer</span> <span class="o">=</span> <span class="n">LabelledDatetimeDataAnalyzer</span><span class="p">()</span>
+<span class="n">labelled_analyzer</span><span class="o">.</span><span class="n">feed_all</span><span class="p">(</span><span class="n">datetimes</span><span class="p">,</span><span class="n">labels</span><span class="p">)</span>
+<span class="n">labelled_stats</span><span class="p">,</span> <span class="n">all_stats</span> <span class="o">=</span> <span class="n">labelled_analyzer</span><span class="o">.</span><span class="n">get_statistics</span><span class="p">(</span><span class="n">resolution_list</span><span class="o">=</span><span class="p">[</span><span class="n">DatetimeResolution</span><span class="o">.</span><span class="n">YEAR</span><span class="p">,</span>
+                                                                               <span class="n">DatetimeResolution</span><span class="o">.</span><span class="n">MONTH</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>We define a helper function <code class="docutils literal notranslate"><span class="pre">plot_labelled_datetime_stats</span></code> to help visualize generated statistics. This function is only valid to plot datatime distribution with resolution <em>YEAR</em> and <em>MONTH</em>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="k">def</span> <span class="nf">plot_labelled_datetime_stats</span><span class="p">(</span><span class="n">labelled_stats</span><span class="p">,</span> <span class="n">all_stats</span><span class="p">,</span> <span class="n">label_name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_plot</span><span class="p">(</span><span class="n">_class</span><span class="p">,</span><span class="n">_frequency_count</span><span class="p">):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+        <span class="n">data_dist</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">_frequency_count</span><span class="o">.</span><span class="n">items</span><span class="p">())}</span>
+        <span class="n">min_year</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data_dist</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">max_year</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data_dist</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">earliest</span> <span class="o">=</span> <span class="p">(</span><span class="n">min_year</span><span class="p">,</span> <span class="nb">min</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">month</span><span class="p">)</span> <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="n">data_dist</span><span class="p">[</span><span class="n">min_year</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()]))</span>
+        <span class="n">latest</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_year</span><span class="p">,</span> <span class="nb">max</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">month</span><span class="p">)</span> <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="n">data_dist</span><span class="p">[</span><span class="n">max_year</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()]))</span>
+
+        <span class="n">line_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_dist</span><span class="p">)</span>
+        <span class="n">data_frame</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="n">data_dist</span><span class="p">:</span>
+            <span class="n">year_data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">13</span>
+            <span class="n">year_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">year</span>
+            <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="n">data_dist</span><span class="p">[</span><span class="n">year</span><span class="p">]:</span>
+                <span class="n">year_data</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">month</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">data_dist</span><span class="p">[</span><span class="n">year</span><span class="p">][</span><span class="n">month</span><span class="p">])</span>
+            <span class="n">data_frame</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">year_data</span><span class="p">)</span>
+        <span class="n">data_frame</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">bars</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#1abc9c&#39;</span><span class="p">,</span> <span class="s1">&#39;#2ecc71&#39;</span><span class="p">,</span> <span class="s1">&#39;#3498db&#39;</span><span class="p">,</span> <span class="s1">&#39;#7f8c8d&#39;</span><span class="p">,</span> <span class="s1">&#39;#9b59b6&#39;</span><span class="p">,</span> <span class="s1">&#39;#34495e&#39;</span><span class="p">,</span> <span class="s1">&#39;#f1c40f&#39;</span><span class="p">,</span> <span class="s1">&#39;#e67e22&#39;</span><span class="p">,</span> <span class="s1">&#39;#e74c3c&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;#95a5a6&#39;</span><span class="p">,</span> <span class="s1">&#39;#d35400&#39;</span><span class="p">,</span> <span class="s1">&#39;#bdc3c7&#39;</span><span class="p">]</span>
+        <span class="n">legends</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Jan&#39;</span><span class="p">,</span> <span class="s1">&#39;Feb&#39;</span><span class="p">,</span> <span class="s1">&#39;Mar&#39;</span><span class="p">,</span> <span class="s1">&#39;April&#39;</span><span class="p">,</span> <span class="s1">&#39;May&#39;</span><span class="p">,</span> <span class="s1">&#39;Jun&#39;</span><span class="p">,</span> <span class="s1">&#39;Jul&#39;</span><span class="p">,</span> <span class="s1">&#39;Aug&#39;</span><span class="p">,</span> <span class="s1">&#39;Sep&#39;</span><span class="p">,</span> <span class="s1">&#39;Oct&#39;</span><span class="p">,</span> <span class="s1">&#39;Nov&#39;</span><span class="p">,</span> <span class="s1">&#39;Dec&#39;</span><span class="p">]</span>
+        <span class="n">current_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">line_num</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">):</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">line_num</span><span class="p">)),</span> <span class="n">width</span><span class="o">=</span><span class="n">data_frame</span><span class="p">[:,</span> <span class="n">month</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">left</span><span class="o">=</span><span class="n">current_sum</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                         <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">month</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">bars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">current_sum</span> <span class="o">=</span> <span class="n">data_frame</span><span class="p">[:,</span> <span class="n">month</span><span class="p">]</span> <span class="o">+</span> <span class="n">current_sum</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">line_num</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">current_sum</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">idx</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">current_sum</span><span class="p">[</span><span class="n">idx</span><span class="p">]),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">line_num</span><span class="p">)),</span> <span class="nb">list</span><span class="p">(</span><span class="n">data_dist</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bars</span><span class="p">,</span> <span class="n">legends</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.04</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> - </span><span class="si">%s</span><span class="se">\n</span><span class="s1">Date Range: </span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1"> - </span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">label_name</span><span class="p">,</span><span class="n">_class</span><span class="p">,</span><span class="n">earliest</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">legends</span><span class="p">[</span><span class="n">earliest</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">latest</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">legends</span><span class="p">[</span><span class="n">latest</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">_class</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">labelled_stats</span><span class="o">.</span><span class="n">keys</span><span class="p">())[:</span><span class="mi">3</span><span class="p">]:</span>
+        <span class="n">_plot</span><span class="p">(</span><span class="n">_class</span><span class="p">,</span><span class="n">labelled_stats</span><span class="p">[</span><span class="n">_class</span><span class="p">]</span><span class="o">.</span><span class="n">frequency_count</span><span class="p">)</span>
+
+    <span class="n">_plot</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">,</span><span class="n">all_stats</span><span class="o">.</span><span class="n">frequency_count</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The figures below show frequency counts by class based on <em>year</em> and <em>month</em> as configured previsouly.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plot_labelled_datetime_stats</span><span class="p">(</span><span class="n">labelled_stats</span><span class="p">,</span> <span class="n">all_stats</span><span class="p">,</span> <span class="n">label_column</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_33_0.png" src="../../_images/tutorials_data_tutorial_data_explorer_33_0.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_33_1.png" src="../../_images/tutorials_data_tutorial_data_explorer_33_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_33_2.png" src="../../_images/tutorials_data_tutorial_data_explorer_33_2.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_33_3.png" src="../../_images/tutorials_data_tutorial_data_explorer_33_3.png" />
+</div>
+</div>
+</div>
+<div class="section" id="5.-Data-Analyzer-Suite">
+<h2>5. Data Analyzer Suite<a class="headerlink" href="#5.-Data-Analyzer-Suite" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">xai.data.explorer.DataAnalyzerSuite</span></code> is a tool to analyze a data set based on its defined schema. It support structured data (e.g. csv) and unstructured data (e.g. jsonline). It can be compatible to data set with sequence features.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1">## load meta data</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;./sample_data/meta.json&#39;</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">meta</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="n">pprint</span><span class="p">(</span><span class="n">meta</span><span class="p">)</span>
+
+<span class="c1"># get feature names, feature types and sequence feature names,</span>
+<span class="n">sequence_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s1">&#39;sequence&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+<span class="n">data_type</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">column_names</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;non_sequence&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">data_type</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
+    <span class="n">column_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;sequence&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">data_type</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
+    <span class="n">column_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">sequence_names</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">column_names</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;non_sequence&#39;: {&#39;IC_0/COUNTRY&#39;: {&#39;type&#39;: &#39;categorical&#39;},
+                  &#39;IC_0/REGION&#39;: {&#39;type&#39;: &#39;categorical&#39;},
+                  &#39;IC_0/SEX&#39;: {&#39;type&#39;: &#39;categorical&#39;}},
+ &#39;sequence&#39;: {&#39;IA_0/COMM_MEDIUM&#39;: {&#39;type&#39;: &#39;categorical&#39;},
+              &#39;IA_0/IA_INTERVAL&#39;: {&#39;type&#39;: &#39;numerical&#39;},
+              &#39;IA_0/IA_REASON&#39;: {&#39;type&#39;: &#39;categorical&#39;},
+              &#39;IA_0/IA_TYPE&#39;: {&#39;type&#39;: &#39;categorical&#39;}}}
+[&#39;IA_0/IA_TYPE&#39;, &#39;IA_0/IA_INTERVAL&#39;, &#39;IA_0/COMM_MEDIUM&#39;, &#39;IA_0/IA_REASON&#39;]
+[&#39;IC_0/COUNTRY&#39;, &#39;IC_0/REGION&#39;, &#39;IC_0/SEX&#39;, &#39;IA_0/IA_TYPE&#39;, &#39;IA_0/IA_INTERVAL&#39;, &#39;IA_0/COMM_MEDIUM&#39;, &#39;IA_0/IA_REASON&#39;]
+[&#39;categorical&#39;, &#39;categorical&#39;, &#39;categorical&#39;, &#39;categorical&#39;, &#39;numerical&#39;, &#39;categorical&#39;, &#39;categorical&#39;]
+</pre></div></div>
+</div>
+<p>We import <code class="docutils literal notranslate"><span class="pre">xai.data.explorer.data_analyzer_suite</span></code> and initialize an object of <code class="docutils literal notranslate"><span class="pre">DataAnalyzerSuite</span></code>. The initializer takes 3 parameters: - <em>data_type_list</em>: a list of pre-defined data type - <em>columns_names</em>: a list of column name. If this is not provided, the data_type_list should be the same length of the data - <em>sequence_names</em>: a list of feature names which is considered as sequence feature, so that each item of the value will be aggragated to get the overall stats.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">xai.data.explorer.data_analyzer_suite</span> <span class="kn">import</span> <span class="n">DataAnalyzerSuite</span>
+
+<span class="n">data_analyzer_suite</span> <span class="o">=</span> <span class="n">DataAnalyzerSuite</span><span class="p">(</span><span class="n">data_type_list</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span>
+                                        <span class="n">column_names</span><span class="o">=</span><span class="n">column_names</span><span class="p">,</span>
+                                        <span class="n">sequence_names</span><span class="o">=</span><span class="n">sequence_names</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Then we parse each json line of the data into a json object and feed into the analyzer, together with the label.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1">## load json line data</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;./sample_data/lead_score.data&#39;</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;LABEL&#39;</span><span class="p">]</span>
+        <span class="n">data_analyzer_suite</span><span class="o">.</span><span class="n">feed_row</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">label</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Finally the <code class="docutils literal notranslate"><span class="pre">get_statistics()</span></code> function is called to generate the stats of the entire data based on the each column and its type. The returned stats is a dictionary which maps feature name to a tuple of stats (class-based stats and overall stats).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">stats</span> <span class="o">=</span> <span class="n">data_analyzer_suite</span><span class="o">.</span><span class="n">get_statistics</span><span class="p">()</span>
+<span class="n">pprint</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;IA_0/COMM_MEDIUM&#39;: ({0: &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83e163bc18&gt;,
+                       1: &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83e163b7f0&gt;},
+                      &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83e163b438&gt;),
+ &#39;IA_0/IA_INTERVAL&#39;: ({0: &lt;xai.data.explorer.numerical.numerical_stats.NumericalStats object at 0x7f83e163bba8&gt;,
+                       1: &lt;xai.data.explorer.numerical.numerical_stats.NumericalStats object at 0x7f83e163b3c8&gt;},
+                      &lt;xai.data.explorer.numerical.numerical_stats.NumericalStats object at 0x7f83e163bf60&gt;),
+ &#39;IA_0/IA_REASON&#39;: ({0: &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83e163bcf8&gt;,
+                     1: &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83e163beb8&gt;},
+                    &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83e163b470&gt;),
+ &#39;IA_0/IA_TYPE&#39;: ({0: &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83e163b320&gt;,
+                   1: &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83e163bf28&gt;},
+                  &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83d3a71ac8&gt;),
+ &#39;IC_0/COUNTRY&#39;: ({0: &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83d3a71d68&gt;,
+                   1: &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83d3a71da0&gt;},
+                  &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83d3a71358&gt;),
+ &#39;IC_0/REGION&#39;: ({0: &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83d3a71240&gt;,
+                  1: &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83d3a71208&gt;},
+                 &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83d3a71eb8&gt;),
+ &#39;IC_0/SEX&#39;: ({0: &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83d3a716d8&gt;,
+               1: &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83d3a71cf8&gt;},
+              &lt;xai.data.explorer.categorical.categorical_stats.CategoricalStats object at 0x7f83d3a71f60&gt;)}
+</pre></div></div>
+</div>
+<p>We plot <code class="docutils literal notranslate"><span class="pre">IA_0/COMM_MEDIUM</span></code> as an example for categorical features results, and <code class="docutils literal notranslate"><span class="pre">IA_0/IA_INTERVAL</span></code> as the numerical restuls.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">feature_column</span> <span class="o">=</span> <span class="s1">&#39;IA_0/COMM_MEDIUM&#39;</span>
+<span class="n">plotter</span><span class="o">.</span><span class="n">plot_labelled_categorical_stats</span><span class="p">(</span><span class="n">labelled_stats</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="n">feature_column</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                        <span class="n">all_stats</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="n">feature_column</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                                        <span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;LABEL&#39;</span><span class="p">,</span>
+                                        <span class="n">feature_column</span> <span class="o">=</span> <span class="n">feature_column</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_43_0.png" src="../../_images/tutorials_data_tutorial_data_explorer_43_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_43_1.png" src="../../_images/tutorials_data_tutorial_data_explorer_43_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">feature_column</span> <span class="o">=</span> <span class="s1">&#39;IA_0/IA_INTERVAL&#39;</span>
+<span class="n">plotter</span><span class="o">.</span><span class="n">plot_labelled_numerical_stats</span><span class="p">(</span><span class="n">labelled_stats</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="n">feature_column</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                      <span class="n">all_stats</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="n">feature_column</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                                      <span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;LABEL&#39;</span><span class="p">,</span>
+                                      <span class="n">feature_column</span> <span class="o">=</span> <span class="n">feature_column</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="section" id="IA_0/IA_INTERVAL">
+<h3>IA_0/IA_INTERVAL<a class="headerlink" href="#IA_0/IA_INTERVAL" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_data_tutorial_data_explorer_44_1.png" src="../../_images/tutorials_data_tutorial_data_explorer_44_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>class</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>median</th>
+      <th>min</th>
+      <th>sd</th>
+      <th>total_count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>365.0</td>
+      <td>18.147545</td>
+      <td>41.756111</td>
+      <td>0.0</td>
+      <td>365.0</td>
+      <td>17249</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>363.0</td>
+      <td>18.162088</td>
+      <td>46.937193</td>
+      <td>0.0</td>
+      <td>363.0</td>
+      <td>728</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>all</td>
+      <td>365.0</td>
+      <td>18.148134</td>
+      <td>41.978351</td>
+      <td>0.0</td>
+      <td>365.0</td>
+      <td>17977</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../../data/data.html" class="btn btn-neutral float-right" title="data package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../../data_module_tutorial.html" class="btn btn-neutral float-left" title="XAI Data tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
