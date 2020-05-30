@@ -1,0 +1,337 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>explainer.tabular.shap_tabular_explainer module &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="explainer.text package" href="explainer.text.html" />
+    <link rel="prev" title="explainer.tabular.lime_tabular_explainer module" href="explainer.tabular.lime_tabular_explainer.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training_module.html">Model Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../inference_module.html">Explainer Module</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../inference_module_tutorial.html">Tutorial</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="explainer.html">API Documentation</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="explainer.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="explainer.tabular.html">explainer.tabular package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="explainer.text.html">explainer.text package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="explainer.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../inference_module.html">Explainer Module</a> &raquo;</li>
+        
+          <li><a href="explainer.html">explainer package</a> &raquo;</li>
+        
+          <li><a href="explainer.tabular.html">explainer.tabular package</a> &raquo;</li>
+        
+      <li>explainer.tabular.shap_tabular_explainer module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/explainer/explainer.tabular.shap_tabular_explainer.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-explainer.tabular.shap_tabular_explainer">
+<span id="explainer-tabular-shap-tabular-explainer-module"></span><h1>explainer.tabular.shap_tabular_explainer module<a class="headerlink" href="#module-explainer.tabular.shap_tabular_explainer" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="explainer.tabular.shap_tabular_explainer.SHAPTabularExplainer">
+<em class="property">class </em><code class="sig-name descname">SHAPTabularExplainer</code><a class="reference internal" href="../_modules/explainer/tabular/shap_tabular_explainer.html#SHAPTabularExplainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#explainer.tabular.shap_tabular_explainer.SHAPTabularExplainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xai.explainer.abstract_explainer.AbstractExplainer</span></code></p>
+<dl class="method">
+<dt id="explainer.tabular.shap_tabular_explainer.SHAPTabularExplainer.build_explainer">
+<code class="sig-name descname">build_explainer</code><span class="sig-paren">(</span><em class="sig-param">training_data: Any</em>, <em class="sig-param">predict_fn: Callable</em>, <em class="sig-param">feature_names: List[str] = None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/explainer/tabular/shap_tabular_explainer.html#SHAPTabularExplainer.build_explainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#explainer.tabular.shap_tabular_explainer.SHAPTabularExplainer.build_explainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the SHAP kernel explainer
+See <a class="reference external" href="https://shap.readthedocs.io/en/latest/#shap.KernelExplainer">https://shap.readthedocs.io/en/latest/#shap.KernelExplainer</a> for additional details</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>numpy.array</strong><strong> or </strong><strong>pandas.DataFrame</strong><strong> or </strong><strong>shap.common.DenseData or</strong> (<em>training_data</em>) – any scipy.sparse matrix): The background dataset to use for integrating
+out features. In other words, the training data for the SHAP explainer</p></li>
+<li><p><strong>predict_fn</strong> (<em>Callable</em>) – User supplied function that takes a matrix of samples
+(# samples x # features) and computes a the output of the model for those samples.
+The output can be a vector (# samples) or a matrix (# samples x # model outputs).</p></li>
+<li><p><strong>feature_names</strong> (<em>list</em>) – List of feature names corresponding to the data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="explainer.tabular.shap_tabular_explainer.SHAPTabularExplainer.explain_instance">
+<code class="sig-name descname">explain_instance</code><span class="sig-paren">(</span><em class="sig-param">instance: numpy.ndarray</em>, <em class="sig-param">num_samples: Optional[int] = None</em>, <em class="sig-param">num_features: int = 5</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span> &#x2192; Dict[int, Dict]<a class="reference internal" href="../_modules/explainer/tabular/shap_tabular_explainer.html#SHAPTabularExplainer.explain_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#explainer.tabular.shap_tabular_explainer.SHAPTabularExplainer.explain_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate the SHAP values for a sample</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<em>np.ndarray</em>) – A 1D numpy array corresponding to a row/single example</p></li>
+<li><p><strong>num_samples</strong> (<em>int</em>) – The number of re-evaluations to conduct. The higher the samples,
+the lower the variance</p></li>
+<li><p><strong>num_features</strong> (<em>int</em>) – Number of features to include in an explanation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(dict) A mapping of class to explanations</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="explainer.explainer_exceptions.html#explainer.explainer_exceptions.ExplainerUninitializedError" title="explainer.explainer_exceptions.ExplainerUninitializedError"><strong>ExplainerUninitializedError</strong></a> – Raised if self.explainer_object is None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="explainer.tabular.shap_tabular_explainer.SHAPTabularExplainer.load_explainer">
+<code class="sig-name descname">load_explainer</code><span class="sig-paren">(</span><em class="sig-param">path: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/explainer/tabular/shap_tabular_explainer.html#SHAPTabularExplainer.load_explainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#explainer.tabular.shap_tabular_explainer.SHAPTabularExplainer.load_explainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the explainer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to load the explainer</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="explainer.tabular.shap_tabular_explainer.SHAPTabularExplainer.save_explainer">
+<code class="sig-name descname">save_explainer</code><span class="sig-paren">(</span><em class="sig-param">path: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/explainer/tabular/shap_tabular_explainer.html#SHAPTabularExplainer.save_explainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#explainer.tabular.shap_tabular_explainer.SHAPTabularExplainer.save_explainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the explainer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to save the explainer</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="explainer.text.html" class="btn btn-neutral float-right" title="explainer.text package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="explainer.tabular.lime_tabular_explainer.html" class="btn btn-neutral float-left" title="explainer.tabular.lime_tabular_explainer module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

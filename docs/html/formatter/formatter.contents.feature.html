@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>formatter.contents.feature module &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="formatter.contents.model module" href="formatter.contents.model.html" />
+    <link rel="prev" title="formatter.contents.evaluation module" href="formatter.contents.evaluation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../formatter_module.html">Formatter Module</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../formatter_module_tutorial.html">Tutorial</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="formatter.html">API Documentation</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="formatter.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="formatter.contents.html">formatter.contents package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="formatter.hypertext_markup.html">formatter.hypertext_markup package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="formatter.portable_document.html">formatter.portable_document package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="formatter.report.html">formatter.report package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="formatter.writer.html">formatter.writer package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../formatter_module.html">Formatter Module</a> &raquo;</li>
+        
+          <li><a href="formatter.html">formatter package</a> &raquo;</li>
+        
+          <li><a href="formatter.contents.html">formatter.contents package</a> &raquo;</li>
+        
+      <li>formatter.contents.feature module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/formatter/formatter.contents.feature.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-formatter.contents.feature">
+<span id="formatter-contents-feature-module"></span><h1>formatter.contents.feature module<a class="headerlink" href="#module-formatter.contents.feature" title="Permalink to this headline">¶</a></h1>
+<p>Feature Content</p>
+<dl class="class">
+<dt id="formatter.contents.feature.FeatureImportance">
+<em class="property">class </em><code class="sig-name descname">FeatureImportance</code><span class="sig-paren">(</span><em class="sig-param">importance_ranking: List[List], importance_threshold: float, maximum_number_feature=20, notes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/contents/feature.html#FeatureImportance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.contents.feature.FeatureImportance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xai.formatter.contents.base.Content</span></code></p>
+<p>Feature Importance</p>
+<dl class="method">
+<dt id="formatter.contents.feature.FeatureImportance.draw">
+<code class="sig-name descname">draw</code><span class="sig-paren">(</span><em class="sig-param">writer: xai.formatter.writer.base.Writer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/contents/feature.html#FeatureImportance.draw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.contents.feature.FeatureImportance.draw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw Feature Importance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>writer</strong> (<a class="reference internal" href="formatter.writer.base.html#formatter.writer.base.Writer" title="formatter.writer.base.Writer"><em>Writer</em></a>) – Report Writer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.feature.FeatureImportance.importance_ranking">
+<em class="property">property </em><code class="sig-name descname">importance_ranking</code><a class="headerlink" href="#formatter.contents.feature.FeatureImportance.importance_ranking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns feature importance ranking.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.feature.FeatureImportance.importance_threshold">
+<em class="property">property </em><code class="sig-name descname">importance_threshold</code><a class="headerlink" href="#formatter.contents.feature.FeatureImportance.importance_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns feature importance threshold .</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.feature.FeatureImportance.maximum_number_feature">
+<em class="property">property </em><code class="sig-name descname">maximum_number_feature</code><a class="headerlink" href="#formatter.contents.feature.FeatureImportance.maximum_number_feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns maximum number of features.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.feature.FeatureImportance.notes">
+<em class="property">property </em><code class="sig-name descname">notes</code><a class="headerlink" href="#formatter.contents.feature.FeatureImportance.notes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns feature importance info.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="formatter.contents.feature.FeatureShapValues">
+<em class="property">class </em><code class="sig-name descname">FeatureShapValues</code><span class="sig-paren">(</span><em class="sig-param">mode: str, feature_shap_values: List[Tuple[str, List]], class_id: int, train_data: numpy.ndarray, notes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/contents/feature.html#FeatureShapValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.contents.feature.FeatureShapValues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xai.formatter.contents.base.Content</span></code></p>
+<p>Feature Importance</p>
+<dl class="method">
+<dt id="formatter.contents.feature.FeatureShapValues.class_id">
+<em class="property">property </em><code class="sig-name descname">class_id</code><a class="headerlink" href="#formatter.contents.feature.FeatureShapValues.class_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns class id.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.feature.FeatureShapValues.draw">
+<code class="sig-name descname">draw</code><span class="sig-paren">(</span><em class="sig-param">writer: xai.formatter.writer.base.Writer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/contents/feature.html#FeatureShapValues.draw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.contents.feature.FeatureShapValues.draw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw Feature Importance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>writer</strong> (<a class="reference internal" href="formatter.writer.base.html#formatter.writer.base.Writer" title="formatter.writer.base.Writer"><em>Writer</em></a>) – Report Writer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.feature.FeatureShapValues.feature_shap_values">
+<em class="property">property </em><code class="sig-name descname">feature_shap_values</code><a class="headerlink" href="#formatter.contents.feature.FeatureShapValues.feature_shap_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns feature shap values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.feature.FeatureShapValues.mode">
+<em class="property">property </em><code class="sig-name descname">mode</code><a class="headerlink" href="#formatter.contents.feature.FeatureShapValues.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns Mode.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.feature.FeatureShapValues.notes">
+<em class="property">property </em><code class="sig-name descname">notes</code><a class="headerlink" href="#formatter.contents.feature.FeatureShapValues.notes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns feature importance info.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.feature.FeatureShapValues.train_data">
+<em class="property">property </em><code class="sig-name descname">train_data</code><a class="headerlink" href="#formatter.contents.feature.FeatureShapValues.train_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns train_data.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="formatter.contents.model.html" class="btn btn-neutral float-right" title="formatter.contents.model module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="formatter.contents.evaluation.html" class="btn btn-neutral float-left" title="formatter.contents.evaluation module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -14,9 +14,6 @@ build/
 dist/
 sap_explainable_ai.egg-info/
 
-**/.ipynb*
-**/*.pdf
-**/*.html
 xai/formatter/portable_document/fonts/*.pkl
 
 tests/compiler/_temp

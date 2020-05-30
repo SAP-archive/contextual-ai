@@ -1,0 +1,694 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>compiler.base &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>compiler.base</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for compiler.base</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved</span>
+<span class="c1"># ============================================================================</span>
+<span class="sd">&quot;&quot;&quot; Compiler - Base &quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">import_module</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">from</span> <span class="nn">jsonschema</span> <span class="kn">import</span> <span class="n">validate</span>
+
+<span class="kn">from</span> <span class="nn">xai.exception</span> <span class="kn">import</span> <span class="n">CompilerException</span>
+<span class="kn">from</span> <span class="nn">xai.formatter</span> <span class="kn">import</span> <span class="n">Report</span>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1">### Report Enum Constant</span>
+<span class="c1">################################################################################</span>
+<div class="viewcode-block" id="Constant"><a class="viewcode-back" href="../../compiler/compiler.base.html#compiler.base.Constant">[docs]</a><span class="k">class</span> <span class="nc">Constant</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">NAME</span> <span class="o">=</span> <span class="s1">&#39;name&#39;</span>
+    <span class="n">ENABLE_OVERVIEW</span> <span class="o">=</span> <span class="s1">&#39;overview&#39;</span>
+    <span class="n">ENABLE_CONTENT_TABLE</span> <span class="o">=</span> <span class="s1">&#39;content_table&#39;</span>
+
+    <span class="n">CONTENT_LIST</span> <span class="o">=</span> <span class="s1">&#39;contents&#39;</span>
+    <span class="n">SECTION_TITLE</span> <span class="o">=</span> <span class="s1">&#39;title&#39;</span>
+    <span class="n">SECTION_DESC</span> <span class="o">=</span> <span class="s1">&#39;desc&#39;</span>
+    <span class="n">COMPONENT</span> <span class="o">=</span> <span class="s1">&#39;component&#39;</span>
+    <span class="n">COMPONENT_CLASS</span> <span class="o">=</span> <span class="s1">&#39;class&#39;</span>
+    <span class="n">COMPONENT_PACKAGE</span> <span class="o">=</span> <span class="s1">&#39;package&#39;</span>
+    <span class="n">COMPONENT_MODULE</span> <span class="o">=</span> <span class="s1">&#39;module&#39;</span>
+    <span class="n">COMPONENT_ATTR</span> <span class="o">=</span> <span class="s1">&#39;attr&#39;</span>
+    <span class="n">COMPONENT_ATTR_VARS_PREFIX</span> <span class="o">=</span> <span class="s1">&#39;var:&#39;</span>
+    <span class="n">SECTION_LIST</span> <span class="o">=</span> <span class="s1">&#39;sections&#39;</span>
+
+
+    <span class="n">S1</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">H1</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">H2</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">H3</span> <span class="o">=</span> <span class="mi">3</span>
+
+    <span class="n">PATH</span> <span class="o">=</span> <span class="s1">&#39;path&#39;</span>
+    <span class="n">WRITERS</span> <span class="o">=</span> <span class="s1">&#39;writers&#39;</span></div>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1">### Configuration</span>
+<span class="c1">################################################################################</span>
+<div class="viewcode-block" id="Configuration"><a class="viewcode-back" href="../../compiler/compiler.base.html#compiler.base.Configuration">[docs]</a><span class="k">class</span> <span class="nc">Configuration</span><span class="p">:</span>
+    <span class="n">SCHEMA</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;definitions&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;sections&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+                    <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+                    <span class="s2">&quot;sections&quot;</span><span class="p">:</span>
+                        <span class="p">{</span>
+                            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/definitions/sections&quot;</span><span class="p">},</span>
+                            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">[]</span>
+                        <span class="p">},</span>
+                    <span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/definitions/component&quot;</span><span class="p">}</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;package&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+                    <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+                    <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+                    <span class="s2">&quot;attr&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;overview&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot; type&quot;</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;content_table&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;contents&quot;</span><span class="p">:</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/definitions/sections&quot;</span><span class="p">},</span>
+                    <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">[]</span>
+                <span class="p">},</span>
+            <span class="s2">&quot;writers&quot;</span><span class="p">:</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/definitions/component&quot;</span><span class="p">}</span>
+                <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;content_table&quot;</span><span class="p">,</span> <span class="s2">&quot;contents&quot;</span><span class="p">,</span> <span class="s2">&quot;writers&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load Config File</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config (Path): config json/yaml file Path object</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            configuration dict object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">extension</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;.json&#39;</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">config</span><span class="p">))</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;.yml&#39;</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">config</span><span class="p">))</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CompilerException</span><span class="p">(</span><span class="s1">&#39;Unsupported config file, </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">config</span><span class="p">)</span>
+
+        <span class="n">validate</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">Configuration</span><span class="o">.</span><span class="n">SCHEMA</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+<div class="viewcode-block" id="Configuration.render_config"><a class="viewcode-back" href="../../compiler/compiler.base.html#compiler.base.Configuration.render_config">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">render_config</span><span class="p">(</span><span class="n">contents</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rendering Config</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            contents (dict): contents dict object</span>
+<span class="sd">            variables: dictionary of the current globals/locals symbol table</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                <span class="n">component</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT_ATTR</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">component</span><span class="p">:</span>
+                    <span class="n">attr</span> <span class="o">=</span> <span class="n">component</span><span class="p">[</span><span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT_ATTR</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">attr</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> \
+                                <span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT_ATTR_VARS_PREFIX</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                            <span class="n">p</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT_ATTR_VARS_PREFIX</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
+                                <span class="n">attr</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">variables</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">Constant</span><span class="o">.</span><span class="n">SECTION_LIST</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                <span class="n">Configuration</span><span class="o">.</span><span class="n">render_config</span><span class="p">(</span>
+                    <span class="n">contents</span><span class="o">=</span><span class="n">content</span><span class="p">[</span><span class="n">Constant</span><span class="o">.</span><span class="n">SECTION_LIST</span><span class="o">.</span><span class="n">value</span><span class="p">],</span>
+                    <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_load_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load Config File - file path or dict</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config (str/dict): path to config json/yaml file or dict pre-loaded</span>
+<span class="sd">            variables: dictionary of the current globals/locals symbol table</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="n">_result</span> <span class="o">=</span> <span class="n">Configuration</span><span class="o">.</span><span class="n">_load</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
+                <span class="n">_result</span> <span class="o">=</span> <span class="n">config</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CompilerException</span><span class="p">(</span>
+                    <span class="s1">&#39;Unsupported config format, </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">config</span><span class="p">)</span>
+
+            <span class="c1"># -- Start Rendering --</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">variables</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="n">Configuration</span><span class="o">.</span><span class="n">render_config</span><span class="p">(</span>
+                    <span class="n">contents</span><span class="o">=</span><span class="n">_result</span><span class="p">[</span><span class="n">Constant</span><span class="o">.</span><span class="n">CONTENT_LIST</span><span class="o">.</span><span class="n">value</span><span class="p">],</span>
+                    <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_result</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Configuration setup</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config (str/dict): path to config json/yaml file or dict pre-loaded</span>
+<span class="sd">            variables: dictionary of the current globals/locals symbol table</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">Configuration</span><span class="o">.</span><span class="n">_load_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">variables</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Configuration execution</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config (str/dict): path to config json/yaml file or dict pre-loaded</span>
+<span class="sd">            variables: dictionary of the current globals/locals symbol table</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            configuration dict object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">Configuration</span><span class="o">.</span><span class="n">_load_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">variables</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span></div>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1">### Controller</span>
+<span class="c1">################################################################################</span>
+<div class="viewcode-block" id="Controller"><a class="viewcode-back" href="../../compiler/compiler.base.html#compiler.base.Controller">[docs]</a><span class="k">class</span> <span class="nc">Controller</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Controller setup</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config (Configuration): configuration dict object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns Configuration Object&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span>
+
+<div class="viewcode-block" id="Controller.render_contents"><a class="viewcode-back" href="../../compiler/compiler.base.html#compiler.base.Controller.render_contents">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">render_contents</span><span class="p">(</span><span class="n">report</span><span class="p">:</span> <span class="n">Report</span><span class="p">,</span> <span class="n">contents</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rendering Content</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            report (Report): report object</span>
+<span class="sd">            contents (dict): contents dict object</span>
+<span class="sd">            level (int): content level</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_level</span> <span class="o">=</span> <span class="n">level</span>
+        <span class="k">for</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Constant</span><span class="o">.</span><span class="n">SECTION_TITLE</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="n">Constant</span><span class="o">.</span><span class="n">SECTION_TITLE</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">title</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">current_level</span> <span class="o">==</span> <span class="n">Constant</span><span class="o">.</span><span class="n">S1</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                        <span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_new_page</span><span class="p">()</span>
+                        <span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_section_title</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">current_level</span> <span class="o">==</span> <span class="n">Constant</span><span class="o">.</span><span class="n">H1</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                        <span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_header_level_1</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">current_level</span> <span class="o">==</span> <span class="n">Constant</span><span class="o">.</span><span class="n">H2</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                        <span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_header_level_2</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_header_level_3</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">Constant</span><span class="o">.</span><span class="n">SECTION_DESC</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                <span class="n">desc</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="n">Constant</span><span class="o">.</span><span class="n">SECTION_DESC</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">desc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+                    <span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_paragraph</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">desc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                <span class="n">component</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+                <span class="n">Controller</span><span class="o">.</span><span class="n">render_component</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span>
+                                            <span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">,</span>
+                                            <span class="n">level</span><span class="o">=</span><span class="n">current_level</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">Constant</span><span class="o">.</span><span class="n">SECTION_LIST</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                <span class="n">Controller</span><span class="o">.</span><span class="n">render_contents</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span>
+                                           <span class="n">contents</span><span class="o">=</span><span class="n">content</span><span class="p">[</span>
+                                               <span class="n">Constant</span><span class="o">.</span><span class="n">SECTION_LIST</span><span class="o">.</span><span class="n">value</span><span class="p">],</span>
+                                           <span class="n">level</span><span class="o">=</span><span class="n">current_level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Controller.value_extractor"><a class="viewcode-back" href="../../compiler/compiler.base.html#compiler.base.Controller.value_extractor">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">value_extractor</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract value with key, return default if not found</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            items: items</span>
+<span class="sd">            key (str): key</span>
+<span class="sd">            default: default return</span>
+<span class="sd">        Returns: default</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">items</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">default</span></div>
+
+<div class="viewcode-block" id="Controller.factory"><a class="viewcode-back" href="../../compiler/compiler.base.html#compiler.base.Controller.factory">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">factory</span><span class="p">(</span><span class="n">report</span><span class="p">:</span> <span class="n">Report</span><span class="p">,</span> <span class="n">package</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                <span class="n">attr</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dynamically import and load class</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            report (Report): report object</span>
+<span class="sd">            package (str): component package</span>
+<span class="sd">            module (str): component module name</span>
+<span class="sd">            name (str): component class name</span>
+<span class="sd">            attr (dict): component class attributes in dict</span>
+<span class="sd">            level (int): content level</span>
+<span class="sd">        Returns: class object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">imported_module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">module</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="n">package</span><span class="p">)</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">imported_module</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+        <span class="n">obj</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Controller.render_component"><a class="viewcode-back" href="../../compiler/compiler.base.html#compiler.base.Controller.render_component">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">render_component</span><span class="p">(</span><span class="n">report</span><span class="p">:</span> <span class="n">Report</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rendering Report component</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            report (Report): report object</span>
+<span class="sd">            component (dict): component info in dict</span>
+<span class="sd">            level (int): content level</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT_CLASS</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">component</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">component</span><span class="p">[</span><span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT_CLASS</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+            <span class="n">package</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">value_extractor</span><span class="p">(</span>
+                <span class="n">items</span><span class="o">=</span><span class="n">component</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT_PACKAGE</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;xai&#39;</span><span class="p">)</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">value_extractor</span><span class="p">(</span>
+                <span class="n">items</span><span class="o">=</span><span class="n">component</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT_MODULE</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;compiler&#39;</span><span class="p">)</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">value_extractor</span><span class="p">(</span>
+                <span class="n">items</span><span class="o">=</span><span class="n">component</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT_ATTR</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">())</span>
+            <span class="n">Controller</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="n">package</span><span class="p">,</span>
+                               <span class="n">module</span><span class="o">=</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="n">attr</span><span class="p">,</span>
+                               <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CompilerException</span><span class="p">(</span><span class="s2">&quot;class is not defined&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Controller.output"><a class="viewcode-back" href="../../compiler/compiler.base.html#compiler.base.Controller.output">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">output</span><span class="p">(</span><span class="n">report</span><span class="p">:</span> <span class="n">Report</span><span class="p">,</span> <span class="n">writers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rendering Report to writer</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            report (Report): report object</span>
+<span class="sd">            writers (dict): output writer dict object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">writer</span> <span class="ow">in</span> <span class="n">writers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT_CLASS</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">writer</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">writer</span><span class="p">[</span><span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT_CLASS</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+                <span class="n">package</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">value_extractor</span><span class="p">(</span>
+                    <span class="n">items</span><span class="o">=</span><span class="n">writer</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT_PACKAGE</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">default</span><span class="o">=</span><span class="s1">&#39;xai&#39;</span><span class="p">)</span>
+                <span class="n">module</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">value_extractor</span><span class="p">(</span>
+                    <span class="n">items</span><span class="o">=</span><span class="n">writer</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT_MODULE</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">default</span><span class="o">=</span><span class="s1">&#39;compiler&#39;</span><span class="p">)</span>
+                <span class="n">attr</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">value_extractor</span><span class="p">(</span>
+                    <span class="n">items</span><span class="o">=</span><span class="n">writer</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">Constant</span><span class="o">.</span><span class="n">COMPONENT_ATTR</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">())</span>
+                <span class="n">Controller</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="n">package</span><span class="p">,</span>
+                                   <span class="n">module</span><span class="o">=</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="n">attr</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CompilerException</span><span class="p">(</span><span class="s2">&quot;class is not defined&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Controller.render"><a class="viewcode-back" href="../../compiler/compiler.base.html#compiler.base.Controller.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Render Report&quot;&quot;&quot;</span>
+        <span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">Constant</span><span class="o">.</span><span class="n">NAME</span><span class="o">.</span><span class="n">value</span><span class="p">])</span>
+        <span class="n">report</span><span class="o">.</span><span class="n">set_content_table</span><span class="p">(</span><span class="n">indicator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span>
+            <span class="n">Constant</span><span class="o">.</span><span class="n">ENABLE_CONTENT_TABLE</span><span class="o">.</span><span class="n">value</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">render_contents</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span>
+                             <span class="n">contents</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">Constant</span><span class="o">.</span><span class="n">CONTENT_LIST</span><span class="o">.</span><span class="n">value</span><span class="p">],</span>
+                             <span class="n">level</span><span class="o">=</span><span class="n">Constant</span><span class="o">.</span><span class="n">S1</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span> <span class="n">writers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">Constant</span><span class="o">.</span><span class="n">WRITERS</span><span class="o">.</span><span class="n">value</span><span class="p">])</span></div></div>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1">### Dict to Object</span>
+<span class="c1">################################################################################</span>
+<div class="viewcode-block" id="Dict2Obj"><a class="viewcode-back" href="../../compiler/compiler.base.html#compiler.base.Dict2Obj">[docs]</a><span class="k">class</span> <span class="nc">Dict2Obj</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Init</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dictionary (dict): attribute to set</span>
+<span class="sd">            schema (dict): schema to validate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span> <span class="o">=</span> <span class="n">dictionary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span> <span class="o">=</span> <span class="n">schema</span>
+
+        <span class="c1"># validate(instance=self._dict, schema=self._schema)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">:</span> <span class="n">Report</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            report (Report): report object</span>
+<span class="sd">            level (int): content level</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_report</span> <span class="o">=</span> <span class="n">report</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_level</span> <span class="o">=</span> <span class="n">level</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns Report object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_report</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns Report section level.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_level</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return class name and attributes&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: schema[</span><span class="si">%s</span><span class="s2">] data[</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Dict2Obj.assert_attr"><a class="viewcode-back" href="../../compiler/compiler.base.html#compiler.base.Dict2Obj.assert_attr">[docs]</a>    <span class="k">def</span> <span class="nf">assert_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assert and Get Attribute, raise Compiler exception if not found</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): Attribute Name</span>
+<span class="sd">            optional (Optional): default is False, if set to true,</span>
+<span class="sd">                        simple return None when attribute not found</span>
+<span class="sd">            default (Optional): default value if not found</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            attribute value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">optional</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">default</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">default</span>
+        <span class="k">raise</span> <span class="n">CompilerException</span><span class="p">(</span><span class="s2">&quot;attribute &#39;</span><span class="si">%s</span><span class="s2">&#39; is not defined&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Dict2Obj.add_header"><a class="viewcode-back" href="../../compiler/compiler.base.html#compiler.base.Dict2Obj.add_header">[docs]</a>    <span class="k">def</span> <span class="nf">add_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">==</span> <span class="n">Constant</span><span class="o">.</span><span class="n">S1</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_header_level_1</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">==</span> <span class="n">Constant</span><span class="o">.</span><span class="n">H1</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_header_level_2</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">==</span> <span class="n">Constant</span><span class="o">.</span><span class="n">H2</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_header_level_3</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_paragraph</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Dict2Obj.load_data"><a class="viewcode-back" href="../../compiler/compiler.base.html#compiler.base.Dict2Obj.load_data">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load Data from variable or file based on the file extension.</span>
+<span class="sd">        This function is based on pandas and numpy tools, when the file is in a</span>
+<span class="sd">        standard format. Various file types are supported (.npy, .csv, .json,</span>
+<span class="sd">        .jsonl, .xls, .xlsx, .tsv, .pickle, .pick)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input: vars to the data file</span>
+<span class="sd">            header (bool): load data with header, default is True</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">input</span>
+
+        <span class="c1"># -- Parse/read if the input is a str --</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="n">extension</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;.npy&#39;</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.json&quot;</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.jsonl&quot;</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">lines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.dta&quot;</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_stata</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.tsv&quot;</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">extension</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.xls&quot;</span><span class="p">,</span> <span class="s2">&quot;.xlsx&quot;</span><span class="p">]:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">extension</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;.pickle&quot;</span><span class="p">]:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">extension</span> <span class="o">!=</span> <span class="s2">&quot;.csv&quot;</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;Warning! unsupported extension </span><span class="si">%s</span><span class="s2">, &quot;</span>
+                                      <span class="s2">&quot;we default it to be in CSV format.&quot;</span> <span class="o">%</span>
+                              <span class="n">extension</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">header</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

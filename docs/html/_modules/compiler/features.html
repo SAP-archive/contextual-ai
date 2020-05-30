@@ -1,0 +1,346 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>compiler.features &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>compiler.features</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for compiler.features</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># Copyright 2019 SAP SE or an SAP affiliate company. All rights reserved</span>
+<span class="c1"># ============================================================================</span>
+<span class="sd">&quot;&quot;&quot; Compiler - Features &quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+
+<span class="kn">from</span> <span class="nn">xai</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ALG</span><span class="p">,</span>
+    <span class="n">MODE</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">xai.compiler.base</span> <span class="kn">import</span> <span class="n">Dict2Obj</span>
+<span class="kn">from</span> <span class="nn">xai.formatter</span> <span class="kn">import</span> <span class="n">Report</span>
+<span class="kn">from</span> <span class="nn">xai.model.interpreter</span> <span class="kn">import</span> <span class="n">FeatureInterpreter</span>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1">### Feature Importance Ranking</span>
+<span class="c1">################################################################################</span>
+<div class="viewcode-block" id="FeatureImportanceRanking"><a class="viewcode-back" href="../../compiler/compiler.features.html#compiler.features.FeatureImportanceRanking">[docs]</a><span class="k">class</span> <span class="nc">FeatureImportanceRanking</span><span class="p">(</span><span class="n">Dict2Obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compiler for Feature Importance Ranking</span>
+
+<span class="sd">    Param:</span>
+<span class="sd">        package (str, Optional): component package name</span>
+<span class="sd">        module (str, Optional): component module name</span>
+<span class="sd">        class (str): component class name</span>
+
+<span class="sd">    Attr:</span>
+<span class="sd">        trained_model (str): path to trained model pickle</span>
+<span class="sd">        train_data (str): path to training sample data</span>
+<span class="sd">        feature_names (str, Optional): array-list of feature names</span>
+<span class="sd">        method: (str, Optional) interpreter method, default = &#39;default&#39;</span>
+<span class="sd">        threshold (number, Optional): importance threshold, default 0.005</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &quot;component&quot;: {</span>
+<span class="sd">            &quot;package&quot;: &quot;xai&quot;,</span>
+<span class="sd">            &quot;module&quot;: &quot;compiler&quot;,</span>
+<span class="sd">            &quot;class&quot;: &quot;FeatureImportanceRanking&quot;,</span>
+<span class="sd">            &quot;attr&quot;: {</span>
+<span class="sd">                &quot;mode&quot;: &quot;classification&quot;,</span>
+<span class="sd">                &quot;trained_model&quot;: &quot;./sample_input/model.pkl&quot;,</span>
+<span class="sd">                &quot;train_data&quot;: &quot;./sample_input/train.csv&quot;,</span>
+<span class="sd">                &quot;feature_names&quot;: &quot;./sample_input/feature_name.csv&quot;,</span>
+<span class="sd">                &quot;method&quot;: &quot;default&quot;</span>
+<span class="sd">                &quot;threshold&quot;: 0.005</span>
+<span class="sd">            }</span>
+<span class="sd">        }</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;trained_model&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">]},</span>
+            <span class="s2">&quot;train_data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot; type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">]},</span>
+            <span class="s2">&quot;feature_names&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">]},</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;enum&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="s2">&quot;shap&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;default&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;threshold&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;number&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mf">0.005</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;trained_model&quot;</span><span class="p">,</span> <span class="s2">&quot;train_data&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Init</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dictionary (dict): attribute to set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FeatureImportanceRanking</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span>
+                                                       <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">:</span> <span class="n">Report</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execution</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            report (Report): report object</span>
+<span class="sd">            level (int): content level</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FeatureImportanceRanking</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span>
+                                                       <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">)</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;mode&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">MODE</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="p">)</span>
+        <span class="n">threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;threshold&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;method&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">)</span>
+        <span class="c1"># -- Load Model --</span>
+        <span class="n">model_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;trained_model&#39;</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">model_var</span><span class="p">)</span>
+        <span class="c1"># -- Check if feature names is set --</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">fn_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;feature_names&#39;</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">feature_names</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">fn_var</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">feature_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">fn_var</span><span class="p">)</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># -- Load Training Data for default method --</span>
+        <span class="n">data_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;train_data&#39;</span><span class="p">,</span>
+                                    <span class="n">optional</span><span class="o">=</span><span class="p">(</span><span class="n">method</span><span class="o">==</span><span class="s1">&#39;default&#39;</span><span class="p">))</span>
+        <span class="n">train_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">data_var</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">train_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">data_var</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">header</span><span class="p">:</span>
+                <span class="n">feature_names</span> <span class="o">=</span> <span class="n">train_data</span><span class="o">.</span><span class="n">columns</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">):</span>
+            <span class="n">train_data</span> <span class="o">=</span> <span class="n">train_data</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="n">fi</span> <span class="o">=</span> <span class="n">FeatureInterpreter</span><span class="p">(</span><span class="n">feature_names</span><span class="o">=</span><span class="n">feature_names</span><span class="p">)</span>
+
+        <span class="c1"># -- Get Feature Importance --</span>
+        <span class="n">rank</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">get_feature_importance_ranking</span><span class="p">(</span><span class="n">trained_model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                                                 <span class="n">train_x</span><span class="o">=</span><span class="n">train_data</span><span class="p">,</span>
+                                                 <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+                                                 <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+        <span class="c1"># -- Add Feature Importance --</span>
+        <span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_feature_importance</span><span class="p">(</span>
+            <span class="n">importance_ranking</span><span class="o">=</span><span class="n">rank</span><span class="p">,</span> <span class="n">importance_threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">ALG</span><span class="o">.</span><span class="n">SHAP</span><span class="p">:</span>
+            <span class="c1"># -- Get Feature Shap Values --</span>
+            <span class="n">shap_values</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">get_feature_shap_values</span><span class="p">(</span><span class="n">trained_model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                                                     <span class="n">train_x</span><span class="o">=</span><span class="n">train_data</span><span class="p">,</span>
+                                                     <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+
+            <span class="n">num_class</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shap_values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="c1"># -- Add Feature Importance --</span>
+            <span class="k">for</span> <span class="n">class_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_class</span><span class="p">):</span>
+                <span class="n">report</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_feature_shap_values</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+                                                      <span class="n">feature_shap_values</span><span class="o">=</span><span class="n">shap_values</span><span class="p">,</span>
+                                                      <span class="n">class_id</span><span class="o">=</span><span class="n">class_id</span><span class="p">,</span>
+                                                      <span class="n">train_data</span><span class="o">=</span><span class="n">train_data</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

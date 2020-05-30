@@ -1,0 +1,370 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>formatter.contents.basic module &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="formatter.contents.data module" href="formatter.contents.data.html" />
+    <link rel="prev" title="formatter.contents.base module" href="formatter.contents.base.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../data_module.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../formatter_module.html">Formatter Module</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../formatter_module_tutorial.html">Tutorial</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="formatter.html">API Documentation</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="formatter.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="formatter.contents.html">formatter.contents package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="formatter.hypertext_markup.html">formatter.hypertext_markup package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="formatter.portable_document.html">formatter.portable_document package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="formatter.report.html">formatter.report package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="formatter.writer.html">formatter.writer package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../formatter_module.html">Formatter Module</a> &raquo;</li>
+        
+          <li><a href="formatter.html">formatter package</a> &raquo;</li>
+        
+          <li><a href="formatter.contents.html">formatter.contents package</a> &raquo;</li>
+        
+      <li>formatter.contents.basic module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/formatter/formatter.contents.basic.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-formatter.contents.basic">
+<span id="formatter-contents-basic-module"></span><h1>formatter.contents.basic module<a class="headerlink" href="#module-formatter.contents.basic" title="Permalink to this headline">¶</a></h1>
+<p>Basic Content - commonly use</p>
+<dl class="class">
+<dt id="formatter.contents.basic.BasicImageGrid">
+<em class="property">class </em><code class="sig-name descname">BasicImageGrid</code><span class="sig-paren">(</span><em class="sig-param">image_list: list</em>, <em class="sig-param">grid_spec: list</em>, <em class="sig-param">notes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/contents/basic.html#BasicImageGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.contents.basic.BasicImageGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xai.formatter.contents.base.Content</span></code></p>
+<p>Basic Image Grid</p>
+<dl class="method">
+<dt id="formatter.contents.basic.BasicImageGrid.draw">
+<code class="sig-name descname">draw</code><span class="sig-paren">(</span><em class="sig-param">writer: xai.formatter.writer.base.Writer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/contents/basic.html#BasicImageGrid.draw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.contents.basic.BasicImageGrid.draw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw Basic Image Grids</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>writer</strong> (<a class="reference internal" href="formatter.writer.base.html#formatter.writer.base.Writer" title="formatter.writer.base.Writer"><em>Writer</em></a>) – Report Writer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.basic.BasicImageGrid.grid_spec">
+<em class="property">property </em><code class="sig-name descname">grid_spec</code><a class="headerlink" href="#formatter.contents.basic.BasicImageGrid.grid_spec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns images size anf position information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.basic.BasicImageGrid.image_list">
+<em class="property">property </em><code class="sig-name descname">image_list</code><a class="headerlink" href="#formatter.contents.basic.BasicImageGrid.image_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns images path information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.basic.BasicImageGrid.notes">
+<em class="property">property </em><code class="sig-name descname">notes</code><a class="headerlink" href="#formatter.contents.basic.BasicImageGrid.notes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns block description.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="formatter.contents.basic.BasicKeyValuePairs">
+<em class="property">class </em><code class="sig-name descname">BasicKeyValuePairs</code><span class="sig-paren">(</span><em class="sig-param">info: list</em>, <em class="sig-param">notes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/contents/basic.html#BasicKeyValuePairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.contents.basic.BasicKeyValuePairs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xai.formatter.contents.base.Content</span></code></p>
+<p>Basic Key-Value pairs info</p>
+<dl class="method">
+<dt id="formatter.contents.basic.BasicKeyValuePairs.draw">
+<code class="sig-name descname">draw</code><span class="sig-paren">(</span><em class="sig-param">writer: xai.formatter.writer.base.Writer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/contents/basic.html#BasicKeyValuePairs.draw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.contents.basic.BasicKeyValuePairs.draw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw Basic Info (key-value pairs) Paragraph</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>writer</strong> (<a class="reference internal" href="formatter.writer.base.html#formatter.writer.base.Writer" title="formatter.writer.base.Writer"><em>Writer</em></a>) – Report Writer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.basic.BasicKeyValuePairs.info">
+<em class="property">property </em><code class="sig-name descname">info</code><a class="headerlink" href="#formatter.contents.basic.BasicKeyValuePairs.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns key-value pairs information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.basic.BasicKeyValuePairs.notes">
+<em class="property">property </em><code class="sig-name descname">notes</code><a class="headerlink" href="#formatter.contents.basic.BasicKeyValuePairs.notes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns block description.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="formatter.contents.basic.BasicTable">
+<em class="property">class </em><code class="sig-name descname">BasicTable</code><span class="sig-paren">(</span><em class="sig-param">table_header: list</em>, <em class="sig-param">table_data: list</em>, <em class="sig-param">col_width: list</em>, <em class="sig-param">notes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/contents/basic.html#BasicTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.contents.basic.BasicTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xai.formatter.contents.base.Content</span></code></p>
+<p>Basic Table</p>
+<dl class="method">
+<dt id="formatter.contents.basic.BasicTable.col_width">
+<em class="property">property </em><code class="sig-name descname">col_width</code><a class="headerlink" href="#formatter.contents.basic.BasicTable.col_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns column width information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.basic.BasicTable.draw">
+<code class="sig-name descname">draw</code><span class="sig-paren">(</span><em class="sig-param">writer: xai.formatter.writer.base.Writer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/formatter/contents/basic.html#BasicTable.draw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formatter.contents.basic.BasicTable.draw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw Basic Table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>writer</strong> (<a class="reference internal" href="formatter.writer.base.html#formatter.writer.base.Writer" title="formatter.writer.base.Writer"><em>Writer</em></a>) – Report Writer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.basic.BasicTable.notes">
+<em class="property">property </em><code class="sig-name descname">notes</code><a class="headerlink" href="#formatter.contents.basic.BasicTable.notes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns block description.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.basic.BasicTable.table_data">
+<em class="property">property </em><code class="sig-name descname">table_data</code><a class="headerlink" href="#formatter.contents.basic.BasicTable.table_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns table data information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="formatter.contents.basic.BasicTable.table_header">
+<em class="property">property </em><code class="sig-name descname">table_header</code><a class="headerlink" href="#formatter.contents.basic.BasicTable.table_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns table header information.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="formatter.contents.data.html" class="btn btn-neutral float-right" title="formatter.contents.data module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="formatter.contents.base.html" class="btn btn-neutral float-left" title="formatter.contents.base module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

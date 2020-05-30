@@ -1,0 +1,610 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>data.constants module &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="data.exceptions module" href="data.exceptions.html" />
+    <link rel="prev" title="data.abstract_stats module" href="data.abstract_stats.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../data_module.html">Data Module</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../data_module_tutorial.html">Tutorial</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="data.html">API Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="data.html#subpackages">Subpackages</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="data.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="data.abstract_stats.html">data.abstract_stats module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">data.constants module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="data.exceptions.html">data.exceptions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="data.helper.html">data.helper module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../data_module.html">Data Module</a> &raquo;</li>
+        
+          <li><a href="data.html">data package</a> &raquo;</li>
+        
+      <li>data.constants module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/data/data.constants.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-data.constants">
+<span id="data-constants-module"></span><h1>data.constants module<a class="headerlink" href="#module-data.constants" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="data.constants.DATATYPE">
+<em class="property">class </em><code class="sig-name descname">DATATYPE</code><a class="reference internal" href="../_modules/data/constants.html#DATATYPE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.constants.DATATYPE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Predefined data type for data analyzer</p>
+<dl class="attribute">
+<dt id="data.constants.DATATYPE.ATTRIBUTE">
+<code class="sig-name descname">ATTRIBUTE</code><em class="property"> = 'attribute'</em><a class="headerlink" href="#data.constants.DATATYPE.ATTRIBUTE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DATATYPE.CATEGORY">
+<code class="sig-name descname">CATEGORY</code><em class="property"> = 'categorical'</em><a class="headerlink" href="#data.constants.DATATYPE.CATEGORY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DATATYPE.DATETIME">
+<code class="sig-name descname">DATETIME</code><em class="property"> = 'datetime'</em><a class="headerlink" href="#data.constants.DATATYPE.DATETIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DATATYPE.FREETEXT">
+<code class="sig-name descname">FREETEXT</code><em class="property"> = 'text'</em><a class="headerlink" href="#data.constants.DATATYPE.FREETEXT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DATATYPE.KEY">
+<code class="sig-name descname">KEY</code><em class="property"> = 'key'</em><a class="headerlink" href="#data.constants.DATATYPE.KEY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DATATYPE.LABEL">
+<code class="sig-name descname">LABEL</code><em class="property"> = 'label'</em><a class="headerlink" href="#data.constants.DATATYPE.LABEL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DATATYPE.NUMBER">
+<code class="sig-name descname">NUMBER</code><em class="property"> = 'numerical'</em><a class="headerlink" href="#data.constants.DATATYPE.NUMBER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DATATYPE.SEQUENCE">
+<code class="sig-name descname">SEQUENCE</code><em class="property"> = 'sequence'</em><a class="headerlink" href="#data.constants.DATATYPE.SEQUENCE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DATATYPE.STRUCTURED">
+<code class="sig-name descname">STRUCTURED</code><em class="property"> = 'structured'</em><a class="headerlink" href="#data.constants.DATATYPE.STRUCTURED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DATATYPE.TYPE">
+<code class="sig-name descname">TYPE</code><em class="property"> = 'type'</em><a class="headerlink" href="#data.constants.DATATYPE.TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DATATYPE.USED">
+<code class="sig-name descname">USED</code><em class="property"> = 'used'</em><a class="headerlink" href="#data.constants.DATATYPE.USED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="data.constants.DatetimeResolution">
+<em class="property">class </em><code class="sig-name descname">DatetimeResolution</code><a class="reference internal" href="../_modules/data/constants.html#DatetimeResolution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.constants.DatetimeResolution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Constants for datetime resolution</p>
+<dl class="attribute">
+<dt id="data.constants.DatetimeResolution.DAY">
+<code class="sig-name descname">DAY</code><em class="property"> = 2</em><a class="headerlink" href="#data.constants.DatetimeResolution.DAY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DatetimeResolution.HOUR">
+<code class="sig-name descname">HOUR</code><em class="property"> = 4</em><a class="headerlink" href="#data.constants.DatetimeResolution.HOUR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DatetimeResolution.MINUTE">
+<code class="sig-name descname">MINUTE</code><em class="property"> = 5</em><a class="headerlink" href="#data.constants.DatetimeResolution.MINUTE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DatetimeResolution.MONTH">
+<code class="sig-name descname">MONTH</code><em class="property"> = 1</em><a class="headerlink" href="#data.constants.DatetimeResolution.MONTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DatetimeResolution.SECOND">
+<code class="sig-name descname">SECOND</code><em class="property"> = 6</em><a class="headerlink" href="#data.constants.DatetimeResolution.SECOND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DatetimeResolution.WEEKDAY">
+<code class="sig-name descname">WEEKDAY</code><em class="property"> = 3</em><a class="headerlink" href="#data.constants.DatetimeResolution.WEEKDAY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.DatetimeResolution.YEAR">
+<code class="sig-name descname">YEAR</code><em class="property"> = 0</em><a class="headerlink" href="#data.constants.DatetimeResolution.YEAR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="data.constants.STATSCONSTANTS">
+<em class="property">class </em><code class="sig-name descname">STATSCONSTANTS</code><a class="reference internal" href="../_modules/data/constants.html#STATSCONSTANTS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.constants.STATSCONSTANTS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Constants for stats generation</p>
+<dl class="attribute">
+<dt id="data.constants.STATSCONSTANTS.DEFAULT_BIN_SIZE">
+<code class="sig-name descname">DEFAULT_BIN_SIZE</code><em class="property"> = 10</em><a class="headerlink" href="#data.constants.STATSCONSTANTS.DEFAULT_BIN_SIZE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSCONSTANTS.KDE_BAND_WIDTH">
+<code class="sig-name descname">KDE_BAND_WIDTH</code><em class="property"> = 0.2</em><a class="headerlink" href="#data.constants.STATSCONSTANTS.KDE_BAND_WIDTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSCONSTANTS.KDE_XGRID_RESOLUTION">
+<code class="sig-name descname">KDE_XGRID_RESOLUTION</code><em class="property"> = 100</em><a class="headerlink" href="#data.constants.STATSCONSTANTS.KDE_XGRID_RESOLUTION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="data.constants.STATSKEY">
+<em class="property">class </em><code class="sig-name descname">STATSKEY</code><a class="reference internal" href="../_modules/data/constants.html#STATSKEY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.constants.STATSKEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Constants for key used in stats json object</p>
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.DATA_COLUMN_NAME">
+<code class="sig-name descname">DATA_COLUMN_NAME</code><em class="property"> = 'attribute_name'</em><a class="headerlink" href="#data.constants.STATSKEY.DATA_COLUMN_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.DATA_TYPE">
+<code class="sig-name descname">DATA_TYPE</code><em class="property"> = 'data_type'</em><a class="headerlink" href="#data.constants.STATSKEY.DATA_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.DF">
+<code class="sig-name descname">DF</code><em class="property"> = 'document_frequency'</em><a class="headerlink" href="#data.constants.STATSKEY.DF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.DISTRIBUTION">
+<code class="sig-name descname">DISTRIBUTION</code><em class="property"> = 'frequency'</em><a class="headerlink" href="#data.constants.STATSKEY.DISTRIBUTION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="data.constants.STATSKEY.DISTRIBUTION_KEY">
+<em class="property">class </em><code class="sig-name descname">DISTRIBUTION_KEY</code><a class="reference internal" href="../_modules/data/constants.html#STATSKEY.DISTRIBUTION_KEY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.constants.STATSKEY.DISTRIBUTION_KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.DISTRIBUTION_KEY.ATTRIBUTE_COUNT">
+<code class="sig-name descname">ATTRIBUTE_COUNT</code><em class="property"> = 'count'</em><a class="headerlink" href="#data.constants.STATSKEY.DISTRIBUTION_KEY.ATTRIBUTE_COUNT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.DISTRIBUTION_KEY.ATTRIBUTE_NAME">
+<code class="sig-name descname">ATTRIBUTE_NAME</code><em class="property"> = 'value'</em><a class="headerlink" href="#data.constants.STATSKEY.DISTRIBUTION_KEY.ATTRIBUTE_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.FIELDS">
+<code class="sig-name descname">FIELDS</code><em class="property"> = 'fields'</em><a class="headerlink" href="#data.constants.STATSKEY.FIELDS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.HISTOGRAM">
+<code class="sig-name descname">HISTOGRAM</code><em class="property"> = 'distribution'</em><a class="headerlink" href="#data.constants.STATSKEY.HISTOGRAM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="data.constants.STATSKEY.HISTOGRAM_KEY">
+<em class="property">class </em><code class="sig-name descname">HISTOGRAM_KEY</code><a class="reference internal" href="../_modules/data/constants.html#STATSKEY.HISTOGRAM_KEY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.constants.STATSKEY.HISTOGRAM_KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.HISTOGRAM_KEY.BIN_COUNT">
+<code class="sig-name descname">BIN_COUNT</code><em class="property"> = 'bin_count'</em><a class="headerlink" href="#data.constants.STATSKEY.HISTOGRAM_KEY.BIN_COUNT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.HISTOGRAM_KEY.X_LEFT">
+<code class="sig-name descname">X_LEFT</code><em class="property"> = 'bin_left_edge'</em><a class="headerlink" href="#data.constants.STATSKEY.HISTOGRAM_KEY.X_LEFT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.HISTOGRAM_KEY.X_RIGHT">
+<code class="sig-name descname">X_RIGHT</code><em class="property"> = 'bin_right_edge'</em><a class="headerlink" href="#data.constants.STATSKEY.HISTOGRAM_KEY.X_RIGHT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.KDE">
+<code class="sig-name descname">KDE</code><em class="property"> = 'kernel_density_estimation'</em><a class="headerlink" href="#data.constants.STATSKEY.KDE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="data.constants.STATSKEY.KDE_KEY">
+<em class="property">class </em><code class="sig-name descname">KDE_KEY</code><a class="reference internal" href="../_modules/data/constants.html#STATSKEY.KDE_KEY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.constants.STATSKEY.KDE_KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.KDE_KEY.X">
+<code class="sig-name descname">X</code><em class="property"> = 'x'</em><a class="headerlink" href="#data.constants.STATSKEY.KDE_KEY.X" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.KDE_KEY.Y">
+<code class="sig-name descname">Y</code><em class="property"> = 'y'</em><a class="headerlink" href="#data.constants.STATSKEY.KDE_KEY.Y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.MAX">
+<code class="sig-name descname">MAX</code><em class="property"> = 'maximum'</em><a class="headerlink" href="#data.constants.STATSKEY.MAX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.MEAN">
+<code class="sig-name descname">MEAN</code><em class="property"> = 'mean'</em><a class="headerlink" href="#data.constants.STATSKEY.MEAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.MEDIAN">
+<code class="sig-name descname">MEDIAN</code><em class="property"> = 'median'</em><a class="headerlink" href="#data.constants.STATSKEY.MEDIAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.MIN">
+<code class="sig-name descname">MIN</code><em class="property"> = 'minimum'</em><a class="headerlink" href="#data.constants.STATSKEY.MIN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.NAN_COUNT">
+<code class="sig-name descname">NAN_COUNT</code><em class="property"> = 'nan_count'</em><a class="headerlink" href="#data.constants.STATSKEY.NAN_COUNT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="data.constants.STATSKEY.PATTERN">
+<em class="property">class </em><code class="sig-name descname">PATTERN</code><a class="reference internal" href="../_modules/data/constants.html#STATSKEY.PATTERN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.constants.STATSKEY.PATTERN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.PATTERN.PATTERN_DF">
+<code class="sig-name descname">PATTERN_DF</code><em class="property"> = 'doc_with_pattern'</em><a class="headerlink" href="#data.constants.STATSKEY.PATTERN.PATTERN_DF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.PATTERN.PATTERN_NAME">
+<code class="sig-name descname">PATTERN_NAME</code><em class="property"> = 'pattern_name'</em><a class="headerlink" href="#data.constants.STATSKEY.PATTERN.PATTERN_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.PATTERN.PATTERN_TF">
+<code class="sig-name descname">PATTERN_TF</code><em class="property"> = 'occurrence'</em><a class="headerlink" href="#data.constants.STATSKEY.PATTERN.PATTERN_TF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.STATS">
+<code class="sig-name descname">STATS</code><em class="property"> = 'stats'</em><a class="headerlink" href="#data.constants.STATSKEY.STATS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.STDDEV">
+<code class="sig-name descname">STDDEV</code><em class="property"> = 'standard_deviation'</em><a class="headerlink" href="#data.constants.STATSKEY.STDDEV" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.TF">
+<code class="sig-name descname">TF</code><em class="property"> = 'term_frequency'</em><a class="headerlink" href="#data.constants.STATSKEY.TF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.TFIDF">
+<code class="sig-name descname">TFIDF</code><em class="property"> = 'tfidf'</em><a class="headerlink" href="#data.constants.STATSKEY.TFIDF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.STATSKEY.TOTAL_COUNT">
+<code class="sig-name descname">TOTAL_COUNT</code><em class="property"> = 'total_count'</em><a class="headerlink" href="#data.constants.STATSKEY.TOTAL_COUNT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="data.constants.THRESHOLD">
+<em class="property">class </em><code class="sig-name descname">THRESHOLD</code><a class="reference internal" href="../_modules/data/constants.html#THRESHOLD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.constants.THRESHOLD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Predefined threshold for data type identification</p>
+<dl class="attribute">
+<dt id="data.constants.THRESHOLD.FLOAT_UNIQUE_ABS_THRESHOLD">
+<code class="sig-name descname">FLOAT_UNIQUE_ABS_THRESHOLD</code><em class="property"> = 10</em><a class="headerlink" href="#data.constants.THRESHOLD.FLOAT_UNIQUE_ABS_THRESHOLD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.THRESHOLD.INT_UNIQUE_ABS_THRESHOLD">
+<code class="sig-name descname">INT_UNIQUE_ABS_THRESHOLD</code><em class="property"> = 15</em><a class="headerlink" href="#data.constants.THRESHOLD.INT_UNIQUE_ABS_THRESHOLD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.THRESHOLD.UNIQUE_VALUE_REL_THRESHOLD">
+<code class="sig-name descname">UNIQUE_VALUE_REL_THRESHOLD</code><em class="property"> = 0.3</em><a class="headerlink" href="#data.constants.THRESHOLD.UNIQUE_VALUE_REL_THRESHOLD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="data.constants.TermFrequencyType">
+<em class="property">class </em><code class="sig-name descname">TermFrequencyType</code><a class="reference internal" href="../_modules/data/constants.html#TermFrequencyType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.constants.TermFrequencyType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Constants for term frequency type</p>
+<dl class="attribute">
+<dt id="data.constants.TermFrequencyType.TF_ABSOLUTE">
+<code class="sig-name descname">TF_ABSOLUTE</code><em class="property"> = 1</em><a class="headerlink" href="#data.constants.TermFrequencyType.TF_ABSOLUTE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.TermFrequencyType.TF_AUGMENTED">
+<code class="sig-name descname">TF_AUGMENTED</code><em class="property"> = 6</em><a class="headerlink" href="#data.constants.TermFrequencyType.TF_AUGMENTED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.TermFrequencyType.TF_BOOLEAN">
+<code class="sig-name descname">TF_BOOLEAN</code><em class="property"> = 2</em><a class="headerlink" href="#data.constants.TermFrequencyType.TF_BOOLEAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.TermFrequencyType.TF_LOGARITHM">
+<code class="sig-name descname">TF_LOGARITHM</code><em class="property"> = 5</em><a class="headerlink" href="#data.constants.TermFrequencyType.TF_LOGARITHM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.TermFrequencyType.TF_NORMALIZED_BY_DOC">
+<code class="sig-name descname">TF_NORMALIZED_BY_DOC</code><em class="property"> = 4</em><a class="headerlink" href="#data.constants.TermFrequencyType.TF_NORMALIZED_BY_DOC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="data.constants.TermFrequencyType.TF_NORMALIZED_BY_MAX">
+<code class="sig-name descname">TF_NORMALIZED_BY_MAX</code><em class="property"> = 3</em><a class="headerlink" href="#data.constants.TermFrequencyType.TF_NORMALIZED_BY_MAX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="data.exceptions.html" class="btn btn-neutral float-right" title="data.exceptions module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="data.abstract_stats.html" class="btn btn-neutral float-left" title="data.abstract_stats module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

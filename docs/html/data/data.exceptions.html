@@ -1,0 +1,322 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>data.exceptions module &mdash; XAI  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="data.helper module" href="data.helper.html" />
+    <link rel="prev" title="data.constants module" href="data.constants.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> XAI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../data_module.html">Data Module</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../data_module_tutorial.html">Tutorial</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="data.html">API Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="data.html#subpackages">Subpackages</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="data.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="data.abstract_stats.html">data.abstract_stats module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="data.constants.html">data.constants module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">data.exceptions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="data.helper.html">data.helper module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../training_module.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inference_module.html">Explainer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formatter_module.html">Formatter Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compiler_module.html">Compiler Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autodoc.html">XAI Auto-doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">XAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../data_module.html">Data Module</a> &raquo;</li>
+        
+          <li><a href="data.html">data package</a> &raquo;</li>
+        
+      <li>data.exceptions module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/data/data.exceptions.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-data.exceptions">
+<span id="data-exceptions-module"></span><h1>data.exceptions module<a class="headerlink" href="#module-data.exceptions" title="Permalink to this headline">¶</a></h1>
+<dl class="exception">
+<dt id="data.exceptions.AnalyzerDataTypeNotSupported">
+<em class="property">exception </em><code class="sig-name descname">AnalyzerDataTypeNotSupported</code><span class="sig-paren">(</span><em class="sig-param">data_type</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/data/exceptions.html#AnalyzerDataTypeNotSupported"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.exceptions.AnalyzerDataTypeNotSupported" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when an unsupported analyzer data type is provided</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="data.exceptions.AttributeNotFound">
+<em class="property">exception </em><code class="sig-name descname">AttributeNotFound</code><span class="sig-paren">(</span><em class="sig-param">attribute_name</em>, <em class="sig-param">sample</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/data/exceptions.html#AttributeNotFound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.exceptions.AttributeNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when a defined attribute is not found in the sample</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="data.exceptions.ColumnNotFound">
+<em class="property">exception </em><code class="sig-name descname">ColumnNotFound</code><span class="sig-paren">(</span><em class="sig-param">column_name</em>, <em class="sig-param">columns</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/data/exceptions.html#ColumnNotFound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.exceptions.ColumnNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when a defined column is not found in the dataframe</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="data.exceptions.InconsistentSize">
+<em class="property">exception </em><code class="sig-name descname">InconsistentSize</code><span class="sig-paren">(</span><em class="sig-param">column_A</em>, <em class="sig-param">column_B</em>, <em class="sig-param">length_A</em>, <em class="sig-param">length_B</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/data/exceptions.html#InconsistentSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.exceptions.InconsistentSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when two lists have different lengths</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="data.exceptions.InvalidSizeError">
+<em class="property">exception </em><code class="sig-name descname">InvalidSizeError</code><span class="sig-paren">(</span><em class="sig-param">att_name</em>, <em class="sig-param">obj_size</em>, <em class="sig-param">supported_sizes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/data/exceptions.html#InvalidSizeError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.exceptions.InvalidSizeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when an invalid size is provided</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="data.exceptions.InvalidTypeError">
+<em class="property">exception </em><code class="sig-name descname">InvalidTypeError</code><span class="sig-paren">(</span><em class="sig-param">att_name</em>, <em class="sig-param">obj_type</em>, <em class="sig-param">supported_types</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/data/exceptions.html#InvalidTypeError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.exceptions.InvalidTypeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when an object type is invalid</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="data.exceptions.ItemDataTypeNotSupported">
+<em class="property">exception </em><code class="sig-name descname">ItemDataTypeNotSupported</code><span class="sig-paren">(</span><em class="sig-param">data_type</em>, <em class="sig-param">analyzer_type</em>, <em class="sig-param">supported_types</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/data/exceptions.html#ItemDataTypeNotSupported"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.exceptions.ItemDataTypeNotSupported" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when an unsupported item data type is provided</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="data.exceptions.NoItemsError">
+<em class="property">exception </em><code class="sig-name descname">NoItemsError</code><span class="sig-paren">(</span><em class="sig-param">stats_type</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/data/exceptions.html#NoItemsError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.exceptions.NoItemsError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when no items are passed in the stats</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="data.exceptions.UndefinedRequiredParams">
+<em class="property">exception </em><code class="sig-name descname">UndefinedRequiredParams</code><span class="sig-paren">(</span><em class="sig-param">att_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/data/exceptions.html#UndefinedRequiredParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data.exceptions.UndefinedRequiredParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when a required params is not defined</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="data.helper.html" class="btn btn-neutral float-right" title="data.helper module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="data.constants.html" class="btn btn-neutral float-left" title="data.constants module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
