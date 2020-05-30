@@ -1,0 +1,3 @@
+{
+    "path": "../../../../tutorials/explainer/lime_text_explainer.ipynb"
+}

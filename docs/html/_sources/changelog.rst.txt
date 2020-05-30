@@ -1,0 +1,2 @@
+
+.. mdinclude:: ../../changelog.md
