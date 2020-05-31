@@ -1,9 +1,0 @@
-{
-  "Sequence time step": 15,
-  "Sequence feature length": 125,
-  "Attribute feature length": 294,
-  "RNN layer number": 2,
-  "RNN keep probability": 0.8,
-  "DNN layer number": 1,
-  "DNN regularizer": "L2 (scale: 0.06)"
-}
