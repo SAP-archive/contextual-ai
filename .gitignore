@@ -13,7 +13,7 @@ __pycache__/
 release/**
 build/
 dist/
-sap_explainable_ai.egg-info/
+contextual_ai.egg-info/
 
 xai/formatter/portable_document/fonts/*.pkl
 
