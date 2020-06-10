@@ -43,8 +43,8 @@ setuptools.setup(
         'Programming Language :: Python :: 3.6',
         'Operating System :: OS Independent',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        'Topic :: Software Development :: Contextual AI',
-        'Topic :: Software Development :: XAI'
+        'Topic :: Scientific/Engineering :: Artificial Intelligence',
+        'License :: OSI Approved :: Apache Software License'
     ]
 )
 
