@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="HTML Report Generation" href="tutorial_html_report_generation.html" />
-    <link rel="prev" title="XAI formatter tutorials" href="../../formatter_module_tutorial.html" /> 
+    <link rel="prev" title="Contextual AI formatter tutorials" href="../../formatter_module_tutorial.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -106,7 +106,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../developer_guide.html">Developer Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">XAI Auto-doc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">Contextual AI Auto-doc</a></li>
 </ul>
 
             
@@ -154,7 +154,7 @@
         
           <li><a href="../../formatter_module.html">Formatter Module</a> &raquo;</li>
         
-          <li><a href="../../formatter_module_tutorial.html">XAI formatter tutorials</a> &raquo;</li>
+          <li><a href="../../formatter_module_tutorial.html">Contextual AI formatter tutorials</a> &raquo;</li>
         
       <li>PDF Report Generation</li>
     
@@ -430,7 +430,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="section" id="(A)-Generate-PDF-Report">
 <h2>(A) Generate PDF Report<a class="headerlink" href="#(A)-Generate-PDF-Report" title="Permalink to this headline">¶</a></h2>
-<p>This demo is to use XAI report formatter (a.k.a <code class="docutils literal notranslate"><span class="pre">xai.formatter.report</span></code>) to generate report content. ### Step 1: Create Report object Create a report object</p>
+<p>This demo is to use Contextual AI report formatter (a.k.a <code class="docutils literal notranslate"><span class="pre">xai.formatter.report</span></code>) to generate report content. ### Step 1: Create Report object Create a report object</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -445,7 +445,7 @@ div.rendered_html tbody tr:hover {
 <p><img alt="Report Header" src="tutorials/formatter/formatter_pdf_images/sample-report-header-2.png" /></p>
 <div class="section" id="Step-2:-Create-section-and-add-detail-to-report">
 <h3>Step 2: Create section and add detail to report<a class="headerlink" href="#Step-2:-Create-section-and-add-detail-to-report" title="Permalink to this headline">¶</a></h3>
-<p>Content refer a detail block inside report. XAI library group certain popular detail into business group, some examples includes but not limited to: - Dataset distribution - Feature value distribution (based on feature type: categorical, numeric, text, etc.) - Evaluation result summary - Feature importance - Learning curve history - …</p>
+<p>Content refer a detail block inside report. Contextual AI library group certain popular detail into business group, some examples includes but not limited to: - Dataset distribution - Feature value distribution (based on feature type: categorical, numeric, text, etc.) - Evaluation result summary - Feature importance - Learning curve history - …</p>
 <p>There is pre-defined order of the report structure, it’s like a <code class="docutils literal notranslate"><span class="pre">section</span></code> of the report: The pre-defined order is in following order: 1. Cover Contents 2. Content Table 3. Detail Contents</p>
 <p>Each content can be added to <code class="docutils literal notranslate"><span class="pre">overview</span></code> (overview section) and <code class="docutils literal notranslate"><span class="pre">detail</span></code> (details section) using: - Add content to overview section with - <code class="docutils literal notranslate"><span class="pre">report.overview.add_xx</span></code> - Add content to details section with - <code class="docutils literal notranslate"><span class="pre">report.detail.add_xx</span></code> If there is no content added, the respecitve section will not be create.</p>
 <p>The content table section is optional but <code class="docutils literal notranslate"><span class="pre">enabled</span></code> by default, call <code class="docutils literal notranslate"><span class="pre">has_content_table</span></code> and set indicator as <code class="docutils literal notranslate"><span class="pre">False</span></code> to disable. There is no pre-defined item in content table, it is depends on the implementation of inherited <code class="docutils literal notranslate"><span class="pre">writer</span></code>.</p>
@@ -851,7 +851,7 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </div>
 <div class="section" id="1.4.3-Text-Field-Distribution">
 <h5>1.4.3 Text Field Distribution<a class="headerlink" href="#1.4.3-Text-Field-Distribution" title="Permalink to this headline">¶</a></h5>
-<p>For text fields, a woldcloud will be shown with a size weigthed on the TF-IDF. Besides, XAI has some pre-defined text patterns, such as <code class="docutils literal notranslate"><span class="pre">Email</span></code>, <code class="docutils literal notranslate"><span class="pre">URL</span></code>, <code class="docutils literal notranslate"><span class="pre">Datetime</span></code>. If the text field is analyzed with XAI Data Explorer package, the percentage of documents contains each pattern will also be analyzed and displayed. See details about <code class="docutils literal notranslate"><span class="pre">xai.data_explorer.text_analyzer</span></code>.</p>
+<p>For text fields, a woldcloud will be shown with a size weigthed on the TF-IDF. Besides, Contextual AI has some pre-defined text patterns, such as <code class="docutils literal notranslate"><span class="pre">Email</span></code>, <code class="docutils literal notranslate"><span class="pre">URL</span></code>, <code class="docutils literal notranslate"><span class="pre">Datetime</span></code>. If the text field is analyzed with Contextual AI Data Explorer package, the percentage of documents contains each pattern will also be analyzed and displayed. See details about <code class="docutils literal notranslate"><span class="pre">xai.data_explorer.text_analyzer</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
@@ -1497,7 +1497,7 @@ report generated : /Users/i062308/Development/Explainable_AI/tutorials/formatter
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">report</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">add_section_title</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;Overview&quot;</span><span class="p">)</span>
-<span class="n">summary_notes_text</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;This report serves as a demo for the XAI library.</span>
+<span class="n">summary_notes_text</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;This report serves as a demo for the Contextual AI library.</span>
 <span class="s1">The data used to generate this report is not from any specific use case.</span>
 <span class="s1">Sorry for any inconsistency in the report data.</span>
 <span class="s1">&#39;&#39;&#39;</span>
@@ -1639,7 +1639,7 @@ report generated : /Users/i062308/Development/Explainable_AI/tutorials/formatter
         <a href="tutorial_html_report_generation.html" class="btn btn-neutral float-right" title="HTML Report Generation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../../formatter_module_tutorial.html" class="btn btn-neutral float-left" title="XAI formatter tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../../formatter_module_tutorial.html" class="btn btn-neutral float-left" title="Contextual AI formatter tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

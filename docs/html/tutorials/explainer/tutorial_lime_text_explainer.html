@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="XAI LIME Text ExplainerFactory with Keras" href="tutorial_lime_text_explainer_with_keras.html" />
+    <link rel="next" title="Contextual AI LIME Text ExplainerFactory with Keras" href="tutorial_lime_text_explainer_with_keras.html" />
     <link rel="prev" title="LIME Tabular Explainer via XAI" href="tutorial_lime_tabular_explainer.html" /> 
 </head>
 
@@ -93,8 +93,8 @@
 <li class="toctree-l3 current"><a class="reference internal" href="../../inference_module_tutorial.html#tutorial">Tutorial</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="tutorial_lime_tabular_explainer.html">LIME Tabular Explainer via XAI</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">LIME Text Explainer via XAI</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial_lime_text_explainer_with_keras.html">XAI LIME Text ExplainerFactory with Keras</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial_shap_tabular_explainer.html">SHAP Kernel Explainer for Tabular Data via XAI</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial_lime_text_explainer_with_keras.html">Contextual AI LIME Text ExplainerFactory with Keras</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial_shap_tabular_explainer.html">SHAP Kernel Explainer for Tabular Data via Contextual AI</a></li>
 </ul>
 </li>
 </ul>
@@ -109,7 +109,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../developer_guide.html">Developer Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">XAI Auto-doc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">Contextual AI Auto-doc</a></li>
 </ul>
 
             
@@ -157,7 +157,7 @@
         
           <li><a href="../../inference_module.html">Explainer Module</a> &raquo;</li>
         
-          <li><a href="../../inference_module_tutorial.html">XAI Explainer tutorials</a> &raquo;</li>
+          <li><a href="../../inference_module_tutorial.html">Contextual AI Explainer tutorials</a> &raquo;</li>
         
       <li>LIME Text Explainer via XAI</li>
     
@@ -402,7 +402,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="LIME-Text-Explainer-via-XAI">
 <h1>LIME Text Explainer via XAI<a class="headerlink" href="#LIME-Text-Explainer-via-XAI" title="Permalink to this headline">¶</a></h1>
-<p>This tutorial demonstrates how to generate explanations using LIME’s text explainer implemented by the XAI library. Much of the tutorial overlaps with what is covered in the <a class="reference external" href="lime_tabular_explainer.ipynb">LIME tabular tutorial</a>. To recap, the main steps for generating explanations are:</p>
+<p>This tutorial demonstrates how to generate explanations using LIME’s text explainer implemented by the Contextual AI library. Much of the tutorial overlaps with what is covered in the <a class="reference external" href="lime_tabular_explainer.ipynb">LIME tabular tutorial</a>. To recap, the main steps for generating explanations are:</p>
 <ol class="arabic simple">
 <li><p>Get an explainer via the <code class="docutils literal notranslate"><span class="pre">ExplainerFactory</span></code> class</p></li>
 <li><p>Build the text explainer</p></li>
@@ -431,7 +431,7 @@ div.rendered_html tbody tr:hover {
 <span class="c1"># Set the path so that we can import ExplainerFactory</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../../&#39;</span><span class="p">)</span>
 
-<span class="c1"># Main XAI imports</span>
+<span class="c1"># Main Contextual AI imports</span>
 <span class="kn">import</span> <span class="nn">xai</span>
 <span class="kn">from</span> <span class="nn">xai.explainer</span> <span class="kn">import</span> <span class="n">ExplainerFactory</span>
 </pre></div>
@@ -788,7 +788,7 @@ Label soc.religion.christian 2
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="tutorial_lime_text_explainer_with_keras.html" class="btn btn-neutral float-right" title="XAI LIME Text ExplainerFactory with Keras" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="tutorial_lime_text_explainer_with_keras.html" class="btn btn-neutral float-right" title="Contextual AI LIME Text ExplainerFactory with Keras" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="tutorial_lime_tabular_explainer.html" class="btn btn-neutral float-left" title="LIME Tabular Explainer via XAI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>XAI LIME Text ExplainerFactory with Keras &mdash; XAI  documentation</title>
+  <title>Contextual AI LIME Text ExplainerFactory with Keras &mdash; XAI  documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="SHAP Kernel Explainer for Tabular Data via XAI" href="tutorial_shap_tabular_explainer.html" />
+    <link rel="next" title="SHAP Kernel Explainer for Tabular Data via Contextual AI" href="tutorial_shap_tabular_explainer.html" />
     <link rel="prev" title="LIME Text Explainer via XAI" href="tutorial_lime_text_explainer.html" /> 
 </head>
 
@@ -93,8 +93,8 @@
 <li class="toctree-l3 current"><a class="reference internal" href="../../inference_module_tutorial.html#tutorial">Tutorial</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="tutorial_lime_tabular_explainer.html">LIME Tabular Explainer via XAI</a></li>
 <li class="toctree-l4"><a class="reference internal" href="tutorial_lime_text_explainer.html">LIME Text Explainer via XAI</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">XAI LIME Text ExplainerFactory with Keras</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial_shap_tabular_explainer.html">SHAP Kernel Explainer for Tabular Data via XAI</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Contextual AI LIME Text ExplainerFactory with Keras</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial_shap_tabular_explainer.html">SHAP Kernel Explainer for Tabular Data via Contextual AI</a></li>
 </ul>
 </li>
 </ul>
@@ -109,7 +109,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../developer_guide.html">Developer Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">XAI Auto-doc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">Contextual AI Auto-doc</a></li>
 </ul>
 
             
@@ -157,9 +157,9 @@
         
           <li><a href="../../inference_module.html">Explainer Module</a> &raquo;</li>
         
-          <li><a href="../../inference_module_tutorial.html">XAI Explainer tutorials</a> &raquo;</li>
+          <li><a href="../../inference_module_tutorial.html">Contextual AI Explainer tutorials</a> &raquo;</li>
         
-      <li>XAI LIME Text ExplainerFactory with Keras</li>
+      <li>Contextual AI LIME Text ExplainerFactory with Keras</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -400,12 +400,12 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<div class="section" id="XAI-LIME-Text-ExplainerFactory-with-Keras">
-<h1>XAI LIME Text ExplainerFactory with Keras<a class="headerlink" href="#XAI-LIME-Text-ExplainerFactory-with-Keras" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="Contextual-AI-LIME-Text-ExplainerFactory-with-Keras">
+<h1>Contextual AI LIME Text ExplainerFactory with Keras<a class="headerlink" href="#Contextual-AI-LIME-Text-ExplainerFactory-with-Keras" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial is similar to <a class="reference external" href="lime_text_explainer.ipynb">lime_text_explainer.ipynb</a>, but instead of a Naive Bayes model we attempt to generate explanations with a neural network implemented with Keras.</p>
 <p>The neural network is a simple multi-layer CNN with GloVe embeddings. This tutorial requires you to download the pre-trained word embeddings from this <a class="reference external" href="http://nlp.stanford.edu/data/glove.6B.zip">link</a> (caution - this link initiates a 822MB download).</p>
 <p>The modelling/text processing portions of this tutorial are heavily borrowed from <a class="reference external" href="https://blog.keras.io/using-pre-trained-word-embeddings-in-a-keras-model.html">this Keras blog</a>.</p>
-<p>Like with other XAI tutorials, the main steps for generating explanations are:</p>
+<p>Like with other Contextual AI tutorials, the main steps for generating explanations are:</p>
 <ol class="arabic simple">
 <li><p>Get an explainer via the <code class="docutils literal notranslate"><span class="pre">ExplainerFactory</span></code> class</p></li>
 <li><p>Build the text explainer</p></li>
@@ -448,7 +448,7 @@ div.rendered_html tbody tr:hover {
 <span class="c1"># Set the path so that we can import the ExplainerFactory</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../../&#39;</span><span class="p">)</span>
 
-<span class="c1"># Main XAI imports</span>
+<span class="c1"># Main Contextual AI imports</span>
 <span class="kn">import</span> <span class="nn">xai</span>
 <span class="kn">from</span> <span class="nn">xai.explainer</span> <span class="kn">import</span> <span class="n">ExplainerFactory</span>
 
@@ -1085,7 +1085,7 @@ Label rec.sport.baseball
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="tutorial_shap_tabular_explainer.html" class="btn btn-neutral float-right" title="SHAP Kernel Explainer for Tabular Data via XAI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="tutorial_shap_tabular_explainer.html" class="btn btn-neutral float-right" title="SHAP Kernel Explainer for Tabular Data via Contextual AI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="tutorial_lime_text_explainer.html" class="btn btn-neutral float-left" title="LIME Text Explainer via XAI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
