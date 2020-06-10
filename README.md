@@ -9,25 +9,18 @@ Contextual AI adds explainability to different stages of machine learning pipeli
 
 ## 🖥 Installation
 
-XAI has been tested with Python 3.5+. You can install it using pip:
+XAI has been tested with Python 3.6 and 3.7. You can install it using pip:
+
+```
+$ pip install contextual-ai
+```
 
 ### Building locally
 
 ````
-$ git clone https://github.wdf.sap.corp/ML-Leonardo/Explainable_AI
-$ cd Explainable_AI
 $ sh build.sh
 $ pip install dist/*.whl
 ````
-
-### Installing from Nexus
-
-XAI is now packaged and distributed in SAP's internal Nexus repository! You can install the latest release via the following command:
-
-```
-$ pip install --index-url=http://nexus.wdf.sap.corp:8081/nexus/content/groups/build.releases.pypi/simple/ --trusted-host=nexus.wdf.sap.corp sap-explainable-ai 
-
-```
 
 ## ⚡️ Quickstart
 
@@ -150,24 +143,14 @@ XAI spans [three pillars](https://wiki.wdf.sap.corp/wiki/display/MLAPPS/Pillars+
 * Produce PDF/HTML reports of outputs from the above using only a few lines of code
 * [Tutorial](https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/compiler_module_tutorial.html)
 
-## ⭐️ Use case examples
-
-* [SAP Cash Application data report](https://wiki.wdf.sap.corp/wiki/download/attachments/2123358216/training_report.pdf?version=1&modificationDate=1563243859000&api=v2)
-* [Service Ticket Intelligence training report](https://wiki.wdf.sap.corp/wiki/display/MLAPPS/Service+Ticket+Intelligence+-+Training+Report?preview=/2123358161/2162139944/sti_sample_training_report.pdf)
-
 ## 🤝 Contributing
 
 We welcome contributions of all kinds!
 
-- Reporting a bug (file an issue in this repository!)
-- Providing discussions in our communication channels
-- Fixing a typo in the code
-- Fixing a typo in the documentation
-- Providing your feedback on the proposed features and designs
-- Reviewing Pull Requests
-- General questions about usage/specifications
-
-Of course, we welcome code contributions to the XAI project as well. Please feel free to fork this project and issue a pull request.
+- Reporting bugs
+- Requesting features
+- Creatin pull requests
+- Providing discussions/feedback
 
 ## 📙 Resources
 
@@ -176,7 +159,3 @@ Of course, we welcome code contributions to the XAI project as well. Please feel
 - [Fiori UX4AI design guidelines](https://ux.wdf.sap.corp/fiori-design-web/explainable-ai/)
 - [Advanced ML Training - Explainability](https://github.wdf.sap.corp/ML-Leonardo/ML-Advanced-Trainings/tree/master/explainability)
 - [Explainable ML S/4 Architecture Guidelines](https://jam4.sapjam.com/groups/pi0IqJnjso67tPOaOehICd/documents/q3EYBiNRJSLGBuvtrk5kG9/slide_viewer)
-
-## 📧 Contact Us
-
-DL_5CE39E1B960F84027F4937EE@global.corp.sap (DL ML Explainable AI)

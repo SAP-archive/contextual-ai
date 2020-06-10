@@ -7,12 +7,12 @@ with open("README.md", "r", encoding='utf-8') as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='sap_explainable_ai',
+    name='contextual-ai',
     version='0.1.2',
     packages=setuptools.find_packages(include=['xai*']),
     author="SAP",
     url="https://github.wdf.sap.corp/ML-Leonardo/Explainable_AI",
-    description="Explainable AI",
+    description="Contextual AI",
     long_description=long_description,
     long_description_content_type="text/markdown",
     package_dir={'xai': 'xai'},
