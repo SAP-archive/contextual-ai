@@ -1,9 +1,9 @@
-# XAI Compiler tutorials
+# Contextual AI Compiler tutorials
 
-XAI follows simple inversion of control (IoC) programming principle to 
+`contextual-ai` follows simple inversion of control (IoC) programming principle to 
 allowing user to customize and create use-case-specific explainability report.
 
-This is to increase the modularity of XAI lib and make it easy for extensible.
+This is to increase the modularity of `contextual-ai` lib and make it easy for extensible.
 
 
 <span style="font-size:1.5em;font-weight: bold;">Example</span>

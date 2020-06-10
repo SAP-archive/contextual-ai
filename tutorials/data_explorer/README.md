@@ -1,6 +1,6 @@
-### XAI Data tutorials
+### Contextual AI Data tutorials
 
-The following notebooks demonstrate different functionality of XAI data module:
+The following notebooks demonstrate different functionality of `contextual-ai` data module:
 
 #### Data explorer
 

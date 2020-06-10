@@ -1,4 +1,4 @@
-# XAI Explainer tutorials
+# Contextual AI Explainer tutorials
 
 This directory houses the Jupyter notebooks which demonstrate how to use each explanation algorithm
 found in :ref:doc:`xai.explainer <explainer/explainer>`.
