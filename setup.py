@@ -8,10 +8,10 @@ with open("README.md", "r", encoding='utf-8') as fh:
 
 setuptools.setup(
     name='contextual-ai',
-    version='0.1.2',
+    version='0.0.1',
     packages=setuptools.find_packages(include=['xai*']),
     author="SAP",
-    url="https://github.wdf.sap.corp/ML-Leonardo/Explainable_AI",
+    url="https://github.com/sap-staging/contextual-ai",
     description="Contextual AI",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -43,7 +43,7 @@ setuptools.setup(
         'Programming Language :: Python :: 3.6',
         'Operating System :: OS Independent',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        'Topic :: Software Development :: Explainable AI',
+        'Topic :: Software Development :: Contextual AI',
         'Topic :: Software Development :: XAI'
     ]
 )
