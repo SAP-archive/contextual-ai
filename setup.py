@@ -6,12 +6,20 @@ import setuptools
 with open("README.md", "r", encoding='utf-8') as fh:
     long_description = fh.read()
 
+def get_version():
+    with open('version.txt') as ver_file:
+        version_str = ver_file.readline().rstrip()
+    return version_str
+
 setuptools.setup(
     name='contextual-ai',
-    version='0.0.1',
+    version=get_version(),
     packages=setuptools.find_packages(include=['xai*'], exclude=['tutorials*', 'docs*', 'tests*']),
     author="SAP",
-    url="https://github.com/sap-staging/contextual-ai",
+    url='https://github.com/sap-staging/contextual-ai',
+    project_urls={
+        'Documentation': 'https://contextual-ai.readthedocs.io/en/latest/'
+    },
     description="Contextual AI",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -29,8 +37,8 @@ setuptools.setup(
                       'fpdf==1.7.2',
                       'wordcloud==1.5.0',
                       'nltk==3.4.5',
-                      'ordered-set==3.1',
-                      'lime>=0.1.1.32',
+                      'ordered-set>=3.1.0',
+                      'lime>=0.1.1, <=2',
                       'dill==0.3.0',
                       'shap>=0.35.0',
                       'yattag==1.12.2',
@@ -41,6 +49,7 @@ setuptools.setup(
                       ],
     classifiers=[
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Operating System :: OS Independent',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
