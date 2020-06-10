@@ -9,7 +9,7 @@ with open("README.md", "r", encoding='utf-8') as fh:
 setuptools.setup(
     name='contextual-ai',
     version='0.0.1',
-    packages=setuptools.find_packages(include=['xai*']),
+    packages=setuptools.find_packages(include=['xai*'], exclude=['tutorials*', 'docs*', 'tests*']),
     author="SAP",
     url="https://github.com/sap-staging/contextual-ai",
     description="Contextual AI",
