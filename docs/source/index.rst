@@ -4,7 +4,7 @@
 
 .. toctree::
    :maxdepth: 2
-   :caption: XAI Documentation
+   :caption: Contextual AI Documentation
 
    data_module
    training_module
