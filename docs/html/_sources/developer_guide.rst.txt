@@ -2,8 +2,8 @@
 Developer Guide
 ================
 
-XAI libraries consist of multiple modules (data, model, explainer, formatter and compiler as of Nov 2019).
-Developers of XAI are recommended to follow the same structure and documentation style when extending the library.
+Contextual AI libraries consist of multiple modules (data, model, explainer, formatter, and compiler).
+Developers of Contextual AI are recommended to follow the same structure and documentation style when extending the library.
 
 ---------------------
 Structure Guideline

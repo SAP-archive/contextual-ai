@@ -1,6 +1,6 @@
-### XAI formatter tutorials
+### Contextual AI formatter tutorials
 
-The following notebooks demonstrate different functionality of XAI formatter:
+The following notebooks demonstrate different functionality of `contextual-ai` formatter:
 
 #### PDF Report
 * :ref:doc:`PDF_Report_Generation.ipynb <tutorials/formatter/tutorial_pdf_report_generation>`:
@@ -22,4 +22,3 @@ The following notebooks demonstrate different functionality of XAI formatter:
         sample report generated with all sections
         * `sample-report-final-with-summary` - final sample report generated 
         with summary contents as summary page
-   

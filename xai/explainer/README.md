@@ -11,7 +11,7 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 
-# Main XAI imports
+# Main Contextual-AI imports
 import xai
 from xai.explainer import ExplainerFactory
 
@@ -75,7 +75,7 @@ Output:
 
 <span style="font-size:1.17em;font-weight: bold;">Development</span>
 
-If you are developing your own XAI-compatible explanation algorithm, you should do the following:
+If you are developing your own Contextual AI compatible explanation algorithm, you should do the following:
 * Extend the :py:meth:`AbstractExplainer <explainer.abstract_explainer.AbstractExplainer>` and implement
 all the abstract methods.
 * Assign a particular domain to your explanation algorithm as well as a unique name. Place the module

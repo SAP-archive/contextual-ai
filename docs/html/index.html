@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Contextual AI &mdash; XAI  documentation</title>
+  <title>Contextual AI &mdash; Contextual AI  documentation</title>
   
 
   
@@ -49,7 +49,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> XAI
+            <a href="#" class="icon icon-home"> Contextual AI
           
 
           
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.0.1
               </div>
             
           
@@ -83,7 +83,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+              <p class="caption"><span class="caption-text">Contextual AI Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="data_module.html">Data Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="training_module.html">Model Module</a></li>
@@ -95,7 +95,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developer_guide.html">Developer Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="autodoc.html">XAI Auto-doc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Contextual AI Auto-doc</a></li>
 </ul>
 
             
@@ -110,7 +110,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">XAI</a>
+          <a href="#">Contextual AI</a>
         
       </nav>
 
@@ -186,25 +186,19 @@
 </style>
 <div class="section" id="contextual-ai">
 <h1>Contextual AI<a class="headerlink" href="#contextual-ai" title="Permalink to this headline">¶</a></h1>
-<a class="reference external image-reference" href="https://jenkins.ml.only.sap/job/Explainable_AI/job/master/"><img alt="Build Status" src="https://jenkins.ml.only.sap/buildStatus/icon?job=Explainable_AI%2Fmaster" /></a>
-<a class="reference external image-reference" href="https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/"><img alt="Generic badge" src="https://img.shields.io/badge/docs-passing-&lt;GREEN&gt;.svg" /></a>
+<a class="reference external image-reference" href="https://travis-ci.com/sap-staging/contextual-ai"><img alt="Build Status" src="https://travis-ci.com/sap-staging/contextual-ai.svg?token=wh5aYpEiVyMyx9ysvFdy&amp;branch=master" /></a>
+<a class="reference external image-reference" href="https://contextual-ai.readthedocs.io/en/latest/?badge=latest"><img alt="Documentation Status" src="https://readthedocs.org/projects/contextual-ai/badge/?version=latest" /></a>
 <p>Contextual AI adds explainability to different stages of machine learning pipelines - data, training, and inference - thereby addressing the trust gap between such ML systems and their users.</p>
 <div class="section" id="installation">
 <h2>🖥 Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>XAI has been tested with Python 3.5+. You can install it using pip:</p>
-<div class="section" id="building-locally">
-<h3>Building locally<a class="headerlink" href="#building-locally" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.wdf.sap.corp/ML-Leonardo/Explainable_AI
-$ cd Explainable_AI
-$ sh build.sh
-$ pip install dist/*.whl
+<p>Contextual AI has been tested with Python 3.6 and 3.7. You can install it using pip:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>$ pip install contextual-ai
 </pre></div>
 </div>
-</div>
-<div class="section" id="installing-from-nexus">
-<h3>Installing from Nexus<a class="headerlink" href="#installing-from-nexus" title="Permalink to this headline">¶</a></h3>
-<p>XAI is now packaged and distributed in SAP’s internal Nexus repository! You can install the latest release via the following command:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>$ pip install --index-url=http://nexus.wdf.sap.corp:8081/nexus/content/groups/build.releases.pypi/simple/ --trusted-host=nexus.wdf.sap.corp sap-explainable-ai
+<div class="section" id="building-locally">
+<h3>Building locally<a class="headerlink" href="#building-locally" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>$ sh build.sh
+$ pip install dist/*.whl
 </pre></div>
 </div>
 </div>
@@ -212,15 +206,12 @@ $ pip install dist/*.whl
 <div class="section" id="quickstart">
 <h2>⚡️ Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
 <p>In this simple example, we will attempt to generate explanations for some ML model trained on 20newsgroups, a text classification dataset. In particular, we want to find out which words were important for a particular prediction.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
 <span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
-<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
 <span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">MultinomialNB</span>
 <span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">TfidfVectorizer</span>
 
-<span class="c1"># Main XAI imports</span>
+<span class="c1"># Main Contextual AI imports</span>
 <span class="kn">import</span> <span class="nn">xai</span>
 <span class="kn">from</span> <span class="nn">xai.explainer</span> <span class="kn">import</span> <span class="n">ExplainerFactory</span>
 
@@ -244,9 +235,9 @@ $ pip install dist/*.whl
 <span class="n">clf</span> <span class="o">=</span> <span class="n">MultinomialNB</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 
-<span class="c1">##################</span>
-<span class="c1"># Main XAI steps #</span>
-<span class="c1">##################</span>
+<span class="c1">############################</span>
+<span class="c1"># Main Contextual AI steps #</span>
+<span class="c1">############################</span>
 <span class="c1"># Instantiate the text explainer via the ExplainerFactory interface</span>
 <span class="n">explainer</span> <span class="o">=</span> <span class="n">ExplainerFactory</span><span class="o">.</span><span class="n">get_explainer</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">xai</span><span class="o">.</span><span class="n">DOMAIN</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
 
@@ -296,13 +287,13 @@ $ pip install dist/*.whl
 </div>
 <div class="section" id="what-else-can-it-do">
 <h2>🚀 What else can it do?<a class="headerlink" href="#what-else-can-it-do" title="Permalink to this headline">¶</a></h2>
-<p>XAI spans <a class="reference external" href="https://wiki.wdf.sap.corp/wiki/display/MLAPPS/Pillars+of+Explainability">three pillars</a>, or scopes, of explainability, each addressing a different stage of a machine learning solution’s lifecycle.</p>
+<p>Contextual AI spans three pillars, or scopes, of explainability, each addressing a different stage of a machine learning solution’s lifecycle.</p>
 <div class="section" id="pre-training-data">
 <h3>Pre-training (Data)<a class="headerlink" href="#pre-training-data" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Distributional analysis of data and features</p></li>
 <li><p>Data validation</p></li>
-<li><p><a class="reference external" href="https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/data_module_tutorial.html">Tutorial</a></p></li>
+<li><p><a class="reference external" href="https://contextual-ai.readthedocs.io/en/latest/data_module_tutorial.html">Tutorial</a></p></li>
 </ul>
 </div>
 <div class="section" id="training-evaluation-model">
@@ -311,60 +302,35 @@ $ pip install dist/*.whl
 <li><p>Training performance</p></li>
 <li><p>Feature importance</p></li>
 <li><p>Per-class explanations</p></li>
-<li><p><a class="reference external" href="https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/training_module.html">Tutorial</a></p></li>
+<li><p><a class="reference external" href="https://contextual-ai.readthedocs.io/en/latest/training_module_tutorial.html">Tutorial</a></p></li>
 </ul>
 </div>
 <div class="section" id="inference-prediction">
 <h3>Inference (Prediction)<a class="headerlink" href="#inference-prediction" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Explanations per prediction instance</p></li>
-<li><p><a class="reference external" href="https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/inference_module.html">Tutorial</a></p></li>
+<li><p><a class="reference external" href="https://contextual-ai.readthedocs.io/en/latest/inference_module_tutorial.html">Tutorial</a></p></li>
 </ul>
 </div>
 <div class="section" id="formatter-compiler">
 <h3>Formatter/Compiler<a class="headerlink" href="#formatter-compiler" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Produce PDF/HTML reports of outputs from the above using only a few lines of code</p></li>
-<li><p><a class="reference external" href="https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/compiler_module_tutorial.html">Tutorial</a></p></li>
+<li><p><a class="reference external" href="https://contextual-ai.readthedocs.io/en/latest/compiler_module_tutorial.html">Tutorial</a></p></li>
 </ul>
 </div>
-</div>
-<div class="section" id="use-case-examples">
-<h2>⭐️ Use case examples<a class="headerlink" href="#use-case-examples" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference external" href="https://wiki.wdf.sap.corp/wiki/download/attachments/2123358216/training_report.pdf?version=1&amp;modificationDate=1563243859000&amp;api=v2">SAP Cash Application data report</a></p></li>
-<li><p><a class="reference external" href="https://wiki.wdf.sap.corp/wiki/display/MLAPPS/Service+Ticket+Intelligence+-+Training+Report?preview=/2123358161/2162139944/sti_sample_training_report.pdf">Service Ticket Intelligence training report</a></p></li>
-</ul>
 </div>
 <div class="section" id="contributing">
 <h2>🤝 Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
 <p>We welcome contributions of all kinds!</p>
 <ul class="simple">
-<li><p>Reporting a bug (file an issue in this repository!)</p></li>
-<li><p>Providing discussions in our communication channels</p></li>
-<li><p>Fixing a typo in the code</p></li>
-<li><p>Fixing a typo in the documentation</p></li>
-<li><p>Providing your feedback on the proposed features and designs</p></li>
-<li><p>Reviewing Pull Requests</p></li>
-<li><p>General questions about usage/specifications</p></li>
+<li><p>Reporting bugs</p></li>
+<li><p>Requesting features</p></li>
+<li><p>Creatin pull requests</p></li>
+<li><p>Providing discussions/feedback</p></li>
 </ul>
-<p>Of course, we welcome code contributions to the XAI project as well. Please feel free to fork this project and issue a pull request.</p>
-</div>
-<div class="section" id="resources">
-<h2>📙 Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference external" href="https://wiki.wdf.sap.corp/wiki/pages/viewpage.action?pageId=2098642718">Wiki</a></p></li>
-<li><p><a class="reference external" href="https://sap-ml.slack.com/messages/CHJMDJB17">Slack (#xai)</a></p></li>
-<li><p><a class="reference external" href="https://ux.wdf.sap.corp/fiori-design-web/explainable-ai/">Fiori UX4AI design guidelines</a></p></li>
-<li><p><a class="reference external" href="https://github.wdf.sap.corp/ML-Leonardo/ML-Advanced-Trainings/tree/master/explainability">Advanced ML Training - Explainability</a></p></li>
-<li><p><a class="reference external" href="https://jam4.sapjam.com/groups/pi0IqJnjso67tPOaOehICd/documents/q3EYBiNRJSLGBuvtrk5kG9/slide_viewer">Explainable ML S/4 Architecture Guidelines</a></p></li>
-</ul>
-</div>
-<div class="section" id="contact-us">
-<h2>📧 Contact Us<a class="headerlink" href="#contact-us" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="mailto:DL_5CE39E1B960F84027F4937EE&#37;&#52;&#48;global&#46;corp&#46;sap">DL_5CE39E1B960F84027F4937EE<span>&#64;</span>global<span>&#46;</span>corp<span>&#46;</span>sap</a> (DL ML Explainable AI)</p>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">XAI Documentation</span></p>
+<p class="caption"><span class="caption-text">Contextual AI Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="data_module.html">Data Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="data_module_tutorial.html">Tutorial</a></li>
@@ -397,12 +363,8 @@ $ pip install dist/*.whl
 <p class="caption"><span class="caption-text">Miscellaneous</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#unreleased">[Unreleased]</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id1">[0.0.1] - 2019-09-26</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">[0.0.2] - 2019-10-18</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#released">[Released]</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id4">[0.1.0] - 2019-11-18</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id6">[0.1.1] - 2020-01-15</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#unreleased">Unreleased</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#released">Released</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="developer_guide.html">Developer Guide</a><ul>
@@ -411,7 +373,7 @@ $ pip install dist/*.whl
 <li class="toctree-l2"><a class="reference internal" href="developer_guide.html#cross-reference-examples">Cross Reference Examples</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="autodoc.html">XAI Auto-doc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Contextual AI Auto-doc</a></li>
 </ul>
 </div>
 </div>
@@ -435,7 +397,7 @@ $ pip install dist/*.whl
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+        &copy; Copyright 2020, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
 
     </p>
   </div>

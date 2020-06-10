@@ -1,7 +1,7 @@
 Contextual AI
 ==============
 
-[![Build Status](https://jenkins.ml.only.sap/buildStatus/icon?job=Explainable_AI%2Fmaster)](https://jenkins.ml.only.sap/job/Explainable_AI/job/master/)
+[![Build Status](https://travis-ci.com/sap-staging/contextual-ai.svg?token=wh5aYpEiVyMyx9ysvFdy&branch=master)](https://travis-ci.com/sap-staging/contextual-ai)
 [![Documentation Status](https://readthedocs.org/projects/contextual-ai/badge/?version=latest)](https://contextual-ai.readthedocs.io/en/latest/?badge=latest)
 
 
@@ -9,40 +9,30 @@ Contextual AI adds explainability to different stages of machine learning pipeli
 
 ## 🖥 Installation
 
-XAI has been tested with Python 3.5+. You can install it using pip:
+Contextual AI has been tested with Python 3.6 and 3.7. You can install it using pip:
+
+```
+$ pip install contextual-ai
+```
 
 ### Building locally
 
 ````
-$ git clone https://github.wdf.sap.corp/ML-Leonardo/Explainable_AI
-$ cd Explainable_AI
 $ sh build.sh
 $ pip install dist/*.whl
 ````
-
-### Installing from Nexus
-
-XAI is now packaged and distributed in SAP's internal Nexus repository! You can install the latest release via the following command:
-
-```
-$ pip install --index-url=http://nexus.wdf.sap.corp:8081/nexus/content/groups/build.releases.pypi/simple/ --trusted-host=nexus.wdf.sap.corp sap-explainable-ai 
-
-```
 
 ## ⚡️ Quickstart
 
 In this simple example, we will attempt to generate explanations for some ML model trained on 20newsgroups, a text classification dataset. In particular, we want to find out which words were important for a particular prediction.
 
 ```python
-import random
-import numpy as np
 from pprint import pprint
 from sklearn import datasets
-from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-# Main XAI imports
+# Main Contextual AI imports
 import xai
 from xai.explainer import ExplainerFactory
 
@@ -66,9 +56,9 @@ y_test = raw_test.target
 clf = MultinomialNB(alpha=0.1)
 clf.fit(X_train, y_train)
 
-##################
-# Main XAI steps #
-##################
+############################
+# Main Contextual AI steps #
+############################
 # Instantiate the text explainer via the ExplainerFactory interface
 explainer = ExplainerFactory.get_explainer(domain=xai.DOMAIN.TEXT)
 
@@ -125,58 +115,36 @@ Label soc.religion.christian => 2
 
 ## 🚀 What else can it do?
 
-XAI spans [three pillars](https://wiki.wdf.sap.corp/wiki/display/MLAPPS/Pillars+of+Explainability), or scopes, of explainability, each addressing a different stage of a machine learning solution's lifecycle.
+Contextual AI spans three pillars, or scopes, of explainability, each addressing a different stage of a machine learning solution's lifecycle.
 
 ### Pre-training (Data)
 
 * Distributional analysis of data and features
 * Data validation
-* [Tutorial](https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/data_module_tutorial.html)
+* [Tutorial](https://contextual-ai.readthedocs.io/en/latest/data_module_tutorial.html)
 
 ### Training evaluation (Model)
 
 * Training performance
 * Feature importance
 * Per-class explanations
-* [Tutorial](https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/training_module.html)
+* [Tutorial](https://contextual-ai.readthedocs.io/en/latest/training_module_tutorial.html)
 
 ### Inference (Prediction)
 
 * Explanations per prediction instance
-* [Tutorial](https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/inference_module.html)
+* [Tutorial](https://contextual-ai.readthedocs.io/en/latest/inference_module_tutorial.html)
 
 ### Formatter/Compiler
 
 * Produce PDF/HTML reports of outputs from the above using only a few lines of code
-* [Tutorial](https://github.wdf.sap.corp/pages/ML-Leonardo/Explainable_AI/compiler_module_tutorial.html)
-
-## ⭐️ Use case examples
-
-* [SAP Cash Application data report](https://wiki.wdf.sap.corp/wiki/download/attachments/2123358216/training_report.pdf?version=1&modificationDate=1563243859000&api=v2)
-* [Service Ticket Intelligence training report](https://wiki.wdf.sap.corp/wiki/display/MLAPPS/Service+Ticket+Intelligence+-+Training+Report?preview=/2123358161/2162139944/sti_sample_training_report.pdf)
+* [Tutorial](https://contextual-ai.readthedocs.io/en/latest/compiler_module_tutorial.html)
 
 ## 🤝 Contributing
 
 We welcome contributions of all kinds!
 
-- Reporting a bug (file an issue in this repository!)
-- Providing discussions in our communication channels
-- Fixing a typo in the code
-- Fixing a typo in the documentation
-- Providing your feedback on the proposed features and designs
-- Reviewing Pull Requests
-- General questions about usage/specifications
-
-Of course, we welcome code contributions to the XAI project as well. Please feel free to fork this project and issue a pull request.
-
-## 📙 Resources
-
-- [Wiki](https://wiki.wdf.sap.corp/wiki/pages/viewpage.action?pageId=2098642718)
-- [Slack (#xai)](https://sap-ml.slack.com/messages/CHJMDJB17)
-- [Fiori UX4AI design guidelines](https://ux.wdf.sap.corp/fiori-design-web/explainable-ai/)
-- [Advanced ML Training - Explainability](https://github.wdf.sap.corp/ML-Leonardo/ML-Advanced-Trainings/tree/master/explainability)
-- [Explainable ML S/4 Architecture Guidelines](https://jam4.sapjam.com/groups/pi0IqJnjso67tPOaOehICd/documents/q3EYBiNRJSLGBuvtrk5kG9/slide_viewer)
-
-## 📧 Contact Us
-
-DL_5CE39E1B960F84027F4937EE@global.corp.sap (DL ML Explainable AI)
+- Reporting bugs
+- Requesting features
+- Creatin pull requests
+- Providing discussions/feedback

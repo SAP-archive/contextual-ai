@@ -17,15 +17,17 @@ import sys
 sys.path.insert(0, os.path.abspath('../../xai'))
 sys.path.insert(0, os.path.abspath('../..'))
 
+import datetime
+
 
 # -- Project information -----------------------------------------------------
 
-project = 'XAI'
-copyright = '2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj'
+project = 'Contextual AI'
+copyright = '{}, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj'.format(datetime.datetime.now().year)
 author = 'Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj'
 
 # The full version, including alpha/beta/rc tags
-version = '0.1.0'
+version = '0.0.1'
 # release = '0.0.1'
 
 

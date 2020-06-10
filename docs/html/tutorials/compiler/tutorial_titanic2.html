@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generate Explainable Report with Titanic dataset using XAI &mdash; XAI  documentation</title>
+  <title>Generate Explainable Report with Titanic dataset using Contextual AI &mdash; Contextual AI  documentation</title>
   
 
   
@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="compiler package" href="../../compiler/compiler.html" />
-    <link rel="prev" title="Generate Explainable Report with Titanic dataset using XAI" href="tutorial_titanic.html" /> 
+    <link rel="prev" title="Generate Explainable Report with Titanic dataset using Contextual AI" href="tutorial_titanic.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -50,7 +50,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> XAI
+            <a href="../../index.html" class="icon icon-home"> Contextual AI
           
 
           
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.0.1
               </div>
             
           
@@ -84,7 +84,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+              <p class="caption"><span class="caption-text">Contextual AI Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../data_module.html">Data Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../training_module.html">Model Module</a></li>
@@ -93,9 +93,9 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../../compiler_module.html">Compiler Module</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../../compiler_module_tutorial.html">Tutorial</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../../compiler_module_tutorial.html#tutorial">Tutorial</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="tutorial_automobile.html">Generate an Explainability Report with the Automobile dataset using XAI</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial_titanic.html">Generate Explainable Report with Titanic dataset using XAI</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Generate Explainable Report with Titanic dataset using XAI</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial_automobile.html">Generate an Explainability Report with the Automobile dataset using Contextual AI</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial_titanic.html">Generate Explainable Report with Titanic dataset using Contextual AI</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Generate Explainable Report with Titanic dataset using Contextual AI</a></li>
 </ul>
 </li>
 </ul>
@@ -108,7 +108,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../developer_guide.html">Developer Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">XAI Auto-doc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">Contextual AI Auto-doc</a></li>
 </ul>
 
             
@@ -123,7 +123,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">XAI</a>
+          <a href="../../index.html">Contextual AI</a>
         
       </nav>
 
@@ -156,9 +156,9 @@
         
           <li><a href="../../compiler_module.html">Compiler Module</a> &raquo;</li>
         
-          <li><a href="../../compiler_module_tutorial.html">XAI Compiler tutorials</a> &raquo;</li>
+          <li><a href="../../compiler_module_tutorial.html">Contextual AI Compiler tutorials</a> &raquo;</li>
         
-      <li>Generate Explainable Report with Titanic dataset using XAI</li>
+      <li>Generate Explainable Report with Titanic dataset using Contextual AI</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -399,21 +399,21 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<div class="section" id="Generate-Explainable-Report-with-Titanic-dataset-using-XAI">
-<h1>Generate Explainable Report with Titanic dataset using XAI<a class="headerlink" href="#Generate-Explainable-Report-with-Titanic-dataset-using-XAI" title="Permalink to this headline">¶</a></h1>
-<p>This notebook demonstrates how to generate explanations report using complier implemented in the XAI library.</p>
+<div class="section" id="Generate-Explainable-Report-with-Titanic-dataset-using-Contextual-AI">
+<h1>Generate Explainable Report with Titanic dataset using Contextual AI<a class="headerlink" href="#Generate-Explainable-Report-with-Titanic-dataset-using-Contextual-AI" title="Permalink to this headline">¶</a></h1>
+<p>This notebook demonstrates how to generate explanations report using complier implemented in the Contextual AI library.</p>
 <div class="section" id="Motivation">
 <h2>Motivation<a class="headerlink" href="#Motivation" title="Permalink to this headline">¶</a></h2>
 <p>Once the PoC is done (and you know where your data comes from, what it looks like, and what it can predict) comes the ideal next step is to put your model into production and make it useful for the rest of the business.</p>
 <p>Does it sound familiar? do you also need to answer the questions below, before promoting your model into production: 1. <em>How you sure that your model is ready for production?</em> 2. <em>How you able to explain the model performance? in business context that non-technical management can understand?</em> 3. <em>How you able to compare between newly trained models and existing models is done manually every iteration?</em></p>
-<p>In XAI project, our simply vision is to: 1. <strong>Speed up data validation</strong> 2. <strong>Simplify model engineering</strong> 3. <strong>Build trust</strong></p>
-<p>For more details, please refer to our <a class="reference external" href="https://sap.sharepoint.com/sites/100454/ML_Apps/Shared%20Documents/Reusable%20Components/Explainability/XAI_Whitepaper.pdf?csf=1&amp;e=phIUNN&amp;cid=771297d7-d488-441a-8a65-dab0305c3f04">whitepaper</a></p>
+<p>In Contextual AI project, our simply vision is to: 1. <strong>Speed up data validation</strong> 2. <strong>Simplify model engineering</strong> 3. <strong>Build trust</strong></p>
+<p>For more details, please refer to our <a class="reference external" href="https://sap.sharepoint.com/sites/100454/ML_Apps/Shared%20Documents/Reusable%20Components/Explainability/Contextual%20AI_Whitepaper.pdf?csf=1&amp;e=phIUNN&amp;cid=771297d7-d488-441a-8a65-dab0305c3f04">whitepaper</a></p>
 </div>
 <div class="section" id="Steps">
 <h2>Steps<a class="headerlink" href="#Steps" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
 <li><p>Create a model to Predict survival on the Titanic, using the data provide in <a class="reference external" href="https://www.kaggle.com/c/titanic/data">titanic</a></p></li>
-<li><p>Evaluate the model performance with XAI report and generate a local explainer pkl</p></li>
+<li><p>Evaluate the model performance with Contextual AI report and generate a local explainer pkl</p></li>
 <li><p>Load the explainer pkl while inference and explain the instance</p></li>
 </ol>
 <hr class="docutils" />
@@ -902,8 +902,8 @@ Model Testing Accuracy:  81.56
 </div>
 </div>
 </div>
-<div class="section" id="2.-Involve-XAI-complier">
-<h3>2. Involve XAI complier<a class="headerlink" href="#2.-Involve-XAI-complier" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="2.-Involve-Contextual-AI-complier">
+<h3>2. Involve Contextual AI complier<a class="headerlink" href="#2.-Involve-Contextual-AI-complier" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -1131,7 +1131,7 @@ explainer generated : /Users/i309943/workspace/Explainable_AI/tutorials/compiler
         <a href="../../compiler/compiler.html" class="btn btn-neutral float-right" title="compiler package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="tutorial_titanic.html" class="btn btn-neutral float-left" title="Generate Explainable Report with Titanic dataset using XAI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="tutorial_titanic.html" class="btn btn-neutral float-left" title="Generate Explainable Report with Titanic dataset using Contextual AI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1140,7 +1140,7 @@ explainer generated : /Users/i309943/workspace/Explainable_AI/tutorials/compiler
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+        &copy; Copyright 2020, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
 
     </p>
   </div>

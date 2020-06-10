@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>LIME Tabular Explainer via XAI &mdash; XAI  documentation</title>
+  <title>LIME Tabular Explainer via XAI &mdash; Contextual AI  documentation</title>
   
 
   
@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="LIME Text Explainer via XAI" href="tutorial_lime_text_explainer.html" />
-    <link rel="prev" title="XAI Explainer tutorials" href="../../inference_module_tutorial.html" /> 
+    <link rel="prev" title="Contextual AI Explainer tutorials" href="../../inference_module_tutorial.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -50,7 +50,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> XAI
+            <a href="../../index.html" class="icon icon-home"> Contextual AI
           
 
           
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.0.1
               </div>
             
           
@@ -84,7 +84,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+              <p class="caption"><span class="caption-text">Contextual AI Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../data_module.html">Data Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../training_module.html">Model Module</a></li>
@@ -93,8 +93,8 @@
 <li class="toctree-l3 current"><a class="reference internal" href="../../inference_module_tutorial.html#tutorial">Tutorial</a><ul class="current">
 <li class="toctree-l4 current"><a class="current reference internal" href="#">LIME Tabular Explainer via XAI</a></li>
 <li class="toctree-l4"><a class="reference internal" href="tutorial_lime_text_explainer.html">LIME Text Explainer via XAI</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial_lime_text_explainer_with_keras.html">XAI LIME Text ExplainerFactory with Keras</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial_shap_tabular_explainer.html">SHAP Kernel Explainer for Tabular Data via XAI</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial_lime_text_explainer_with_keras.html">Contextual AI LIME Text ExplainerFactory with Keras</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial_shap_tabular_explainer.html">SHAP Kernel Explainer for Tabular Data via Contextual AI</a></li>
 </ul>
 </li>
 </ul>
@@ -109,7 +109,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../developer_guide.html">Developer Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">XAI Auto-doc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">Contextual AI Auto-doc</a></li>
 </ul>
 
             
@@ -124,7 +124,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">XAI</a>
+          <a href="../../index.html">Contextual AI</a>
         
       </nav>
 
@@ -157,7 +157,7 @@
         
           <li><a href="../../inference_module.html">Explainer Module</a> &raquo;</li>
         
-          <li><a href="../../inference_module_tutorial.html">XAI Explainer tutorials</a> &raquo;</li>
+          <li><a href="../../inference_module_tutorial.html">Contextual AI Explainer tutorials</a> &raquo;</li>
         
       <li>LIME Tabular Explainer via XAI</li>
     
@@ -402,16 +402,16 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="LIME-Tabular-Explainer-via-XAI">
 <h1>LIME Tabular Explainer via XAI<a class="headerlink" href="#LIME-Tabular-Explainer-via-XAI" title="Permalink to this headline">¶</a></h1>
-<p>This tutorial demonstrates how to generate explanations using LIME’s tabular explainer implemented by the XAI library.</p>
-<p>At a high level, explanations can be obtained from any XAI explanation algorithm in 3 steps:</p>
+<p>This tutorial demonstrates how to generate explanations using LIME’s tabular explainer implemented by the Contextual AI library.</p>
+<p>At a high level, explanations can be obtained from any Contextual AI explanation algorithm in 3 steps:</p>
 <ol class="arabic simple">
-<li><p>Create an explainer via the <code class="docutils literal notranslate"><span class="pre">ExplainerFactory</span></code> class, which serves as the primary interface between the user and all XAI-supported explanation algorithms</p></li>
-<li><p>Build the explainer by calling the <code class="docutils literal notranslate"><span class="pre">build_explainer</span></code> method (which is implemented by any XAI explanation algorithm) and providing arguments that are specific to that algorithm</p></li>
+<li><p>Create an explainer via the <code class="docutils literal notranslate"><span class="pre">ExplainerFactory</span></code> class, which serves as the primary interface between the user and all Contextual AI-supported explanation algorithms</p></li>
+<li><p>Build the explainer by calling the <code class="docutils literal notranslate"><span class="pre">build_explainer</span></code> method (which is implemented by any Contextual AI explanation algorithm) and providing arguments that are specific to that algorithm</p></li>
 <li><p>Get explanations for some data instance by calling the <code class="docutils literal notranslate"><span class="pre">explain_instance</span></code> method (which is also common among all algorithms) and provoding arguments that are specific to that algorithm</p></li>
 </ol>
 <div class="section" id="Step-1:-Import-libraries">
 <h2>Step 1: Import libraries<a class="headerlink" href="#Step-1:-Import-libraries" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">xai.explainer.ExplainerFactory</span></code> is the main class that users of XAI interact with. <code class="docutils literal notranslate"><span class="pre">xai</span></code> contains some constants that are used to instantiate an <code class="docutils literal notranslate"><span class="pre">AbstractExplainer</span></code> object.</p>
+<p><code class="docutils literal notranslate"><span class="pre">xai.explainer.ExplainerFactory</span></code> is the main class that users of Contextual AI interact with. <code class="docutils literal notranslate"><span class="pre">xai</span></code> contains some constants that are used to instantiate an <code class="docutils literal notranslate"><span class="pre">AbstractExplainer</span></code> object.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -432,7 +432,7 @@ div.rendered_html tbody tr:hover {
 <span class="c1"># Set the path so that we can import ExplainerFactory</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../../&#39;</span><span class="p">)</span>
 
-<span class="c1"># Main XAI imports</span>
+<span class="c1"># Main Contextual AI imports</span>
 <span class="kn">import</span> <span class="nn">xai</span>
 <span class="kn">from</span> <span class="nn">xai.explainer</span> <span class="kn">import</span> <span class="n">ExplainerFactory</span>
 </pre></div>
@@ -480,8 +480,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="section" id="Step-3:-Instantiate-the-explainer">
 <h2>Step 3: Instantiate the explainer<a class="headerlink" href="#Step-3:-Instantiate-the-explainer" title="Permalink to this headline">¶</a></h2>
-<p>This is where we instantiate the XAI explainer. This <code class="docutils literal notranslate"><span class="pre">ExplainerFactory</span></code> class is in charge of loading a particular explanation algorithm. The user is required to provide one argument - the <code class="docutils literal notranslate"><span class="pre">domain</span></code>, which indicates the domain of the training data (e.g. <code class="docutils literal notranslate"><span class="pre">tabular</span></code> or <code class="docutils literal notranslate"><span class="pre">text</span></code>). The available domains can be found in <code class="docutils literal notranslate"><span class="pre">xai.DOMAIN</span></code>. Users can also select a particular explainer algorithm by providing the algorithm’s name (registered in <code class="docutils literal notranslate"><span class="pre">xai.ALG</span></code>) to the <code class="docutils literal notranslate"><span class="pre">algorithm</span></code> parameter. If this
-argument is not provided, the <code class="docutils literal notranslate"><span class="pre">ExplainerFactory.get_explainer</span></code> method defaults to a pre-set algorithm for that domain which can be found in <code class="docutils literal notranslate"><span class="pre">xai/explainer/config.py</span></code>.</p>
+<p>This is where we instantiate the Contextual AI explainer. This <code class="docutils literal notranslate"><span class="pre">ExplainerFactory</span></code> class is in charge of loading a particular explanation algorithm. The user is required to provide one argument - the <code class="docutils literal notranslate"><span class="pre">domain</span></code>, which indicates the domain of the training data (e.g. <code class="docutils literal notranslate"><span class="pre">tabular</span></code> or <code class="docutils literal notranslate"><span class="pre">text</span></code>). The available domains can be found in <code class="docutils literal notranslate"><span class="pre">xai.DOMAIN</span></code>. Users can also select a particular explainer algorithm by providing the algorithm’s name (registered in <code class="docutils literal notranslate"><span class="pre">xai.ALG</span></code>) to the <code class="docutils literal notranslate"><span class="pre">algorithm</span></code> parameter. If
+this argument is not provided, the <code class="docutils literal notranslate"><span class="pre">ExplainerFactory.get_explainer</span></code> method defaults to a pre-set algorithm for that domain which can be found in <code class="docutils literal notranslate"><span class="pre">xai/explainer/config.py</span></code>.</p>
 <p>We want to load the <code class="docutils literal notranslate"><span class="pre">LimeTabularExplainer</span></code>, so we provide <code class="docutils literal notranslate"><span class="pre">xai.DOMAIN.TABULAR</span></code> as the argument to <code class="docutils literal notranslate"><span class="pre">domain</span></code> and <code class="docutils literal notranslate"><span class="pre">xai.ALG.LIME</span></code> as the argument to <code class="docutils literal notranslate"><span class="pre">algorithm</span></code>. Note that <code class="docutils literal notranslate"><span class="pre">xai.ALG.LIME</span></code> is the default tabular explanation algorithm; hence this also works:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">explainer</span> <span class="o">=</span> <span class="n">ExplainerFactory</span><span class="o">.</span><span class="n">get_explainer</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">xai</span><span class="o">.</span><span class="n">DOMAIN</span><span class="o">.</span><span class="n">TABULAR</span><span class="p">)</span>
 </pre></div>
@@ -584,7 +584,7 @@ discretization. See original docs for more details * sample_around_instance (Tru
 </div>
 <div class="section" id="Step-6:-Save-and-load-the-explainer">
 <h2>Step 6: Save and load the explainer<a class="headerlink" href="#Step-6:-Save-and-load-the-explainer" title="Permalink to this headline">¶</a></h2>
-<p>Finally, every XAI explainer supports saving and loading functions.</p>
+<p>Finally, every Contextual AI explainer supports saving and loading functions.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
@@ -658,7 +658,7 @@ discretization. See original docs for more details * sample_around_instance (Tru
         <a href="tutorial_lime_text_explainer.html" class="btn btn-neutral float-right" title="LIME Text Explainer via XAI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../../inference_module_tutorial.html" class="btn btn-neutral float-left" title="XAI Explainer tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../../inference_module_tutorial.html" class="btn btn-neutral float-left" title="Contextual AI Explainer tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -667,7 +667,7 @@ discretization. See original docs for more details * sample_around_instance (Tru
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+        &copy; Copyright 2020, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
 
     </p>
   </div>

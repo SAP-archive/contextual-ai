@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>SHAP Kernel Explainer for Tabular Data via XAI &mdash; XAI  documentation</title>
+  <title>SHAP Kernel Explainer for Tabular Data via Contextual AI &mdash; Contextual AI  documentation</title>
   
 
   
@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="explainer package" href="../../explainer/explainer.html" />
-    <link rel="prev" title="XAI LIME Text ExplainerFactory with Keras" href="tutorial_lime_text_explainer_with_keras.html" /> 
+    <link rel="prev" title="Contextual AI LIME Text ExplainerFactory with Keras" href="tutorial_lime_text_explainer_with_keras.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -50,7 +50,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> XAI
+            <a href="../../index.html" class="icon icon-home"> Contextual AI
           
 
           
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.0.1
               </div>
             
           
@@ -84,7 +84,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">XAI Documentation</span></p>
+              <p class="caption"><span class="caption-text">Contextual AI Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../data_module.html">Data Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../training_module.html">Model Module</a></li>
@@ -93,8 +93,8 @@
 <li class="toctree-l3 current"><a class="reference internal" href="../../inference_module_tutorial.html#tutorial">Tutorial</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="tutorial_lime_tabular_explainer.html">LIME Tabular Explainer via XAI</a></li>
 <li class="toctree-l4"><a class="reference internal" href="tutorial_lime_text_explainer.html">LIME Text Explainer via XAI</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial_lime_text_explainer_with_keras.html">XAI LIME Text ExplainerFactory with Keras</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">SHAP Kernel Explainer for Tabular Data via XAI</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial_lime_text_explainer_with_keras.html">Contextual AI LIME Text ExplainerFactory with Keras</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">SHAP Kernel Explainer for Tabular Data via Contextual AI</a></li>
 </ul>
 </li>
 </ul>
@@ -109,7 +109,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../developer_guide.html">Developer Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">XAI Auto-doc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">Contextual AI Auto-doc</a></li>
 </ul>
 
             
@@ -124,7 +124,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">XAI</a>
+          <a href="../../index.html">Contextual AI</a>
         
       </nav>
 
@@ -157,9 +157,9 @@
         
           <li><a href="../../inference_module.html">Explainer Module</a> &raquo;</li>
         
-          <li><a href="../../inference_module_tutorial.html">XAI Explainer tutorials</a> &raquo;</li>
+          <li><a href="../../inference_module_tutorial.html">Contextual AI Explainer tutorials</a> &raquo;</li>
         
-      <li>SHAP Kernel Explainer for Tabular Data via XAI</li>
+      <li>SHAP Kernel Explainer for Tabular Data via Contextual AI</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -400,9 +400,9 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<div class="section" id="SHAP-Kernel-Explainer-for-Tabular-Data-via-XAI">
-<h1>SHAP Kernel Explainer for Tabular Data via XAI<a class="headerlink" href="#SHAP-Kernel-Explainer-for-Tabular-Data-via-XAI" title="Permalink to this headline">¶</a></h1>
-<p>This tutorial demonstrates how to generate explanations using SHAP’s Kernel Explainer implemented by the XAI library. Much of the tutorial overlaps with what is covered in the <a class="reference external" href="lime_tabular_explainer.ipynb">LIME tabular tutorial</a>. To recap, the main steps for generating explanations are:</p>
+<div class="section" id="SHAP-Kernel-Explainer-for-Tabular-Data-via-Contextual-AI">
+<h1>SHAP Kernel Explainer for Tabular Data via Contextual AI<a class="headerlink" href="#SHAP-Kernel-Explainer-for-Tabular-Data-via-Contextual-AI" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial demonstrates how to generate explanations using SHAP’s Kernel Explainer implemented by the Contextual AI library. Much of the tutorial overlaps with what is covered in the <a class="reference external" href="lime_tabular_explainer.ipynb">LIME tabular tutorial</a>. To recap, the main steps for generating explanations are:</p>
 <ol class="arabic simple">
 <li><p>Get an explainer via the <code class="docutils literal notranslate"><span class="pre">ExplainerFactory</span></code> class</p></li>
 <li><p>Build the text explainer</p></li>
@@ -432,7 +432,7 @@ div.rendered_html tbody tr:hover {
 <span class="c1"># Set the path so that we can import ExplainerFactory</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../../&#39;</span><span class="p">)</span>
 
-<span class="c1"># Main XAI imports</span>
+<span class="c1"># Main Contextual AI imports</span>
 <span class="kn">import</span> <span class="nn">xai</span>
 <span class="kn">from</span> <span class="nn">xai.explainer</span> <span class="kn">import</span> <span class="n">ExplainerFactory</span>
 </pre></div>
@@ -519,7 +519,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="section" id="Step-4:-Build-the-explainer">
 <h2>Step 4: Build the explainer<a class="headerlink" href="#Step-4:-Build-the-explainer" title="Permalink to this headline">¶</a></h2>
-<p>Like with any explainer in XAI, the SHAP Kernel Explainer implements a <code class="docutils literal notranslate"><span class="pre">build_explainer</span></code> method to initialize the explainer (this can include pre-training a model or initializing some parameters). Note, however, that the <code class="docutils literal notranslate"><span class="pre">build_explainer</span></code> for SHAP requires a different set of parameters than that of the LIME Tabular Explainer. This also goes for <code class="docutils literal notranslate"><span class="pre">explain_instance</span></code>.</p>
+<p>Like with any explainer in Contextual AI, the SHAP Kernel Explainer implements a <code class="docutils literal notranslate"><span class="pre">build_explainer</span></code> method to initialize the explainer (this can include pre-training a model or initializing some parameters). Note, however, that the <code class="docutils literal notranslate"><span class="pre">build_explainer</span></code> for SHAP requires a different set of parameters than that of the LIME Tabular Explainer. This also goes for <code class="docutils literal notranslate"><span class="pre">explain_instance</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -618,7 +618,7 @@ Using 455 background data samples could cause slower run times. Consider using s
 </div>
 <div class="section" id="Step-6:-Save-and-load-the-explainer">
 <h2>Step 6: Save and load the explainer<a class="headerlink" href="#Step-6:-Save-and-load-the-explainer" title="Permalink to this headline">¶</a></h2>
-<p>Any explanation algorithm in XAI can be saved/loaded via <code class="docutils literal notranslate"><span class="pre">save_explainer</span></code> and <code class="docutils literal notranslate"><span class="pre">load_explainer</span></code>, respectively.</p>
+<p>Any explanation algorithm in Contextual AI can be saved/loaded via <code class="docutils literal notranslate"><span class="pre">save_explainer</span></code> and <code class="docutils literal notranslate"><span class="pre">load_explainer</span></code>, respectively.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -712,7 +712,7 @@ Using 455 background data samples could cause slower run times. Consider using s
         <a href="../../explainer/explainer.html" class="btn btn-neutral float-right" title="explainer package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="tutorial_lime_text_explainer_with_keras.html" class="btn btn-neutral float-left" title="XAI LIME Text ExplainerFactory with Keras" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="tutorial_lime_text_explainer_with_keras.html" class="btn btn-neutral float-left" title="Contextual AI LIME Text ExplainerFactory with Keras" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -721,7 +721,7 @@ Using 455 background data samples could cause slower run times. Consider using s
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
+        &copy; Copyright 2020, Wang Jin, Sean Saito, Chai Wei Tah, Ni Peng, Shu Zhen, Karthik Muthuswamy, Amrit Raj
 
     </p>
   </div>
