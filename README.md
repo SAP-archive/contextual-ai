@@ -131,7 +131,7 @@ pprint(controller.config)
 
 The `Controller` is responsible for ingesting the configuration file `basic-report-explainer.json` and parsing the specifications of the report. The configuration file looks like this:
 
-```json
+```
 {'content_table': True,
  'contents': [{'desc': 'This section summarized the training performance',
                'sections': [{'component': {'attr': {'labels_file': 'labels.json',
