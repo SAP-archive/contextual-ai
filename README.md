@@ -22,7 +22,7 @@ $ sh build.sh
 $ pip install dist/*.whl
 ````
 
-## ⚡️ Quickstart
+## ⚡️ Quickstart 1 - Explain the predictions of a model
 
 In this simple example, we will attempt to generate explanations for some ML model trained on 20newsgroups, a text classification dataset. In particular, we want to find out which words were important for a particular prediction.
 
@@ -113,6 +113,80 @@ Label soc.religion.christian => 2
 
 
 
+## ⚡️ Quickstart 2 - Generate an explainability report
+
+Another functionality of `contextual-ai` is the ability to generate PDF reports that compile the results of data analysis, model training, feature importance, error analysis, and more. Here's a simple example where we provide an explainability report for the [Titanic](https://www.kaggle.com/c/titanic) dataset. The full tutorial can be found [here](https://contextual-ai.readthedocs.io/en/latest/tutorials/compiler/tutorial_titanic2.html).
+
+```python
+import os
+import sys
+from pprint import pprint
+from xai.compiler.base import Configuration, Controller
+
+json_config = 'basic-report-explainer.json'
+
+controller = Controller(config=Configuration(json_config))
+pprint(controller.config)
+```
+
+The `Controller` is responsible for ingesting the configuration file `basic-report-explainer.json` and parsing the specifications of the report. The configuration file looks like this:
+
+```json
+{'content_table': True,
+ 'contents': [{'desc': 'This section summarized the training performance',
+               'sections': [{'component': {'attr': {'labels_file': 'labels.json',
+                                                    'y_pred_file': 'y_conf.csv',
+                                                    'y_true_file': 'y_true.csv'},
+                                           'class': 'ClassificationEvaluationResult',
+                                           'module': 'compiler',
+                                           'package': 'xai'},
+                             'title': 'Training Result'}],
+               'title': 'Training Result'},
+              {'desc': 'This section provides the analysis on feature',
+               'sections': [{'component': {'_comment': 'refer to document '
+                                                       'section xxxx',
+                                           'attr': {'train_data': 'train_data.csv',
+                                                    'trained_model': 'model.pkl'},
+                                           'class': 'FeatureImportanceRanking'},
+                             'title': 'Feature Importance Ranking'}],
+               'title': 'Feature Importance Analysis'},
+              {'desc': 'This section provides a model-agnostic explainer',
+               'sections': [{'component': {'attr': {'domain': 'tabular',
+                                                    'feature_meta': 'feature_meta.json',
+                                                    'method': 'lime',
+                                                    'num_features': 5,
+                                                    'predict_func': 'func.pkl',
+                                                    'train_data': 'train_data.csv'},
+                                           'class': 'ModelAgnosticExplainer',
+                                           'module': 'compiler',
+                                           'package': 'xai'},
+                             'title': 'Result'}],
+               'title': 'Model-Agnostic Explainer'},
+              {'desc': 'This section provides the analysis on data',
+               'sections': [{'component': {'_comment': 'refer to document '
+                                                       'section xxxx',
+                                           'attr': {'data': 'titanic.csv',
+                                                    'label': 'Survived'},
+                                           'class': 'DataStatisticsAnalysis'},
+                             'title': 'Simple Data Statistic'}],
+               'title': 'Data Statistics Analysis'}],
+ 'name': 'Report for Titanic Dataset',
+ 'overview': True,
+ 'writers': [{'attr': {'name': 'titanic-basic-report'}, 'class': 'Pdf'}]}
+```
+
+The `Controller` also triggers the rendering of the report:
+
+```python
+controller.render()
+```
+
+Which produces [this](tutorials/compiler/titanic2/titanic-basic-report.pdf) PDF report which visualizes data distributions, training results, feature importances, local prediction explanations, and more!
+
+![alt text](imgs/titanic_report.png)
+
+
+
 ## 🚀 What else can it do?
 
 Contextual AI spans three pillars, or scopes, of explainability, each addressing a different stage of a machine learning solution's lifecycle.
@@ -128,6 +202,7 @@ Contextual AI spans three pillars, or scopes, of explainability, each addressing
 * Training performance
 * Feature importance
 * Per-class explanations
+* Simple error analysis
 * [Tutorial](https://contextual-ai.readthedocs.io/en/latest/training_module_tutorial.html)
 
 ### Inference (Prediction)
@@ -135,7 +210,7 @@ Contextual AI spans three pillars, or scopes, of explainability, each addressing
 * Explanations per prediction instance
 * [Tutorial](https://contextual-ai.readthedocs.io/en/latest/inference_module_tutorial.html)
 
-### Formatter/Compiler
+### Formatter/Compiler 
 
 * Produce PDF/HTML reports of outputs from the above using only a few lines of code
 * [Tutorial](https://contextual-ai.readthedocs.io/en/latest/compiler_module_tutorial.html)
@@ -148,3 +223,4 @@ We welcome contributions of all kinds!
 - Requesting features
 - Creatin pull requests
 - Providing discussions/feedback
+
