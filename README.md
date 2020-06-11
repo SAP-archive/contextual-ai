@@ -189,7 +189,7 @@ Which produces [this](tutorials/compiler/titanic2/titanic-basic-report.pdf) PDF 
 
 ## 🚀 What else can it do?
 
-Contextual AI spans three pillars, or scopes, of explainability, each addressing a different stage of a machine learning solution's lifecycle.
+Contextual AI spans three pillars, or scopes, of explainability, each addressing a different stage of a machine learning solution's lifecycle. We provide several features and functionalities for each:
 
 ### Pre-training (Data)
 
