@@ -191,7 +191,7 @@
 <p>Contextual AI adds explainability to different stages of machine learning pipelines - data, training, and inference - thereby addressing the trust gap between such ML systems and their users.</p>
 <div class="section" id="installation">
 <h2>🖥 Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>Contextual AI has been tested with Python 3.6 and 3.7. You can install it using pip:</p>
+<p>Contextual AI has been tested with Python 3.6, 3.7, and 3.8. You can install it using pip:</p>
 <div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>$ pip install contextual-ai
 </pre></div>
 </div>
@@ -203,8 +203,8 @@ $ pip install dist/*.whl
 </div>
 </div>
 </div>
-<div class="section" id="quickstart">
-<h2>⚡️ Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="quickstart-1-explain-the-predictions-of-a-model">
+<h2>⚡️ Quickstart 1 - Explain the predictions of a model<a class="headerlink" href="#quickstart-1-explain-the-predictions-of-a-model" title="Permalink to this headline">¶</a></h2>
 <p>In this simple example, we will attempt to generate explanations for some ML model trained on 20newsgroups, a text classification dataset. In particular, we want to find out which words were important for a particular prediction.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
 <span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
@@ -285,9 +285,74 @@ $ pip install dist/*.whl
 </pre></div>
 </div>
 </div>
+<div class="section" id="quickstart-2-generate-an-explainability-report">
+<h2>⚡️ Quickstart 2 - Generate an explainability report<a class="headerlink" href="#quickstart-2-generate-an-explainability-report" title="Permalink to this headline">¶</a></h2>
+<p>Another functionality of <code class="docutils literal notranslate"><span class="pre">contextual-ai</span></code> is the ability to generate PDF reports that compile the results of data analysis, model training, feature importance, error analysis, and more. Here’s a simple example where we provide an explainability report for the <a class="reference external" href="https://www.kaggle.com/c/titanic">Titanic</a> dataset. The full tutorial can be found <a class="reference external" href="https://contextual-ai.readthedocs.io/en/latest/tutorials/compiler/tutorial_titanic2.html">here</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="kn">from</span> <span class="nn">xai.compiler.base</span> <span class="kn">import</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">Controller</span>
+
+<span class="n">json_config</span> <span class="o">=</span> <span class="s1">&#39;basic-report-explainer.json&#39;</span>
+
+<span class="n">controller</span> <span class="o">=</span> <span class="n">Controller</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">Configuration</span><span class="p">(</span><span class="n">json_config</span><span class="p">))</span>
+<span class="n">pprint</span><span class="p">(</span><span class="n">controller</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Controller</span></code> is responsible for ingesting the configuration file <code class="docutils literal notranslate"><span class="pre">basic-report-explainer.json</span></code> and parsing the specifications of the report. The configuration file looks like this:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>{&#39;content_table&#39;: True,
+ &#39;contents&#39;: [{&#39;desc&#39;: &#39;This section summarized the training performance&#39;,
+               &#39;sections&#39;: [{&#39;component&#39;: {&#39;attr&#39;: {&#39;labels_file&#39;: &#39;labels.json&#39;,
+                                                    &#39;y_pred_file&#39;: &#39;y_conf.csv&#39;,
+                                                    &#39;y_true_file&#39;: &#39;y_true.csv&#39;},
+                                           &#39;class&#39;: &#39;ClassificationEvaluationResult&#39;,
+                                           &#39;module&#39;: &#39;compiler&#39;,
+                                           &#39;package&#39;: &#39;xai&#39;},
+                             &#39;title&#39;: &#39;Training Result&#39;}],
+               &#39;title&#39;: &#39;Training Result&#39;},
+              {&#39;desc&#39;: &#39;This section provides the analysis on feature&#39;,
+               &#39;sections&#39;: [{&#39;component&#39;: {&#39;_comment&#39;: &#39;refer to document &#39;
+                                                       &#39;section xxxx&#39;,
+                                           &#39;attr&#39;: {&#39;train_data&#39;: &#39;train_data.csv&#39;,
+                                                    &#39;trained_model&#39;: &#39;model.pkl&#39;},
+                                           &#39;class&#39;: &#39;FeatureImportanceRanking&#39;},
+                             &#39;title&#39;: &#39;Feature Importance Ranking&#39;}],
+               &#39;title&#39;: &#39;Feature Importance Analysis&#39;},
+              {&#39;desc&#39;: &#39;This section provides a model-agnostic explainer&#39;,
+               &#39;sections&#39;: [{&#39;component&#39;: {&#39;attr&#39;: {&#39;domain&#39;: &#39;tabular&#39;,
+                                                    &#39;feature_meta&#39;: &#39;feature_meta.json&#39;,
+                                                    &#39;method&#39;: &#39;lime&#39;,
+                                                    &#39;num_features&#39;: 5,
+                                                    &#39;predict_func&#39;: &#39;func.pkl&#39;,
+                                                    &#39;train_data&#39;: &#39;train_data.csv&#39;},
+                                           &#39;class&#39;: &#39;ModelAgnosticExplainer&#39;,
+                                           &#39;module&#39;: &#39;compiler&#39;,
+                                           &#39;package&#39;: &#39;xai&#39;},
+                             &#39;title&#39;: &#39;Result&#39;}],
+               &#39;title&#39;: &#39;Model-Agnostic Explainer&#39;},
+              {&#39;desc&#39;: &#39;This section provides the analysis on data&#39;,
+               &#39;sections&#39;: [{&#39;component&#39;: {&#39;_comment&#39;: &#39;refer to document &#39;
+                                                       &#39;section xxxx&#39;,
+                                           &#39;attr&#39;: {&#39;data&#39;: &#39;titanic.csv&#39;,
+                                                    &#39;label&#39;: &#39;Survived&#39;},
+                                           &#39;class&#39;: &#39;DataStatisticsAnalysis&#39;},
+                             &#39;title&#39;: &#39;Simple Data Statistic&#39;}],
+               &#39;title&#39;: &#39;Data Statistics Analysis&#39;}],
+ &#39;name&#39;: &#39;Report for Titanic Dataset&#39;,
+ &#39;overview&#39;: True,
+ &#39;writers&#39;: [{&#39;attr&#39;: {&#39;name&#39;: &#39;titanic-basic-report&#39;}, &#39;class&#39;: &#39;Pdf&#39;}]}
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Controller</span></code> also triggers the rendering of the report:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">controller</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Which produces <a class="reference external" href="https://github.com/sap-staging/contextual-ai/blob/master/tutorials/compiler/titanic2/titanic-basic-report.pdf">this</a> PDF report which visualizes data distributions, training results, feature importances, local prediction explanations, and more!</p>
+<a class="reference external image-reference" href="https://github.com/sap-staging/contextual-ai/blob/master/imgs/titanic_report.png?raw=true"><img alt="alt text" src="https://github.com/sap-staging/contextual-ai/blob/master/imgs/titanic_report.png?raw=true" /></a>
+</div>
 <div class="section" id="what-else-can-it-do">
 <h2>🚀 What else can it do?<a class="headerlink" href="#what-else-can-it-do" title="Permalink to this headline">¶</a></h2>
-<p>Contextual AI spans three pillars, or scopes, of explainability, each addressing a different stage of a machine learning solution’s lifecycle.</p>
+<p>Contextual AI spans three pillars, or scopes, of explainability, each addressing a different stage of a machine learning solution’s lifecycle. We provide several features and functionalities for each:</p>
 <div class="section" id="pre-training-data">
 <h3>Pre-training (Data)<a class="headerlink" href="#pre-training-data" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -302,6 +367,7 @@ $ pip install dist/*.whl
 <li><p>Training performance</p></li>
 <li><p>Feature importance</p></li>
 <li><p>Per-class explanations</p></li>
+<li><p>Simple error analysis</p></li>
 <li><p><a class="reference external" href="https://contextual-ai.readthedocs.io/en/latest/training_module_tutorial.html">Tutorial</a></p></li>
 </ul>
 </div>
