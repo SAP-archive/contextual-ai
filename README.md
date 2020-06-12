@@ -9,7 +9,7 @@ Contextual AI adds explainability to different stages of machine learning pipeli
 
 ## 🖥 Installation
 
-Contextual AI has been tested with Python 3.6 and 3.7. You can install it using pip:
+Contextual AI has been tested with Python 3.6, 3.7, and 3.8. You can install it using pip:
 
 ```
 $ pip install contextual-ai
@@ -181,9 +181,9 @@ The `Controller` also triggers the rendering of the report:
 controller.render()
 ```
 
-Which produces [this](tutorials/compiler/titanic2/titanic-basic-report.pdf) PDF report which visualizes data distributions, training results, feature importances, local prediction explanations, and more!
+Which produces [this](https://github.com/sap-staging/contextual-ai/blob/master/tutorials/compiler/titanic2/titanic-basic-report.pdf) PDF report which visualizes data distributions, training results, feature importances, local prediction explanations, and more!
 
-![alt text](imgs/titanic_report.png)
+![alt text](https://github.com/sap-staging/contextual-ai/blob/master/imgs/titanic_report.png?raw=true)
 
 
 

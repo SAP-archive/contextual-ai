@@ -1,7 +1,21 @@
 language: python
+addons:
+  apt:
+    packages: &common_packages
+    - libatlas-dev
+    - libatlas-base-dev
+    - liblapack-dev
+    - gfortran
+    - libgmp-dev
+    - libmpfr-dev
+    - libsuitesparse-dev
+    - ccache
+    - swig
+    - libmpc-dev
 python:
   - "3.6"      # current default Python on Travis CI
   - "3.7"
+  - "3.8"
 # command to install dependencies
 install:
   - pip install -r tests/test_requirements.txt
