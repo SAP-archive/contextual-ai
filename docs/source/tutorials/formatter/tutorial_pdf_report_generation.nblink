@@ -1,3 +1,4 @@
 {
-    "path": "../../../../tutorials/formatter/portable_document/pdf_report_generation.ipynb"
+    "path": "../../../../tutorials/formatter/portable_document/pdf_report_generation.ipynb",
+    "extra_media": ["../../../../tutorials/formatter/portable_document/formatter_pdf_images/"]
 }

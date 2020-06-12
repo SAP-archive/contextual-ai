@@ -1,3 +1,4 @@
 {
-    "path": "../../../../tutorials/formatter/hypertext_markup/html_report_generation.ipynb"
+    "path": "../../../../tutorials/formatter/hypertext_markup/html_report_generation.ipynb",
+    "extra_media": ["../../../../tutorials/formatter/hypertext_markup/formatter_html_images/"]
 }
