@@ -1,3 +1,0 @@
-{
-    "path": "../../../../tutorials/model_interpreter/model_interpreter.ipynb"
-}

@@ -1,3 +1,0 @@
-{
-    "path": "../../../../tutorials/compiler/automobile/sample.ipynb"
-}

@@ -1,3 +1,0 @@
-{
-    "path": "../../../../tutorials/formatter/hypertext_markup/html_report_generation.ipynb"
-}

@@ -1,3 +1,0 @@
-{
-    "path": "../../../../tutorials/data_explorer/data_explorer.ipynb"
-}

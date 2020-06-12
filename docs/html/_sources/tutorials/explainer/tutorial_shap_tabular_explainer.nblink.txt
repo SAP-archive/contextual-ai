@@ -1,3 +1,0 @@
-{
-    "path": "../../../../tutorials/explainer/shap_tabular_explainer.ipynb"
-}

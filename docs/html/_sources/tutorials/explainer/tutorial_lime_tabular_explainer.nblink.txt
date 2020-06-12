@@ -1,3 +1,0 @@
-{
-    "path": "../../../../tutorials/explainer/lime_tabular_explainer.ipynb"
-}
