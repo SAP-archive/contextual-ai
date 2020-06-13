@@ -32,7 +32,7 @@ setuptools.setup(
                       'scikit-learn==0.22.2',
                       'scipy==1.3.1',
                       'tqdm==4.44.1',
-                      'matplotlib==3.1.1',
+                      'matplotlib==3.1.2',
                       'seaborn==0.9.0',
                       'fpdf==1.7.2',
                       'wordcloud==1.5.0',
