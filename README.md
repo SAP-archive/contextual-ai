@@ -224,3 +224,4 @@ We welcome contributions of all kinds!
 - Creatin pull requests
 - Providing discussions/feedback
 
+Please refer to `CONTRIBUTING.md` for more.
