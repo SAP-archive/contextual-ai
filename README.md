@@ -181,9 +181,9 @@ The `Controller` also triggers the rendering of the report:
 controller.render()
 ```
 
-Which produces [this](https://github.com/sap-staging/contextual-ai/blob/master/tutorials/compiler/titanic2/titanic-basic-report.pdf) PDF report which visualizes data distributions, training results, feature importances, local prediction explanations, and more!
+Which produces [this](https://github.com/SAP/contextual-ai/blob/master/tutorials/compiler/titanic2/titanic-basic-report.pdf) PDF report which visualizes data distributions, training results, feature importances, local prediction explanations, and more!
 
-![alt text](https://github.com/sap-staging/contextual-ai/blob/master/imgs/titanic_report.png?raw=true)
+![alt text](https://github.com/SAP/contextual-ai/blob/master/imgs/titanic_report.png?raw=true)
 
 
 
