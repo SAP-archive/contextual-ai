@@ -3,7 +3,9 @@ Contextual AI
 
 [![Build Status](https://travis-ci.com/SAP/contextual-ai.svg?branch=master)](https://travis-ci.com/SAP/contextual-ai)
 [![Documentation Status](https://readthedocs.org/projects/contextual-ai/badge/?version=latest)](https://contextual-ai.readthedocs.io/en/latest/?badge=latest)
-
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/contextual-ai)
+[![PyPI version](https://badge.fury.io/py/contextual-ai.svg)](https://badge.fury.io/py/contextual-ai)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Contextual AI adds explainability to different stages of machine learning pipelines - data, training, and inference - thereby addressing the trust gap between such ML systems and their users.
 
@@ -181,7 +183,7 @@ The `Controller` also triggers the rendering of the report:
 controller.render()
 ```
 
-Which produces [this](https://github.com/SAP/contextual-ai/blob/master/tutorials/compiler/titanic2/titanic-basic-report.pdf) PDF report which visualizes data distributions, training results, feature importances, local prediction explanations, and more!
+Which produces [this PDF report](https://github.com/SAP/contextual-ai/blob/master/tutorials/compiler/titanic2/titanic-basic-report.pdf) which visualizes data distributions, training results, feature importances, local prediction explanations, and more!
 
 ![alt text](https://github.com/SAP/contextual-ai/blob/master/imgs/titanic_report.png?raw=true)
 
