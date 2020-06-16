@@ -229,7 +229,7 @@ We welcome contributions of all kinds!
 Please refer to `CONTRIBUTING.md` for more.
 
 
-### Contrbutors
+### Contributors
 
 * [Sean Saito](https://github.com/seansaito)
 * [Wang Jin](https://github.com/wangjin1024)
