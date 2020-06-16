@@ -225,3 +225,13 @@ We welcome contributions of all kinds!
 - Providing discussions/feedback
 
 Please refer to `CONTRIBUTING.md` for more.
+
+
+### Contrbutors
+
+* [Sean Saito](https://github.com/seansaito)
+* [Wang Jin](https://github.com/wangjin1024)
+* [Chai Wei Tah](https://github.com/postalC)
+* [Ni Peng](mailto:peng.ni@sap.com)
+* Amrit Raj
+* Karthik Muthuswamy

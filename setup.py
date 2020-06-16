@@ -16,7 +16,7 @@ setuptools.setup(
     version=get_version(),
     packages=setuptools.find_packages(include=['xai*'], exclude=['tutorials*', 'docs*', 'tests*']),
     author="SAP",
-    url='https://github.com/sap-staging/contextual-ai',
+    url='https://github.com/SAP/contextual-ai.git',
     project_urls={
         'Documentation': 'https://contextual-ai.readthedocs.io/en/latest/'
     },
