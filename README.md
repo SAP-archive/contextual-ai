@@ -1,7 +1,7 @@
 Contextual AI
 ==============
 
-[![Build Status](https://travis-ci.com/sap-staging/contextual-ai.svg?token=wh5aYpEiVyMyx9ysvFdy&branch=master)](https://travis-ci.com/sap-staging/contextual-ai)
+[![Build Status](https://travis-ci.com/SAP/contextual-ai.svg?branch=master)](https://travis-ci.com/SAP/contextual-ai)
 [![Documentation Status](https://readthedocs.org/projects/contextual-ai/badge/?version=latest)](https://contextual-ai.readthedocs.io/en/latest/?badge=latest)
 
 
