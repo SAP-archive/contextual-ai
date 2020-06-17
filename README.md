@@ -3,6 +3,7 @@ Contextual AI
 
 [![Build Status](https://travis-ci.com/SAP/contextual-ai.svg?branch=master)](https://travis-ci.com/SAP/contextual-ai)
 [![Documentation Status](https://readthedocs.org/projects/contextual-ai/badge/?version=latest)](https://contextual-ai.readthedocs.io/en/latest/?badge=latest)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/SAP/contextual-ai.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SAP/contextual-ai/context:python)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/contextual-ai)
 [![PyPI version](https://badge.fury.io/py/contextual-ai.svg)](https://badge.fury.io/py/contextual-ai)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
