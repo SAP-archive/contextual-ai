@@ -213,6 +213,17 @@ Contextual AI spans three pillars, or scopes, of explainability, each addressing
 * Explanations per prediction instance
 * [Tutorial](https://contextual-ai.readthedocs.io/en/latest/inference_module_tutorial.html)
 
+We currently support the following explainers for each data type:
+
+**Tabular**:
+* [LIME Tabular Explainer](https://lime-ml.readthedocs.io/en/latest/lime.html#module-lime.lime_tabular)
+* [SHAP Kernel Explainer](https://shap.readthedocs.io/en/latest/#shap.KernelExplainer)
+
+**Text**:
+* [LIME Text Explainer](https://lime-ml.readthedocs.io/en/latest/lime.html#module-lime.lime_text)
+
+Looking to integrate your own explainer into contextual AI? Look at the [following documentation](https://contextual-ai.readthedocs.io/en/latest/inference_module.html) to see how you can use our `AbstractExplainer` class to create your own explainer that satisfies our interface!
+
 ### Formatter/Compiler 
 
 * Produce PDF/HTML reports of outputs from the above using only a few lines of code
