@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/SAP/contextual-ai/blob/master/imgs/logo.png?raw=true">
+</p>
+
 Contextual AI
 ==============
 
