@@ -12,6 +12,7 @@ Contextual AI
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/contextual-ai)
 [![PyPI version](https://badge.fury.io/py/contextual-ai.svg)](https://badge.fury.io/py/contextual-ai)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Gitter](https://badges.gitter.im/SAP/contextual-ai.svg)](https://gitter.im/SAP/contextual-ai?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 Contextual AI adds explainability to different stages of machine learning pipelines - data, training, and inference - thereby addressing the trust gap between such ML systems and their users.
 
