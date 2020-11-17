@@ -12,4 +12,10 @@ git pull
 ```
 pip install -r requirements.txt
 ```
+- install nltk data stopwords corpus following the steps at https://www.nltk.org/data.html. eg. From Python interpreter, invoke the interactive NLTK Downloader and select popular packages for download
+```
+>>> import nltk
+>>> nltk.download()
+```
+
 - set your jupyter notebook kernel correctly to the environment with all required packages.
