@@ -13,6 +13,7 @@ Contextual AI
 [![PyPI version](https://badge.fury.io/py/contextual-ai.svg)](https://badge.fury.io/py/contextual-ai)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Gitter](https://badges.gitter.im/SAP/contextual-ai.svg)](https://gitter.im/SAP/contextual-ai?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![REUSE status](https://api.reuse.software/badge/github.com/SAP/contextual-ai)](https://api.reuse.software/info/github.com/SAP/contextual-ai)
 
 Contextual AI adds explainability to different stages of machine learning pipelines - data, training, and inference - thereby addressing the trust gap between such ML systems and their users.
 
@@ -255,3 +256,7 @@ Please refer to `CONTRIBUTING.md` for more.
 * [Ni Peng](mailto:peng.ni@sap.com)
 * Amrit Raj
 * Karthik Muthuswamy
+
+## Licensing
+
+Copyright 2020-2021 SAP SE or an SAP affiliate company and contextual-ai contributors. Please see our [LICENSE](LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/SAP/contextual-ai).
