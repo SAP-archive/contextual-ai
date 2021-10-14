@@ -12,7 +12,7 @@ nltk==3.4.5
 ordered-set>=3.1.0
 dill>=0.3.0
 yattag==1.12.2
-pyyaml==5.3.1
+pyyaml==5.4
 jsonschema==3.0.2
 PyPDF2==1.26.0
 pillow>=7.1.0
