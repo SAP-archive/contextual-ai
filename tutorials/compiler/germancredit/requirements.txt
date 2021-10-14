@@ -13,5 +13,5 @@ yattag==1.12.2
 pyyaml==5.1.2
 jsonschema==3.0.2
 plotly==4.3.0
-nltk==3.4.5
+nltk==3.6.5
 wordcloud==1.5.0
