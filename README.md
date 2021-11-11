@@ -86,7 +86,7 @@ exp = explainer.explain_instance(
     num_features=5 # how many words to show?
 )
 
-print('Label', raw_train.target_names[raw_test.target[0]], '=>', raw_test.target[0])
+print('Label', raw_train.target_names[raw_test.target[9]], '=>', raw_test.target[9])
 pprint(exp)
 ```
 
