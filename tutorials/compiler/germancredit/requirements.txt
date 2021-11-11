@@ -10,7 +10,7 @@ lime==0.1.1.32
 dill==0.3.0
 shap==0.29.3
 yattag==1.12.2
-pyyaml==5.1.2
+pyyaml==5.4
 jsonschema==3.0.2
 plotly==4.3.0
 nltk==3.6.5
