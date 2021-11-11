@@ -37,7 +37,7 @@ setuptools.setup(
                       'seaborn>=0.9.0',
                       'fpdf==1.7.2',
                       'wordcloud==1.5.0',
-                      'nltk==3.4.5',
+                      'nltk==3.6.5',
                       'ordered-set>=3.1.0',
                       'lime>=0.1.1, <=2',
                       'dill>=0.3.0',
