@@ -46,7 +46,7 @@ setuptools.setup(
                       'pyyaml==5.4',
                       'pillow>=7.1.0',
                       'jsonschema==3.0.2',
-                      'PyPDF2 == 1.26.0'
+                      'PyPDF2 == 1.27.5'
                       ],
     classifiers=[
         'Programming Language :: Python :: 3.6',
