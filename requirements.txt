@@ -14,7 +14,7 @@ dill>=0.3.0
 yattag==1.12.2
 pyyaml==5.4
 jsonschema==3.0.2
-PyPDF2==1.26.0
+PyPDF2==1.27.9
 pillow>=7.1.0
 shap>=0.35.0
 lime>=0.1.1, <=2
